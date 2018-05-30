@@ -1,0 +1,56 @@
+.scrollable{position:relative;z-index:10;overflow:hidden;width:283px;height:203px;}
+.scrollable .item{width:283px;height:203px;margin-bottom:2px;}
+.scrollable .item a{width:283px;height:203px;display:block;overflow:hidden;}
+.scrollable .item a p{color:#F12F09;font-size:24px;position:absolute;display:block;text-align:center;width:283px;margin:174px 0 0;height:29px;overflow:hidden;}
+.scrollable .item a td{width:283px;height:203px;}
+.scrollable .items{height:20000em;position:absolute;}
+.scrollable .item img{max-width:283px;max-height:203px;display:block;margin:auto;}
+.no_marg{}
+.scrollable2{position:relative;z-index:10;overflow:hidden;width:328px;height:387px;margin:auto;}
+.scrollable2 .item{width:328px;height:395px;float:left;}
+.scrollable2 .item a{width:328px;height:395px;display:block;overflow:hidden;}
+.scrollable2 .text_top_prod{width:308px;overflow:hidden;padding:10px;margin:317px 0 0;position:absolute;}
+.scrollable2 .item a p.name_top_prod{font-size:16pt;color:#000;text-align:center;}
+.scrollable2 .item a p.price_top_prod{font-size:16pt;color:red;}
+.scrollable2 .items, .ca-ul-box .items{width:20000em;position:absolute;}
+.ca-ul-box .item{float:left;}
+.scrollable2 .item img{max-height:395px;display:block;margin:auto;}
+#scrollable3 .item{width:328px;height:389px;overflow:hidden;}
+#scrollable3 .item img{margin-left:-90px;}
+#scrollable3 .item .text_top_prod{background:#E0E0E9;background:rgba(224, 224, 233, 0.78);}
+#scrollable3 .item p.name_top_prod{width:216px;float:left;margin:0;text-align:left;}
+#scrollable3 .item p.price_top_prod{margin:0.5em 0;}
+.navi{cursor:pointer;height:18px;}
+.navigator{height:18px;margin-right:8px;}
+.navi a{width:8px;height:8px;float:left;margin:3px;background:url(/img/main/navigator.png) 0 0 no-repeat;display:block;font-size:1px;}
+.navi a:hover{background-position:0 -8px;}
+.navi a.active{background-position:0 -15px;}
+.home-content-box{text-align:center;margin-bottom:5px;}
+.block-box{text-align: center;}
+div.body div.ca-box{background:none;padding:0px;height:100%;width:100%;}
+div.body div.ca-box div.ca-ul-box{height:370px;width:100%;}
+div.body div.ca-box ul.ca-ul{height:413px;}
+div.body div.ca-box ul.ca-ul li.ca-li{height:413px;width:710px;}
+div.body .ca-item-box a.img{height:413px;}
+div.body .ca-item-box{background:none;}
+div.body .ca-item-box div.name, div.body .ca-item-box div.price-new{background:none;color:#000;}
+div.body div.ca-box a.ca-button-left{left:0px;}
+div.body div.ca-box a.ca-button-right{right:0px;}
+div.body .ca-item-box div.price-new span.price{color:#eb3424;font-weight:normal;font-size:30px;}
+div.body .ca-item-box div.price-new{border:none;font-size:16px;top:295px;width:220px;text-align:right;right:0;padding-right:10px;}
+div.body .ca-item-box div.name{border:none;font-size:30px;height:100px;width:220px;text-align:right;right:0;padding-right:10px;font-weight:bold;}
+div.body .ca-item-box div.name span{font-size:16px;padding-top:15px;font-weight:normal;}
+div.body div.homepage-box div.column-2{float:right;width:285px;}
+.brand_slider{height:62px;left:305px;overflow:hidden;position:absolute;top:35px;width:580px;border:1px solid #C3C3C3;}
+.brand_slider .bprev{display:block;width:20px;height:20px;cursor:pointer;float:left;margin-left:5px;margin-right:12px;margin-top:21px;}
+.brand_slider .bprev div{width:20px;height:20px;background:url(/img/brend_left.png) no-repeat;}
+.brand_slider .bnext{display:block;width:20px;height:20px;float:right;cursor:pointer;margin-left:10px;margin-right:5px;margin-top:21px;}
+.brand_slider .bnext div{width:20px;height:20px;background:url(/img/brend_right.png) no-repeat;}
+.brand_slider .disable .bpr{background:url(/img/brend_left_g.png) no-repeat;}
+.brand_slider .disable .bnx{background:url(/img/brend_right_g.png) no-repeat;}
+.brand_slider .bnext img, .brand_slider .bprev img{width:20px;}
+.scrollable_brand .item{width:62px;height:62px;float:left;border-right:1px solid #C3C3C3;}
+.scrollable_brand .item a{width:62px;height:62px;display:block;overflow:hidden;}
+.scrollable_brand .item a td{width:62px;height:62px;}
+.scrollable_brand .items{width:20000em;position:absolute;height:62px;}
+.scrollable_brand .item img{max-width:60px;max-height:60px;display:block;margin:auto;}

@@ -1,0 +1,1 @@
+<div id="result"><?=$this->resultat;?></div>

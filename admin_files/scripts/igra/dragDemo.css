@@ -1,0 +1,19 @@
+.computer {
+text-align: center;
+  width: 150px;
+  height: 150px;
+  background: url(/img/admin/igra/meshok.png) no-repeat;
+  background-size: cover;
+  position: fixed;
+  bottom: 20px;
+  left: 0px;
+}
+.c{
+ top: 0px;
+ left: -50px; 
+    z-index: 9999;
+    position: absolute;
+}
+.draggable {
+  cursor: pointer;
+}

@@ -1,0 +1,27 @@
+#soundContainer {
+	position: absolute;
+	left: -256px;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+}
+
+#soundOff, #soundOn {
+	display: none;
+	position: absolute;
+	width: 128px;
+	height: 128px;
+	left: 50%;
+	top: 50%;
+	margin-left: -64px;
+	margin-top: -64px;
+	z-index: 999999;
+}
+
+#soundOff {
+	background: url(mel.sound.png) no-repeat left;
+}
+
+#soundOn {
+	background: url(mel.sound.png) no-repeat right;
+}

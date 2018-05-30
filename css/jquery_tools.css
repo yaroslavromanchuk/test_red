@@ -1,0 +1,23 @@
+﻿.scrollable{position:relative;overflow:hidden;width:135px;height:30px;float:left;margin:20px 0px;}
+.scrollable .items{width:20000em;position:absolute;}
+.items div{float:left;}
+.scrollable .items img{-moz-border-radius:4px 4px 4px 4px;float:left;margin:0 5px 0 5px;height:23px;cursor:pointer;}
+a.browse{background:url("../img/hori_large.png") no-repeat scroll 0 0 transparent;cursor:pointer;display:block;float:left;font-size:1px;height:23px;margin:20px 10px;width:10px;}
+a.r{background-position:0 -23px;clear:right;margin-right:0;}
+a.r:hover{background-position:-10px -23px;}
+a.r:active{background-position:-20px -23px;}
+a.l{margin-left:0;}
+a.l:hover{background-position:-10px 0;}
+a.l:active{background-position:-20px 0;}
+#image_wrap{border:2px solid #7cc623;-moz-border-radius:5px 5px 5px 5px;width:155px;height:155px;margin-left:10px;}
+#image_wrap img{max-height:155px;max-width:155px;cursor:pointer;}
+.scrollable .active{border:2px solid #7cc623;cursor:default;position:relative;}
+
+
+.simple_overlay{display:none;}
+
+.width_simple_850{width:850px;}
+.width_simple_600{width:600px;}
+.close{background-image:url(../img/close.png);position:absolute;right:0px;top:0px;cursor:pointer;height:35px;width:35px;}
+.modal-dialog .close{background-image:url(../img/close.png);position:absolute;right:0px;top:0px;cursor:pointer;height:35px;width:35px;z-index: 2;}
+/*.simple_overlay img{max-height:600px;max-width:600px;}*/

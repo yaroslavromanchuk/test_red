@@ -1,0 +1,103 @@
+.ui-helper-clearfix:before,
+.ui-helper-clearfix:after {
+	content: "";
+	display: table;
+	border-collapse: collapse;
+}
+.ui-helper-clearfix:after {
+	clear: both;
+}
+.ui-tabs {
+	position: relative;
+	padding: .2em;
+}
+.ui-tabs .ui-tabs-nav {
+	margin: 0;
+	padding: 0px;/* .2em .2em 0;*/
+}
+.ui-tabs .ui-tabs-nav li {
+    border-radius: 2px 2px 0px 0px;
+	list-style: none;
+	float: left;
+	position: relative;
+	top: 0;
+/*	margin: 1px .2em 0 0;*/
+	border-bottom-width: 0;
+	padding: 0;
+	white-space: nowrap;
+}
+.ui-tabs .ui-tabs-nav .ui-tabs-anchor {
+	float: left;
+	padding: 5px 10px;
+	text-decoration: none;
+}
+.ui-tabs .ui-tabs-nav li.ui-tabs-active {
+	margin-bottom: -1px;
+	padding-bottom: 1px;
+}
+.ui-tabs .ui-tabs-nav li.ui-tabs-active .ui-tabs-anchor,
+.ui-tabs .ui-tabs-nav li.ui-state-disabled .ui-tabs-anchor,
+.ui-tabs .ui-tabs-nav li.ui-tabs-loading .ui-tabs-anchor {
+	cursor: text;
+}
+.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-active .ui-tabs-anchor {
+	cursor: pointer;
+}
+.ui-tabs .ui-tabs-panel {	
+border-top: 1px solid #e6e6e6;
+ /*border-radius: 2px;
+	border: 1px solid #e6e6e6;*/
+	display: block;	
+	padding: 10px;
+	background: none;
+}
+.ui-tooltip {
+	padding: 8px;
+	position: absolute;
+	z-index: 9999;
+	max-width: 300px;
+	-webkit-box-shadow: 0 0 5px #e6e6e6;
+	box-shadow: 0 0 5px #e6e6e6;
+}
+
+/* Component containers
+----------------------------------*/
+.ui-widget-content {	
+	background: #ffffff;
+	color: #222222;
+}
+.ui-widget-content a {
+	color: #222222;
+}
+/*Õ≈ ¿ “»¬Õ€… “¿¡*/
+.ui-state-default,
+.ui-widget-content .ui-state-default,
+.ui-widget-header .ui-state-default {
+	border: 1px solid #ffffff;
+	background: #ffffff;
+	font-weight: normal;
+	color: #555555;
+}
+
+/*œ–» Õ¿¬≈ƒ≈Õ»≈ Õ¿ “¿¡*/
+.ui-state-hover,
+.ui-widget-content .ui-state-hover,
+.ui-widget-header .ui-state-hover,
+.ui-state-focus,
+.ui-widget-content .ui-state-focus,
+.ui-widget-header .ui-state-focus {
+	border: 1px solid #999999;
+	background: rgba(218, 218, 218, 0.37);
+	font-weight: normal;
+	color: #212121;
+	cursor: pointer;
+}
+/*¿ “»¬Õ€… “¿¡*/
+.ui-state-active,
+.ui-widget-content .ui-state-active,
+.ui-widget-header .ui-state-active {
+	border: 1px solid #e6e6e6;
+	/*background: rgba(218, 218, 218, 0.37);*/
+	font-weight: normal;
+	color: #212121;
+}

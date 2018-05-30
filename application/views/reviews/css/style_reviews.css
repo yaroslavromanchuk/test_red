@@ -1,0 +1,213 @@
+.ac-container{
+	width: 100%;
+	margin: 10px auto auto auto;
+	text-align: left;
+}
+.ac-container label{
+    z-index: 20;
+    cursor: pointer;
+}
+.ac-container label:hover{
+	/*background: #fff;*/
+}
+.ac-container input:checked + label,
+.ac-container input:checked + label:hover{
+	/*background: rgba(247, 247, 247, 0.61);*/
+	color: #000000;
+	text-shadow: 0px 1px 1px rgba(255,255,255, 0.6);
+	/*box-shadow: 
+		0px 0px 0px 1px rgba(155,155,155,0.3), 
+		0px 2px 2px rgba(0,0,0,0.1);*/
+}
+.ac-container label:after,
+.ac-container input:checked + label:after{
+	content: '';
+	position: absolute;
+	width: 24px;
+	height: 24px;
+	right: 13px;
+	top: 7px;
+	/*background: transparent url(../images/arrow_down.png) no-repeat center center;	*/
+}
+.ac-container input:checked + label:after{
+	/*background-image: url(../images/arrow_up.png);*/
+}
+
+.inp{
+	display: none;
+}
+.ac-container article{
+	overflow: hidden;
+	height: 0px;
+	position: relative;
+	z-index: 10;
+	-webkit-transition: height 0.3s ease-in-out, box-shadow 0.6s linear;
+	-moz-transition: height 0.3s ease-in-out, box-shadow 0.6s linear;
+	-o-transition: height 0.3s ease-in-out, box-shadow 0.6s linear;
+	-ms-transition: height 0.3s ease-in-out, box-shadow 0.6s linear;
+	transition: height 0.3s ease-in-out, box-shadow 0.6s linear;
+}
+.ac-container article p{
+	font-style: italic;
+	color: #777;
+	line-height: 23px;
+	font-size: 14px;
+	padding: 20px;
+	text-shadow: 1px 1px 1px rgba(255,255,255,0.8);
+}
+.ac-container input:checked ~ article{
+	-webkit-transition: height 0.5s ease-in-out, box-shadow 0.1s linear;
+	-moz-transition: height 0.5s ease-in-out, box-shadow 0.1s linear;
+	-o-transition: height 0.5s ease-in-out, box-shadow 0.1s linear;
+	-ms-transition: height 0.5s ease-in-out, box-shadow 0.1s linear;
+	transition: height 0.5s ease-in-out, box-shadow 0.1s linear;
+	/*box-shadow: 0px 0px 0px 1px rgba(155,155,155,0.3);*/
+}
+.ac-container input:checked ~ article.ac-small{
+	height: 140px;
+}
+.ac-container input:checked ~ article.ac-medium{
+	height: 180px;
+}
+.ac-container input:checked ~ article.ac-large{
+	height: auto;
+}
+.rd_r{
+	    color: #999;
+    padding-left: 1%;
+    /* padding-right: 5%; */
+    /* float: right; */
+    font-size: 12px;
+}
+.x{
+	    font-size: 14px;
+	padding-right: 3%;
+    padding-left: 3%;
+}
+.ss{
+	    margin-bottom: 3%;
+
+    margin-left: 5%;
+	margin-right: 5%;
+    background: #ffffff;
+    color: rgb(36, 74, 130);
+    text-shadow: 0px 1px 1px rgba(255,255,255, 0.6);
+    box-shadow: 0px 0px 0px 1px rgba(155,155,155,0.3), 0px 2px 2px rgba(0,0,0,0.1);
+}
+.c{
+	padding-left: 3%;
+    padding-right: 3%;
+    padding-bottom: 2%;
+    padding-top: 2%;
+}
+.forma{
+	display:none;
+}
+.ac-large{
+	width: 100%;
+	    float: right;
+}
+.rd_r_a{
+	    padding-right: 0%;
+    float: right;
+}
+#cs {width:870px; color:#333; padding:10px; font:normal 14px Verdana; text-align:left; background:#FFF;}
+#cs a{text-decoration:none; cursor:pointer;}
+#cs div.f{width:99%; float:right;}
+#cs div.s{width:90%; float:right; margin-top:5px;}
+#cs div.c{background: url(top.png) left top no-repeat;}
+#cs div.c div{clear:both; padding:10px; background: url(fon.png);}
+#cs div.c span.l{height:40px; float:left;}
+#cs div.c span.r{height:40px; font-size:10px; position:relative; top:15px; left:-10px; float:right;}
+span.r_r{
+	
+	    float: right;
+    margin: 2px 10px 10px;
+    padding: 5px 15px 5px;
+    border: 1px #CCC solid;
+    cursor: pointer;
+    color: #1B1919;
+	}
+span.r_r:hover{
+	
+	color:#787878;}
+#cf {background: #b6b5b5 url(/application/views/reviews/addtitle.png) top left repeat-x; border:1px solid #CCC; margin-top:25px; padding:10px;}
+#scf {background:#FFF;}
+#cf #status span.t{font: bold 18px Verdana; color:#FFF;}
+#cf #status font.ok{font: bold 18px Verdana; color:#9F9;}
+#cf #status font.err{font: bold 18px Verdana; color:#F99;}
+#cf #rules{font:normal 12px Verdana; background: url(bottom.png) right bottom no-repeat; padding:5px 0px 20px;}
+#cf #rules div{padding:5px 15px 5px; color:#FFF;}
+#cf textarea{border:10px solid #FFF; padding:5px; font:normal 15px Verdana; overflow:hidden; background: url(areafon.png) top left no-repeat;}
+#cf #name{width:30%; height:50px; float:left;}
+#cf #site{width:60%; height:50px;}
+#cf #mail{width:90%; height:50px;}
+#cf #text {width:90%; margin:5px 10px 15px; border:1px solid #DDD; height:200px; background:#EEE;}
+.clear {clear:both;}
+.add {cursor:pointer; margin:10px 0px 0px;}
+.add_f{
+	 width: 95%;
+    /*display: none;*/
+    float: right;
+}
+.add_forma{
+	border-radius: 10px;
+    -webkit-box-shadow: 0 0 8px 5px rgb(238, 238, 238);
+    width: 100%;
+    background: rgb(238, 238, 238);
+}
+
+.sub_mit{
+	padding: 8 10;
+    display: block;
+    border-radius: 10px;
+    float: right;
+    margin: 10;
+}
+.in_name{
+	height: 40px;
+    padding: 2 0 5 5;
+    border-radius: 7px;
+   /* -webkit-box-shadow: 0 0 5px 3px rgba(95,151,216,.14);*/
+	display:none;
+}
+.comment-types {
+	text-align: center;
+}
+.comment-types .comment-type {
+    display: inline-block;
+    margin-left: 0px;
+    margin-right: 15px;
+}
+.comment-types .comment-type input[type="radio"] {
+    display: none;
+}
+.comment-types .comment-type input[type="radio"] + label {
+    cursor: pointer;
+	display: inline-block;
+}
+.comment-types .comment-type input[type="radio"]#comment-radio-bad:checked + label:before {
+    background-position: 60px 0px;
+}
+.comment-types .comment-type input[type="radio"]#comment-radio-bad + label:before {
+    background-image: url(../images/bad-small.png);
+}
+.comment-types .comment-type input[type="radio"]#comment-radio-good:checked + label:before {
+    background-position: 60px 0px;
+}
+.comment-types .comment-type input[type="radio"]#comment-radio-good + label:before {
+    background-image: url(../images/good-small.png);
+}
+.comment-types .comment-type input[type="radio"]#comment-radio-normal:checked + label:before {
+    background-position: 60px 0px;
+}
+.comment-types .comment-type input[type="radio"]#comment-radio-normal + label:before {
+    background-image: url(../images/normal-small.png);
+}
+.comment-types .comment-type input[type="radio"] + label:before {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 60px;
+    margin-bottom: 10px;
+}

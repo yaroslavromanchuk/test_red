@@ -1,0 +1,92 @@
+.el{ z-index: -1;
+position:fixed;top:47px;left:0px;width:300px;height:224px;background:url('/img/fon/img/el.png');background-size: cover;
+}
+.er{ z-index: -1;
+position:fixed;top:47px;right:0px;width:300px;height:224px;background:url('/img/fon/img/er.png');background-size: cover;
+}
+
+.el_1{
+position:fixed;top:62px;left:16px;width:37px;height:37px;background:url('/img/fon/img/el_1_0.png');background-size: cover;
+}
+.el_1:hover{
+background:url('/img/fon/img/el_1_1.png');
+}
+.el_2{
+position:fixed;top:86px;left:59px;width:41px;height:41px;background:url('/img/fon/img/el_2_0.png');background-size: cover;
+}
+.el_2:hover{
+background:url('/img/fon/img/el_2_1.png');
+}
+.el_3{
+position:fixed;top:130px;left:10px;width:49px;height:49px;background:url('/img/fon/img/el_3_0.png');background-size: cover;
+}
+.el_3:hover{
+background:url('/img/fon/img/el_3_1.png');
+}
+.el_4{
+position:fixed;top:80px;left:132px;width:18px;height:18px;background:url('/img/fon/img/el_4_0.png');background-size: cover;
+}
+.el_4:hover{
+background:url('/img/fon/img/el_4_1.png');
+}
+.el_5{
+position:fixed;top:47px;left:122px;width:28px;height:23px;background:url('/img/fon/img/el_5_0.png');background-size: cover;
+}
+.el_5:hover{
+background:url('/img/fon/img/el_5_1.png');
+}
+.el_6{
+position:fixed;top:57px;left:199px;width:26px;height:26px;background:url('/img/fon/img/el_6_0.png');background-size: cover;
+}
+.el_6:hover{
+background:url('/img/fon/img/el_6_1.png');
+}
+.el_7{
+position:fixed;top:217px;left:10px;width:26px;height:26px;background:url('/img/fon/img/el_7_0.png');background-size: cover;
+}
+.el_7:hover{
+background:url('/img/fon/img/el_7_1.png');
+}
+/*--------*/
+.er_1{z-index: 1;
+position:fixed;top:62px;right:16px;width:37px;height:37px;background:url('/img/fon/img/er_1_0.png');background-size: cover;
+}
+.er_1:hover{ 
+background:url('/img/fon/img/er_1_1.png');
+}
+.er_2{ z-index: 1;
+position:fixed;top:86px;right:59px;width:41px;height:41px;background:url('/img/fon/img/er_2_0.png');background-size: cover;
+}
+.er_2:hover{
+background:url('/img/fon/img/er_2_1.png');
+}
+.er_3{ z-index: 1;
+position:fixed;top:130px;right:10px;width:49px;height:49px;background:url('/img/fon/img/er_3_0.png');background-size: cover;
+}
+.er_3:hover{
+background:url('/img/fon/img/er_3_1.png');
+}
+.er_4{ z-index: 1;
+position:fixed;top:80px;right:132px;width:18px;height:18px;background:url('/img/fon/img/er_4_0.png');background-size: cover;
+}
+.er_4:hover{
+background:url('/img/fon/img/er_4_1.png');
+}
+.er_5{ z-index: 1;
+position:fixed;top:47px;right:122px;width:28px;height:23px;background:url('/img/fon/img/er_5_0.png');background-size: cover;
+}
+.er_5:hover{
+background:url('/img/fon/img/er_5_1.png');
+}
+.er_6{
+position:fixed;top:57px;right:199px;width:26px;height:26px;background:url('/img/fon/img/er_6_0.png');background-size: cover;
+}
+.er_6:hover{
+background:url('/img/fon/img/er_6_1.png');
+}
+.er_7{
+position:fixed;top:217px;right:10px;width:26px;height:26px;background:url('/img/fon/img/er_7_0.png');background-size: cover;
+}
+.er_7:hover{
+background:url('/img/fon/img/er_7_1.png');
+}

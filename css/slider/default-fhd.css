@@ -1,0 +1,108 @@
+
+/* ------ mobilyslider
+-----------------------------------------------*/
+
+.slider {
+float:left;
+width:100%;
+/*height:100%;*/
+position:relative;
+/*padding-bottom:26px;
+background:url(/img/slider/bottom_shadow.png) no-repeat bottom center;*/
+}
+
+.sliderContent {
+float:left;
+width:100%;
+height:1080px;
+clear:both;
+position:relative;
+/*overflow:hidden;*/
+overflow:scroll;
+}
+
+.sliderArrows a {
+display:block;
+text-indent:-9999px;
+outline:none;
+z-index:50;
+background-image:url(/img/slider/prev_next.png);
+width:42px;
+height:42px;
+position:absolute;
+top:50%;
+margin-top:-25px;
+}
+
+.prev {
+background-position:0 0;
+left:10px;
+}
+
+.prev:hover {
+background-position:0 -44px;
+}
+
+.next {
+right:10px;
+background-position:-44px 0;
+}
+
+.next:hover {
+background-position:-44px -44px;
+}
+
+.sliderContent .item {
+position:absolute;
+width:100%px;
+background:#fff;
+}
+
+.sliderBullets {
+position:absolute;
+top:10px;
+right:20px;
+z-index:50;
+/*margin-left:-45px;*/
+}
+
+.sliderBullets a {
+display:block;
+float:left;
+text-indent:-9999px;
+outline:none;
+margin-left:5px;
+width:10px;
+height:11px;
+background:url(/img/slider/bullets.png) no-repeat;
+}
+
+.sliderBullets .active {
+background-position:0 -11px;
+}
+
+.sliderContent a {
+outline:none;
+}
+
+a {
+color: #999999;
+}
+
+a img {
+border:none;
+}
+@media (min-device-width:320px) and (orientation:portrait){.m_im{width:320px; height:118px;}}
+@media (min-device-width:360px) and (orientation:portrait){.m_im{width:360px; height:133px;}}
+@media (min-device-width:375px) and (orientation:portrait){.m_im{width: 375px;height:138px;}}
+@media (min-device-width:768px) and (orientation:portrait){.m_im{width:768px;height:283px;}}
+@media (min-device-width: 800px) and (orientation:portrait){.m_im{width:800px;height:300px;}}
+
+@media (min-device-width:480px) and (orientation:landscape){.m_im{width:480px;height:178px;} }
+@media (min-device-width:534px) and (orientation:landscape){.m_im{width:534px;height:196px;}  }
+@media (min-device-width:568px) and (orientation:landscape){.m_im{width:568px;height:210px;}}
+@media (min-device-width:640px) and (orientation:landscape){.m_im{width:640px;height:236px;} }
+@media (min-device-width:667px) and (orientation:landscape){.m_im{width:667px;height:246px;}  }
+@media (min-device-width:1024px) and (orientation:landscape){.m_im{width:1003px;height:370px; } }
+@media (min-device-width:1280px) and (orientation:landscape){.m_im{width:1003px;height:370px; }}
+

@@ -1,0 +1,14 @@
+.smm-fixed{position:fixed;right:0;bottom:5%;width:43px;z-index:1040;}
+.smm-fixed .vkcom{background:#4c75a3;}
+.smm-fixed .fccom{background:#3664a2;}
+.smm-fixed .okru{background:#ed812b;}
+.smm-fixed .inst{background:#777578;}
+.smm-fixed .youtube{background:#ff2922;}
+.smm-fixed .links{display:block;position:relative;right:-13px;width:43px;height:30px;margin-bottom:4px;text-align:left;transition:.3s;-webkit-transition:.3s;-o-transition:.3s;-moz-transition:.3s;}
+.smm-fixed .links:hover{right:0;}
+.smm-fixed a{width:30px;height:30px;display:inline-block;background:url(/img/icons_sprite.png);cursor:pointer;}
+.smm-fixed .vkcom a{background-position:0 -248px;}
+.smm-fixed .fccom a{background-position:-34px -248px;}
+.smm-fixed .okru a{background-position:-170px -248px;}
+.smm-fixed .inst a{background-position:-238px -248px;}
+.smm-fixed .youtube a{background-position:-306px -248px;}
