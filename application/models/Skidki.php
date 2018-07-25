@@ -19,7 +19,9 @@ class Skidki extends wsActiveRecord
 
         static function getActiv($article_id)
         {
-            return wsActiveRecord::useStatic('Skidki')->findFirst(array('article_id' => $article_id, 'publish' => 1, 'start <= "' . date('Y-m-d H:i:s') . '"', 'finish >= "' . date('Y-m-d H:i:s') . '"'));
+		$article_id = (int)$article_id;
+		$a = wsActiveRecord::useStatic('Skidki')->findFirst(array(' article_id = '.$article_id.' and publish = 1 and start <= "' . date('Y-m-d H:i:s') . '" and  "' . date('Y-m-d H:i:s') . '" <= finish '));
+            return $a;
         }
 
         static function getAllActiv($article_id)

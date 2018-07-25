@@ -1,7 +1,14 @@
-<script type="text/javascript" src="/js/call/jquery.mask.js"></script>
-<h1><?php echo $this->getCurMenu()->getName();?></h1>
-<?php echo $this->getCurMenu()->getPageBody(); ?>
+<h1><?=$this->getCurMenu()->getName()?></h1>
+<div class="row mx-auto">
+<div class="col-xl-12" style="    background: white;
+    padding: 30px;">
+<?=$this->getCurMenu()->getPageBody()?>
+</div>
+ </div>
+ <script type="text/javascript" src="https://rabota.ua/export/context/company.js"></script>
+<!--
 <h1><strong>Анкета на работу:</strong></h1>
+
 <form action="" method="post" enctype="multipart/form-data" name="work" id="work">
   <fieldset id="f1">
   <legend>
@@ -152,18 +159,10 @@
  <input name="save" type="submit" id="b8" style="display:none;" >Отправить</button>
   </fieldset>
 
- <!-- <input name="submit" type="button" value="Отправить" />-->
-</form>
+</form>-->
 
 
 <script type="text/javascript">
-jQuery(function($){
-  // $("#date").mask("99/99/9999");
-   $("#phone").mask("(999)999-99-99");
-   // $("#product").mask("99/99/9999",{placeholder:" "});
-   //$("#tin").mask("99-9999999");
-   //$("#ssn").mask("999-99-9999");
-});
 function uroven1(){
 $('.red').removeClass('red');
 if($("select#works").val()== 0){
@@ -289,63 +288,4 @@ $('#f8').show();
 }
 }
 
-function uroven8(){
-//$('#work').submit();
-            //return true;
-}
-
-   /* function validationForm() {
-        var msg = '';
-        $('.red').removeClass('red');
-        if ($('#fio').val() == '') {
-            msg += 'ФИО\r\n';
-            $('#fio').addClass('red');
-        }
-
-        if ($('#bz').val() == '' || $('#bz1').val() == '' || $('#bz2').val() == '') {
-            msg += 'Дата рождения\r\n';
-            $('#bz').addClass('red');
-            $('#bz1').addClass('red');
-            $('#bz2').addClass('red');
-        }
-
-
-        if ($('#obr option:selected').val() == '') {
-            msg += 'Образование\r\n';
-        }*/
-       /* if ($('#adres').val() == '') {
-            msg += 'Адрес (прописка)\r\n';
-            $('#adres').addClass('red');
-        }
-        if ($('#adresf').val() == '') {
-            msg += 'Адрес (фактическое проживание)\r\n';
-            $('#adresf').addClass('red');
-        }*//*
-        if ($('#tel').val() == '') {
-            msg += 'Контактный телефон\r\n';
-            $('#tel').addClass('red');
-        }
-        if ($('#dolgnost').val() == '') {
-            msg += 'Предполагаемая должность\r\n';
-            $('#dolgnost').addClass('red');
-        }
-        if ($('#uchz').val() == '') {
-            msg += 'Оконченные учебные заведения\r\n';
-            $('#uchz').addClass('red');
-        }
-        if ($('#opit').val() == '') {
-            msg += 'Опыт работы\r\n';
-            $('#opit').addClass('red');
-        }
-
-
-        if (msg != '') {
-            alert('Заполните следующие поля:\r\n' + msg);
-            return false;
-        } else {
-            $('#work').submit();
-            return true;
-        }
-    }*/
-   
 </script>

@@ -97,7 +97,7 @@ $( document ).ready(function() {
             <td class="kolom1">Ссылка для статистики<br/>
             	https://www.red.ua/?</td>
             <td><input name="extra_url" type="text" class="formfields" id="paginatitle"
-                       value="<?=@$this->post->extra_url ? $this->post->extra_url : 'utm_source=return_user_email&utm_medium=email&utm_content=return_user_email&utm_campaign=return_user_email'; ?>"/></td>
+                       value="<?=@$this->post->extra_url ? $this->post->extra_url : 'utm_source=return_user_email_'.date('d.m.Y').'&utm_medium=email&utm_content=return_user_email&utm_campaign=return_user_email'; ?>"/></td>
         </tr>        
         <tr>
             <td class="kolom1">Баннеры и текст вначале<br><br>(размер изображения по ширине нужно устанавливать = 700)<br><br>(ссылки должны начинаться c http:// <br> все относительные ссылки будут идти от домена red.ua)</td>

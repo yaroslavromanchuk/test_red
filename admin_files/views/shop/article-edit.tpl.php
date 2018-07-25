@@ -48,357 +48,6 @@
         </div>
       </div><!-- modal-dialog -->
     </div>
-	<div id="opis_mod" class="modal fade" style="display: none;" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-vertical-center" role="document">
-        <div class="modal-content bd-0 tx-14">
-          <div class="modal-header pd-y-20 pd-x-25">
-            <h6 class="tx-14 mg-b-0 tx-uppercase tx-inverse tx-bold">Описание товара</h6>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">×</span>
-            </button>
-			<h4 class="lh-3 mg-b-20"><a href="" class="tx-inverse hover-primary">Создание описания товара</a></h4>
-            <p class="mg-b-5">Кликните в поле которое нужно добавить и введите содержимое. После заполения нужных полей, нажмите "Добавить".</p>
-          </div>
-          <div class="modal-body pd-25 text_opis" style="display: inline-block;">
-		 <!-- <div   class="col-xs-12">
-<p class="z 70 75 69 30 77 142 147 148 32 39 40 78 149 110 150 158 137 251 275 274 276 278 277 283 273 263">
-<input type="checkbox"  class="checking" value="1">
-<label class="leb1"  for="1">Длина рукава: </label>
-<select class="form-control input" id="1">
-<option value="короткий">короткий</option>
-<option value="длинный">длинный</option>
-<option value="без рукавов">без рукавов</option>
-<option value="3/4">3/4</option>
-</select>
-</p>
-<p class="z 70 75 69 30 77 142 147 148 32 39 40 78 149 110 150 158 137 275 274 276 278 277 283 273 263 ">
-<input type="checkbox"  class="checking" value="2">
-<label class="leb2"  for="2">Покрой: </label>
-<select class="form-control input" id="2">
-<option value="приталенный">приталенный</option>
-<option value="свободный">свободный</option>
-<option value="прямой">прямой</option>
-<option value="удлиненный">удлиненный</option>
-</select>
-</p>
-<p class="z 15 73 149 78 107 84 40 158 263 39 32 141 14 148 80 142 113 255 249 140 147 69 74 77  13 7 70 65 75 30 143 144 59 150 163 110 151 66 37 57 61 67 35 60 62 56 58 36 68 53 71 117 158 137 251 275 274 276 278 279 282 277 280 281 283 273 297 296">
-<input type="checkbox"  class="checking" value="3">
-<label class="leb3"  for="3">Вид застежки: </label>
-<select multiple class="form-control input" id="3" size="3">
-<option value="без застежки">без застежки</option>
-<option value="молния">молния</option>
-<option value="пуговицы">пуговицы</option>
-<option value="липучка">липучка</option>
-<option value="кнопки">кнопки</option>
-<option value="крючки">крючки</option>
-<option value="пряжка">пряжка</option>
-<option value="шнуровка">шнуровка</option>
-<option value="магнитная кнопка">магнитная кнопка</option>
-<option value="эластичный пояс">эластичный пояс</option>
-<option value="магнитная кнопка">магнитная кнопка</option>
-<option value="завязки">завязки</option>
-</select>
-</p>
-<p class="z 150 110 30 69 70 75 77 142 147 148 32 39 40 78 84 249 263 149 158 137 275 274 276 278 277 283 273 297 296 ">
-<input type="checkbox"  class="checking" value="5">
-<label class="leb5"  for="5">Вырез горловины: </label>
-<select class="form-control input" id="5">
-<option value="округлый">округлый</option>
-<option value="v-образный">v-образный</option>
-<option value="лодочка">лодочка</option>
-<option value="отложной воротник">отложной воротник</option>
-<option value="воротник-стойка">воротник-стойка</option>
-</select>
-</p>
-<p class="z 70 75 30 147 148 32 82 249 150 110 158 137 84 74 140 275 276 283 273 163 297 296 263">
-<input type="checkbox"  class="checking" value="8">
-<label class="leb8"  for="8">Вид бретелек: </label>
-<select class="form-control input" id="8">
-<option value="тонкие">тонкие</option>
-<option value="тонкие (регулируются по длине)">тонкие (регулируются по длине)</option>
-<option value="широкие">широкие</option>
-<option value="без бретелек">без бретелек</option>
-</select>
-</p>
-<p class="z 15 73 149 78 107 84 40 158 263 39 32 141 14 148 80 142 113 255 249 140 147 69 74 77 13 7 70 65 75 30 143 144 59 150 163 110 151 66 158 137 251 275 274 276 278 279 282 277 280 281 283 273">
-<input type="checkbox"  class="checking" value="9">
-<label class="leb9"  for="9">Тип карманов: </label>
-<select multiple class="form-control input" id="9" size="3">
-<option value="накладные">накладные</option>
-<option value="прорезные">прорезные</option>
-<option value="втачные">втачные</option>
-</select>
-</p>
-<p class="z 73 75 80 107 113 158 137 151 279 282 263 283 147 40">
-<input type="checkbox"  class="checking" value="10">
-<label class="leb10"  for="10">Крой брюк: </label>
-<select class="form-control input"  id="10">
-<option value="зауженный">зауженный</option>
-<option value="прямой">прямой</option>
-<option value="клеш">клеш</option>
-</select>
-</p>
-<p class="z 73 75 80 141 143 107 113 158 137 84 249 74 140 151 110 279 282 280 163 297 296 283 147 40">
-<input type="checkbox"  class="checking" value="11">
-<label class="leb11"  for="11">Тип посадки: </label>
-<select class="form-control input"  id="11">
-<option value="низкая">низкая</option>
-<option value="средняя">средняя</option>
-<option value="высокая">высокая</option>
-</select>
-</p>
-<p class="z 73 80 141 143 107 113 70 144 158 137 75 263 276 279 282 280 281">
-<input type="checkbox"  class="checking" value="13">
-<label class="leb13"  for="13">Ширина пояса: </label> 
-<input type="text" class="form-control input" id="13"  value="" />
-</p>
-<p class="z 150 142 149 78 69 274 277 75 263">
-<input type="checkbox"  class="checking" value="14">
-<label class="leb14"  for="14">Опции капюшона: </label>
-<select  class="form-control input" id="14">
-<option value="съемный">съемный</option>
-<option value="не съемный">не съемный</option>
-<option value="скрытый капюшон">скрытый капюшон</option>
-
-</select>
-</p>
-<p class="z 150 142 149 277">
-<input type="checkbox"  class="checking" value="15">
-<label class="leb15"  for="15">Опции опушки: </label>
-<select class="form-control input"  id="15">
-<option value="съемная">съемная</option>
-<option value="не съемная">не съемная</option>
-<option value="без опушки">без опушки</option>
-</select>
-</p>
-
-<p class="z 249 140 74 137 84 55 146 163 297 296">
-<input type="checkbox"  class="checking" value="18">
-<label class="leb18"  for="18">Назначение: </label>
-<select multiple class="form-control input" id="18" size="3">
-<option value="пляж">пляж</option>
-<option value="спорт">спорт</option>
-<option value="ежедневный">ежедневный</option>
-<option value="термобелье">термобелье</option>
-<option value="для кормления">для кормления</option>
-</select>
-</p>
-<p class="z 249 140 74 137 163 297 296">
-<input type="checkbox"  class="checking" value="19">
-<label class="leb19"  for="19">Особенности белья: </label>
-<select class="form-control input"  id="19">
-<option value="бретели съемные">бретели съемные</option>
-<option value="бретели не съемные">бретели не съемные</option>
-<option value="бретели регулируются по длине">бретели регулируются по длине</option>
-</select>
-</p>
-<p class="z 249 140 74 163 297 296">
-<input type="checkbox"  class="checking" value="20">
-<label class="leb20"  for="20">Вид чашки: </label>
-<select  class="form-control input"  id="20">
-<option value="пуш-ап">пуш-ап</option>
-<option value="пуш-ап съемный">пуш-ап съемный</option>
-<option value="с мягкой чашкой">с мягкой чашкой</option>
-<option value="тонкий поролон">тонкий поролон</option>
-</select>
-</p>
-<p class="z 70 144  276 281">
-<input type="checkbox"  class="checking" value="21">
-<label class="leb21"  for="21">Длина изделия: </label>
-<select class="form-control input"  id="21">
-<option value="мини">мини</option>
-<option value="миди">миди</option>
-<option value="макси">макси</option>
-</select>
-</p><p class="z 35 37 57 62 58 36 56 61 60 68 67">
-<input type="checkbox"  class="checking" value="24">
-<label class="leb24"  for="24">Вид мыска: </label>
-<select class="form-control input"   id="24">
-<option value="открытый">открытый</option>
-<option value="закрытый">закрытый</option>
-</select>
-</p>
-<p class="z 35 37 57 62 58 36 56 61 60 68 67">
-<input type="checkbox"  class="checking" value="23">
-<label class="leb23"  for="23">Форма мыска: </label>
-<select class="form-control input"   id="23">
-<option value="округлый">округлый</option>
-<option value="острый">острый</option>
-</select>
-</p>
-<p class="z 35 37 57 62 58 36 56 61 60 68 67">
-<input type="checkbox"  class="checking" value="25">
-<label class="leb25"  for="25">Высота платформы: </label>
-<input type="text" class="form-control input" id="25"  value="" />
-</p>
-<p class="z 35 37 57 62 58 36 56 61 60 68 67">
-<input type="checkbox"  class="checking" value="26">
-<label class="leb26"  for="26">Высота каблука: </label>
-<input type="text" class="form-control input" id="26"  value="" />
-</p>
-<p class="z 35 37 57 62 58 36 56 61 60 68 67">
-<input type="checkbox"  class="checking" value="27">
-<label class="leb27"  for="27">Высота танкетки: </label>
-<input type="text" class="form-control input" id="27"  value="" />
-</p>
-<p class="z 35 37 57 62 58 36 56 61 60 68 67">
-<input type="checkbox"  class="checking" value="28">
-<label class="leb28"  for="28">Тип подошвы: </label>
-<select class="form-control input"  id="28">
-<option value="рифленная">рифленная</option>
-<option value="протекторная">протекторная</option>
-</select>
-</p>
-<p class="z 65">
-<input type="checkbox"  class="checking" value="32">
-<label class="leb32"  for="32">Длина пряжки: </label>
-<input type="text" class="form-control input" id="32"  value="" />
-</p>
-<p class="z 65">
-<input type="checkbox"  class="checking" value="33">
-<label class="leb33"  for="33">Ширина пряжки: </label>
-<input type="text" class="form-control input" id="33"  value="" />
-</p>
-<p class="z 65 53 79 71 114 115 117 152 253 55">
-<input type="checkbox"  class="checking" value="35">
-<label class="leb35"  for="35">Цвет фурнитуры: </label>
-<input type="text" class="form-control input" id="35"  value="" />
-</p>
-<p class="z 53 117">
-<input type="checkbox"  class="checking" value="37">
-<label class="leb37"  for="37">Длина: </label>
-<input type="text" class="form-control input" id="37"  value="" />
-</p>
-<p class="z 53 117 268">
-<input type="checkbox"  class="checking" value="38">
-<label class="leb38"  for="38">Ширина: </label>
-<input type="text" class="form-control input" id="38"  value="" />
-</p>
-<p class="z 268">
-<input type="checkbox"  class="checking" value="53">
-<label class="leb53"  for="53">Высота: </label>
-<input type="text" class="form-control input" id="53"  value="" />
-</p>
-<p class="z 53 117">
-<input type="checkbox"  class="checking" value="39">
-<label class="leb39"  for="39">Глубина: </label>
-<input type="text" class="form-control input" id="39"  value="" />
-</p>
-<p class="z 117 ">
-<input type="checkbox"  class="checking" value="41">
-<label class="leb41"  for="41">Отсеки: </label>
-<select multiple class="form-control input" id="41" size="2">
-<option value="для монет">для монет</option>
-<option value="для купюр">для купюр</option>
-<option value="для карточек">для какточек</option>
-</select>
-</p>
-<p class="z 53">
-<input type="checkbox"  class="checking" value="43">
-<label class="leb43"  for="43">Количество отделений: </label>
-<input type="text" class="form-control input" id="43"  value="" />
-</p>
-<p class="z 79">
-<input type="checkbox"  class="checking" value="44">
-<label class="leb44"  for="44">Габариты товара: </label>
-<input type="text" class="form-control input" id="44"  value="" />
-</p>
-<p class="z 155 154">
-<input type="checkbox"  class="checking" value="52">
-<label class="leb52"  for="52">Модель: </label>
-<input type="text" class="form-control input" id="52"  value="" />
-</p>
-<p class="z 155 154">
-<input type="checkbox"  class="checking" value="45">
-<label class="leb45"  for="45">Механизм: </label>
-<input type="text" class="form-control input" id="45"  value="" />
-</p>
-<p class="z 155 154">
-<input type="checkbox"  class="checking" value="46">
-<label class="leb46"  for="46">Материал браслета: </label>
-<input type="text" class="form-control input" id="46"  value="" />
-</p>
-<p class="z 155 154">
-<input type="checkbox"  class="checking" value="47">
-<label class="leb47"  for="47">Материал корпуса: </label>
-<input type="text" class="form-control input" id="47"  value="" />
-</p>
-<p class="z 155 154">
-<input type="checkbox"  class="checking" value="48">
-<label class="leb48"  for="48">Форма корпуса: </label>
-<input type="text" class="form-control input" id="48"  value="" />
-</p>
-<p class="z 155 154">
-<input type="checkbox"  class="checking" value="49">
-<label class="leb49"  for="49">Ширина циферблата: </label>
-<input type="text" class="form-control input" id="49"  value="" />
-</p>
-<p class="z 155 154">
-<input type="checkbox"  class="checking" value="50">
-<label class="leb50"  for="50">Ширина ремешка: </label>
-<input type="text" class="form-control input" id="50"  value="" />
-</p>
-<p class="z 155 154">
-<input type="checkbox"  class="checking" value="51">
-<label class="leb51"  for="51">Толщина корпуса: </label>
-<input type="text" class="form-control input" id="51"  value="" />
-</p>
-<p class="z 253">
-<input type="checkbox"  class="checking" value="54">
-<label class="leb54"  for="54">Материал линзы: </label>
-<input type="text" class="form-control input" id="54"  value="" />
-</p>
-<p class="z 253">
-<input type="checkbox"  class="checking" value="55">
-<label class="leb55"  for="55">Материал оправы: </label>
-<input type="text" class="form-control input" id="55"  value="" />
-</p>
-<p class="z 253">
-<input type="checkbox"  class="checking" value="56">
-<label class="leb56"  for="56">Материал дужек: </label>
-<input type="text" class="form-control input" id="56"  value="" />
-</p>
-<p class="z 115 ">
-<input type="checkbox"  class="checking" value="58">
-<label class="leb58"  for="58">Ширина полей: </label>
-<input type="text" class="form-control input" id="58"  value="" />
-</p>
-<p class="z 253">
-<input type="checkbox"  class="checking" value="57">
-<label class="leb57"  for="57">Степень защиты: </label>
-<input type="text" class="form-control input" id="57"  value="" />
-</p>
-<p class="z a ">
-<input type="checkbox"  class="checking" value="4">
-<label class="leb4"  for="4">Комплектация: </label>
-<input type="text" class="form-control input" id="4"  value="" />
-</p>
-<p class="z a ">
-<input type="checkbox"  class="checking" value="6">
-<label class="leb6"  for="6">Размер на фото: </label>
-<input type="text" class="form-control input w100"  id="6"  value="" />
-</p>
-<p class="z a ">
-<input type="checkbox"  class="checking" value="7">
-<label class="leb7"  for="7">Страна бренда: </label>
-<input type="text" class="form-control input" id="7"  value="" />
-</p>
-<p class="z a ">
-<input type="checkbox"  class="checking" value="59">
-<label class="leb59"  for="59">Примечание: </label>
-<input type="text" class="form-control input" id="59"  value="" />
-</p>
-</div>
--->
-          </div>
-          <div class="modal-footer">
-		  
-            <button type="button" onclick="Add_Opis();return false;" class="btn btn-info pd-x-20" data-dismiss="modal">Добавить</button>
-            <button type="button" class="btn btn-secondary pd-x-20" data-dismiss="modal">Закрыть</button>
-          </div>
-        </div>
-      </div><!-- modal-dialog -->
-    </div>
 <ul class="nav nav-tabs">
   <li class="active"><a data-toggle="tab" href="#product-edit">Редактирование</a></li>
   <li><a data-toggle="tab" href="#opisanie">Описание</a></li>
@@ -445,13 +94,9 @@
     <div class="col-xs-8">
 	        <select name="size_type" class="form-control input" id="size_type">
 		 <option value="">Выбрать...</option>
-            <option value="0"  <?php if ($this->article->getSizeType() == 0) { ?>selected="selected"<?php } ?> >Унисекс</option>
-            <option value="1"
-                    <?php if ($this->article->getSizeType() <= 3 and $this->article->getSizeType() != 0) { ?>selected="selected"<?php } ?>>
-                Мужское
-            </option>
-            <option value="5" <?php if ($this->article->getSizeType() > 3) { ?>selected="selected"<?php } ?>>Женское
-            </option>
+            <option value="1" <?php if ($this->article->getSizeType() == 1) { ?>selected="selected"<?php } ?> > Мужское</option>
+            <option value="2" <?php if ($this->article->getSizeType() == 2) { ?>selected="selected"<?php } ?> > Женское</option>
+			<option value="3"  <?php if ($this->article->getSizeType() == 3 or !$this->article->getSizeType()) { ?>selected="selected"<?php } ?> >Унисекс</option>
         </select>
 		</div>
   </div>
@@ -656,6 +301,16 @@ document.getElementById('img2').addEventListener('change', handleFileSelect, fal
             <option value="0" selected>Выберите категорию...</option>
             <?php foreach ($mas as $kay => $value) { ?>
             <option value="<?=$kay?>" <?php if ($this->article && $kay == $this->article->getDopCatId()) echo "selected"; ?>><?=$value?></option>
+			<?php } ?>
+        </select>
+	    </div>
+  </div>
+   <div class="form-group">
+    <label for="status" class="col-xs-4 control-label">Статус:</label>
+    <div class="col-xs-8">
+	<select name="status" class="form-control" id="status">
+            <?php foreach (wsActiveRecord::useStatic('Shoparticlesstatus')->findAll() as $kay => $value) { ?>
+            <option value="<?=$value->id?>" <?php if ($this->article->getStatus() && $this->article->getStatus() == $value->id){echo "selected";}elseif($value->id == 2){echo "selected";}?> ><?=$value->name?></option>
 			<?php } ?>
         </select>
 	    </div>
@@ -1222,8 +877,8 @@ arr_s.push(input.val()+input.attr("name"));
 
 j++;
 });
-console.log(arr_s);
-  sostav.innerHTML = arr_s.join('; ');
+console.log(arr_s.sort().reverse());
+  sostav.innerHTML = arr_s.join('; \n')+'.';
 }
 
 function SelectCatType(){

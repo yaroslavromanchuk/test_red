@@ -1,17 +1,12 @@
-
-<div style="width: 260px;margin:auto;">
-<img src="<?=SITE_URL.$this->getCurMenu()->getImage();?>" class="page-img"/>
-    <?php if ($this->user->isSuperAdmin()) { ?>
-	<a href="/admin/orderhistory/id/<?=$this->getOrder()->getId();?>"  target="_blank">
-<img src="/img/icons/histori.png" class="page-img " data-placement="bottom"  data-tooltip="tooltip" style="float:right;cursor:pointer;margin: 0px 5px;"   title="Смотреть историю заказа"/>
-</a>
+<div style="width: 260px;margin:auto;" class="row">
+<i class=" ion-calendar tx-30 pd-5" style="float:left;"></i><p style="font-size: 20px;float: left;padding: 5px;margin: 0 5px;">Заказ <span id="get_order_id"><?=$this->getOrder()->getId();?></span></p>
+<i class="icon ion-settings bleak tx-30 pd-5 view_detaly" data-placement="bottom"  data-tooltip="tooltip"  data-original-title="Показать детали"></i>
+<?php if ($this->user->isSuperAdmin()) { ?>
+<i class="icon ion-clock bleak tx-30 pd-5 history" alt="История" data-id="<?=$this->getOrder()->getId();?>" data-placement="bottom" title="" data-tooltip="tooltip" data-original-title="Смотреть историю заказа"></i>
     <?php } ?>
-<img src="/img/icons/config.png" class="page-img"  data-placement="bottom" id="view_detaly" data-tooltip="tooltip"  title="Показать детали" style="float:right; cursor:pointer;margin: 0px 5px;"/>	
-<h1>Заказ <span id="get_order_id"><?=$this->getOrder()->getId();?></span></h1>
-
 <script type="text/javascript">
   $(document).ready(function () {
-        $('#view_detaly').click(function () {
+        $('.view_detaly').click(function () {
 		if($('.detaly_order').is(":visible")){
 		$('.detaly_order').slideUp();
 		}else{
@@ -20,7 +15,6 @@
 		});
 		});
 </script>
-
 </div>
 <?php if (@$this->errordell) { ?>
     <div id="errormessage"><img src="<?=SITE_URL;?>/img/icons/error.png" alt=""   class="page-img"/>
@@ -102,7 +96,7 @@ if ($order_owner->getAdminComents()) { ?>
 </tr>
 <tr id="d_d"  <?php echo $this->getOrder()->getDeliveryTypeId() != 9 ? 'style="display:none;"': ''?>>
     <td class="column-data">Дата доставки</td>
-    <td><input name="delivery_date" class="form-control input"  value="<?php echo $this->getOrder()->getDeliveryDate() ? date('Y-m-d', strtotime($this->getOrder()->getDeliveryDate())) : ""; ?>" type="date" ></td>
+    <td><input name="delivery_date" class="form-control input"  value="<?php if($this->getOrder()->getDeliveryDate()) echo date('Y-m-d', strtotime($this->getOrder()->getDeliveryDate()))?>" type="date" ></td>
 </tr>
 <tr id="t_d" <?php echo $this->getOrder()->getDeliveryTypeId() != 9 ? 'style="display:none;"': ''?>>
     <td class="column-data">Время доставки</td>
@@ -141,6 +135,7 @@ if(page != null){
 }
     $(document).ready(function () {
 	parseHash();
+	
 	$('#savepage').on( "click", function () {
 		$.ajax({
 			beforeSend: function( data ) {
@@ -403,7 +398,10 @@ if(page != null){
     <td><strong>Цена</strong></td>
 	<td><strong>Детали</strong></td>
 </tr>
-    <?php $t_price = 0.00; $t_option = 0.00;
+    <?php 
+      $SumOrder = $this->getOrder()->calculateOrderPrice(true, false, true, $this->getOrder()->getBonus() > 0?true:false);
+	
+	$t_price = 0.00; $t_option = 0.00;
 	$t_real_price =0.00; $sum_skudka = 0.00;
 	if ($this->getOrder()->getArticles()->count()) { ?>
         <?php 
@@ -424,10 +422,10 @@ if(page != null){
 					<a href="/admin/shop-articles/edit/id/<?=$article->getId();?>" title="Редактировать" data-placement="bottom"  data-tooltip="tooltip" style="display: inline-block;">
 						<img src="<?=SITE_URL;?>/img/icons/edit-small.png" alt="Редактировать" class="img_return"/>
 					</a>
-					<a href="<?=$this->path;?>shop-orders/adelete/id/<?=$article_rec->getId();?>/#flag=<?=$article_rec->getId();?>" onclick="return confirm('Удалить?');" style="display: inline-block;" data-placement="bottom"  data-tooltip="tooltip" title="Удалить на сайт">
+					<a href="<?=$this->path;?>shop-orders/adelete/id/<?=$article_rec->getId();?>/#flag=<?=$article_rec->getId();?>" onclick="return confirm('Удалить?');" style="display: inline-block;" data-placement="bottom"  data-tooltip="tooltip" data-original-title="Удалить на сайт">
 						<img src="<?=SITE_URL;?>/img/icons/cantremove-small.png" alt="Удалить" class="img_return" />
 					</a>
-					<a href="<?=$this->path;?>shop-orders/adeletenoshop/id/<?=$article_rec->getId();?>/" onclick="return dell(this);" title="Удалить без возврата на сайт" data-placement="bottom"  data-tooltip="tooltip" style="display: inline-block;">
+					<a href="<?=$this->path;?>shop-orders/adeletenoshop/id/<?=$article_rec->getId();?>/" onclick="return dell(this);" data-original-title="Удалить без возврата на сайт" data-placement="bottom"  data-tooltip="tooltip" style="display: inline-block;">
 				<img src="<?=SITE_URL;?>/img/icons/remove-small.png" alt="Удалить" class="img_return"/>
 				</a>
 				<?php if($this->admin_rights['491']['right'] == 1){ ?>
@@ -452,14 +450,9 @@ function ret(d){
 var id = d.name;
 if(id){
 console.log(id);
+
 $.ajax({
-			beforeSend: function( data ) {
-			//console.log(dat);
-			
-			//$('#popup').html('<img  id="loading" src="/img/loader-article.gif">');
-			//fopen();
-			},
-			type: "GET",
+			type: "POST",
 			url: '/admin/shop-orders/return_article/',
 			dataType: 'json',
 			data: '&id='+ id +'&js=go',
@@ -470,14 +463,12 @@ $.ajax({
 			}
 			console.log(data);
 			},
-			complete: function( data ) {
-			//$('#save').attr('value', 'Создать');
-			},
-			error: function( e ) {
+			error: function(e) {
 			console.log(e);
 			alert('Что-то пошло нетак! Заказ не добавлен, внесите изменения и попробуйте снова!');
 			}
 		});
+		
 		}
 return false;
 
@@ -485,14 +476,14 @@ return false;
 </script>
 				<td class="column-article">
 					<?php echo 'Количество: <b>' . $article_rec->getCount().'</b>'; ?>
-					<br><span style="color: #048;"><?php if (strlen($article_rec->getCode()) > 0) echo 'Артикул: ' . $article_rec->getCode(); ?></span>
+					<br><span style="color: #048;"><?=$article_rec->getCode()?></span>
 					<br><a href="<?=$article->getPath(); ?>" target="_blank"><?=$article_rec->getTitle()?></a>
 					<br><span style="color: #777;"><?=$article_rec->article_db->category->getRoutez()?></span>
 					<br>
 					<br>
 					Наличие:
-					<?php $cnt = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $article_rec->getArticleId(), 'id_size' => $article_rec->getSize(), 'id_color' => $article_rec->getColor()))->getCount();
-
+					<?php $art = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $article_rec->getArticleId(), 'id_size' => $article_rec->getSize(), 'id_color' => $article_rec->getColor()));
+						$cnt = $art->getCount();
 					
 					if ((int)$cnt > 0) { ?>
 					<select name="count-<?=$article_rec->getId()?>"  class="count form-control input w150">
@@ -506,59 +497,20 @@ return false;
 				</td>
 				<td>
 					<input type="hidden" class="hidden" value="<?=$article->getId() ?>">
-					<?=wsActiveRecord::useStatic('Size')->findById($article_rec->getSize())->getSize(); ?>
-					/<?=wsActiveRecord::useStatic('Shoparticlescolor')->findById($article_rec->getColor())->getName(); ?>
-					<br/>
-					<select name="size-<?=$article_rec->getId(); ?>" class="size form-control input w150" style="display:none;">
-						<option>...</option>
-						<?php
-						$mas = array();
-
-						foreach ($article->getSizes() as $size) {
-							if ($size->getCount() > 0)
-								$mas [$size->getSize()->getId()] = $size->getSize()->getSize();
-						}
-						foreach (array_unique($mas) as $kay => $value) {
-							if ($kay != $article_rec->getSize())
-								echo '<option value="' . $kay . '">' . $value . '</option>';
-							else
-								echo '<option value="' . $kay . '" selected="selected">' . $value . '</option>';
-						}
-						?>
-					</select>
-					<select name="color-<?=$article_rec->getId(); ?>" class="color form-control input w150" style="display:none;">
-						<option>...</option>
-						<?php
-						$mas = array();
-
-						foreach ($article->getSizes() as $color) {
-							if ($color->getCount() > 0)
-								$mas [$color->getColor()->getId()] = $color->getColor()->getName();
-						}
-						foreach (array_unique($mas) as $kay => $value) {
-							if ($kay != $article_rec->getColor())
-								echo '<option value="' . $kay . '">' . $value . '</option>';
-							else
-								echo '<option value="' . $kay . '" selected="selected">' . $value . '</option>';
-						}
-						?>
-					</select>
+					<?=$article_rec->sizes->getSize().' / '.$article_rec->colors->getName()?>
+					<input type="hidden" class="hidden"  name="size-<?=$article_rec->getId(); ?>"  value="<?=$article_rec->getSize()?>">
+					<input type="hidden" class="hidden"  name="color-<?=$article_rec->getId(); ?>"  value="<?=$article_rec->getColor()?>">
 				</td>
 				<?php
 					$price_real = (int)$article_rec->getOldPrice() ? $article_rec->getOldPrice() : $article_rec->getPrice();
 						$t_real_price += $price_real * $article_rec->getCount();
-					
-					//$price_show = $article_rec->getPrice() /** (1 - ($article_rec->getEventSkidka() / 100))*/ * $article_rec->getCount();
-						//$t_price += $price_show;
 						
 						$price_show = $article_rec->getPerc($this->order->getAllAmount());
 							$sum_skudka += $price_show['minus'];
-						//echo '( '.$pri['price'].' )';
 						
 					if($article_rec->getCount() > 0){
 					$skid_show = round((1 - (($price_show['price']/$article_rec->getCount())/ $price_real)) * 100);
 					}
-					//echo $skid_show;
 					$st = (int)$article_rec->getOldPrice() ? 'style="color:red;font-size:12px"' : 'style="font-size:12px"';
 					$s_uc = (int)$article_rec->getOldPrice() ? 'Уценка' : 'Скидка';
 				?>
@@ -568,14 +520,15 @@ return false;
 					<?php } ?>
 	<?php if ($article_rec->getCount() > 0) { echo $skid_show ? '<span '.$st.'>'.$s_uc.' '.$skid_show.'%</span><br><br>' : ''; } ?>
 					<b><?php echo Number::formatFloat($price_show['price']); ?> грн</b>
+					<?=@$price_show['comment']?'<br><span style="font-size:10px;color:red;">'.$price_show['comment'].'</span>':''?>
 				</td>
 				<td>
-				<img alt="История" src="/img/icons/histori.png"  data-id="<?=$article->getId()?>"   data-tooltip="tooltip" class="img_return history" title="История изменения товара">
+				<img alt="История" src="/img/icons/histori.png"  data-id="<?=$article->getId()?>"   data-tooltip="tooltip" class="img_return history_article" data-original-title="История изменения товара">
 					<?php if ($article->ArtycleBuyCount() == 0) { ?>
-					<img alt="Покупки" src="/img/icons/shoppingcart.png"  data-id="<?=$article->getId()?>"   data-tooltip="tooltip" class="img_return" title="Это первый заказ">
+					<img alt="Покупки" src="/img/icons/shoppingcart.png"  data-id="<?=$article->getId()?>"   data-tooltip="tooltip" class="img_return" data-original-title="Это первый заказ">
 					<span>Всего куплено: 0 шт.</span>
 					<?php } else { ?>
-					<img alt="Покупки" src="/img/icons/shoppingcart.png"  data-id="<?=$article->getId()?>"   data-tooltip="tooltip" class="img_return shoping" title="Товар покупался <?=$article->ArtycleBuyCount()?> раз">
+					<img alt="Покупки" src="/img/icons/shoppingcart.png"  data-id="<?=$article->getId()?>"   data-tooltip="tooltip" class="img_return shoping" data-original-title="Товар покупался <?=$article->ArtycleBuyCount()?> раз">
 					<?php } ?>
 				</td>
 			</tr>
@@ -625,8 +578,7 @@ return false;
 <tr>
     <td colspan="4"><strong>Всего со скидкой и доставкой</strong></td>
     <td colspan="2"><strong><?php
-	if($this->getOrder()->getBonus() > 0){ $bonus = true; }else{ $bonus = false; }
-      echo Number::formatFloat($this->getOrder()->calculateOrderPrice(true, false, true, $bonus), 2);
+      echo Number::formatFloat($SumOrder, 2);
             ?> грн</strong></td>
 </tr>
 <?php if ($this->getOrder()->getDeposit() > 0) { ?>
@@ -752,6 +704,10 @@ $("#summa").parent().addClass("has-error");
 return false;
 }
 $('.history').click(function (e) {
+var id = e.target.attributes.getNamedItem("data-id").value;
+$.get('/admin/orderhistory/id/'+id+'/m/1',function (data) {fopen('История изменения заказа №'+id, data);});	
+});
+$('.history_article').click(function (e) {
 var id = e.target.attributes.getNamedItem("data-id").value;
 $.get('/admin/articlehistory/id/'+id+'/m/1',function (data) {fopen('История изменения товара', data);});	
 });

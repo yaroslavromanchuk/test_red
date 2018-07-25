@@ -3,30 +3,76 @@
   <?php //echo print_r($this->getCurMenu());?>
   <?php //echo print_r($this->post);?>
  
+
+  
+
+<?php if(true){ 
+ if(@$this->orders_days){ ?>
+  <span class="days d-none"><?php  foreach($this->orders_days['koll'] as $k => $koll){echo $k==0?$koll:','.$koll; }  ?></span>
+  <div id="days" class="modal fade " style="display: none;" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-vertical-center" role="document">
+        <div class="modal-content bd-0 tx-14">
+          <div class="modal-header pd-y-20 pd-x-25">
+            <h6 class="tx-14 mg-b-0 tx-uppercase tx-inverse tx-bold">Продажи за сегодня</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+          </div>
+          <div class="modal-body pd-25"><span  class="sparkline_days"></span></div>
+        </div>
+      </div><!-- modal-dialog -->
+    </div>
+ <?php }
+ if(@$this->orders_week){ ?>
+   <span class="week d-none"><?php  foreach($this->orders_week['koll'] as $k => $koll){echo $k==0?$koll:','.$koll; }  ?></span>
+     <div id="week" class="modal fade " style="display: none;" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-vertical-center" role="document">
+        <div class="modal-content bd-0 tx-14">
+          <div class="modal-header pd-y-20 pd-x-25">
+            <h6 class="tx-14 mg-b-0 tx-uppercase tx-inverse tx-bold">Продажи за неделю</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+          </div>
+          <div class="modal-body pd-25"><span  class="sparkline_week"></span></div>
+        </div>
+      </div><!-- modal-dialog -->
+    </div>
+ <?php }
+
+ if(@$this->orders_month){ ?>
+ <span class="month d-none"><?php  foreach($this->orders_month['koll'] as $k => $koll){echo $k==0?$koll:','.$koll; }?></span>
 <div id="month" class="modal fade " style="display: none;" aria-hidden="true">
       <div class="modal-dialog modal-dialog-vertical-center" role="document">
         <div class="modal-content bd-0 tx-14">
           <div class="modal-header pd-y-20 pd-x-25">
             <h6 class="tx-14 mg-b-0 tx-uppercase tx-inverse tx-bold">Продажи за месяц</h6>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">×</span>
-            </button>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
           </div>
-          <div class="modal-body pd-25">
-                <span id="sparkline0" class="sparkline0"><?php foreach($this->orders_month['koll'] as $k => $koll){ echo $k==0?$koll:','.$koll;} ?></span>
-          </div>
+          <div class="modal-body pd-25"><span  class="sparkline_month"></span></div>
         </div>
       </div><!-- modal-dialog -->
     </div>
 
-<?php if(true){ ?>
+<?php }
+if(@$this->orders_year){ ?>
+   <span class="year d-none"><?php  foreach($this->orders_year['koll'] as $k => $koll){echo $k==0?$koll:','.$koll; }  ?></span>
+   <div id="year" class="modal fade " style="display: none;" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-vertical-center" role="document">
+        <div class="modal-content bd-0 tx-14">
+          <div class="modal-header pd-y-20 pd-x-25">
+            <h6 class="tx-14 mg-b-0 tx-uppercase tx-inverse tx-bold">Продажи за год</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+          </div>
+          <div class="modal-body pd-25"><span  class="sparkline_year"></span></div>
+        </div>
+      </div><!-- modal-dialog -->
+    </div>
+<?php } ?>
+
  <div class="row row-sm mg-x-0 mg-t-20">
  <?php if(@$this->orders_days){ ?>
           <div class="col-sm-6 col-xl-3">
             <div class="card pd-20 bg-primary">
               <div class="d-flex justify-content-between align-items-center mg-b-10">
                 <h6 class="tx-11 tx-uppercase mg-b-0 tx-spacing-1 tx-white">Продажи за сегодня</h6>
-                <a href="" class="tx-white-8 hover-white"><i class="icon ion-android-more-horizontal"></i></a>
+                <a href="" class="tx-white-8 hover-white" data-toggle="modal" data-target="#days"><i class="icon ion-android-more-horizontal"></i></a>
               </div><!-- card-header -->
               <div class="d-flex align-items-center justify-content-between">
                 <span class="sparkline2">
@@ -61,12 +107,12 @@
               </div><!-- -->
             </div><!-- card -->
           </div><!-- col-3 -->
-		  <?php } ?>
+		  <?php } if(@$this->orders_week){		  ?>
           <div class="col-sm-6 col-xl-3 mg-t-20 mg-sm-t-0">
             <div class="card pd-20 bg-info">
               <div class="d-flex justify-content-between align-items-center mg-b-10">
                 <h6 class="tx-11 tx-uppercase mg-b-0 tx-spacing-1 tx-white">продажи за неделю</h6>
-                <a href="" class="tx-white-8 hover-white"><i class="icon ion-android-more-horizontal"></i></a>
+                <a href="" class="tx-white-8 hover-white" data-toggle="modal" data-target="#week"><i class="icon ion-android-more-horizontal"></i></a>
               </div><!-- card-header -->
               <div class="d-flex align-items-center justify-content-between">
                 <span class="sparkline2"><?php foreach($this->orders_week['koll'] as $k => $koll){ echo $k==0?$koll:','.$koll;} ?></span>
@@ -96,6 +142,7 @@
               </div><!-- -->
             </div><!-- card -->
           </div><!-- col-3 -->
+		  <?php } if(@$this->orders_month){ ?>
           <div class="col-sm-6 col-xl-3 mg-t-20 mg-xl-t-0">
             <div class="card pd-20 bg-purple">
               <div class="d-flex justify-content-between align-items-center mg-b-10">
@@ -103,7 +150,7 @@
                 <a href="" class="tx-white-8 hover-white" data-toggle="modal" data-target="#month"  ><i class="icon ion-android-more-horizontal"></i></a>
               </div><!-- card-header -->
               <div class="d-flex align-items-center justify-content-between">
-                <span class="sparkline2 month" ><?php foreach($this->orders_month['koll'] as $k => $koll){ echo $k==0?$koll:','.$koll;} ?></span>
+                <span class="sparkline2" ><?php foreach($this->orders_month['koll'] as $k => $koll){ echo $k==0?$koll:','.$koll;} ?></span>
               </div><!-- card-body -->
 			   <h5 class="mg-b-0 tx-white tx-lato tx-bold"><?php
 				$am = 0;
@@ -129,11 +176,12 @@
               </div><!-- -->
             </div><!-- card -->
           </div><!-- col-3 -->
+		   <?php } if(@$this->orders_year){ ?>
           <div class="col-sm-6 col-xl-3 mg-t-20 mg-xl-t-0">
             <div class="card pd-20 bg-sl-primary">
               <div class="d-flex justify-content-between align-items-center mg-b-10">
                 <h6 class="tx-11 tx-uppercase mg-b-0 tx-spacing-1 tx-white">продажи за год</h6>
-                <a href="" class="tx-white-8 hover-white"><i class="icon ion-android-more-horizontal"></i></a>
+                <a href="" class="tx-white-8 hover-white" data-toggle="modal" data-target="#year"><i class="icon ion-android-more-horizontal"></i></a>
               </div><!-- card-header -->
               <div class="d-flex align-items-center justify-content-between">
                 <span class="sparkline2"><?php foreach($this->orders_year['koll'] as $k => $koll){ echo $k==0?$koll:','.$koll;} ?></span>
@@ -163,6 +211,7 @@
               </div><!-- -->
             </div><!-- card -->
           </div><!-- col-3 -->
+		   <?php }  ?>
         </div><!-- row -->
 <?php }?>
         <div class="row row-sm mg-x-0 mg-t-20">
@@ -235,19 +284,39 @@
                   </div>
                 </div><!-- row -->
               </div>
-			   <div class="card pd-10 diagram_8">
-               <canvas id="articles_shop_3" ></canvas>
+			   <div class="card pd-10 diagram_8 ">
+               <canvas id="articles_shop_3"  ></canvas>
 			  </div>
             </div><!-- card -->
 
           </div><!-- col-8 -->
-		  <div class="col-xl-6">
+		  <div class="col-xl-6 mg-t-20">
+            <div class="card pd-20 pd-sm-40">
+              <h6 class="card-body-title">Статистика уценки</h6>
+			  <div class="card-body pd-0 bd-color-gray-lighter">
+			  <div class="row no-gutters tx-center">
+                  <div class="col-12 col-sm-10  tx-left">
+                    <p class="pd-l-20 tx-12 lh-8 mg-b-5">Отображаются история уценки товаров.</p>
+                  </div><!-- col-4 -->
+				 <div class="col-6 col-sm-2 ">
+				 <!--<p class="tx-11 mg-b-5 tx-uppercase">Всего </p>
+                    <h4 class="tx-inverse tx-lato tx-bold mg-b-5" id="koll_ucenka" ></h4>
+                    <p class="tx-11 mg-b-5 tx-uppercase"> Товаров</p>-->
+                  </div>
+                </div><!-- row -->
+			  </div>
+              <div class="card pd-10 diagram_9">
+               <canvas id="ucenka" ></canvas>
+			  </div>
+            </div><!-- card -->
+          </div><!-- col-6 -->
+		  <div class="col-xl-6 mg-t-20">
             <div class="card pd-20 pd-sm-40">
               <h6 class="card-body-title">Уценка</h6>
 			  <div class="card-body pd-0 bd-color-gray-lighter">
 			  <div class="row no-gutters tx-center">
                   <div class="col-12 col-sm-10  tx-left">
-                    <p class="pd-l-20 tx-12 lh-8 mg-b-5">Отображаются товары которые есть в наличии. Сгрупированые по проценту уценки.</p>
+                    <p class="pd-l-20 tx-12 lh-8 mg-b-5">Отображены товары которые есть в наличии.</p>
                   </div><!-- col-4 -->
 				 <div class="col-6 col-sm-2 ">
 				 <p class="tx-11 mg-b-5 tx-uppercase">Всего </p>
@@ -256,7 +325,8 @@
                   </div>
                 </div><!-- row -->
 			  </div>
-              <div id="ucenka" class="ht-200 ht-sm-250"></div>
+              <div class="card pd-10 diagram_9 ht-200 ht-sm-250" id="ucenka_2">
+			  </div>
             </div><!-- card -->
           </div><!-- col-6 -->
 			<div class="col-xl-6 d-none">
@@ -357,13 +427,49 @@ return false;
 
 $(document).ready(function(){
 
-
-$('#month').on('shown.bs.modal', function () {
-  $('.sparkline0').sparkline('html', {
+$('#days').on('shown.bs.modal', function () {
+$('.sparkline_days').html($('.days').text());
+  $('.sparkline_days').sparkline('html', {
     type: 'bar',
     barWidth: 30,
     height: 200,
     barColor: '#0083CD',
+    lineColor: 'rgba(255,255,255,0.5)',
+    chartRangeMin: 0,
+    chartRangeMax: 10
+  });
+});
+$('#week').on('shown.bs.modal', function () {
+$('.sparkline_week').html($('.week').text());
+  $('.sparkline_week').sparkline('html', {
+    type: 'bar',
+    barWidth: 30,
+    height: 200,
+    barColor: '#0083CD',
+    lineColor: 'rgba(255,255,255,0.5)',
+    chartRangeMin: 0,
+    chartRangeMax: 10
+  });
+});
+$('#month').on('shown.bs.modal', function () {
+$('.sparkline_month').html($('.month').text());
+  $('.sparkline_month').sparkline('html', {
+    type: 'bar',
+    barWidth: 30,
+    height: 200,
+    barColor: '#6e42c1',
+    lineColor: 'rgba(255,255,255,0.5)',
+    chartRangeMin: 0,
+    chartRangeMax: 10
+  });
+});
+$('#year').on('shown.bs.modal', function () {
+$('.sparkline_year').html($('.year').text());
+  $('.sparkline_year').sparkline('html', {
+    type: 'bar',
+    barWidth: 30,
+    height: 200,
+    barColor: '#2b333e',
     lineColor: 'rgba(255,255,255,0.5)',
     chartRangeMin: 0,
     chartRangeMax: 10
@@ -378,6 +484,7 @@ chartLine('h_a');
 
 chartBar4('dely');
 Ucenka();
+Ucenka_2();
 flotPie2('status');
 flotPie3('quick');
 });	
@@ -403,9 +510,9 @@ $(".m_time").hide();
   rickshaw2(e.target.id);
 });
 
-function Ucenka(){
+function Ucenka_2(){
 var url = '/admin/home/';
-		var new_data = '&method=ucenka';
+		var new_data = '&method=ucenka_2';
 		//console.log(new_data);
 		$.ajax({
                 url: url,
@@ -422,7 +529,7 @@ var url = '/admin/home/';
             }).done(function(res) {
 			console.log(res);
 			new Morris.Donut({
-    element: 'ucenka',
+    element: 'ucenka_2',
     data: [
       {label: "0%", value: res[0]},
       {label: "20%", value: res[20]},
@@ -522,7 +629,6 @@ var label = [];
   var date1 =[];
   var date2 =[];
   var date3 =[];
-  //var leb = ['#Заказали','#Оплатили', '#Вернули'];
  var i;
  var max = 0;
  var sum = 0;
@@ -605,6 +711,110 @@ var label = [];
   });
   });
   return false;
+}
+
+function Ucenka(){
+var label = [];
+  var date20 =[];
+  var date30 =[];
+  var date40 =[];
+  var date50 =[];
+  var date60 =[];
+var url = '/admin/home/';
+		var new_data = '&method=ucenka';
+		//console.log(new_data);
+		$.ajax({
+                url: url,
+                type: 'POST',
+                dataType: 'json',
+                data: new_data,
+                success: function (res) {
+console.log(res);
+var l = res.length;
+					for (i = 0; i < l; i++) {
+			//if(res[i]['y'] > max) max = res[i]['y'];
+			label.push(res[i]['x']); 
+			date20.push(res[i]['20']); 
+			date30.push(res[i]['30']); 
+			date40.push(res[i]['40']);
+			date50.push(res[i]['50']);
+			date60.push(res[i]['60']);
+			//sum +=res[i]['y']; 
+  }
+				//$("#koll_ucenka").html(res['sum']);
+                },
+				error: function (res) {
+				console.log(res);
+				}
+            }).done(function(res) {
+
+			  var ctx4 = document.getElementById('ucenka');
+  var myChart4 = new Chart(ctx4, {
+    type: 'line',
+    data: {
+      labels: label,
+      datasets: [{
+	  label: '20%',
+        data: date20,
+        borderColor: '#324463',
+        borderWidth: 1,
+        fill: false
+      },{
+	  label: '30%',
+        data: date30,
+        borderColor: '#5B93D3',
+        borderWidth: 1,
+        fill: false
+      },{
+	  label: '40%',
+        data: date40,
+        borderColor: '#5B9300',
+        borderWidth: 1,
+        fill: false
+      },{
+	  label: '50%',
+        data: date50,
+        borderColor: '#5B9300',
+        borderWidth: 1,
+        fill: false
+      },{
+	  label: '60%',
+        data: date60,
+        borderColor: '#5B9300',
+        borderWidth: 1,
+        fill: false
+      }
+	  ]
+    },
+    options: {
+      legend: {
+        display: true,
+          labels: {
+            display: true
+          }
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero:true,
+            fontSize: 10//,
+           // max: max
+          }
+        }],
+        xAxes: [{
+          ticks: {
+            beginAtZero:true,
+            fontSize: 11
+          }
+        }]
+      }
+    }
+  });
+			
+			});
+
+
+
 }
 function chartBar4(e){
 var label = [];

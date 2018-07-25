@@ -7,10 +7,11 @@
 <script src="<?=$this->files;?>scripts/jquery.js" type="text/javascript" charset="utf-8"></script>
 </head>
 <style type="text/css">
-    body {font-size: 10px;}
+    body {font-size: 8px; font-family: Verdana,Myriad Pro;}
 	.tt_border_bottom {border-bottom: solid 1px #000;}
     .tt_border_top {border-top: solid 1px #000;}
     .fnt_size_1 {font-size: 12px;}
+	.fnt_size_10{font-size: 10px;} 
     .fnt_size_2 {font-size: 11px;}
     .fnt_size_3 {font-size: 15px;}
     .border_all {border-top: 1px solid #000;border-left: 1px solid #000;}
@@ -19,9 +20,11 @@
     .border_top {border-top: 1px solid #000;}
     .border_none {border: none;}
 </style>
-<body onload="window.print();">
+<body>
 <?php
+require_once("QRCode/qrcode.php");
 for ($step = 0; $step < 2; $step++) {
+//$res = '';
     ?>
     <table border="0" cellpadding="3" cellspacing="0" width="250">
 	<tr>
@@ -35,25 +38,27 @@ for ($step = 0; $step < 2; $step++) {
             <strong>  E-mail: market@red.ua</strong><br><span>(044) 224-40-00, (063) 809-35-29, (067) 406-90-80</span>  
         </td>
     </tr>
+	<tr><td colspan="6"></td>
+	</tr>
     <tr>
+	
         <td colspan="6" align="center" class="fnt_size_3">
             <strong>Товарный чек
                 № <?php
+				$res ='';
 					echo $this->order->getId();
 					if ($this->order->getComlpect()) {
 						$compl = explode(';', $this->order->getComlpect());
-						echo ' (';
+						echo ' <span ><br>(';
+						$i=0;
 						foreach ($compl as $cmpl) {
-							$cnt++;
-							if ($res > '') $res .= ',';
+							if($i != 0)  $res .= ', ';
 							$res .= $cmpl;
-							if ($cnt > 4) {
-								$res .= '<br/>';
-								$cnt = 0;
-							}
+							$i++;
 						}
 						echo $res;
-						echo ')';
+						//echo $this->order->getComlpect();
+						echo ')</span>';
 					}
 ?></strong>
         </td>
@@ -62,20 +67,18 @@ for ($step = 0; $step < 2; $step++) {
         <td colspan="6" align="center" class="fnt_size_1"><strong>от <?=$this->date_today?> года</strong></td>
     </tr>
     <tr>
-        <td colspan="6"><i><strong>Получатель:</strong> <?=$this->order->getName() . ' ' . $this->order->getMiddleName()?><br />
-                <?=$this->order->getAddress()?>
-            </i><br/>
-            <i>Контактный телефон: <?=$this->order->getTelephone()?></i>
+        <td colspan="6"><strong>Получатель: </strong> <?=$this->order->getName() . ' ' . $this->order->getMiddleName()?><br>
+            Контактный телефон: <?=$this->order->getTelephone()?>
         </td>
     </tr>
     <tr>
-        <td colspan="6"><i><strong>Коментарии к заказу:</strong><?=$this->order->getDeliveryType()->getName()?></i></td>
+        <td colspan="6"><strong>Коментарии к заказу: </strong><?=strip_tags($this->order->getDeliveryType()->getName())?></td>
     </tr>
     <tr>
         <td colspan="6">
                 <?php if ($this->getOrder()->getComments()) { ?>
                     <div class="comm_cli">
-                        <b>Комментарий клиента :</b>
+                        <b>Комментарий клиента: </b>
                         <?=$this->getOrder()->getComments()?>
                     </div>
                 <?php } ?>
@@ -92,6 +95,8 @@ for ($step = 0; $step < 2; $step++) {
     </tr>
     <!-- TOVAR -->
     <?php
+	$cod ='%';
+	$sk = 0;
     $i = 1;
     $to_pay = 0;
     $to_pay_minus = 0.00;
@@ -100,16 +105,17 @@ for ($step = 0; $step < 2; $step++) {
 	$price_show = 0;
     foreach ($this->getOrder()->getArticles() as $main_key => $article_rec) {
         if ($article_rec->getCount()) {
+		
             for ($a_cnt = 0; $a_cnt < $article_rec->getCount(); $a_cnt++) { ?>
                 <tr>
                     <td class="border_all " align="center"><strong><?=$i?></strong></td>
-                    <td class="border_all " style="font-size:10px;">
+                    <td class="border_all " >
 						<b>
 <?php echo $article_rec->getTitle() . ', <br>' . wsActiveRecord::useStatic('Size')->findById($article_rec->getSize())->getSize() . ', ' . wsActiveRecord::useStatic('Shoparticlescolor')->findById($article_rec->getColor())->getName();?>
 							<br>
 							<?=$article_rec->getCode()?>
 							<br>
-							<font style="font-size:10px;"><?=$article_rec->article_db->category->getRoutez()?></font>
+							<font ><?=$article_rec->article_db->category->getRoutezGolovna()?></font>
 						</b>
                     </td>
                     <td class="border_all" align="center"><strong>1</strong></td>
@@ -123,13 +129,25 @@ $price_real = (int)$article_rec->getOldPrice() ? $article_rec->getOldPrice() : $
 			$sum_skudka += $price_show['minus']/$article_rec->getCount(); //сумируется общая скидка
 			
 				$skid_show = round((1 - (($price_show['price']/$article_rec->getCount())/ $price_real)) * 100);//вычисление процента скидки по товару
+				
+					$sk = Number::formatFloat($skid_show, 2);
 					
- echo Number::formatFloat($price_real, 2); ?>
+					
+					if($skid_show == 100){
+$sk = Number::formatFloat(99.99, 2);
+			}else{
+		$sk = Number::formatFloat($skid_show, 2);
+		}
+					
+					
+ echo Number::formatFloat($price_real, 2); 
+ 
+ ?>
                     </td>
                     <td class="border_all " align="right">
                         <?php
-$st = (int)$article_rec->getOldPrice() ? 'style="color:red;font-size:12px;"' : 'style="font-size:12px;text-decoration: underline;"';//уценялся
-	if((int)$article_rec->getEventSkidka()){ $st = 'style="color:red;font-size:12px;font-weight: 600;"';}//наличие доп скидки
+$st = (int)$article_rec->getOldPrice() ? 'style="font-weight: 600;"' : 'style="text-decoration: underline;font-weight: 600;"';//уценялся
+	if((int)$article_rec->getEventSkidka()){ $st = 'style="font-weight: 600;"';}//наличие доп скидки
 					
 echo $skid_show ? '<span '.$st.'>'.$skid_show.' %</span>' : '';?>
                     </td>
@@ -140,7 +158,9 @@ echo $skid_show ? '<span '.$st.'>'.$skid_show.' %</span>' : '';?>
                 <?php
                 $i++;
             }
+			$cod.=$article_rec->getCode().'/'.$article_rec->getCount().'/'.$sk.'&';
         }
+		
     }
 	
 	if($this->getOrder()->getBonus() > 0){ $bonus = true; }else{ $bonus = false; }
@@ -205,12 +225,14 @@ echo $skid_show ? '<span '.$st.'>'.$skid_show.' %</span>' : '';?>
     <?php } ?>
     <tr>
 		<td colspan="4" class="border_none fnt_size_1" align="right"><strong style="text-transform: uppercase;">Всего к оплате:</strong><br/>
-            <span style="font-size: 12px;">Без ПДВ</span>
+            <span>Без ПДВ</span>
         </td>
         <td class="border_all border_right tt_border_bottom" align="right" colspan="2"><strong><?=$to_pay?></strong></td>
     </tr>
-    <tr>
-		<td colspan="6">
+	    <tr>
+        <td colspan="6" class="tt_border_bottom"><b>Удачных покупок!</b></td>
+    </tr>
+		<tr><td colspan="6">
             <br/>
             <i>Всего наименований <strong><?php echo($i - 1) ?></strong>, на сумму <strong>
                     <?php $sum = explode(',', $to_pay); echo $sum[0];?> грн.
@@ -219,11 +241,10 @@ echo $skid_show ? '<span '.$st.'>'.$skid_show.' %</span>' : '';?>
             <br/>
         </td>
     </tr>
+	<tr><td colspan="6" style="text-align: center;" class="qr<?=$this->getOrder()->getId()?>" ></td></tr>
+
     <tr>
-        <td colspan="6" class="tt_border_bottom"><b>Удачных покупок!</b></td>
-    </tr>
-    <tr>
-        <td colspan="6" style=" font-size: 10px; padding-bottom: 30px;">
+        <td colspan="6" style=" padding-bottom: 30px;">
             Персональные данные (ФИО и адрес) Покупателя были переданы интернет-магазину RED.ua, с целью выполнения данного
             заказа Покупателя, и в дальнейшем могут передаваться уполномоченным органам в установленном законом порядке.
             Как субъект персональных данных Покупатель имеет все права, предусмотренные ст. 8 Закона Украины «О защите
@@ -232,6 +253,23 @@ echo $skid_show ? '<span '.$st.'>'.$skid_show.' %</span>' : '';?>
     </tr>
     </table>
     <div style='page-break-after: always;'></div>
-<?php } ?>
+<?php
+
+
+ }
+ if(true){
+ //$cod.=$this->order->getId().'&';
+		$qr = new qrcode();
+		$qr->text($cod);
+		echo "<p id='qr".$this->order->getId()."' hidden><img src='".$qr->get_link(220)."' border='0'/></p>";
+		//echo $cod;
+				}
+ ?>
 </body>
 </html>
+<script>
+$(window).load(function(){
+ $('.qr<?=$this->order->getId()?>').html($('#qr<?=$this->order->getId()?>').html());
+ window.print();
+ });
+</script>

@@ -6,9 +6,7 @@ class PaymentMethod extends wsActiveRecord
 	
 	protected function _defineRelations()
 	{	
-		$this->_relations = array(	
-													
-													);
+		$this->_relations = array(	);
 	}
 
 }

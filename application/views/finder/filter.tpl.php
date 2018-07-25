@@ -27,30 +27,33 @@ $text_result_trans = explode(',', $this->trans->get('Вы искали,Всег�
                 <div style="clear: both;"></div>
                 <div class="list_list drop_list" >
                     <?php
-                    $groups = array();
-                    foreach ($this->filters['categories'] as $cat) {
-                        if ($cat['id'] != $this->finder_category) {
-                            $groups[@$cat['parent']][] = $cat;
-                        }
-                    }
-                    ksort($groups);
+					//echo print_r($this->filters['categories']);
+                  //  $groups = array();
+                 //   foreach ($this->filters['categories'] as $cat) {
+                  //      if ($cat['id'] != $this->finder_category) {
+                  //          $groups[@$cat['parent']][] = $cat;
+                   //     }
+                  //  }
+                  //  ksort($groups);
 					$asc = array();
 					$asc = explode(',' , $this->get->categories);
-                    foreach ($groups as $k => $g) {
-					if(@$k) echo '<h4 class="fh4">'.$k.'</h4>';
-                        foreach ($g as $cat) {
-                            if ($cat['id'] != $this->finder_category) { ?>
+                   // foreach ($groups as $k => $g) {
+					//if(@$k) echo '<h4 class="fh4">'.$k.'</h4>';
+                        foreach ($this->filters['categories'] as $cat) {
+						
+?>
+                         
                                 <div>
                                     <label for="c_category_<?=$cat['id'];?>"  class="ckbox" >
 									<input type="checkbox" class="c_category"
                                            id="c_category_<?=$cat['id']; ?>" value="<?=$cat['id']; ?>"  <?php if(in_array($cat['id'], $asc, true)){ ?>checked="checked" <?php } ?> />
-                                         <span><?=$cat['name'].' <span class="co">  '.$cat['count'].'</span>'; ?></span>
+                                         <span><?php if($cat['parent']) echo $cat['parent'].':'; ?><?=$cat['name']?><span class="co"><?=$cat['count']?></span></span>
                                     </label>
                                 </div>
                             <?php
-                            }
+                            
                         }
-                    }
+                   // }
                    ?>
 				           
                 </div>
@@ -87,13 +90,11 @@ $text_result_trans = explode(',', $this->trans->get('Вы искали,Всег�
                     <p class="sub-title"><span>Сезон</span></p>
                     <div style="clear: both;"></div>
                     <div class="list_list drop_list" style="display:none;">
-                        <?php
-						$mass = array( 1 => 'Лето', 2 => 'Осень-Весна', 3 => 'Зима', 4 => 'Всесезон');
-                        foreach ($this->filters['sezons'] as $cat) { ?>
+                        <?php foreach ($this->filters['sezons'] as $cat) { ?>
                             <div>
                                 <label for="c_sezon<?=$cat['id'];?>" class="ckbox">
 								<input type="checkbox" class="c_sezon" id="c_sezon<?=$cat['id']; ?>" value="<?=$cat['id']; ?>"/>
-                                 <span><?=$mass[$cat['id']].' <span class="co">  '.$cat['count'].'</span>'; ?></span>
+                                 <span><?=$cat['name'].' <span class="co">  '.$cat['count'].'</span>'; ?></span>
                                 </label>
                             </div>
                         <?php } ?>
@@ -107,15 +108,13 @@ $text_result_trans = explode(',', $this->trans->get('Вы искали,Всег�
                     <p class="sub-title"><span><?=$text[3]?></span></p>
                     <div style="clear: both;"></div>
                     <div class="list_list drop_list" style="display:none;">
-                        <?php foreach ($this->filters['sizes_categories'] as $k => $v) { ?>
-                            <?php foreach ($v as $cat) { ?>
+                        <?php foreach ($this->filters['sizes'] as $cat) { ?>
                               <div>
                                     <label for="s_size<?=$cat['id']; ?>" class="ckbox">
 									 <input type="checkbox" class="s_size"  id="s_size<?=$cat['id']; ?>" value="<?=$cat['id']; ?>"/>
                                        <span><?=$cat['name'].' <span class="co">  '.$cat['count'].'</span>'; ?></span>
                                     </label>
                                 </div>
-                            <?php } ?>
                         <?php } ?>
                     </div>
 					<a href="#" style="display:none;" onclick="return gatheringSelected('sizes', 0, 4)" class="openFilter drop_list"><?=$text[1]?></a>
@@ -127,10 +126,13 @@ $text_result_trans = explode(',', $this->trans->get('Вы искали,Всег�
                     <p class="sub-title"><span><?=$text[4]?></span></p>
                     <div style="clear: both;"></div>
                     <div class="list_list drop_list" style="display:none;">
-                        <?php foreach ($this->filters['colors'] as $cat) { ?>
+                        <?php
+$asc = array();
+					$asc = explode(',' , $this->get->colors);
+						foreach ($this->filters['colors'] as $cat) { ?>
                             <div>
                                 <label for="c_color<?=$cat['id']; ?>" class="ckbox">
-								 <input type="checkbox" class="c_color"  id="c_color<?=$cat['id']; ?>" value="<?=$cat['id']; ?>">
+								 <input type="checkbox" class="c_color"  id="c_color<?=$cat['id']; ?>" value="<?=$cat['id']; ?>" <?php if(in_array($cat['id'], $asc, true)){ ?>checked="checked" <?php } ?>>
                                     <span> <?=$cat['name'].' <span class="co">  '.$cat['count'].'</span>'; ?></span>
                                 </label>
                             </div>
@@ -165,11 +167,14 @@ $text_result_trans = explode(',', $this->trans->get('Вы искали,Всег�
                     <p class="sub-title"><span>Labels</span></p>
                     <div style="clear: both;"></div>
                     <div class="list_list drop_list">
+					
                         <?php
-                        foreach ($this->filters['labels'] as $cat) { ?>
+$asc = array();
+					$asc = explode(',' , $this->get->labels);
+						foreach ($this->filters['labels'] as $cat) { ?>
                             <div>
                                 <label for="c_label<?=$cat['id']; ?>" class="ckbox">
-								<input type="checkbox" class="c_label" id="c_label<?=$cat['id']; ?>" value="<?=$cat['id']; ?>"/>
+								<input type="checkbox" class="c_label" id="c_label<?=$cat['id']; ?>" value="<?=$cat['id']; ?>" <?php if(in_array($cat['id'], $asc, true)){ ?>checked="checked" <?php } ?>/>
                                     <span><?=$cat['name'].' <span>  '.$cat['count'].'</span>'; ?></span>
                                 </label>
                             </div>
@@ -185,10 +190,12 @@ $text_result_trans = explode(',', $this->trans->get('Вы искали,Всег�
                     <div style="clear: both;"></div>
                     <div class="list_list drop_list">
                         <?php
+						$asc = array();
+					$asc = explode(',' , $this->get->skidka);
                         foreach ($this->filters['skidka'] as $cat) { ?>
                             <div>
                                 <label for="c_skidka<?=$cat['id']; ?>" class="ckbox">
-								<input type="checkbox" class="c_skidka" id="c_skidka<?=$cat['id']; ?>" value="<?=$cat['id']; ?>"/>
+								<input type="checkbox" class="c_skidka" id="c_skidka<?=$cat['id']; ?>" value="<?=$cat['id']; ?>" <?php if(in_array($cat['id'], $asc, true)){ ?>checked="checked" <?php } ?> />
                                     <span><?=$cat['name'].' <span>  '.$cat['count'].'</span>'; ?></span>
                                 </label>
                             </div>

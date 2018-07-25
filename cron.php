@@ -20,7 +20,7 @@ HAVING sum(ws_articles_sizes.count) <>stock ');
 				
 		}
 		
-if($days[date( 'N' )] == 'Вторник'){//уценка  
+if($days[date( 'N' )] == 'Вторник'){//уценка
 $sum = 0;
 $all_sum = 0;
 $all_count = 0;

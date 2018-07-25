@@ -60,7 +60,7 @@ abstract class controllerAbstract extends Controller
 		
 		$this->view->text_trans  = explode(',', $this->trans->get('Товаров на странице,Быстрый просмотр,Цвета,Размеры'));
 		  //push
-		// $this->view->puch = $this->view->render('/cache/puch.tpl.php');
+	//	 $this->view->puch = $this->view->render('/cache/puch.tpl.php');
 		 
 		$sql = '
 		SELECT  brand, count(ws_articles.id) as cnt, red_brands.logo, brand_id
@@ -202,8 +202,8 @@ class Translator
 {
     public function get($msg = '')
     {
-	if($msg == '') return false;
-        $value = wsActiveRecord::useStatic('Dictionary')->findByName($msg)->at(0);
+	if(!$msg or $msg == '') return false;
+        $value = wsActiveRecord::useStatic('Dictionary')->findByName(trim($msg))->at(0);
         if (!$value) {
             $value = new Dictionary();
             $value->setName($msg);
@@ -241,6 +241,24 @@ $value = new Dictionary();
     }
 
 public function translateuk($str, $lang_from = 'ru', $lang_to='uk') {
+ $apiKey = 'AIzaSyC5MeHPcuEKqiWH7Oqlxvp8GhY7TTYwUf8';    
+  $url = 'https://www.googleapis.com/language/translate/v2?key=' . $apiKey . '&q=' . rawurlencode($str) . '&source='.$lang_from.'&target='.$lang_to;  
+  $handle = curl_init($url);  
+  curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);  
+  $response = curl_exec($handle);  
+  $responseDecoded = json_decode($response, true);  
+  $responseCode = curl_getinfo($handle, CURLINFO_HTTP_CODE); 
+  curl_close($handle);  
+  if($responseCode != 200) {  
+        echo 'Fetching translation failed! Server response code:' . $responseCode . '<br>';  
+        echo 'Error description: ' . $responseDecoded['error']['errors'][0]['message'];  
+    } else {  
+       // echo 'Source: ' . $text . '<br>';  
+        $trans = $responseDecoded['data']['translations'][0]['translatedText'];  
+		return $trans;
+    }
+}
+public function translateru($str, $lang_from = 'uk', $lang_to='ru') {
  $apiKey = 'AIzaSyC5MeHPcuEKqiWH7Oqlxvp8GhY7TTYwUf8';    
   $url = 'https://www.googleapis.com/language/translate/v2?key=' . $apiKey . '&q=' . rawurlencode($str) . '&source='.$lang_from.'&target='.$lang_to;  
   $handle = curl_init($url);  

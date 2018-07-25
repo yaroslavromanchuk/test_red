@@ -2,36 +2,19 @@
 <h1><?=$this->getCurMenu()->getTitle()?></h1>
 <?=$this->getCurMenu()->getPageBody()?>
 
-<?php
-	if($this->errors)
-	{
-?>
-	<div id="errormessage"><img src="<?php echo SITE_URL;?>/img/icons/error.png" alt="" width="32" height="32" class="page-img" />
+<?php if($this->errors){ ?>
+	<div id="errormessage"><img src="<?=SITE_URL?>/img/icons/error.png" alt="" width="32" height="32" class="page-img" />
 	    <h1>Найдены ошибки:</h1>
 	    <ul>
-    	<?php
-    		foreach($this->errors as $error)
-    		{
-    	?>
-		    <li><?php echo $error;?></li>
-		<?php
-			}
-		?>
+    	<?php foreach($this->errors as $error){ ?><li><?=$error?></li><?php } ?>
 	    </ul>
 	</div>  
-<?php
-	}
-
-	if($this->saved)
-	{
-?>	
+<?php } if($this->saved){ ?>	
 	<div id="pagesaved">
-		<img src="<?php echo SITE_URL;?>/img/icons/accept.png" alt="" width="32" height="32" class="page-img" />
+		<img src="<?=SITE_URL?>/img/icons/accept.png" alt="" width="32" height="32" class="page-img" />
 		<h1>Данные успешно сохранены.</h1>
 	</div>
-<?php
-	}
-?>
+<?php } ?>
 
 	<form method="post" action="<?=$this->path?>news/edit/id/<?=(int)$this->onenew->getId()?>/"  claass="form-horizontal form-inline form-style"  enctype="multipart/form-data">
     <table id="editpage" cellpadding="5" cellspacing="0" class="table">
@@ -91,13 +74,14 @@
 	</button>
 	</p>
     </form>
-<script type="text/javascript" src="<?=SITE_URL.$this->files;?>scripts/tiny_mce/tiny_mce.js"></script> 	
+<!--<script type="text/javascript" src="<?=SITE_URL.$this->files;?>scripts/tiny_mce/tiny_mce.js"></script> 	-->
+<script type="text/javascript" src="<?=SITE_URL.$this->files; ?>scripts/tinymce/tinymce.min.js"></script>
 <script type="text/javascript">
 
-	    tinyMCE.init({
+	 /*   tinyMCE.init({
         // General options
         mode : "exact",
-        elements: "paginatext, paginaintro",
+        elements: "paginatext, paginaintro, introtext",
         language : "ru",
         theme : "advanced",
         plugins : "table, paste, images, pastehtml",
@@ -119,11 +103,30 @@ apply_source_formatting : true,
 remove_script_host : true,
  
         // Example word content CSS (should be your site CSS) this one removes paragraph margins
-        content_css : "<?php echo SITE_URL;?>/standard.css",
-        external_link_list_url : "<?php echo SITE_URL;?>/admin/pages/tinymce_list/",
+        content_css : "<?=SITE_URL?>/standard.css",
+        external_link_list_url : "<?=SITE_URL?>/admin/pages/tinymce_list/",
             extended_valid_elements : "b,u,i,iframe[name|src|framespacing|border|frameborder|scrolling|title|height|width],object[declare|classid|codebase|data|type|codetype|archive|standby|height|width|usemap|name|tabindex|align|border|hspace|vspace],div[*],p[*]",
-        external_image_list_url : "<?php echo SITE_URL;?>/admin/pages/tinymce_imagelist/"
+        external_image_list_url : "<?=SITE_URL?>/admin/pages/tinymce_imagelist/"
 
-    });
+    });*/
+	tinymce.init({
+		selector: "textarea",
+		//width: 750,
+		//height: 400,
+		language : 'ru',
+		plugins: [
+			 "advlist autolink link image lists charmap print preview hr anchor pagebreak",
+			 "searchreplace wordcount visualblocks visualchars insertdatetime media nonbreaking",
+			 "table contextmenu directionality emoticons paste textcolor responsivefilemanager code"
+	   ],
+	   toolbar1: "undo redo | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
+	   toolbar2: "| responsivefilemanager | link unlink anchor | image media | forecolor backcolor  | fontsizeselect | preview | code ",
+	   image_advtab: true ,
+	   
+	   external_filemanager_path:"/admin_files/scripts/filemanager/",
+	   filemanager_title:"Responsive Filemanager" ,
+	   external_plugins: { "filemanager" : "/admin_files/scripts/filemanager/plugin.min.js"},
+	   convert_urls: false
+	 });
 </script> 
 <!-- /TinyMCE --> 	

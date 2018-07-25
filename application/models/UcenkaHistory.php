@@ -15,7 +15,7 @@ class UcenkaHistory extends wsActiveRecord
     }
 
 
-    static function newUcenka($admin, $article, $old, $new, $proc = false)
+    static function newUcenka($admin, $article, $old, $new, $count = 0, $proc = false)
     {
 
         $ucenka = new UcenkaHistory();
@@ -23,6 +23,7 @@ class UcenkaHistory extends wsActiveRecord
         $ucenka->setArticleId($article);
         $ucenka->setOldPrice($old);
         $ucenka->setNewPrice($new);
+		$ucenka->setKoll($count);
 		if($proc){
 		 $ucenka->setProc($proc);
 		}else{

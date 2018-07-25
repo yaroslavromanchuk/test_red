@@ -27,7 +27,47 @@ if (isset($_COOKIE["SAuid"]) && isset($_COOKIE["utm_source"]) && $_COOKIE["utm_s
 ?>
 <div style="text-align:center;">
 <p><span style="font-size: 13px;"><?=$this->trans->get('Ваш заказ успешно оформлен. В течение нескольких минут Вы получите sms и e-mail со сведениями о заказе')?>.</span></p>
-<?php if(true){ ?>
+<?php if(@$_SESSION['pay']){ ?>
+<form action="https://lmi.paysoft.solutions" method="POST" name="payment_form" id="payment_form">
+<div class="row">
+<div class="col-xs-10 col-xs-offset-1">
+	<div class="col-xs-6 form-group">
+	<input id="LMI_MERCHANT_ID" name="LMI_MERCHANT_ID" type="hidden" required="" placeholder="LMI_MERCHANT_ID" class="form-control" value="<?=$_SESSION['pay']['LMI_MERCHANT_ID']?>">
+				</div>
+
+				<div class="col-xs-6 form-group">
+					<input id="LMI_PAYMENT_AMOUNT" name="LMI_PAYMENT_AMOUNT" type="hidden" required="" placeholder="LMI_PAYMENT_AMOUNT" class="form-control" value="<?=$_SESSION['pay']['LMI_PAYMENT_AMOUNT']?>">
+				</div>
+				
+				<div class="col-xs-6 form-group">
+					<input id="LMI_PAYMENT_NO" name="LMI_PAYMENT_NO" type="hidden" required="" placeholder="LMI_PAYMENT_NO" class="form-control" value="<?=$_SESSION['pay']['LMI_PAYMENT_NO']?>">
+				</div>
+
+				<div class="col-xs-6 form-group">
+					<input id="LMI_PAYMENT_DESC" name="LMI_PAYMENT_DESC" type="hidden" required="" placeholder="LMI_PAYMENT_DESC" class="form-control" value="<?=$_SESSION['pay']['LMI_PAYMENT_DESC']?>">
+				</div>
+				<div class="col-xs-6 form-group">
+					<input id="LMI_PAYMENT_SYSTEM" name="LMI_PAYMENT_SYSTEM" type="hidden" required="" placeholder="LMI_PAYMENT_SYSTEM" class="form-control" value="<?=$_SESSION['pay']['LMI_PAYMENT_SYSTEM']?>">
+				</div>
+
+				<div class="col-xs-6 form-group">
+				<input id="LMI_SIM_MODE" name="LMI_SIM_MODE" type="hidden" required=""  placeholder="LMI_SIM_MODE" class="form-control" value="<?=$_SESSION['pay']['LMI_SIM_MODE']?>">
+				</div>
+				<div class="col-xs-6 form-group">
+					<input id="LMI_HASH" name="LMI_HASH" type="hidden" required="" placeholder="LMI_HASH" class="form-control" value="<?=$_SESSION['pay']['LMI_HASH']?>">
+				</div>
+
+				<div class="col-xs-12 form-group">
+					<button type="submit" style="display:none;" class="btn btn-default">Оплата</button>
+				</div>
+		</div>
+	</div>
+</form>
+<?php  unset($_SESSION['pay']);?>
+<script type="text/javascript">
+	document.forms.payment_form.submit();
+</script>
+<?php }else{ ?>
 <p style="
     font-weight: bold;
     font-size: 20px;

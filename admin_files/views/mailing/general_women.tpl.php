@@ -114,7 +114,7 @@ $( document ).ready(function() {
         <tr>
 		    <td class="kolom1">Начало обращения</td>
             <td><input type="hidden" id="id_post" name="id_post" value="<?php if($this->pemail->id){ echo $this->pemail->id;} ?>"/>
-			<input name="subject_start" type="text" class="formfields" id="paginatitle" disabled
+			<input name="subject_start" type="text" class="formfields" disabled
                        value="<?php if(@$this->post->subject_start){ echo $this->post->subject_start;}elseif($this->pemail->subject_start){ echo $this->pemail->subject_start;} ?>"/>  <input type="checkbox" id="s_start" name="s_start" onclick="agreeForm(this.form)" value="1"><label>Добавить приветствие</label></td>
 					   </tr>
 					   <tr>
@@ -125,8 +125,11 @@ $( document ).ready(function() {
         <tr>
             <td class="kolom1">Ссылка для статистики<br/>
             	http://www.red.ua/?</td>
-            <td><input name="extra_url" type="text" class="formfields" id="paginatitle"
-                       value="<?php echo @$this->post->extra_url ? $this->post->extra_url : 'utm_source=women_email&utm_medium=email&utm_content=Women_Subscriber&utm_campaign=Women_Subscriber'; ?>"/></td>
+            <td><input name="extra_url" type="text" class="formfields" 
+                       value="<?php echo @$this->post->extra_url ? $this->post->extra_url : 'utm_source=women_email_'.date('d.m.Y').'&utm_medium=email&utm_content=Women_Subscriber&utm_campaign=Women_Subscriber'; ?>"/>
+					   <input name="unsubscribe" hidden type="text" 
+                       value="<?=@$this->post->unsubscribe ? $this->post->unsubscribe : '&utm_source=unsubscribe_'.date('d.m.Y').'&utm_medium=email&utm_content=Women_Subscriber&utm_campaign=Women_Subscriber'?>"/>
+					   </td>
         </tr>        
         <tr>
             <td class="kolom1">Баннеры и текст вначале<br><br>(размер изображения по ширине нужно устанавливать = 700)<br><br>(ссылки должны начинаться c http:// <br> все относительные ссылки будут идти от домена red.ua)</td>

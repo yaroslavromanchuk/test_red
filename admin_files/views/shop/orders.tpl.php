@@ -3,23 +3,6 @@
 <table style="width: 100%;" class="table">
 	<tr>
 		<td style="width:40%;">
-<?php
-/*
-	echo '<pre>';
-	print_r($_POST);
-	print_r($_GET);
-	echo '</pre>';
-
-*/
-$mas_delivery_type = array();
-	foreach (wsActiveRecord::useStatic('DeliveryType')->findAll(array('active'=> 1), array('sort'=>'ASC')) as $d) {
-	$mas_delivery_type[$d->id] = $d->name;
-	}
-$mas_payment_method = array();
-	foreach (wsActiveRecord::useStatic('PaymentMethod')->findAll(array('active'=>1)) as $p) {
-	$mas_payment_method[$p->id] = $p->getName();
-	}
-?>
 <div class="">
 <form action="/admin/shop-orders/" method="get" class="form-horizontal">
 	 <div class="form-group">
@@ -53,13 +36,12 @@ $mas_payment_method = array();
     </div>
   </div>
   <div class="form-group">
-    <label for="delivery" class="ct-110 control-label">Магазин:</label>
+    <label for="delivery" class="ct-110 control-label">Доставка:</label>
     <div class="col-xs-6">
 	 <select name="delivery" class="form-control input" id="delivery" >
 				<option value="">Все</option>
-				<?php foreach($mas_delivery_type as $k =>$name){
-				?>
-				 <option value="<?=$k;?>" <?php if(isset($_GET['delivery']) and $_GET['delivery'] == $k ) echo 'selected="selected"'; ?> ><?=$name;?></option>
+				<?php foreach (wsActiveRecord::useStatic('DeliveryType')->findAll(array('active'=> 1), array('sort'=>'ASC')) as $d) { ?>
+				 <option value="<?=$d->id?>" <?php if(isset($_GET['delivery']) and $_GET['delivery'] == $d->id ) echo 'selected="selected"'; ?> ><?=$d->name;?></option>
 			<?php	} ?>
 				<option
 					value="999" <?php if (isset($_GET['delivery']) and $_GET['delivery'] == '999') echo 'selected="selected"';?>>
@@ -307,6 +289,7 @@ $(".s-b").slideDown();
 	<br>
 	<button class="btn btn-small btn-default" id='masrintorder' type="button"><i class="glyphicon glyphicon-print" aria-hidden="true"></i> Счета</button>
 	<button class="btn btn-small btn-default" id='masrintnakl' type="button"><i class="glyphicon glyphicon-print" aria-hidden="true"></i> Наклейки</button>
+	
 </div>
 <div style="width: 49%;display: inline-block;vertical-align: top;">
 <label>Печать выделеных заказов:</label><br>
@@ -316,7 +299,11 @@ $(".s-b").slideDown();
 	<option value="2">Чеки</option>
 	<option value="3">Сообщение на посылку</option>
  </select>
- <span class="form-group  fade all_print-error" style="color: #ce0000;"><i class="glyphicon glyphicon-ban-circle" aria-hidden="true"></i> Выберите нужные заказы!</span>
+ <span class="form-group  fade all_print-error" style="color: #ce0000;"><i class="glyphicon glyphicon-ban-circle" aria-hidden="true"></i> Выберите нужные заказы!</span><br>
+ <?php if(true){ ?>
+	<button class="btn btn-small btn-default" id='pr_vozvrat' type="button"><i class="glyphicon glyphicon-copy" aria-hidden="true"></i> Принять на возврат</button>
+	
+	<?php } ?>
  </div>
 <script type="text/javascript">
     $(document).ready(function () {
@@ -358,6 +345,47 @@ $(".s-b").slideDown();
 			}
         });
     });
+	 $('#pr_vozvrat').click(function () {
+            if ($('.order-item:checked').val()) {
+                id = '';
+                i = 0;
+                jQuery.each($('.order-item:checked'), function () {
+                    if (i != 0) {
+                        id += ',' + $(this).attr('name').substr(5);
+                    } else {
+                        id += $(this).attr('name').substr(5);
+                    }
+                    i++;
+                });
+		$.ajax({
+                url: '/admin/vozrat/',
+                type: 'POST',
+                dataType: 'json',
+                data: '&method=add_order_vozvrat&order='+id,
+                success: function (res) {
+				var mes = '';
+				if(res.ok){
+				mes+='<div class="alert alert-success" role="alert">';
+				mes+='Заказ '+res.ok.join(',')+' принят на возврат.';
+				mes+='</div>';
+				}
+				if(res.error){
+				mes+='<div class="alert alert-danger" role="alert">';
+				mes+='Заказ '+res.error.join(',')+' не принят на возврат.';
+				mes+='</div>';
+				}
+				//console.log(res);
+				fopen('Прийом заказа на возврат', mes);
+                },
+				error: function(e){
+				console.log(e);
+				}
+            });
+            }else{
+			alert('Отметьте нужный заказ!');
+			//$('.masrintordertype-error').toggleClass('in'); 
+			}
+        });
 </script>
  </div>
     <script type="text/javascript">
@@ -392,53 +420,8 @@ $(".s-b").slideDown();
 			   }
 		
 		});
-		
-		
-         /*   $('#masrintchek').click(function () {
-                if ($('.order-item:checked').val()) {
-                    id = '';
-                    i = 0;
-                    jQuery.each($('.order-item:checked'), function () {
-                        if (i != 0) {
-                            id += ',' + $(this).attr('name').substr(5);
-                        } else {
-                            id += $(this).attr('name').substr(5);
-                        }
-                        i++;
-                    });
-    				window.open ( '/admin/masgeneratechek/ids/' + id , '_blank');
-
-                }
-            });*/
         });
     </script>
-	<!--
-</p>
-<p>    <input type="button" id='masprintblank_test' class="btn" value="Повідомлення на посилку укрпочта"/>
-<script type="text/javascript">
-
-    $(document).ready(function () {
-        $('#masprintblank_test').click(function () {
-            if ($('.order-item:checked').val()) {
-                id = '';
-                i = 0;
-                jQuery.each($('.order-item:checked'), function () {
-                    if (i != 0) {
-                        id += ',' + $(this).attr('name').substr(5);
-                    } else {
-                        id += $(this).attr('name').substr(5);
-                    }
-                    i++;
-                });
-                window.open ( '/admin/masgenerateblank_test/ids/' + id , '_blank');
-
-            }
-        });
-    });
-</script>
-
-</p>
--->
 <?php if($this->admin_rights['494']['right'] == 1 and false){ ?>
 <p><input type="button" id='view_ttn_np' class="btn" value="Внести ТТН-НП"/></p>
 <?php } ?>
@@ -516,12 +499,6 @@ $("#ttn").focus();
     });
 </script>
 <br/>
-<!--
-<a href="/admin/shop-orders/edit/id/"><img src="<?php //echo SITE_URL.$this->getCurMenu()->getImage(); ?>"
-                                           alt="" width="32" class="page-img" height="32"/>Новый заказ</a>
-<br/>-->
-
-
 <?php if ($this->getOrders()->count()) { ?>
     <script type="text/javascript">
         function chekAll() {
@@ -574,22 +551,7 @@ $.get('/admin/trekko/metod/status/id/'+x,
 		});
 		return false;
 }
-function meest_tracking(x) {
-/*
-$.get('/admin/addmeestttn/ttn/'+x+'/metod/tracking/',
-		function (data) {
-		if(data){
-		//alert(data);
-		 $('#popup').html(data);
-		 fopen();
-		 }
-		});*/
-		 fopen('Отслеживание заказа', 'Сервис временно недоступен.');
-		return false;
-}
-
     </script>
-   <!-- <a href="#" onclick="chekAll(); return false;">Отметить/Снять все</a>-->
     <table cellspacing="0" cellpadding="4" id="orders" class="table  table-hover">
         <tr>
 		<th><label class="ckbox" data-tooltip="tooltip" title="Выделить все заказы"><input onchange="chekAll();" class="chekAll" type="checkbox"/><span></span></label></th>
@@ -624,7 +586,7 @@ $.get('/admin/addmeestttn/ttn/'+x+'/metod/tracking/',
                <img alt="История" src="/img/icons/histori.png" data-placement="left"  data-tooltip="tooltip" class="img_return" title="Смотреть историю заказа" ></a><?php }?>
                <?php } ?>
                 </td>
-                <td><?php echo isset($this->order_status[$order->getStatus()]) ? $this->order_status[$order->getStatus()] : ""; ?>
+                <td><?=$order->getStat()->getName()?>
                     <?php if ($order->getComlpect()) { ?>
                         Совмещенный заказ
                     <?php } ?>
@@ -633,7 +595,8 @@ $.get('/admin/addmeestttn/ttn/'+x+'/metod/tracking/',
                     <?php } ?>
                     <?php if ($order->getCallMy() == 2) { ?>
                         <b>Нет необходимости подтверждать заказ по телефону</b>
-                    <?php } ?>
+                    <?php }
+?>
                 </td>
                 <td><?=$order->getId();?><?php if ($order->getOldid()) echo ' / '.$order->getOldid(); ?></td>
                 <td style="width: 105px;"><?=date("d-m-Y H:i", strtotime($order->getDateCreate()));?></td>
@@ -656,23 +619,17 @@ $.get('/admin/addmeestttn/ttn/'+x+'/metod/tracking/',
 				<td style="font-size:12px;">
 				<?=$order->getPaymentMethod()->getName()?><br>
 				<?php 
-				if($order->payment_method_id == 7){
-if(in_array($order->liqpay_status_id, array(3,4))){
+				if($order->payment_method_id == 4 or $order->payment_method_id == 6){
+if($order->liqpay_status_id == 3){
  echo '<i class="icon ion-ios-checkmark green tx-25 pd-5 history_pay_status" data-placement="right" data-id="'.$order->getId().'"  data-tooltip="tooltip"  title="'.$order->liqpay_status->name.'"></i>';
  }else{
 echo '<i class="icon ion-ios-close red tx-25 pd-5 history_pay_status" data-placement="right" data-id="'.$order->getId().'"   data-tooltip="tooltip"  title="'.$order->liqpay_status->name.'"></i>';
 } 
  } ?>
 				</td>
-                <td><?php  if ($order->getSkidka() != '') {
-                        echo $order->getSkidka();
-                    } else {
-                        $order->save();
-                        echo $order->getSkidka();
-                    } ?> %
-                </td>
-                <td>
-                    <?php if ($order->getBoxNumber()) { ?>
+      <td><?php  if ($order->getSkidka() != '') { echo $order->getSkidka();} //else { //$order->save(); // echo $order->getSkidka(); // } ?> %</td>
+      <td>
+      <?php if ($order->getBoxNumber()) { ?>
                         Номер ячейки: <?php echo $order->getBoxNumber(); ?>
                     <?php } ?>
                     <form id="order<?= $order->getId() ?>" style="margin-bottom: 2px;" action="/admin/shop-orders/edit/id/<?=$order->getId()?>/" method="get" onsubmit="return false;">
@@ -682,9 +639,6 @@ echo '<i class="icon ion-ios-close red tx-25 pd-5 history_pay_status" data-place
   <span class="input-group-addon" id="basic-addon1">ТТН</span>
   <input type="text" class="form-control nakladna" aria-describedby="basic-addon1" id="nakladna" name="nakladna" value="<?=$order->getNakladna(); ?>" pattern="[0-9]{5,14}">
 </div>			
-						
-     <!-- <input type="text" class="form-control input w150 nakladna" style="margin-bottom: 3px;float:left;" id="nakladna" name="nakladna" value="<?=$order->getNakladna(); ?>" pattern="[0-9]{5,14}"><span style="">ТТН:</span> -->
-	  
 	   <?php if(($order->getDeliveryTypeId() == 8 or $order->getDeliveryTypeId() == 16) and @$order->getNakladna()){ ?>
 		<img style="padding-left: 5px;" class="img_return" src="<?=SITE_URL;?>/img/icons/help.png" alt="Отследить" data-placement="right"  data-tooltip="tooltip" title="Отследить"  onclick="np_tracking('<?=$order->getNakladna();?>');"/>
 		<?php }else if($order->getDeliveryTypeId() == 4 and @$order->getNakladna()){
@@ -692,7 +646,7 @@ echo '<i class="icon ion-ios-close red tx-25 pd-5 history_pay_status" data-place
 	<?php }else if($order->getDeliveryTypeId() == 9 and @$order->getNakladna()){?>
 	<img style="padding-left: 5px;" class="img_return" src="<?=SITE_URL; ?>/img/icons/help.png" alt="Отследить" data-placement="right"  data-tooltip="tooltip" title="Отследить"  onclick="k_tracking('<?php echo $order->getNakladna();?>');"/><?php } ?>
                         <br/><?php  } ?>
-                        <?php if (/*$order->getDeliveryTypeId() == 8*/false) {
+                        <?php if (false) {
                             if ($order->getNowaMail() == '0000-00-00 00:00:00') {
                                 ?>
                                 <span> <a href="#"

@@ -120,7 +120,7 @@ foreach (wsActiveRecord::useStatic('Shopcategories')->findAll(array('parent_id'=
 </tr>
 <tr>
 <td colspan="3" style="background:#ddd;font-size: 9px;padding:10px; text-align:center;" >
-				<span>Вы получили это письмо на адрес <?=$this->email?>, потому что оформили подписку на сайте Red.ua. Если Вы больше не хотите получать эти письма, нажмите </span><a href="/subscribe/?email=<?=$this->email?>"><span style="color:#383838">тут</span></a> <span>для того чтобы отписаться.</span>
+				<span>Вы получили это письмо на адрес <?=$this->email?>, потому что оформили подписку на сайте Red.ua. Если Вы больше не хотите получать эти письма, нажмите </span><a href="/subscribe/?email=<?=$this->email.$this->post->unsubscribe?>"><span style="color:#383838">тут</span></a> <span>для того чтобы отписаться.</span>
 				</td>
 			</tr>
 </table>

@@ -277,12 +277,15 @@ function destroy(wizard, options)
  **/
 function finishStep(wizard, state)
 {
+
     var currentStep = wizard.find(".steps li").eq(state.currentIndex);
 
     if (wizard.triggerHandler("finishing", [state.currentIndex]))
     {
+	console.log(state);
         currentStep.addClass("done").removeClass("error");
         wizard.triggerHandler("finished", [state.currentIndex]);
+		$("form").submit();
     }
     else
     {
@@ -1974,7 +1977,7 @@ var defaults = $.fn.steps.defaults = {
          * @default "Cancel"
          * @for defaults
          **/
-        cancel: "Cancel",
+        cancel: "Отмена",
 
         /**
          * This label is important for accessability reasons.
@@ -1985,7 +1988,7 @@ var defaults = $.fn.steps.defaults = {
          * @default "current step:"
          * @for defaults
          **/
-        current: "current step:",
+        current: "текущий шаг:",
 
         /**
          * This label is important for accessability reasons and describes the kind of navigation.
@@ -2006,7 +2009,7 @@ var defaults = $.fn.steps.defaults = {
          * @default "Finish"
          * @for defaults
          **/
-        finish: "Finish",
+        finish: "Сохранить",
 
         /**
          * Label for the next button.
@@ -2016,7 +2019,7 @@ var defaults = $.fn.steps.defaults = {
          * @default "Next"
          * @for defaults
          **/
-        next: "Next",
+        next: "Далее",
 
         /**
          * Label for the previous button.
@@ -2026,7 +2029,7 @@ var defaults = $.fn.steps.defaults = {
          * @default "Previous"
          * @for defaults
          **/
-        previous: "Previous",
+        previous: "Назад",
 
         /**
          * Label for the loading animation.
@@ -2036,7 +2039,7 @@ var defaults = $.fn.steps.defaults = {
          * @default "Loading ..."
          * @for defaults
          **/
-        loading: "Loading ..."
+        loading: "Загрузка ..."
     }
 };
 })(jQuery);

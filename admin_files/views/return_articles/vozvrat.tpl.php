@@ -1,624 +1,235 @@
-<img src="<?php echo SITE_URL;?><?php echo $this->getCurMenu()->getImage();?>" alt=""
-     xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html" width="32" class="page-img"
-     height="32"/>
-<h1>Возрат <?php echo $this->getOrder()->getId(); ?></h1>
 
-<table cellspacing="0" cellpadding="4" id="order-details">
+<div class="row">
+<div class="panel panel-info">
+<div class="panel-heading"><h3 class="panel-title">Информация о покупателе</h3></div>
+<div class="panel-body">
+<ul class="list-group">
+  <li class="list-group-item"><label for="date_create" class="ct-110">Имя:</label><?=$this->getOrder()->getName()?$this->getOrder()->getName():"&nbsp;"?></li>
+  <li class="list-group-item"><label for="date_create" class="ct-110 control-label">Адресс:</label><?=$this->getOrder()->getAddress() ? $this->getOrder()->getAddress() : "&nbsp;"?></li>
+  <li class="list-group-item"><label for="date_create" class="ct-110 control-label">Индекс:</label><?=$this->getOrder()->getIndex() ? $this->getOrder()->getIndex() : "&nbsp;"?></li>
+  <li class="list-group-item"><label for="date_create" class="ct-110 control-label">Телефон:</label><?=$this->getOrder()->getTelephone() ? $this->getOrder()->getTelephone() : "&nbsp;"?></li>
+  <li class="list-group-item"><label for="date_create" class="ct-110 control-label">Email:</label><?=$this->getOrder()->getEmail() ? $this->getOrder()->getEmail() : "&nbsp;"?></li>
+</ul>
 
+  </div>
+  </div>
 
-    <tr>
-        <td class="column-data">Номер заказа</td>
-        <td id='get_order_id'><a
-                href="/admin/shop-orders/edit/id/<?php echo $this->getOrder()->getOldOrder(); ?>"><?php echo $this->getOrder()->getOldOrder(); ?></a>
-        </td>
-    </tr>
-    <tr>
-        <td class="column-data">Способ возврата</td>
-        <td>           <?php
-            if ($this->getOrder()->getSposob() == 1) echo 'на депозит';?>
-            <?php if ($this->getOrder()->getSposob() == 2) echo 'денежным переводом';?></td>
-    </tr>
+</div>
+<script type="text/javascript">
+function Calculat(e){
+var sum = 0.00;
+//console.log(e);
+if ($('.order-item:checked').val() && $('#order_status').val() == 1) {
+jQuery.each($('.order-item:checked'), function () {
+sum += Number($('#s_'+$(this).attr('name').substr(5,5)).val());
+                    });
+					sum+=Number($('#dop_suma').val());
+					sum = sum.toFixed(2);
+					$('#sum_voz').html(sum);
+$('#sum_voz_all').val(sum);
+return true;
+					}
 
-    <tr>
-        <td class="column-data">Дата</td>
-        <td><?php $d = new wsDate($this->getOrder()->getDateModify()); echo $d->getFormattedDateTime(); ?></td>
-    </tr>
-    <form action="" method="post">
-        <tr>
-            <td class="column-data">Накладная</td>
-            <td>
-                №<?php echo $this->getOrder()->getNakladna();?>
-            </td>
-        </tr>
-        <tr>
-            <td class="column-data">Статус</td>
-            <td><label>
+return false;
+}
+function del_tovar(){
+var list = '';
+if ($('.order-item:checked').val()) {
+var arr = [];
+jQuery.each($('.order-item:checked'), function () {
+arr.push($(this).attr('name').substr(5,5));
+});
+list = arr.join(',');
 
-                <select name="order_status" onChange="this.form.submit(); return false;">
+alert(list);
+}else{
+alert('Выберите товар для возврата!');
+return false;
+}
+}
+</script>
+
+<?php if($this->error){ ?>
+<div class="alert alert-danger <?php if($this->error) echo 'show';?>"  role="alert">
+  <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+<span class="sr-only1">Возникли ошибки:</span>
+    <ul>
+		<?php foreach ($this->error as $error) { ?><li><?=$error?></li><?php } ?>
+	</ul>
+</div>
+<?php } ?>
+<form action="" method="post" class="form-horizontal" style="border: 0;padding: 0;">
+<div class="row">
+<div class="panel panel-primary">
+<div class="panel-heading"><h3 class="panel-title">Возврат по заказу <?=$this->getOrder()->getId()?></h3></div>
+<div class="panel-body">
+  <div class="col-lg-6">
+		<div class="panel panel-default">
+		<div class="panel-heading"><h4 class="panel-title">Заказ</h4></div>
+			<div class="panel-body">
+			<ul class="list-group">
+			<li class="list-group-item"><b>Товары</b></li>
+			<?php
+			$articles = array();
+			if(@$this->vozrat->tovar){
+			$articles = explode(",", $this->vozrat->tovar);
+			}
+			
+			if ($this->getOrder()->getArticles()->count()){
+			 foreach ($this->getOrder()->getArticles() as $main_key => $article_rec) {
+			 if($article_rec->getCount() > 0){
+			// if(!in_array($article_rec->getId(), $this->vozrat) and  in_array($this->vozrat->status, array(2,3))) continue;
+			 
+$price_real = $article_rec->getOldPrice()>0?$article_rec->getOldPrice():$article_rec->getPrice();
+			 
+			 $price_show = $article_rec->getPerc($this->getOrder()->getAllAmount());
+			 
+			 $sum_skudka += $price_show['minus'];
+			 
+$skid_show = round((1 - (($price_show['price']/$article_rec->getCount())/ $price_real)) * 100);
+			 ?>
+<li class="list-group-item"  >
+			 <div style="    display: inline-flex;">
+			 <label class="ckbox">
+			 <input type="checkbox" class="order-item cheker" name="item_<?=$article_rec->getArticleId()?>_<?=$article_rec->artikul?>" onChange="return Calculat(this);">
+			 <span></span>
+			 </label>
+<img class="prev" rel="#miesart<?=$article_rec->getId()?>" src="<?=$article_rec->getImagePath('small_basket')?>" alt="<?=htmlspecialchars($article_rec->getTitle())?>" style="width:36px;height:36px;">
+
+<div class="simple_overlay" id="miesart<?=$article_rec->getId()?>" style="position: absolute;  margin-left: 170px; margin-top: -170px;z-index: 100;" >
+<img src="<?=$article_rec->getImagePath('card_product')?>" style="max-width:500px;border-radius: 10px;">
+</div>
+В заказе: <?=trim($article_rec->getCount())?></br>
+<?=trim($article_rec->getCode().' - '.$article_rec->sizes->getSize().' / '.$article_rec->colors->getName())?></br>
+<?=trim($article_rec->getTitle())?><br>
+<?php
+if ($price_real != ($price_show['price']/$article_rec->getCount())){
+echo '  <span style="text-decoration:line-through">'.$price_real.'</span></br>';
+}?>
+<?=$skid_show?'<span> - '.$skid_show.'% = </span>' : '=';?></br>
+<b><?=Number::formatFloat($price_show['price'])?> грн</b>
+<input type="text"  hidden id="<?='s_'.$article_rec->getArticleId()?>"value="<?=$price_show['price']?>">
+					</div>
+			 </li>
+			<?php 
+			}
+			 }
+			}
+			?>
+			<li class="list-group-item"><b>Сумма возврата: <span id="sum_voz"><?=$this->vozrat->amount+$this->vozrat->dop_suma?></span> грн.</b>
+			<input type="text"  hidden id="sum_voz_all" name="sum_voz_all" value=""></li>
+			</ul>
+			</div>
+			<div class="panel-footer">
+			<?php if($this->vozrat->sposob){
+if($this->vozrat->dop_suma > 0) echo 'Дополнительно зачислено '.$this->vozrat->dop_suma.' грн.<br>';?>
+			Сумма возмещения <?=$this->vozrat->amount?> грн.<br>
+			<!--<button class="btn btn-small btn-default"  type="button" onClick="return del_tovar();">
+			<i class="glyphicon glyphicon-copy" aria-hidden="true"></i> 
+			Вернуть в продажу</button>-->
+			<?php }else{ ?>
+			<div class="form-group">
+    <label for="dop_suma" class="ct-150 control-label">Коментарий:</label>
+    <div class="col-xs-6">
+	<input type="text" class="form-control input" value="" name="comments" placeholder="можете оствить комент">
+    </div>
+  </div>
+	<div class="form-group">
+    <label for="dop_suma" class="ct-150 control-label">Доп.сумма:</label>
+    <div class="col-xs-6">
+	<input type="text" class="form-control input" value="" name="dop_suma" id="dop_suma" placeholder="введите сумму">
+    </div>
+  </div>
+						<div class="form-group">
+    <label for="sposob" class="ct-150 control-label">Способ возврата:</label>
+    <div class="col-xs-6">
+	 <select name="sposob" class="form-control input" id="sposob">
+	 <option  value="0">Выберите способ возврата</option>
+	 <option value="1" <?=$this->vozrat->sposob==1?"selected":''; ?>>На депозит</option>
+	 <option value="2" <?=$this->vozrat->sposob==2?"selected":''; ?>>Почтовый перевод</option>
+                </select>
+    </div>
+  </div>
+			<?php }?>
+
+  </div>
+		</div>
+  </div>
+<div class="col-lg-6">
+<div class="panel panel-default">
+		<div class="panel-heading"><h4 class="panel-title">Детали</h4></div>
+			<div class="panel-body">
+<div class="form-group">
+    <label for="date_create" class="ct-150 control-label">Получен:</label>
+    <div class="col-xs-6">
+	<span style="display: inline-flex;margin-top: 7px;"><?=$this->vozrat->date_create?></span>
+    </div>
+  </div>
+<div class="form-group">
+    <label for="status" class="ct-150 control-label">Статус:</label>
+    <div class="col-xs-6">
+	 <select name="order_status" id="order_status" class="form-control input" onChange="this.form.submit(); return false;">
                     <?php foreach ($this->order_status as $key => $item) { ?>
-                    <option value="<?php echo $key; ?>" <?php if ($key == $this->getOrder()->getNewStatus()) echo "selected"; ?>><?php echo $item; ?></option>
+                    <option value="<?=$key?>" <?=$key==$this->vozrat->status?"selected":''; ?>><?=$item?></option>
                     <?php } ?>
                 </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="sposob" class="ct-150 control-label">Способ возврата:</label>
+    <div class="col-xs-6">
+	<span style="display: inline-flex;margin-top: 7px;">
+	<?php $sp = array(1=>'На депозит', 2=>'Почтовый перевод'); ?>
+	<?=$sp[$this->vozrat->sposob]?></span>
+    </div>
+  </div>
 
+  <div class="form-group">
+    <label for="nakladna" class="ct-150 control-label">Накладная:</label>
+    <div class="col-xs-6">
+	<input type="text" class="form-control input" value="<?=@$this->vozrat->nakladna?>" name="nakladna" id="nakladna" placeholder="Номар накладной">
+    </div>
+  </div>
+  </div>
+		</div>
+  </div>
 
+  </div>
+  </div>
+</div>
+  </form>
 
-            </label></td>
-        </tr>
-    </form>
-</table>
-
-<p><strong>Информация о покупателе</strong></p>
-<table cellpadding="4" cellspacing="0" id="order-client"
-       <?php
-$order_owner = new Customer($this->getOrder()->getCustomerId());
-$old_order = new Shoporders($this->getOrder()->getOldOrder());
-?>
-    <tr>
-        <td class="column-data">Компания</td>
-        <td><?php echo $this->getOrder()->getCompany() ? $this->getOrder()->getCompany() : "&nbsp;"; ?></td>
-    </tr>
-    <tr>
-        <td class="column-data">Имя</td>
-        <td><?php echo ($this->getOrder()->getName() ? $this->getOrder()->getName()
-            : "&nbsp;") ?></td>
-    </tr>
-    <tr>
-        <td class="column-data">Адрес</td>
-        <td><?php echo $this->getOrder()->getAddress() ? $this->getOrder()->getAddress() : "&nbsp;"; ?></td>
-    </tr>
-    <tr>
-        <td class="column-data">Почтовый код</td>
-        <td><?php echo $this->getOrder()->getPc() ? $this->getOrder()->getPc() : "&nbsp;"; ?></td>
-    </tr>
-    <tr>
-        <td class="column-data">Город</td>
-        <td><?php echo $this->getOrder()->getCity() ? $this->getOrder()->getCity() : "&nbsp;"; ?></td>
-    </tr>
-    <tr>
-        <td class="column-data">Индекс</td>
-        <td><?php echo $this->getOrder()->getIndex() ? $this->getOrder()->getIndex() : "&nbsp;"; ?></td>
-    </tr>
-    <tr>
-        <td class="column-data">Улица</td>
-        <td><?php echo $this->getOrder()->getStreet() ? $this->getOrder()->getStreet() : "&nbsp;"; ?></td>
-    </tr>
-    <tr>
-        <td class="column-data">Дом</td>
-        <td><?php echo $this->getOrder()->getHouse() ? $this->getOrder()->getHouse() : "&nbsp;"; ?></td>
-    </tr>
-    <tr>
-        <td class="column-data">Квартира</td>
-        <td><?php echo $this->getOrder()->getFlat() ? $this->getOrder()->getFlat() : "&nbsp;"; ?></td>
-    </tr>
-    <tr>
-        <td class="column-data">Телефон</td>
-        <td><?php echo $this->getOrder()->getTelephone() ? $this->getOrder()->getTelephone() : "&nbsp;"; ?></td>
-    </tr>
-    <tr>
-        <td class="column-data">E-mail</td>
-        <td><?php echo $this->getOrder()->getEmail() ? $this->getOrder()->getEmail() : "&nbsp;"; ?></td>
-    </tr>
-    <tr>
-        <td class="column-data">Комментарий</td>
-        <td><?php echo $this->getOrder()->getComments() ? htmlspecialchars($this->getOrder()->getComments())
-            : "&nbsp;"; ?></td>
-    </tr>
-<tr>
-    <td class="column-data">Цена товаров</td>
-    <td><?php echo Shoparticles::showPrice($this->getOrder()->getRealAmount()); ?> грн</td>
-</tr>
-
-<tr>
-    <td class="column-data">Стоимость доставки</td>
-    <td><?php echo Shoparticles::showPrice($this->getOrder()->getDeliveryCost()); ?> грн</td>
-</tr>
-<tr>
-    <td class="column-data">Депозит</td>
-    <td><?php echo Shoparticles::showPrice($this->getOrder()->getDeposit()); ?> грн</td>
-</tr>
-
-    <tr>
-        <td class="column-data">Сумма</td>
-        <td><b><?php echo Shoparticles::showPrice($this->getOrder()->getAmount()); ?> грн</b></td>
-    </tr>
-
-    <tr>
-        <td colspan="2">
-            <a href="/admin/user/edit/id/<?php echo $this->getOrder()->getCustomerId();?>&order_id=<?php echo $this->getOrder()->getId();?>">Редактировать
-                клиента</a>
-        </td>
-    </tr>
-</table>
-
-<p><strong>Товары</strong></p>
-
-<table cellpadding="4" cellspacing="0" id="order-articles">
-    <tr>
-        <td colspan="3" class="kolomicon"><strong>Действие</strong></td>
-        <td class="column-article"><strong>Кол./Товар</strong></td>
-        <td class="column-article"><strong>Размер/Цвет</strong></td>
-        <td><strong>Старая цена</strong></td>
-        <td><strong>Скидка</strong></td>
-        <td colspan="2"><strong>Цена</strong></td>
-    </tr>
-    <form method="post" action="">
-        <?php $t_price = 0.00; $t_option = 0.00;
-        if ($this->getOrder()->getArticles()->count()) {
-            ?>
-            <?php $bool = false;
-            foreach ($this->getOrder()->getArticles() as $main_key => $article_rec) {
-                $article = new Shoparticles($article_rec->getArticleId());
-                $order_article = new Shoporderarticles($article_rec->getOldArticle());
-                $real_order = new Shoporders($this->getOrder()->getOldOrder());
-                ?>
-                <tr>
-                    <td class="kolomicon">
-                    </td>
-
-                    <td class="kolomicon">
-                        <?php if (!in_array($this->getOrder()->getNewStatus(), array(2, 3))) { ?>
-                        <a
-                                href="<?php echo $this->path;?>vozrat/id/<?php echo $this->getOrder()->getId(); ?>/del/<?php echo $article_rec->getId();?>/"
-                                onclick="return confirm('Удалить?');"><img
-                                src="<?php echo SITE_URL; ?>/img/icons/remove-small.png"
-                                alt="Удалить" width="24" height="24"/></a>
-                        <?php } ?>
-                    </td>
-                    <td class="kolomicon">
-
-                        <img class="prev" rel="#miesart<?=$article->getId();?>"
-                             src="<?php echo $article->getImagePath('small_basket'); ?>"
-                             alt="<?php echo htmlspecialchars($article_rec->getTitle()); ?>"/>
-
-                        <div class="simple_overlay" id="miesart<?=$article->getId();?>"
-                             style="min-height: 300px; padding:10px 80px">
-                            <img src="<?php echo $article->getImagePath('detail'); ?>"
-                                 alt="<?php echo htmlspecialchars($article_rec->getTitle()); ?>"/>
-
-                        </div>
-                        <div class="previ"
-                             style="position: absolute; display: none; margin-left: 600px; margin-top: -150px;">
-                            <img src="<?php echo $article->getImagePath('detail'); ?>"
-                                 alt="<?php echo htmlspecialchars($article->getTitle()); ?>"/></div>
-
-                    </td>
-
-                    <td class="column-article">
-
-
-                        <?php echo 'Возврат: '.$article_rec->getCount().' - ';?>
-                        <select name="count_<?php echo $article_rec->getId();?>">
-                            <?php for ($i = 1; $i <= $order_article->getCount(); $i++) { ?>
-                            <option value="<?php echo $i?>" <?php if ($article_rec->getCount() == $i) { ?>selected="selected"<?php } ?>><?php echo $i?></option>
-                            <?php } ?>
-                        </select>
-                        - <a href="<?php echo $article->getPath(); ?>"
-                             target="_blank"><?php echo $article_rec->article_db->category->getRoutez() . ' : '; echo $article_rec->getTitle();  if (strlen($article_rec->getCode()) > 0) echo '(КОД: ' . $article_rec->getCode() . ')';?></a>
-                    </td>
-                    <td class="column-euro">
-                        <input type="hidden" class="hidden" value="<?=$article->getId()?>">
-                        <?=wsActiveRecord::useStatic('Size')->findById($article_rec->getSize())->getSize();?>
-                        /<?=wsActiveRecord::useStatic('Shoparticlescolor')->findById($article_rec->getColor())->getName();?>
-
-
-                    </td>
-                    <td><?php $price_real = (int)$article_rec->getOldPrice() ? $article_rec->getOldPrice() : $article_rec->getPrice();
-                        echo $price_real; ?></td>
-                    <td>
-                        <?php echo ceil((1 - ($article_rec->getPrice() / $price_real)) * 100);?> %
-                        <?php if ($article_rec->getEventSkidka()) { ?>
-                        +<?php echo $article_rec->getEventSkidka(); ?>%
-                        <?php } ?>
-                    </td>
-                    <td>
-                        <?php $tmp = $article_rec->getPrice() * (1 - ($article_rec->getEventSkidka() / 100)) * $article_rec->getCount(); $t_price += $tmp; echo Shoparticles::showPrice($tmp); ?>
-                        грн
-                    </td>
-                    <td>
-
-                    </td>
-                </tr>
-                <?php } ?>
-            <?php } ?>
-        <tr>
-            <td colspan="3"></td>
-            <td>
-                <?php if (!in_array($this->getOrder()->getNewStatus(), array(2, 3))) { ?>
-                <input type="submit" name="edit" id="edit" value="Изменить"/>
-                <?php } ?>
-            </td>
-            <td colspan="2"></td>
-        </tr>
-
-
-    </form>
-
-
-    <tr>
-        <td colspan="6" class="tussenrij">&nbsp;</td>
-    </tr>
-    <tr>
-        <td colspan="4"><strong>Скидка</strong></td>
-        <td class="column-euro"><strong></strong></td>
-        <td><strong><?php
-
-            echo $order_owner->getDiscont($old_order->getId()); ?>%</strong></td>
-    </tr>
-    <tr>
-        <td colspan="4"><strong>Всего</strong></td>
-        <td class="column-euro"><strong></strong></td>
-        <td><strong><?php echo Shoparticles::showPrice($t_price); ?> грн</strong></td>
-    </tr>
-
-    <?php if (!in_array($this->getOrder()->getNewStatus(), array(2, 3))) { ?>
-    <tr>
-        <td colspan="6"><b>Добавить к возврату</b></td>
-    </tr>
-
-    <form method="post" action="">
-
-        <?php foreach ($real_order->articles as $article) {
-        if (!ShoporderarticlesVozrat::isArticleVozvat($article->getId())) {
-            $article_r = new Shoparticles($article->getArticleId());
-            ?>
-            <tr>
-                <td>
-                    <input type="checkbox" name="adda_<?php echo $article->getId()?>"/>
-                </td>
-                <td></td>
-                <td>
-                    
-                    <img class="prev" rel="#miesart<?=$article_r->getId();?>"
-                             src="<?php echo $article_r->getImagePath('small_basket'); ?>"
-                             alt="<?php echo htmlspecialchars($article_r->getTitle()); ?>"/>
-                    <div class="simple_overlay" id="miesart<?=$article->getId();?>"
-                             style="min-height: 300px; padding:10px 80px">
-                            <img src="<?php echo $article_r->getImagePath('detail'); ?>"
-                                 alt="<?php echo htmlspecialchars($article_r->getTitle()); ?>"/>
-
-                        </div>
-                        <div class="previ"
-                             style="position: absolute; display: none; margin-left: 600px; margin-top: -150px;">
-                            <img src="<?php echo $article_r->getImagePath('detail'); ?>"
-                                 alt="<?php echo htmlspecialchars($article_r->getTitle()); ?>"/></div>
-                </td>
-                <td>
-                    <select name="addcount_<?php echo $article->getId();?>">
-                        <?php for ($i = 1; $i <= $article->getCount(); $i++) { ?>
-                        <option value="<?php echo $i?>"><?php echo $i?></option>
-                        <?php } ?>
-                    </select>
-                    <a href="<?php echo $article_r->getPath(); ?>"
-                       target="_blank"><?php echo $article->article_db->category->getRoutez() . ' : '; echo $article->getTitle();  if (strlen($article->getCode()) > 0) echo '(КОД: ' . $article->getCode() . ')';?></a>
-
-                </td>
-                <td>
-                    <?=wsActiveRecord::useStatic('Size')->findById($article->getSize())->getSize();?>
-                    /<?=wsActiveRecord::useStatic('Shoparticlescolor')->findById($article->getColor())->getName();?>
-                </td>
-
-                <td><?php $price_real = (int)$article->getOldPrice() ? $article->getOldPrice() : $article->getPrice();
-                    echo $price_real; ?></td>
-                <td>
-                    <?php echo ceil((1 - ($article->getPrice() / $price_real)) * 100);?> %
-                    <?php if ($article->getEventSkidka()) { ?>
-                    +<?php echo $article->getEventSkidka(); ?>%
-                    <?php } ?>
-                </td>
-                <td>
-                    <?php $tmp = $article->getPrice() * (1 - ($article->getEventSkidka() / 100)) * $article->getCount(); $t_price += $tmp; echo Shoparticles::showPrice($tmp); ?>
-                    грн
-                </td>
-            </tr>
-            <?php }
-    } ?>
-        <tr>
-            <td colspan="6">
-                <input value="Добавить" name="add" type="submit"/>
-            </td>
-        </tr>
-    </form>
-    <?php } ?>
-
-</table>
-
-
-<script type="text/javascript">
+<script>
 $(document).ready(function () {
-    $('.prev').hover(function () {
-        $(this).parent().find('div.previ').show();
-    }, function () {
-        $(this).parent().find('div.previ').hide();
-    });
-    var color_end = 0;
-    var size_end = 0;
-    $('.color').change(function () {
-        var color_id = $(this).val();
-        color_end = color_id;
-        var size = $(this).parent().find('.size');
-        var size_id = size.val();
-        if (color_id == '0') {
-            window.location.reload(true);
-            return(false);
-        }
-        size.attr('disabled', true);
-        size.html('<option>загрузка...</option>');
-        var url = '/page/getsize/';
-        $.get(
-                url,
-                "color_id=" + color_id + '&article_id=' + $(this).parent().find('.hidden').val(),
-                function (result) {
-                    if (result.type == 'error') {
-                        alert('error');
-                        return(false);
-                    }
-                    else {
-                        var options = '';
-                        var option = '';
-                        $(result.size).each(function () {
-                            option = '';
-                            if (size_id == $(this).attr('id')) option = 'selected="selected"';
-                            options += '<option value="' + $(this).attr('id') + '" ' + option + '>' + $(this).attr('title') + '</option>';
-                        });
-                        size.html(options);
-                        size.attr('disabled', false);
-                    }
-                },
-                "json"
-        );
-        if (color_end != 0 && size_end != 0) {
-            $(this).parent().parent().find('.chek_edit').removeAttr("checked");
-            var count_item = $(this).parent().parent().find('.count');
-            var count = count_item.val();
-            count_item.attr('disabled', true);
-            count_item.html('<option>загрузка...</option>');
-            var url = '/page/getcount/';
-            $.get(
-                    url,
-                    "color_id=" + color_end + '&size_id=' + size_end + '&article_id=' + $(this).parent().find('.hidden').val(),
-                    function (result) {
-                        if (result.type == 'error') {
-                            alert('error');
-                            return(false);
-                        }
-                        else {
-                            var options = '';
-                            var option = '';
-                            $(result.count).each(function () {
-                                option = '';
-                                if (count == $(this).attr('id')) option = 'selected="selected"';
-                                options += '<option value="' + $(this).attr('id') + '" ' + option + '>' + $(this).attr('title') + '</option>';
-                            });
-                            count_item.html(options);
-                            count_item.attr('disabled', false);
-                        }
-                    },
-                    "json"
-            );
-        }
-    });
 
-
-    $('.size').change(function () {
-        var size_id = $(this).val();
-        size_end = size_id;
-        var color = $(this).parent().find('.color');
-        var color_id = color.val();
-        if (size_id == '0') {
-            window.location.reload(true);
-            return(false);
-        }
-        color.attr('disabled', true);
-        color.html('<option>загрузка...</option>');
-        var url = '/page/getcolor/';
-        $.get(
-                url,
-                "size_id=" + size_id + '&article_id=' + $(this).parent().find('.hidden').val(),
-                function (result) {
-                    if (result.type == 'error') {
-                        alert('error');
-                        return(false);
-                    }
-                    else {
-                        var options = '';
-                        var option = '';
-                        $(result.color).each(function () {
-                            option = '';
-                            if (color_id == $(this).attr('id')) option = 'selected="selected"';
-                            options += '<option value="' + $(this).attr('id') + '"' + option + '>' + $(this).attr('title') + '</option>';
-                        });
-                        color.html(options);
-                        color.attr('disabled', false);
-                    }
-                },
-                "json"
-        );
-        if (color_end != 0 && size_end != 0) {
-            $(this).parent().parent().find('.chek_edit').removeAttr("checked");
-            var count_item = $(this).parent().parent().find('.count');
-            var count = count_item.val();
-            count_item.attr('disabled', true);
-            count_item.html('<option>загрузка...</option>');
-            var url = '/page/getcount/';
-            $.get(
-                    url,
-                    "color_id=" + color_end + '&size_id=' + size_end + '&article_id=' + $(this).parent().find('.hidden').val(),
-                    function (result) {
-                        if (result.type == 'error') {
-                            alert('error');
-                            return(false);
-                        }
-                        else {
-                            var options = '';
-                            var option = '';
-                            $(result.count).each(function () {
-                                option = '';
-                                if (count == $(this).attr('id')) option = 'selected="selected"';
-                                options += '<option value="' + $(this).attr('id') + '" ' + option + '>' + $(this).attr('title') + '</option>';
-                            });
-                            count_item.html(options);
-                            count_item.attr('disabled', false);
-                        }
-                    },
-                    "json"
-            );
-        }
-    });
-    $('.color_id').change(function () {
-        var color_id = $(this).val();
-        var size_id = $('.size_id').val();
-        if (color_id == '0') {
-            window.location.reload(true);
-            return(false);
-        }
-        $('.size_id').attr('disabled', true);
-        $('.size_id').html('<option>загрузка...</option>');
-        var url = '/page/getsize/';
-        $.get(
-                url,
-                "color_id=" + color_id + '&article_id=' + $('#article_id').val(),
-                function (result) {
-                    if (result.type == 'error') {
-                        alert('error');
-                        return(false);
-                    }
-                    else {
-                        var options = '';
-                        var option = '';
-                        $(result.size).each(function () {
-                            option = '';
-                            if (size_id == $(this).attr('id')) option = 'selected="selected"';
-                            options += '<option value="' + $(this).attr('id') + '" ' + option + '>' + $(this).attr('title') + '</option>';
-                        });
-                        $('.size_id').html(options);
-                        $('.size_id').attr('disabled', false);
-                    }
-                },
-                "json"
-        );
-    });
-
-
-    $('.size_id').change(function () {
-        var size_id = $(this).val();
-        var color_id = $('.color_id').val();
-        if (size_id == '0') {
-            window.location.reload(true);
-            return(false);
-        }
-        $('.color_id').attr('disabled', true);
-        $('.color_id').html('<option>загрузка...</option>');
-        var url = '/page/getcolor/';
-        $.get(
-                url,
-                "size_id=" + size_id + '&article_id=' + $('#article_id').val(),
-                function (result) {
-                    if (result.type == 'error') {
-                        alert('error');
-                        return(false);
-                    }
-                    else {
-                        var options = '';
-                        var option = '';
-                        $(result.color).each(function () {
-                            option = '';
-                            if (color_id == $(this).attr('id')) option = 'selected="selected"';
-                            options += '<option value="' + $(this).attr('id') + '"' + option + '>' + $(this).attr('title') + '</option>';
-                        });
-                        $('.color_id').html(options);
-                        $('.color_id').attr('disabled', false);
-                    }
-                },
-                "json"
-        );
-    });
-    $('#article_id').change(function () {
-        $('.color_id').attr('disabled', true);
-        $('.color_id').html('<option>загрузка...</option>');
-        $('.size_id').attr('disabled', true);
-        $('.size_id').html('<option>загрузка...</option>');
-        var url = '/page/getcolorandsize/';
-        $.get(
-                url,
-                '&article_id=' + $(this).val(),
-                function (result) {
-                    if (result.type == 'error') {
-                        alert('error');
-                        return(false);
-                    }
-                    else {
-                        var options = '';
-                        $(result.color).each(function () {
-                            options += '<option value="' + $(this).attr('id') + '">' + $(this).attr('title') + '</option>';
-                        });
-                        $('.color_id').html(options);
-                        $('.color_id').attr('disabled', false);
-                        var options = '';
-                        $(result.size).each(function () {
-                            options += '<option value="' + $(this).attr('id') + '" >' + $(this).attr('title') + '</option>';
-                        });
-                        $('.size_id').html(options);
-                        $('.size_id').attr('disabled', false);
-                    }
-                },
-                "json"
-        );
-
-    });
+$('#sposob').change(function () {
+var sum = 0.00;
+if($(this).val() > 0){
+if ($('.order-item:checked').val()) {
+jQuery.each($('.order-item:checked'), function () {
+sum += Number($('#s_'+$(this).attr('name').substr(5,5)).val());
+});
+sum+=Number($('#dop_suma').val());
+sum = sum.toFixed(2);
+$('#sum_voz').html(sum);
+$('#sum_voz_all').val(sum);
+//alert(sum);
+return true;
+}else{
+alert('Выберите товар кторый вернули!');
+$('#sposob option[value="0"]').prop('selected', true);
+return false;
+}
+}
 });
 
-</script>
-<script type="text/javascript">
 
-    function loadArticles(category_id) {
-        var data_to_post = new Object();
-        data_to_post.id = category_id;
-        data_to_post.getarticles = '1';
-        $.post('<?php echo $this->path . "shop-orders/"; ?>', data_to_post, function (data) {
-            createSelectList(data);
-        }, 'json');
-        $('#article_id').html('');
-        $('#option_id').html('');
-    }
-
-    function loadOptions(article_id) {
-        var data_to_post = new Object();
-        data_to_post.id = article_id;
-        data_to_post.getoptions = '1';
-        data_to_post.delivery_cost = '<?php echo Shoparticles::showPrice($this->getOrder()->getDeliveryCost()); ?>';
-        data_to_post.articles_count = '<?php echo $this->getOrder()->count(); ?>';
-        $.post('<?php echo $this->path . "shop-orders/"; ?>', data_to_post, function (data) {
-            createSelectList(data);
-        }, 'json');
-        $('#option_id').html('');
-    }
-
-    function createSelectList(data) {
-        if ('done' == data.result) {
-            out = '';
-            himg = '';
-            for (var i = 0; i < data.data.length; i++) {
-                if (data.data[i].img) {
-                    himg += '<img style="display: none;" id ="aih_' + data.data[i].id + '" src="' + data.data[i].img + '"  />';
-                }
-                out += '<option value="' + data.data[i].id + '">' + data.data[i].title + himg + '</option>';
-            }
-            if ('articles' == data.type) {
-                out = '<option value="0" selected>Выберите товар...</option>' + out;
-                $('#article_id').html(out);
-                $('#aih_box').html(himg);
-            } else {
-                out = '<option value="0" selected>Selecteer een optie...</option>' + out;
-                $('#option_id').html(out);
-            }
-        }
-    }
-    $('#article_id').mousemove(function () {
-        $('#aih_box img').hide();
-        $('#aih_box #aih_' + $(this).attr('value')).show();
-    }).mouseout(function () {
-                $('#aih_box img').hide();
-            });
-
+ $('.prev').hover(function () {
+     $(this).parent().find('div.simple_overlay').show();
+     }, function () {
+     $(this).parent().find('div.simple_overlay').hide();
+     });
+	 
+	 });
 </script>
 

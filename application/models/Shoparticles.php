@@ -5,9 +5,7 @@ class Shoparticles extends wsActiveRecord
     protected $_table = 'ws_articles';
     protected $_orderby = array('sequence' => 'DESC');
 
-    protected $_multilang = array('model' => 'model',
-        'long_text' => 'long_text', 'sostav'=>'sostav'
-    );
+    protected $_multilang = array('model' => 'model', 'long_text' => 'long_text', 'sostav'=>'sostav' );
 
     protected function _defineRelations()
     {
@@ -55,6 +53,14 @@ class Shoparticles extends wsActiveRecord
                 'type' => 'hasOne',
                 'class' => 'Shoparticleslabel',
                 'field' => 'label_id'),
+		'name_status' => array(
+                'type' => 'hasOne',
+                'class' => 'Shoparticlesstatus',
+                'field' => 'status'),
+		'name_sezon' => array(
+                'type' => 'hasOne',
+                'class' => 'Shoparticlessezon',
+                'field' => 'sezon'),
         );
     }
 
@@ -66,7 +72,7 @@ class Shoparticles extends wsActiveRecord
     public function getDiscount()
     { 
 	
-        if (!(int)$this->getOldPrice() || !(int)$this->getPrice() /*|| $this->getSkidkaBlock()*/)
+        if (!(int)$this->getOldPrice() || !(int)$this->getPrice() || $this->getSkidkaBlock())
             return 0;
         return 100 - round($this->getPrice() / $this->getOldPrice() * 100);
     }
@@ -234,16 +240,15 @@ class Shoparticles extends wsActiveRecord
 	return ($this->getOldPrice() > 0)?$this->getOldPrice():$this->getPrice();
 	}
 
-    public function getPriceSkidka()
+    public function getPriceSkidka()//цена товара с доп скидкой
     {
-      //$s = Skidki::getActiv($this->getId());
-		$z = Skidki::getActivCat($this->getCategoryId(), $this->getDopCatId());
+      $s = Skidki::getActiv($this->getId());
+		$z = false;//Skidki::getActivCat($this->getCategoryId(), $this->getDopCatId());
         if($z){
 		  return $this->getRealPrice() * ((100 - $z->getValue()) / 100);
-		}
-		/*elseif($s){
+		}elseif($s){
             return $this->getRealPrice() * ((100 - $s->getValue()) / 100);
-        }*/
+        }
 		
 		return $this->getRealPrice();
     }
@@ -276,8 +281,7 @@ class Shoparticles extends wsActiveRecord
         //return SITE_URL . '/files/i' . $type . '/' . $this->getImage();
     }
 
-    public function _beforeDelete()
-    {
+    public function _beforeDelete(){
         $folder = $_SERVER['DOCUMENT_ROOT'] . '/files/org/';
         $name = explode('.', $this->getImage());
         if (file_exists($folder . @$name[0] . '_w155_h132_cf_ft_fc255_255_255.' . @$name[1]))
@@ -290,36 +294,18 @@ class Shoparticles extends wsActiveRecord
         return true;
     }
 
-    /*
-    public function getImage2Path($type = 1) {
-        switch ($type) {
-            case 1:
-                return SITE_URL . '/mimage/type/1/width/70/height/70/crop/false/fill/true/fill_color/255_255_255/filename/' . $this->getImage2();
-            case 2:
-                return SITE_URL . '/mimage/type/1/width/155/height/132/crop/false/fill/true/fill_color/255_255_255/filename/' . $this->getImage2();
-            case 3:
-                return SITE_URL . '/mimage/type/1/width/321/crop/false/fill/true/fill_color/255_255_255/filename/' . $this->getImage2();
-            default:
-                return SITE_URL . '/mimage/filename/' . $this->getImage2();
-        }
-        //return SITE_URL . '/files/i' . $type . '/' . $this->getImage();
-    }
-    */
 
-    public function getPdfPath()
-    {
+    public function getPdfPath(){
         return SITE_URL . '/files/pdf/' . $this->getPdf();
     }
 
-    public function getPdfFileSize($del = 1)
-    {
+    public function getPdfFileSize($del = 1){
         $file = INPATH . '/files/pdf/' . $this->getPdf();
         $size = ($this->getPdf() && file_exists($file)) ? filesize($file) : 0;
         return (int)($size / $del);
     }
 
-    public function getSArticles()
-    {
+    public function getSArticles(){
         $sa = new Orm_Collection();
         if ($this->sug_article_id_1 && ($a = wsActiveRecord::useStatic('Shoparticles')->findById($this->sug_article_id_1)) && $a->getId() && strcasecmp($a->getActive(), 'y') == 0)
             $sa->add($a);
@@ -330,8 +316,7 @@ class Shoparticles extends wsActiveRecord
         return $sa;
     }
 
-    public function getRealOptions($delfirst = false)
-    {
+    public function getRealOptions($delfirst = false){
         $tmp = parent::__call('getOptions', null);
         if (isset($tmp[0]))
             $tmp[0]->setNumber(1);
@@ -342,30 +327,27 @@ class Shoparticles extends wsActiveRecord
         return $tmp;
     }
 
-    public function addToBasket($count, $size, $color, $option_id = 0, $flag = 0, $art)
-    {
+    public function addToBasket($count, $size, $color, $option_id = 0, $flag = 0, $art){
 
-        if (!$count || strcasecmp($this->getActive(), 'y') != 0)
-            return false;
-        $options = $this->getOptions();
-        if (!$option_id)
-            $option_id = 0;
-        /*$key = ($options->count() >= $option_id + 1);
-          if (!$key)
-              return false;*/
-
-       $basket = & $_SESSION['basket'];
-	if($flag == 1){ $basket = array();}
+        if (!$count || strcasecmp($this->getActive(), 'y') != 0) return false;
+		
+        //$options = $this->getOptions();
+		
+       // if (!$option_id) $option_id = 0;
+			
+    $basket = & $_SESSION['basket'];
+	   
+	if($flag == 1) $basket = array(); 
+	
         $was_added = false;
-        foreach ($basket as $key => $item)
+        foreach ($basket as $key => $item){
             if (!$was_added && $item['article_id'] == $this->getId() && $item['size'] == $size && $item['color'] == $color && $item['artikul'] == $art) {
-                if ($item['option_id'] == $option_id) {
+             //   if ($item['option_id'] == $option_id) {
                     $basket[$key]['count'] += $count;
-                    /*	if ($basket[$key]['count'] > MAX_COUNT_PER_ARTICLE)
-                             $basket[$key]['count'] = MAX_COUNT_PER_ARTICLE;*/
                     $was_added = true;
-                }
+               // }
             }
+			}
         if (!$was_added) {
             /*			if ($count > MAX_COUNT_PER_ARTICLE)
                    $count = MAX_COUNT_PER_ARTICLE;*/
@@ -374,18 +356,18 @@ class Shoparticles extends wsActiveRecord
                 'price' => $this->getRealPrice(),
                 'count' => $count,
                 'option_id' => $option_id,
-                'option_price' => ($option_id == 0) ? 0 : $options[$option_id]->getRealPrice(),
+                'option_price' => ($option_id == 0) ? 0 : 0.01,
                 'size' => $size,
                 'color' => $color,
 				'artikul' => $art,
+				'category' =>$this->getCategoryId(),
             );
             $was_added = true;
         }
         return true;
     }
 
-    public function getOffer()
-    {
+    public function getOffer(){
         $tmp = $this->getOffers();
         if ($tmp && $tmp->count())
             return $tmp[0];
@@ -393,27 +375,23 @@ class Shoparticles extends wsActiveRecord
             return null;
     }
 
-    static public function showPrice($price)
-    {
+    static public function showPrice($price){
         return number_format((double)$price, 2, ',', '');
     }
 
-    static public function showPriceBTW($price)
-    {
+    static public function showPriceBTW($price){
         $btw = BTW / 100;
         $tmp = ($price * $btw) / (1 + $btw);
         return self::showPrice($tmp);
     }
 
-    static public function showPriceExBTW($price)
-    {
+    static public function showPriceExBTW($price){
         $btw = BTW / 100;
         $tmp = $price / (1 + $btw);
         return self::showPrice($tmp);
     }
 
-    public function getSystemPath($type = NULL, $filename = NULL)
-    {
+    public function getSystemPath($type = NULL, $filename = NULL){
         if ($type === NULL)
             $type = $this->type;
         if ($filename === NULL)
@@ -436,8 +414,7 @@ class Shoparticles extends wsActiveRecord
         return $path;
     }
 
-    public function unlink_file($type = NULL, $filename = NULL)
-    {
+    public function unlink_file($type = NULL, $filename = NULL){
         if ($type === NULL)
             $type = $this->type;
         if ($filename === NULL)
@@ -460,9 +437,7 @@ class Shoparticles extends wsActiveRecord
         }
     }
 
-    public function getProcent($all_orders_amount, $skidka = 0)
-    {
-	
+    public function getProcent($all_orders_amount, $skidka = 0){
         if ($skidka != 0) {
             return $skidka . '%';
         }
@@ -480,28 +455,89 @@ class Shoparticles extends wsActiveRecord
 
     public function getPerc($all_orders_amount, $count = 1, $skidka = 0, $event_skidka = 0, $kupon = '', $sum_order = 0)
     {
-	
         $minus = 0.00;
         $price = $this->getPrice() * $count;
+		$coment = '';
 		 
 		if (!$this->getSkidkaBlock()) {
+		
+		if(count($_SESSION['basket']) == 2){//bust+trusi
+if((($_SESSION['basket'][0]['category'] == 297 and $_SESSION['basket'][1]['category'] == 296) or ($_SESSION['basket'][1]['category'] == 297 and $_SESSION['basket'][0]['category'] == 296)) and $_SESSION['basket'][0]['count'] == 1 and $_SESSION['basket'][1]['count'] == 1){
+if($this->category_id == 296) {
+$mas['minus'] = $price / 2;
+$mas['price'] = $mas['minus'];
+$mas['option_id'] = 2;
+$mas['option_price'] = $mas['minus'];
+$mas['comment'] = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка 50% по акции - "Собери комплект".</div>';
+return $mas;
+}
+if($this->category_id == 297) {
+$mas['minus'] = 0;
+$mas['price'] = $price; //($price - $minus);//round(, 2)
+$mas['option_id'] = 2;
+$mas['option_price'] = $price;
+//$mas['comment'] = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка 50% по акции - "Собери комплект".</div>';
+return $mas;
+}
+
+}
+		}// exit bust+trusi
+
 		$s = 0;
 		 if ($event_skidka != 0) {
-		 $s = (int)$event_skidka;
-                        //$m = (($price / 100) * $event_skidka);
-						//$minus += $m;
-						//$price -= $m;
-					}
+		  $s = (int)$event_skidka;
+			if($s == 99){// 1+1=3
+			 $mas['minus'] = $price - 0.01;
+			 $mas['price'] = 0.01; //($price - $minus);//round(, 2)
+			 $mas['option_id'] = 1;
+			$mas['option_price'] = 0.01;
+       
+			return $mas;
+			}
+			/*if($s == 50){// na trusi
+			$minus = (($price / 100) * $s);
+			$price -= $minus;
+			 $mas['minus'] = $minus;
+			 $mas['price'] = $price; //($price - $minus);//round(, 2)
+			return $mas;
+			}*/
+		 }
 		
 		$kod = false;
+		
 	if($kupon !=''){
 	$kod = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$kupon));
+	if($kod->count_order){// esli est ogranichenie po koll zakazov
+	if (false){
+	
+	$k = wsActiveRecord::useStatic('Shoporders')->count(array('customer_id' => $this->ws->getCustomer()->getId(), "kupon LIKE  '".$kod->cod."' ") );
+	if($k){
+	if((int)$k >= (int)$kod->count_order){
+	$kod = false;
+	$coment = '<div class="alert alert-danger" style="padding: 5px;margin-top: 10px;">Вами превышен лимит использования этого промокода.</div>';
+	}
+	}
+	}
+	}
+	if($kod->category_id){// kod deistvuet na opredelennu kategoriyu 
+	if($kod->category_id != $this->category_id) {
+	$kod = false;
+	$coment = '<div class="alert alert-danger" style="padding: 5px;margin-top: 10px;">На этот товар промокод не распространяется.</div>';
+	}
+	
+	}
 	}
 		
-		$c = Skidki::getActivCat($this->getCategoryId(), $this->getDopCatId());
-		if($c){
-		$minus = (($price / 100) * ($c->getValue()+$s));
-            $price -= $minus;
+	//	$c = false;// Skidki::getActivCat($this->getCategoryId(), $this->getDopCatId());
+		$a = Skidki::getActiv($this->getId());
+		//if($c){
+		//$minus = (($price / 100) * ($c->getValue()+$s));
+         //   $price -= $minus;
+	//	}else
+		if($a){
+		$minus = (($price / 100) * $a->getValue());
+        $price -= $minus;
+		$coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка -50% НА ШЛЕПКИ.</div>';
 		}else{
 		
                 if ((int)$this->getOldPrice() == 0) {
@@ -514,6 +550,7 @@ class Shoparticles extends wsActiveRecord
 						$m = (($price / 100) * $kod->skidka);
 						$minus += $m;
 						$price -= $m;
+						$coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка по промокоду.</div>';
 						//kupon
 										}
 							}
@@ -538,6 +575,7 @@ class Shoparticles extends wsActiveRecord
 					$m = (($price / 100) * $kod->skidka);
 						$minus += $m;
 						$price -= $m;
+						$coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка по промокоду.</div>';
 						//kupon
 }
 }
@@ -550,6 +588,7 @@ class Shoparticles extends wsActiveRecord
                         $m = (($price / 100) * $s);
 						$minus += $m;
 						$price -= $m;
+						$coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка по промокоду.</div>';
 					}
 				
 				//kupon
@@ -558,6 +597,7 @@ class Shoparticles extends wsActiveRecord
 				$m = (($price / 100) * $kod->skidka);
 						$minus += $m;
 						$price -= $m;
+						$coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка по промокоду.</div>';
 						//kupon
 				}
 			}
@@ -568,22 +608,29 @@ class Shoparticles extends wsActiveRecord
 				
 				
 					if(@$kod and $kod->all == 1){
-							if($sum_order >= $kod->min_sum){
-							$m = (($price / 100) * $kod->skidka);
+					if($sum_order >= $kod->min_sum){
+						$m = (($price / 100) * $kod->skidka);
 						$minus += $m;
 						$price -= $m;
+				$coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка по промокоду.</div>';
 						//kupon
-															}
-												}
+					
+					} 
+					}
 				
         }
 			
 		}
-        $mas['price'] = $price; //$kupon ? ($price - $kupon) : $price;
+        $mas['price'] = $price; 
         $mas['minus'] = $minus;
+		$mas['comment'] = $coment;
 		
         return $mas;
     }
+	//public function getOneOneThree(){// акция 1+1=3
+	
+	
+	//}
 
     static public function getSimilar($id)
     {
@@ -649,9 +696,7 @@ class Shoparticles extends wsActiveRecord
             //prepare to view
             $view->article = $this;
             $label = false;
-			if($this->getDopCatId() == 11){
-			$label = '/storage/label/final_sale_1.png';
-			}else if($this->getLabelId() != 0){
+			if($this->getLabelId() != 0){
 			$label = wsActiveRecord::useStatic('Shoparticleslabel')->findFirst(array('id' => $this->getLabelId()))->getImage();
 			}
             $view->label = $label;
@@ -679,7 +724,6 @@ class Shoparticles extends wsActiveRecord
     public function getSpecNakl()
     {
        
-
         if ($this->getLabelId() != 19) {
             $day = date('Y-m-d', (strtotime($this->getCtime()) + (24 * 60 * 60)));
             if ($day == date('Y-m-d')) {
@@ -803,15 +847,18 @@ class Shoparticles extends wsActiveRecord
 
         return array();
     }
-	
-	public function decode($encoded, $key){//��������������
-		$strofsym="qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM=";//�������, � ������� ������� base64-����
+	public function getCountArticles(){
+   return wsActiveRecord::useStatic('Shoparticlessize')->findByQuery("SELECT SUM(  `count` ) AS ctn FROM  `ws_articles_sizes` WHERE `id_article` =".$this->getId())->at(0)->getCtn();
+
+	}
+	public function decode($encoded, $key){//расшифровываем
+		$strofsym="qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM=";//Символы, с которых состоит base64-ключ
 			$x=0;
-			while ($x++<= strlen($strofsym)) {//����
-			$tmp = md5(md5($key.$strofsym[$x-1]).$key);//���, ������� ������������� �������, �� ������� ��� �������.
-			$encoded = str_replace($tmp[3].$tmp[6].$tmp[1].$tmp[2], $strofsym[$x-1], $encoded);//�������� �3,6,1,2 �� ���� �� ������
+			while ($x++<= strlen($strofsym)) {//Цикл
+			$tmp = md5(md5($key.$strofsym[$x-1]).$key);//Хеш, который соответствует символу, на который его заменят.
+			$encoded = str_replace($tmp[3].$tmp[6].$tmp[1].$tmp[2], $strofsym[$x-1], $encoded);//Заменяем №3,6,1,2 из хеша на символ
 			}
-			return base64_decode($encoded);//������� �������������� ������
+			return base64_decode($encoded);//Вертаем расшифрованную строку
 			}
 
 }

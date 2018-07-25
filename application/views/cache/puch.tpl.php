@@ -2,7 +2,7 @@
 if(isset($_COOKIE['s']) and $_COOKIE['s'] !=''){
 	$date = array(); 
 	$d = date('Y-m-d', strtotime(Shoparticles::decode($_COOKIE['s'], 'coderedua')));
-	$date[] = ' `data_new` < "' . date('Y-m-d') . '" and data_new >= "' .$d. '" and `active` =  "y" and `stock` > 0 ';
+	$date[] = '  data_new >= "' .$d. '" and `active` =  "y" and `stock` not like "0" and status = 3 and ws_articles.category_id != 16 ';
 	$find_count = wsActiveRecord::useStatic('Shoparticles')->count($date);
 	//var_dump($find_count);
 	}

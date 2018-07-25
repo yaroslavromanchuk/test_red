@@ -17,15 +17,14 @@
 <table border="0" cellpadding="2" cellspacing="0" width="700" style="font-family: Verdana" align="center" >
 <tr>
 <td width=700 style="vertical-align:top">
-<?php if($this->order['delivery_type_id'] == 3) { echo '<br><span style="font-size: 14px;color:#E8641B;">'.$this->trans->get('График работы пункта выдачи').' <b>Пн-Вс: 11:00- 21:00</b></span>'; }?>
-<?php if($this->order['delivery_type_id'] == 5) { echo '<br><span style="font-size: 14px;color:#E8641B;">'.$this->trans->get('График работы пункта выдачи').' <b>Пн-Вс: 10:00- 20:00</b></span>'; }?>
+<?php if($this->order['delivery_type_id'] == 3) { echo '<br><span style="font-size: 14px;color:#E8641B;">'.$this->trans->get('График работы пункта выдачи').' <b>Пн-Сб: 08:00-22:00, Вс: 10:00-22:00</b></span>'; }?>
+<?php if($this->order['delivery_type_id'] == 5) { echo '<br><span style="font-size: 14px;color:#E8641B;">'.$this->trans->get('График работы пункта выдачи').' <b>Пн-Вс: 09:00- 22:00</b></span>'; }?>
 <p><?=$this->trans->get('Дополнительную информацию можно получить по телефону');?>: (044) 224-40-00</p>
-<?php if(in_array(@$this->order['delivery_type_id'],array(1,2,3,7,11,5))){ ?>
+<?php if(in_array(@$this->order['delivery_type_id'],array(3,5))){ ?>
     <p style=" font-size: 14px;">
-        <i><?=$this->trans->get('Условия оплаты и возврата заказа');?>:</i><br /><br />
-              - <?=$this->trans->get('дисконтная скидка розничных магазинов RED недействительна для интернет-заказов');?>;<br />
-              - <?=$this->trans->get('перед оплатой заказа, товары можно примерить в примерочной магазина,</br> рассмотреть и убедиться в правильной комплектации заказа');?>;<br />
-              - <?=$this->trans->get('возврат товара до 14 дней с момента покупки');?>. <a href="https://www.red.ua/returns/"><?=$this->trans->get('Условия возврата');?></a>.<br /><br />
+        <i><?=$this->trans->get('Условия оплаты и возврата заказа');?>:</i><br><br>
+              - <?=$this->trans->get('дисконтная скидка розничных магазинов RED недействительна для интернет-заказов');?>;<br>
+              - <?=$this->trans->get('возврат товара до 14 дней с момента покупки');?>. <a href="https://www.red.ua/returns/"><?=$this->trans->get('Условия возврата');?></a>.<br><br>
                <b><?=$this->trans->get('Удачных покупок');?>!</b>
     </p>
 <?php } ?>
@@ -107,11 +106,11 @@
 	   </td>
 	   
        <td>
-	   <?php $t_count += $count; echo $count; ?>
+	   <?php $t_count += $count; echo $count;?>
 	   </td>
 	   
        <td>
-	    <?php echo Shoparticles::showPrice($price['price']); ?> грн.
+	    <?=Shoparticles::showPrice($price['price'])?> грн.
 	   </td>
         </tr>
 <?php } ?>
@@ -123,18 +122,25 @@
 				</td>
 				<td style="text-align:right;" colspan="2" ><?=$order->getDeliveryType()->getName()?></td>
 			</tr>
+						<?php if($order->delivery_type_id == 8 || $order->delivery_type_id == 16){ ?>
+			<tr>
+				<td style="text-align:left;" colspan="5">
+				<?=$order->sklad?>
+				</td>
+			<?php  }?>
 				<tr>
 				<td style="text-align:left;" colspan="3">
 					<?=$this->trans->get('Доставка')?>:
 				</td>
 				<td style="text-align:right;" colspan="2" >
 						<?php if($order->delivery_type_id == 8 || $order->delivery_type_id == 16){
-		echo $this->trans->get('По тарифам</br>Новой Почты');
+		echo $this->trans->get('По тарифам Новой Почты');
 		}else{
 		echo Shoparticles::showPrice($order->delivery_cost)." грн.";
 		}?>
 				</td>
 			</tr>
+
 			<tr>
 				<td style="text-align:left;" colspan="3">
 					<?=$this->trans->get('Способ оплаты')?>:
@@ -189,82 +195,7 @@
 	</tr>
 </table>
 <br/>
-
-
-
-<!--
-<h3 style="color:#E8641B;"><?=$this->trans->get('Контактная информация')?></h3>
-<table cellspacing="0" cellpadding="4" class="basket-cont" width="700"
-       style="border:1px dashed #E8641B;padding:15px; font-size: 12px;">
-    <tr>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;"><?=$this->trans->get('Компания');?></td>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;"><?php echo (isset($this->basket_contacts['company']))
-                ? $this->basket_contacts['company'] : "&nbsp;"; ?></td>
-    </tr>
-    <tr>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;"><?=$this->trans->get('Имя');?></td>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;"><?php echo (isset($this->basket_contacts['name']))
-                ? $this->basket_contacts['name'] : "&nbsp;"; ?></td>
-    </tr>
-    <tr>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;"><?=$this->trans->get('Город');?></td>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;"><?php echo (isset($this->basket_contacts['city']))
-                ? $this->basket_contacts['city'] : "&nbsp;"; ?></td>
-    </tr>
-    <tr>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;"><?=$this->trans->get('Способ доставки');?></td>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;"><?php $d = new DeliveryType(@$this->basket_contacts['delivery_type_id']); echo (isset($this->basket_contacts['delivery_type_id'])) ? $d->getName() : "&nbsp;"; ?></td>
-    </tr>
-    <tr>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;"><?=$this->trans->get('Адрес');?></td>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;"><?php echo (isset($this->basket_contacts['address']))
-                ? $this->basket_contacts['address'] : "&nbsp;"; ?></td>
-    </tr>
-    <tr>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;"><?=$this->trans->get('Индекс');?></td>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;"><?php echo (isset($this->basket_contacts['index']))
-                ? $this->basket_contacts['index'] : "&nbsp;"; ?></td>
-    </tr>
-    <tr>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;"><?=$this->trans->get('Улица');?></td>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;"><?php echo (isset($this->basket_contacts['street']))
-                ? $this->basket_contacts['street'] : "&nbsp;"; ?></td>
-    </tr>
-    <tr>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;"><?=$this->trans->get('Дом');?></td>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;"><?php echo (isset($this->basket_contacts['house']))
-                ? $this->basket_contacts['house'] : "&nbsp;"; ?></td>
-    </tr>
-    <tr>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;"><?=$this->trans->get('Квартира');?></td>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;"><?php echo (isset($this->basket_contacts['flat']))
-                ? $this->basket_contacts['flat'] : "&nbsp;"; ?></td>
-    </tr>
-    <tr>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;"><?=$this->trans->get('Способ оплаты');?></td>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;"><?php $p = new PaymentMethod(@$this->basket_contacts['payment_method_id']); echo (isset($this->basket_contacts['payment_method_id']))
-                ? $p->getName() : "&nbsp;"; ?></td>
-    </tr>
-    <tr>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;"><?=$this->trans->get('Телефон');?></td>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;"><?php echo (isset($this->basket_contacts['telephone']))
-                ? $this->basket_contacts['telephone'] : "&nbsp;"; ?></td>
-    </tr>
-    <tr>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;">
-            E-mail
-        </td>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;"><?php echo (isset($this->basket_contacts['email']))
-                ? $this->basket_contacts['email'] : "&nbsp;"; ?></td>
-    </tr>
-    <tr>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;"><?php echo $this->trans->get('Комментарий');?></td>
-        <td style="border-bottom:1px solid #E8641B; padding-bottom:10px; padding-top:5px; width:250px;"><?php echo (isset($this->basket_contacts['comments']))
-                ? $this->basket_contacts['comments'] : "&nbsp;"; ?></td>
-    </tr>
-</table>
--->
 </td>
 </tr>
-</table><br><!---->
+</table><br>
 <?=$this->render('email/email.footer.tpl.php');?>

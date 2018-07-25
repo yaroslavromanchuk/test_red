@@ -1,5 +1,5 @@
 <!DOCTYPE html >
-<html>
+<html lang="ru">
 <head>
 <?php //clearstatcache(); ?>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -9,16 +9,16 @@
 	<meta name="google-site-verification" content="5KsgGP4-JCTjV0dafIfi5_AI73MIryFuGqLvAgIthAI" />
     <title><?=Config::findByCode('home_title')->getValue()?></title>
 	
-	<link defer rel="shortcut icon" href="/favicon.ico"/>	
+	<link rel="shortcut icon" href="/favicon.ico"/>	
 	<!--<link rel="stylesheet" type="text/css" href="/css/soc.css?z" />	-->
-	<link defer rel="stylesheet" type="text/css" href="/js/slider-fhd/slick.css?v=1"  />
-	<link defer rel="stylesheet" type="text/css" href="/js/slider-fhd/slick-theme.css?v=1" />
+	<link  rel="stylesheet" type="text/css" href="/js/slider-fhd/slick.css?v=1"  />
+	<link  rel="stylesheet" type="text/css" href="/js/slider-fhd/slick-theme.css?v=1" />
     <link rel="stylesheet" type="text/css" href="/css/bs/css/bootstrap.css?v=1.0"/>
-    <link rel="stylesheet" type="text/css" href="/css/style.css?v=1.3"/>
+    <link rel="stylesheet" type="text/css" href="/css/style.css?v=1.4"/>
     <link rel="stylesheet" type="text/css" href="/css/new.css?v=1.3"/>
     
 	
-    <script  type="text/javascript" src="/js/jquery.js"></script>
+    <script src="/js/jquery.js"></script>
 	
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -28,7 +28,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-5DFS2PQ');</script>
 <!-- End Google Tag Manager -->
 </head>
-<body> 
+<body>
+ <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5DFS2PQ"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 <header>
 <?=$this->cached_top_menu;?>
 <?=$this->cached_topcategories;?>
@@ -60,7 +64,7 @@ echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/new_homepage_n
 <div class="block-title py-4 w-100">
 	<div class="vc_separator    vc_sep_pos_align_center vc_sep_color_black double-bordered-thick ">
 	<span class="vc_sep_holder vc_sep_holder_l"><span class="vc_sep_line"></span></span>
-	<h4>ПОПУЛЯРНЫЕ ТОВАРЫ<span>самые просматриваемое товары</span></h4>
+	<h4><?=$this->trans->get('ПОПУЛЯРНЫЕ ТОВАРЫ');?><span><?=$this->trans->get('самые просматриваемые товары');?></span></h4>
 	<span class="vc_sep_holder vc_sep_holder_r"><span class="vc_sep_line"></span></span>
 	</div>
 </div>
@@ -68,7 +72,7 @@ echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/new_homepage_n
 <?php foreach ($this->topproduct as $block) {
             if ($block->getId()) { ?> 
 			<div class="top_articles_item col-xs-12 col-sm-6 col-md-3" >
-         <a name="<?=$block->getId(); ?>" href="<?=$block->getPath();?>" style="    text-align: center;">
+         <a  href="<?=$block->getPath();?>" style="    text-align: center;">
         <img  src="<?=$block->getImagePath('detail'); ?>" alt="<?=$block->getBrand();?>" style="max-width:100%;"  >  
 		</a>
 				<div class="post-name" >
@@ -91,10 +95,10 @@ echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/new_homepage_n
 <div class=" col-xs-12 col-sm-6 col-md-3 p-1">
 <div class="column-inner">
 				 <a href="<?=$block->getUrl()?>">
-				 <img src="<?=$block->getImage()?>" >
+				 <img alt="<?=$block->getName()?>" src="<?=$block->getImage()?>" >
 				 <span class="ol"></span>
 				 <span class="centered">
-				 <span class="title-block"><strong class="line-top"><?=$block->getName(); ?></strong></span>
+				 <span class="title-block"><strong class="line-top"><?=$block->getName()?></strong></span>
 				 </span>
 				</a>
 </div>
@@ -110,7 +114,7 @@ echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/new_homepage_n
 <div class="block-title py-4 w-100">
 	<div class="vc_separator    vc_sep_pos_align_center vc_sep_color_black double-bordered-thick ">
 	<span class="vc_sep_holder vc_sep_holder_l"><span class="vc_sep_line"></span></span>
-	<h4>ПОСЛЕДНИЕ ТОВАРЫ<span>ПОСЛЕДНИЙ РАЗМЕР ИЛИ ПАРА</span></h4>
+	<h4><?=$this->trans->get('ПОСЛЕДНИЕ ТОВАРЫ');?><span><?=$this->trans->get('ПОСЛЕДНИЙ РАЗМЕР ИЛИ ПАРА');?></span></h4>
 	<span class="vc_sep_holder vc_sep_holder_r"><span class="vc_sep_line"></span></span>
 	</div>
 	</div>
@@ -118,7 +122,7 @@ echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/new_homepage_n
 <?php foreach ($this->oneproduct as $block) {
             if ($block->getId()) { ?> 
 			<div class="top_articles_item col-md-3" >
-         <a name="<?=$block->getId(); ?>" href="<?=$block->getPath();?>" style="text-align: center;">
+         <a  href="<?=$block->getPath();?>" style="text-align: center;">
         <img  src="<?=$block->getImagePath('detail'); ?>" alt="<?=$block->getBrand();?>" style="max-width:100%;"  >  
 		</a>
 				<div class="post-name" >
@@ -139,7 +143,7 @@ echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/new_homepage_n
 <div class="block-title py-4 w-100">
 	<div class="vc_separator    vc_sep_pos_align_center vc_sep_color_black double-bordered-thick ">
 	<span class="vc_sep_holder vc_sep_holder_l"><span class="vc_sep_line"></span></span>
-	<h4>BLOG<span>Модные тенденции и тренды</span></h4>
+	<h4>BLOG<span><?=$this->trans->get('Модные тенденции и тренды');?></span></h4>
 	<span class="vc_sep_holder vc_sep_holder_r"><span class="vc_sep_line"></span></span>
 	</div>
 	</div>
@@ -149,9 +153,9 @@ echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/new_homepage_n
                <div class="blog-div-fon">
 			   <div class="post-image">
 			    <a href="<?=$b->getPath()?>?utm_source=blog&utm_medium=link&utm_content=Blog&utm_campaign=Blog">
-			   <img src="/storage<?=$b->getImage()?>">
+			   <img alt="<?=$b->getPostName()?>" src="/storage<?=$b->getImage()?>">
 			   <span class="hover-overlay"></span>
-			   <span class="hover-readmore">Смотреть далее...</span>
+			   <span class="hover-readmore"><?=$this->trans->get('Смотреть далее');?>...</span>
 			   </a>
 			   </div>
 			   <div class="post-name">
@@ -190,9 +194,10 @@ echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/new_homepage_n
 </div>
 <!--brand-->
 <!--пуш о смене email -->
-<?php if(!isset($_COOKIE['puch_close']) and isset($_COOKIE['s']) and $_COOKIE['s'] !='' and false ){ 
+<?php if(!isset($_COOKIE['puch_close']) and isset($_COOKIE['s']) and $_COOKIE['s'] !='' and false){ 
 if($this->ws->getCustomer()->getIsLoggedIn()){ 
-if(!$this->ws->getCustomer()->isClosePuch()){ echo $this->puch; } }else{ echo $this->puch; }
+if(!$this->ws->getCustomer()->isClosePuch()){ echo $this->puch; } 
+}else{ echo $this->puch; }
 } ?>
 <!--/пуш о смене email -->
 </div><!--end container-fluid div-->
@@ -210,7 +215,7 @@ rnt('add_audience', {audienceId: '20676_254951d7-6d13-4ea2-a507-747c9e6fe802'});
 if(Registry::get('device') != 'computer' or ($_COOKIE['mobil'] and $_COOKIE['mobil'] == 10) and false){ ?>
  <div id="slk" class="slk"><input type="button" name="mobi" class="btn btn-secondary btn-sm" onClick="setCooki(0);" value="<?=$this->trans->get('Мобильная версия');?>"><br></div>
 <?php } ?>
-<script defer type="text/javascript">
+<script>
     /* <![CDATA[ */
     var google_conversion_id = 1005381332;
     var google_conversion_label = "1vqdCJyg5gMQ1M2z3wM";
@@ -218,15 +223,12 @@ if(Registry::get('device') != 'computer' or ($_COOKIE['mobil'] and $_COOKIE['mob
     var google_remarketing_only = true;
     /* ]]> */
 </script>
-<script  type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js"></script>
+<script   src="//www.googleadservices.com/pagead/conversion.js"></script>
 <noscript><div style="display:inline;">
 <img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/1005381332/?value=0&amp;label=1vqdCJyg5gMQ1M2z3wM&amp;guid=ON&amp;script=0"/>
 </div></noscript>
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5DFS2PQ"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
-<script type='text/javascript'>
+
+<script>
 $(document).ready(function(){
 var width = window.innerWidth;
 var w = 6;
@@ -261,15 +263,13 @@ nextArrow: '<img src="#" style="background-image:url(/img/slider/p-n-b.png);"  d
 	  });  
 });
 </script>
-
-</body>
-<script defer  src="/js/slider-fhd/slick.min.js" type="text/javascript"></script>
-	<script defer type="text/javascript" src="/js/functions.js?v=1.3"></script>	
-	<script defer  type="text/javascript" src="/js/jquery.liFixar.js"></script>
+<script src="/js/slider-fhd/slick.min.js"></script>	
+	<script  src="/js/functions.js?v=1.3"></script>	
+	<script src="/js/jquery.liFixar.js"></script>
 	
-     <script  type="text/javascript"  src="/css/bs/js/bootstrap.js?v=1.0"></script>
-	 <script  type="text/javascript"  src="/css/bs/js/bootstrap.bundle.min.js?v=1.0"></script>
-	 <script defer  type="text/javascript">
+     <script  src="/css/bs/js/bootstrap.js?v=1.0"></script>
+	 <script   src="/css/bs/js/bootstrap.bundle.min.js?v=1.0"></script>
+	 <script>
         jQuery.browser = {};
         (function () {
             jQuery.browser.msie = false;
@@ -280,5 +280,7 @@ nextArrow: '<img src="#" style="background-image:url(/img/slider/p-n-b.png);"  d
             }
         })();
     </script>
+</body>
+
 
 </html>

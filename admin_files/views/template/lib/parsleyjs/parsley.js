@@ -2401,7 +2401,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
       alphanum: "This value should be alphanumeric."
     },
     notblank: "This value should not be blank.",
-    required: "This value is required.",
+    required: "Это поле обязательное для заполения.",
     pattern: "This value seems to be invalid.",
     min: "This value should be greater than or equal to %s.",
     max: "This value should be lower than or equal to %s.",
@@ -2415,7 +2415,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     equalto: "This value should be the same."
   });
 
-  Parsley.setLocale('en');
+  //Parsley.setLocale('en');
 
   /**
    * inputevent - Alleviate browser bugs for input events

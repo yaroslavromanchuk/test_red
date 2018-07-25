@@ -2,8 +2,7 @@
 	<div class="col-xs-12 col-sm-10 col-md-3 d-none d-md-block pt-3 pl-3 pr-0 text-center">
         <form method="get" class="form-inline" action="/search/">
 		<div class="w-100">
-			 <form method="get" class="form-search" action="/search/">
-		<input type="text" class="form-control" style="max-width: 200px;background: url(/img/top_menu/img_search.png) no-repeat top 5px right 4px #fff;background-size: 22px;" data-provide="typeahead" style="display:inline-block;" maxlength="30" name="s" placeholder="поиск" pattern="^[A-Za-zА-Яа-яЁё ,.-_&amp;іїІЇь]+$" >
+		<input type="text" class="form-control" style="max-width: 200px;background: url(/img/top_menu/img_search.png) no-repeat top 5px right 4px #fff;background-size: 22px;display:inline-block;" data-provide="typeahead"  maxlength="30" name="s" placeholder="<?=$this->trans->get('поиск');?>" pattern="^[A-Za-zА-Яа-яЁё ,.-_&amp;іїІЇь]+$" >
 		<input type="submit" class="btn" value="Искать" style="display:none;" >
 		</div>
 		</form>
@@ -21,14 +20,14 @@
 <a href="/contact/"><span data-placement="bottom"  data-tooltip="tooltip" title="Наши контакты"><?=Config::findByCode('phones')->getValue()?></span>
 <?php if(Config::findByCode('new_grafik')->getValue()) { ?>
 <span  data-placement="bottom"  data-tooltip="tooltip" title="<?=Config::findByCode('new_grafik')->getValue()?>" style="color:#e30613;font-size:10px;    font-weight: bold;"><img  src="/img/top_menu/phone_new.png"><br><?=$this->trans->get('Изменения в режиме работы')?>!</span>
-<?php }else{ ?><img  src="/img/top_menu/phone.png"><?php } ?>
+<?php }else{ ?><img alt="Наши контакты"  src="/img/top_menu/phone.png"><?php } ?>
 </a>
 </div>
 </div>
 </div>
 
 <link rel="stylesheet" type="text/css" href="/css/menu_category.css?v=1.2" />
-<script  type="text/javascript">
+<script>
 var e,i=320;
 e = !!/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
 $(document).ready(function(){
@@ -114,7 +113,7 @@ $articles = wsActiveRecord::useStatic('Shoparticles')->count(array('category_id 
 <div class="mega-menu cat_106">
 	<ul class="sub-menu mega-menu-row">
 			<?php foreach ($sub_cats as $sub_category) {
-$sql = 'SELECT * from ws_articles where category_id in('.implode(",", $sub_category->getKidsIds()).') and  stock > 0 and active = 1 and ("'.$t_t.'" <= data_new and data_new < "'.$t_f.'" or get_now = 1) GROUP BY  `model`  order by `ws_articles`.`id` DESC  LIMIT 0, 5';
+$sql = 'SELECT * from ws_articles where category_id in('.implode(",", $sub_category->getKidsIds()).') and  stock not like "0" and active = "y"  GROUP BY  `model`  order by `ws_articles`.`id` DESC  LIMIT 0, 5';
 $t = wsActiveRecord::useStatic('Shoparticles')->findByQuery($sql);
 if($t->count() == 0) continue;?>
 <li class="menu-item-has-children mega-menu-col">

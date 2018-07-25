@@ -1,19 +1,22 @@
 <?php
-$c = Skidki::getActivCat($this->article->getCategoryId(), $this->article->getDopCatId());
+//$cat = Skidki::getActivCat($this->article->getCategoryId(), $this->article->getDopCatId());
+//if($cat) $c = true;
+$c = Skidki::getActiv($this->article->getId());
 $param = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery('SELECT DISTINCT id_color, id_size FROM ws_articles_sizes WHERE id_article='.$this->article->getId().' AND count > 0');
 ?>
-<li class="article-item <?=$this->article->getId(); ?> col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 p-1 " >
+<li class="article-item <?=$this->article->getId()?> col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 p-1">
 <div class="articles">
   <div  class="img_art">
     <?php
 	$label = $this->label;
-	if($label == '/storage/label/final_sale_1.png'){
+	if(false){
 	$pr = $this->article->getPrice();
 	if((float)$this->article->getOldPrice()) $pr  = $this->article->getOldPrice();
 	$skid = (1-($this->article->getPriceSkidka()/$pr))*100;
 
 	?>
-	 <div class="article_label_container"><div class="article_label"><img src="<?=$label?>" alt="" style="width:90px;" ><p style="    font-size: 95%;
+	 <div class="article_label_container">
+	 <div class="article_label"><img src="<?=$label?>" alt="" style="width:90px;" ><p style="    font-size: 95%;
     font-weight: bold;
     color: #e20404;
     transform: rotate(-45deg);
@@ -21,7 +24,11 @@ $param = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery('SELECT DIST
     top: 20px;
     left: 10px;
     padding: 0;
-    margin: 0;"><?='-'.round($skid).'%';?></p></div></div> 
+    margin: 0;">
+	<?='-'.round($skid).'%'?>
+	</p>
+	</div>
+	</div> 
 	<?php
 	}else{
 	if ($label){
@@ -31,7 +38,7 @@ $param = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery('SELECT DIST
 }	
 	?>
 	
-    <a href="<?=$this->article->getPath();?>" class="img" >
+    
 	<?php if($c){
 	$pr = $this->article->getPrice();
 	if((float)$this->article->getOldPrice()) $pr  = $this->article->getOldPrice();
@@ -39,33 +46,26 @@ $param = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery('SELECT DIST
 	<p class="event_label" ><span><?='-'.round($skid).'%';?></span></p>
 	<?php } ?>
 	<?php if($this->article->getImages()->count() > 0){ ?>
-	<div id="myCarousel<?=$this->article->getId()?>" class="carousel slide" style="" data-interval="false">
+	<div id="myCarousel_<?=$this->article->getId()?>" class="carousel slide"  data-interval="false">
 	<div class="carousel-inner">
-	<div class="carousel-item active">
-	<img src="<?=$this->article->getImagePath('detail');?>" alt="<?=htmlspecialchars($this->article->getTitle());?>">
+	<a href="<?=$this->article->getPath()?>" class="img"><div class="carousel-item active"><img src="<?=$this->article->getImagePath('detail');?>" alt="<?=htmlspecialchars($this->article->getTitle());?>"></div>
+	<?php foreach($this->article->getImages() as $image){ ?><div class="carousel-item"><img alt="" src="<?=$image->getImagePath('detail')?>"></div><?php } ?>
+</a>
 	</div>
-	<?php
-	 foreach($this->article->getImages() as $image){
-	 echo '<div class="carousel-item">';
-      echo '<img src="'.$image->getImagePath('detail').'">';
-	echo '</div>';
-        }
-?>
-	</div>
-	<a class="carousel-control-prev" href="#myCarousel<?=$this->article->getId()?>" role="button" data-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="sr-only">Previous</span>
-  </a>
-  <a class="carousel-control-next" href="#myCarousel<?=$this->article->getId()?>" role="button" data-slide="next">
+	<a class="carousel-control-prev" href="#myCarousel_<?=$this->article->getId()?>" role="button" data-slide="prev">
+	<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+	<span class="sr-only">Previous</span>
+	</a>
+  <a class="carousel-control-next" href="#myCarousel_<?=$this->article->getId()?>" role="button" data-slide="next">
     <span class="carousel-control-next-icon" aria-hidden="true"></span>
     <span class="sr-only">Next</span>
   </a>
 	</div>
 	<?php }else{ ?>
-	<img src="<?=$this->article->getImagePath('detail');?>" alt="<?=htmlspecialchars($this->article->getTitle());?>">
-	<?php } ?>
+	<a href="<?=$this->article->getPath()?>" class="img" >
+	<img src="<?=$this->article->getImagePath('detail')?>" alt="<?=htmlspecialchars($this->article->getTitle())?>">
 	</a>
-	</div>
+	<?php } ?>
 <p class="name"><span><?=$this->article->getModel();?></span></p>
 <p class="brand"><span><?=$this->article->getBrand();?></span></p>
 <hr style="margin-bottom:  5px;">
@@ -110,7 +110,7 @@ if($old_price > 0){ ?>
 		}else{
 		$col[] = $color->id_color;
 		$c = $color->color->getColor();
-		if($c){ echo '<div class="color_box" style="background: '.$c.';"></div>';} else { echo '<div class="no_color_box">'.$color->color->getName().'</div>'; }
+		if($c){ echo '<div class="color_box" style="background: '.$c.'"></div>';} else { echo '<div class="no_color_box">'.$color->color->getName().'</div>'; }
 			}
 				} 
 								} ?>
@@ -134,6 +134,7 @@ if($old_price > 0){ ?>
 	<div style="clear: both;"></div>
 	<div class="quik_look">
 <a href="#comment-modal_article" onclick="getQuikArticle(<?=$this->article->getId();?>);  return false;" data-toggle="modal" ><span class="glaz_quik"></span><?=$this->text_trans[1]?></a>
+	  </div>
 	  </div>
 	  </div>
 	  </div>

@@ -147,7 +147,7 @@ class Shopcategories extends wsActiveRecord
 			foreach($kids as $kid)
 				$ids[] = $kid->getId();
 		$cat_text = 'category_id in (' . implode(', ', $ids) . ')';	
-		return wsActiveRecord::useStatic('Shoparticles')->count(array('stock>0', 'active="y"', $cat_text));
+		return wsActiveRecord::useStatic('Shoparticles')->count(array('stock > 0', 'active="y" ', $cat_text));
 	}
     public function getRoutez(){
         $a = '';
@@ -155,6 +155,22 @@ class Shopcategories extends wsActiveRecord
             $a .= $this->parent->getName().' : ';
         }
         $a .= $this->getName();
+        return $a;
+
+    }
+	public function getRoutezGolovna(){
+        $a = '';
+        if($this->parent){
+		if($this->parent->parent){
+		$a .= $this->parent->parent->getName();
+		}else{
+		$a .= $this->parent->getName();
+		}
+            
+        }else{
+		$a .= $this->getName();
+		}
+        
         return $a;
 
     }

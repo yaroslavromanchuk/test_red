@@ -23,17 +23,17 @@ class Finder extends wsActiveRecord
             $order_by = 'utime DESC';
 
         } else {
-            $order_by = 'data_new DESC';
+            $order_by = 'ctime DESC';//RAND()
         }
 		$t_f = date("Y-m-d 00:00:00"); 
-		$t_t = date("Y-m-d H:m:s", strtotime("-7 day"));
+		$t_t = date("Y-m-d H:m:s", strtotime("-5 day"));
         $where = "
                   FROM ws_articles_sizes
-                 INNER JOIN ws_articles ON ws_articles_sizes.id_article = ws_articles.id
+                 JOIN ws_articles ON ws_articles_sizes.id_article = ws_articles.id
                   WHERE ws_articles_sizes.count > 0 
 				  AND ws_articles.active = 'y' 
-				  AND ws_articles.stock > 0  
-				  and ws_articles.category_id != 16
+				  AND ws_articles.stock not like '0'  
+				  and ws_articles.status = 3
                  ";
 
 
@@ -42,14 +42,15 @@ class Finder extends wsActiveRecord
        // $category_kids[] = $category_id;
 
         if ($category_id == 106) {
+		//$order_by = 'data_new DESC';
 		//$t = date("Y-m-d", strtotime("-6 day")); 
             $where .= " AND ws_articles.ctime > '$t_t' AND ws_articles.old_price = 0";
         } elseif($category_id == 1 and !isset($_COOKIE['s'])){
 		$category_id = 106;
-		$where .=" AND ws_articles.ctime > '$t_t' ";
+		$where .=" AND ws_articles.ctime > '$t_t' AND ws_articles.old_price = 0 ";
 		}elseif(isset($_COOKIE['s']) and $_COOKIE['s'] !='' and $category_id == 1){
 		$c_d = date('Y-m-d', strtotime(Shoparticles::decode($_COOKIE['s'], 'coderedua')));
-		$where .= ' AND `ws_articles`.`data_new` < "' . date('Y-m-d') . '" AND `ws_articles`.`data_new` >= "' .$c_d. '" ';
+		$where .= ' AND  `ws_articles`.`data_new` >= "' .$c_d. '" ';
 		//var_dump($c_d);
 		}elseif($category_id == 999){
 		$where .= ' AND `ws_articles`.`data_ucenki` > "' . date('Y-m-d 00:00:00').'" and `ws_articles`.`ucenka` > 20';
@@ -147,13 +148,14 @@ class Finder extends wsActiveRecord
     public static function getAllEnabledParametrs($search = '', $addtional = false, $category_id = false, $enable_all_child_categories = false)
     {
 	$t_f = date("Y-m-d 00:00:00"); 
-		$t_t = date("Y-m-d H:m:s", strtotime("-6 day"));
+		$t_t = date("Y-m-d H:m:s", strtotime("-5 day"));
         $where = "
                   FROM ws_articles_sizes
-                 INNER JOIN ws_articles ON ws_articles_sizes.id_article = ws_articles.id
+                  JOIN ws_articles ON ws_articles_sizes.id_article = ws_articles.id
                   WHERE ws_articles_sizes.count > 0 
 				  AND ws_articles.active = 'y'  
-				  and ws_articles.category_id != 16
+				  AND ws_articles.stock not like '0'  
+				  and ws_articles.status = 3
                  ";
 
 
@@ -162,11 +164,11 @@ class Finder extends wsActiveRecord
        // $category_kids[] = $category_id;
 
         if ($category_id == 106) {
-		$t = date("Y-m-d", strtotime("-6 day")); 
+		//$t = date("Y-m-d", strtotime("-6 day")); 
             $where .= " AND ws_articles.ctime > '$t_t' AND ws_articles.old_price = 0";
         } elseif($category_id == 1 and !isset($_COOKIE['s'])){
 		$category_id = 106;
-		$where .=" AND  ws_articles.ctime > '$t_t' ";
+		$where .=" AND  ws_articles.ctime > '$t_t'  AND ws_articles.old_price = 0";
 		}elseif(isset($_COOKIE['s']) and $_COOKIE['s'] !='' and $category_id == 1){
 		$c_d = date('Y-m-d', strtotime(Shoparticles::decode($_COOKIE['s'], 'coderedua')));
 		$where .= ' AND `ws_articles`.`data_new` < "' . date('Y-m-d') . '" AND `ws_articles`.`data_new` >= "' .$c_d. '" ';
@@ -199,48 +201,8 @@ class Finder extends wsActiveRecord
         }
 
         if (count(@$addtional['categories'])) {
-
-       /*     if ($enable_all_child_categories) {
-                $zz = '
-                (
-                 id IN (' . implode(',', $addtional['categories']) . ')
-
-                )';
-                //OR parent_id IN ('.implode(',', $addtional['categories']).')
-
-                $get_childs = wsActiveRecord::useStatic('Shopcategories')->findAll(array($zz));
-                $solyamka = array();
-                //sorry...shame on me...
-                foreach ($get_childs as $gc) {
-                    $category = new Shopcategories($gc->getId());
-                    $category_kids = $category->getKidsIds();
-                    $parents = $category->getParents();
-                    if (count($category_kids)) {
-                        foreach ($category_kids as $cat_ids) {
-                            $solyamka[] = array('id' => $cat_ids,
-                                'name' => ''
-                            );
-                        }
-                    }
-                    //sorry...shame on me...
-                    if (count($parents)) {
-                        foreach ($parents as $cat_ids) {
-                            $category = new Shopcategories($cat_ids->getId());
-                            $category_kids = $category->getKidsIds();
-                            if (count($category_kids)) {
-                                foreach ($category_kids as $cat_ids) {
-                                    $solyamka[] = array('id' => $cat_ids,
-                                        'name' => ''
-                                    );
-                                }
-                            }
-                        }
-                    }
-                }
-            }*/
 			$where .= ' AND ( ws_articles.category_id IN (' . implode(',', $addtional['categories']) . ') OR ws_articles.dop_cat_id IN (' . implode(',', $addtional['categories']) . '))';
         }
-
 
         if (count(@$addtional['colors'])) {
             $where .= ' AND ws_articles_sizes.id_color IN (' . implode(',', $addtional['colors']) . ')';
@@ -268,110 +230,97 @@ class Finder extends wsActiveRecord
         }
 
         //Categories
-        $arr = array();
-        $categories = 'SELECT ws_articles.category_id, COUNT( DISTINCT (`ws_articles`.`id`) ) AS cnt ' . $where;
-        $categories = wsActiveRecord::useStatic('Shoparticles')->findByQuery($categories.' group by ws_articles.category_id');
-        foreach ($categories as $cat) {
-            $arr[$cat->getCnt()] = $cat->getCategoryId();
-        }
-        $categories = wsActiveRecord::useStatic('Shopcategories')->findAll(array('id IN (' . implode(',', $arr) . ')'), array('name' => 'asc'));
+        $categories = 'SELECT ws_articles.category_id, COUNT( DISTINCT (`ws_articles`.`id`) ) AS cnt ' . $where.' group by ws_articles.category_id order by ws_articles.category_id';
+        $categories = wsActiveRecord::useStatic('Shoparticles')->findByQuery($categories);
         //convert to array
         $array = array();
         foreach ($categories as $cat) {
-            $parent = $cat->getParent();
-            $parent_name = '';
-            if ($parent) {
-                $parent_name = $parent->getName();
-            }
-
-            if (in_array($category_id, array(106, 85, '', 299, 300, 301, 302, 303, 11))) {
-                $array[] = array(
-                    'id' => $cat->getId(),
-                    'name' => $cat->getName(),
-                    'parent' => $parent_name, 
-					'count' => array_search($cat->getId(), $arr)
+		
+            if (in_array($category_id, array(106, 85, 299, 300, 301, 302, 303, 11))){
+			
+              //  $array[$cat->category_id]['id'] = $cat->category_id;
+				//$array[$cat->category_id]['name'] =$cat->category->getName();
+				//$array[$cat->category_id]['parent'] =$cat->category->getRoutezGolovna();
+				//$array[$cat->category_id]['count'] = $cat->cnt;
+				
+				$array[] = array(
+                    'id' => $cat->category_id,
+                    'name' => $cat->category->getName(),
+                    'parent' => $cat->category->getRoutezGolovna(), 
+					'count' => $cat->cnt
                 );
-            } else {
+            }else{
+			
+			//$array[$cat->category_id]['id'] = $cat->category_id;
+			//	$array[$cat->category_id]['name'] =$cat->category->getName();
+			//	$array[$cat->category_id]['parent'] ='';
+			//	$array[$cat->category_id]['count'] = $cat->cnt;
+				
                 $array[] = array(
-                    'id' => $cat->getId(),
-                    'name' => $cat->getName(),
+                    'id' => $cat->category_id,
+                    'name' => $cat->category->getName(),
                     'parent' => '',
-					'count' => array_search($cat->getId(), $arr)
+					'count' => $cat->cnt
                 );
             }
 
         }
+		//$array = array();
+		//sort($array);
+		//d($array, true);
+		
+		
         $categories = $array;
 
         //Colors
         $arr = array();
-        $colors = 'SELECT ws_articles_sizes.id_color, COUNT( DISTINCT (`ws_articles`.`id`) ) AS cnt ' . $where;
-        $colors = wsActiveRecord::useStatic('Shoparticles')->findByQuery($colors.' group by ws_articles_sizes.id_color');
-
+		$array = array();
+        $colors = 'SELECT  ws_articles_sizes.id_color, COUNT( DISTINCT (ws_articles_sizes.id_article) ) AS ctn ' . $where.' group by ws_articles_sizes.id_color';
+		//d($colors, true);
+        $colors = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery($colors);
+		
         foreach ($colors as $col) {
-            $arr[$col->getCnt()] = $col->getIdColor();
-        }
-        $colors = wsActiveRecord::useStatic('Shoparticlescolor')->findAll(array('id IN (' . implode(',', $arr) . ')'), array('name' => 'asc'));
-        $array = array();
-        foreach ($colors as $col) {
-            $array[] = array(
-                'id' => $col->getId(),
-                'name' => $col->getName(),
-				'count' => array_search($col->getId(), $arr)
+		$array[] = array(
+                'id' => $col->id_color,
+                'name' => $col->color->name,
+				'count' => $col->getCtn(),
             );
         }
         $colors = $array;
+		
         //Sizes
-        $arr = array();
-		$list = array();
-        $sizes = 'SELECT ws_articles_sizes.id_size, COUNT( DISTINCT (`ws_articles`.`id`) ) AS cnt ' . $where;
-        $sizes = wsActiveRecord::useStatic('Shoparticles')->findByQuery($sizes.' group by ws_articles_sizes.id_size ');
-
-        foreach ($sizes as $size) {
-		$list[] = $size->getIdSize();
-            $arr[$size->getIdSize()] = $size->getCnt();
-        }
-        $sizes = wsActiveRecord::useStatic('Size')->findAll(array('id IN (' . implode(',', $list) . ')'));
         $array = array();
-        $sizes_categories = array();
+        $sizes = 'SELECT ws_articles_sizes.id_size, COUNT( DISTINCT (ws_articles_sizes.id_article) ) AS ctn ' . $where.' group by ws_articles_sizes.id_size';
+		
+        $sizes = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery($sizes);
         foreach ($sizes as $size) {
-            $category =  $size->getCategoryId(); //$size->getCategory() ? $size->getCategory()->getName() : $size->getCategory();
-            $sizes_categories[$category][] = array(
-                'id' => $size->getId(),
-                'name' => $size->getSize(),
-				'count' => $arr[$size->getId()]//array_search($size->getId(), $arr)
-            );
-
-            $array[] = array(
-                'id' => $size->getId(),
-                'name' => $size->getSize(),
-				'count' => $arr[$size->getId()]
+			 $array[] = array(
+                'id' => $size->id_size,
+                'name' => $size->size->getSize(),
+				'count' =>$size->getCtn()
 				
             );
         }
         $sizes = $array;
+		
         //Label
-        $arr = array();
-        $labels = 'SELECT label_id, COUNT( DISTINCT (`ws_articles`.`id`) ) AS cnt ' . $where;
-        $labels = wsActiveRecord::useStatic('Shoparticles')->findByQuery($labels.' group by label_id');
+        $labels = 'SELECT ws_articles.label_id, COUNT( DISTINCT (ws_articles_sizes.id_article) ) AS ctn ' . $where.' and ws_articles.label_id !=0 group by label_id';
+        $labels = wsActiveRecord::useStatic('Shoparticles')->findByQuery($labels);
+		$array = array();
         foreach ($labels as $lab) {
-            $arr[$lab->getCnt()] = $lab->getLabelId();
-        }
-        $labels = wsActiveRecord::useStatic('Shoparticleslabel')->findAll(array('id IN (' . implode(',', $arr) . ')'));
-        $array = array();
-        foreach ($labels as $lab) {
-            $array[] = array(
-                'id' => $lab->getId(),
-                'name' => $lab->getName(),
-				'count' => array_search($lab->getId(), $arr)
+		 $array[] = array(
+                'id' => $lab->label_id,
+                'name' => $lab->label->name,
+				'count' => $lab->ctn
             );
         }
+
         $labels = $array;
         //Brand
 
         $array = array();
-        $brands = 'SELECT brand_id, brand, COUNT( DISTINCT (`ws_articles`.`id`) ) AS cnt ' . $where;
-        $brands = wsActiveRecord::useStatic('Shoparticles')->findByQuery($brands . ' group by brand_id ORDER BY brand ');
+        $brands = 'SELECT brand_id, brand, COUNT( DISTINCT (`ws_articles`.`id`) ) AS cnt '. $where.' group by brand_id ORDER BY brand ';
+        $brands = wsActiveRecord::useStatic('Shoparticles')->findByQuery($brands);
         $i = 0;
         foreach ($brands as $brand) {
             $array[] = array(
@@ -398,14 +347,14 @@ class Finder extends wsActiveRecord
 		
 		//Sezon
 		$array = array();
-		$sezons = 'SELECT `ws_articles`.`sezon`, COUNT( DISTINCT (`ws_articles`.`id`) ) AS cnt ' . $where;
-        $sezons = wsActiveRecord::useStatic('Shoparticles')->findByQuery($sezons.'AND  `ws_articles`.`sezon` IS NOT NULL GROUP BY  `ws_articles`.`sezon`');
-        $i = 0;
+		$sezons = 'SELECT `ws_articles`.`sezon`, COUNT( DISTINCT (`ws_articles`.`id`) ) AS ctn ' . $where.' AND  `ws_articles`.`sezon` IS NOT NULL GROUP BY  `ws_articles`.`sezon`';
+        $sezons = wsActiveRecord::useStatic('Shoparticles')->findByQuery($sezons);
         foreach ($sezons as $sez) {
 		if($sez->getSezon() > 0){
             $array[] = array(
-			'id' => $sez->getSezon(),
-			'count' =>  $sez->getCnt()
+			'id' => $sez->sezon,
+			'name' => $sez->name_sezon->name,
+			'count' =>  $sez->ctn
 			);
 			}
         }
@@ -414,7 +363,6 @@ class Finder extends wsActiveRecord
 		$array = array();
 		$ucenka = 'SELECT `ws_articles`.`ucenka`, COUNT( DISTINCT (`ws_articles`.`id`) ) AS cnt ' . $where;
         $ucenka = wsActiveRecord::useStatic('Shoparticles')->findByQuery($ucenka.' and `ws_articles`.`ucenka` != 0 GROUP BY  `ws_articles`.`ucenka`');
-        $i = 0;
         foreach ($ucenka as $uc) {
 		if($uc->getCnt() > 0){
             $array[] = array(
@@ -431,10 +379,10 @@ class Finder extends wsActiveRecord
             'labels' => $labels,
             'brands' => $brands,
            // 'models' => $models,
-            'sizes' => $sizes,
+           'sizes' => $sizes,
 			'sezons' => $sezons,
 			'skidka' => $ucenka,
-            'sizes_categories' => $sizes_categories
+           // 'sizes_categories' => $sizes_categories
         );
 		
         //die($where);

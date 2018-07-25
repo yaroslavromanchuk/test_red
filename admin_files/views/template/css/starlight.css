@@ -2956,7 +2956,7 @@ tbody.collapse.show {
   border-radius: 3px;
 }
 .custom-file-control:lang(en):empty::after {
-  content: "Choose file...";
+  content: "Выбрать файл...";
 }
 .custom-file-control::before {
   position: absolute;
@@ -2974,7 +2974,7 @@ tbody.collapse.show {
   border-radius: 0 3px 3px 0;
 }
 .custom-file-control:lang(en)::before {
-  content: "Browse";
+  content: "Открыть";
 }
 
 .nav {
@@ -12281,7 +12281,7 @@ textarea.parsley-success:focus {
 }
 
 .sl-breadcrumb {
-  height: 60px;
+  height: 45px;
   border-radius: 0;
   display: flex;
   align-items: center;
@@ -56743,3 +56743,11 @@ margin: 5px;
     width: 24px;
     cursor: pointer;
 }
+.w50{max-width: 50px;}
+.w100{max-width: 100px;}
+.w150{max-width: 150px;}
+.w200{max-width: 200px;}
+.w300{max-width: 300px;}
+.w400{max-width: 400px;}
+.w500{max-width: 500px;}
+.w600{max-width: 600px;}

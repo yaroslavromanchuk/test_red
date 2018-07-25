@@ -111,8 +111,11 @@ $( document ).ready(function() {
         <tr>
             <td class="kolom1">Ссылка для статистики<br/>
             	http://www.red.ua/?</td>
-            <td><input name="extra_url" type="text" class="formfields" id="paginatitle"
-                       value="<?php echo @$this->post->extra_url ? $this->post->extra_url : 'utm_source=shop_email&utm_medium=email&utm_content=Shop_Subscriber&utm_campaign=Shop_Subscriber'; ?>"/></td>
+            <td><input name="extra_url" type="text" class="formfields" 
+                       value="<?php echo @$this->post->extra_url ? $this->post->extra_url : 'utm_source=shop_email_'.date('d.m.Y').'&utm_medium=email&utm_content=Shop_Subscriber&utm_campaign=Shop_Subscriber'; ?>"/>
+					   <input name="unsubscribe" hidden type="text"  
+                       value="<?=@$this->post->unsubscribe ? $this->post->unsubscribe : '&utm_source=unsubscribe_'.date('d.m.Y').'&utm_medium=email&utm_content=Shop_Subscriber&utm_campaign=Shop_Subscriber'?>"/>
+					   </td>
         </tr>        
         <tr>
             <td class="kolom1">Баннеры и текст вначале<br><br>(размер изображения по ширине нужно устанавливать = 700)<br><br>(ссылки должны начинаться c http:// <br> все относительные ссылки будут идти от домена red.ua)</td>

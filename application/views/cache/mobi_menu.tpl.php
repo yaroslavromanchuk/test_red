@@ -57,6 +57,15 @@ $(".logo-red").toggleClass("opacity_logo_red");
 		</a>	
    </div>
 		</nav>
+		<?php if(Config::findByCode('new_grafik')->getValue()){ echo '<p style="
+    padding: 1px 5px;
+    text-align:  center;
+    color:  red;
+    margin-bottom: 0px;
+">'.Config::findByCode('new_grafik')->getValue().'</p>'; ?>
+		
+		
+		<?php } ?>
 <div class="back" style="
     z-index: 53;
 	height: 42px;
@@ -91,8 +100,12 @@ $(".logo-red").toggleClass("opacity_logo_red");
 			</div>
 						</li>
 						<li class="nav-item">
+		<a href="tel:+380442244000" class="d-block btn btn-light py-1 my-1 text-left"><span>+38(044) 224-40-00</span></a>
+		</li>
+						<li class="nav-item">
 						<a href="/" class="d-block btn btn-light py-1 my-1 text-left"><img src="/mobil/mimages/menu/home.png" alt="Главная"/><span><?=$this->trans->get('Главная');?></span></a>
 						</li>
+		
                 <?php  if (!$this->ws->getCustomer()->getIsLoggedIn()) { 
 			?>
 			<li class="nav-item">

@@ -11,30 +11,25 @@ class HomeController extends controllerAbstract {
 			$sq = "SELECT distinct(block), `red_home_blocks`.* from `red_home_blocks` where block in(1,2,4,5) and date <= '$today' ORDER BY  `red_home_blocks`.`sequence` ASC ";
 		$this->view->homeblock = wsActiveRecord::useStatic('HomeBlock')->findByQuery($sq);
 		
-        //$this->view->block1 = wsActiveRecord::useStatic('HomeBlock')->findAll(array("block = 1 and date <= '$today' "), array(), array(1));
-        //$this->view->block2 = wsActiveRecord::useStatic('HomeBlock')->findAll(array("block = 2 and date <= '$today' "), array(), array(1));
-          //$this->view->block3 = wsActiveRecord::useStatic('HomeBlock')->findAll(array('block'=>3));
-       // $this->view->block4 = wsActiveRecord::useStatic('HomeBlock')->findAll(array("block = 4 and date <= '$today' "), array(), array(1));
-        //$this->view->block5 = wsActiveRecord::useStatic('HomeBlock')->findAll(array("block = 5 and date <= '$today' "), array(), array(1));
         $this->view->block6 = wsActiveRecord::useStatic('HomeBlock')->findAll(array("block = 6 and date <= '$today' and ( '$today' <= exitdate or exitdate = '0000-00-00 00:00:00') "), array(), array(0, (int)Config::findByCode('baner_to_home')->getValue()));
 
 		//blog
 		$this->view->blog = wsActiveRecord::useStatic('Blog')->findAll(array('public = 1 and ctime < "'.date("Y-m-d H:i:s").'" '), array(), array(0, 3));
 		//blog
 		//topprodukt
-		$t_from = date("Y-m-d", strtotime("-1 day")); 
-		$t_to = date("Y-m-d", strtotime("-10 day"));		
-		$query = "SELECT `id`, `brand`, `price`, `model`, `image` FROM  ws_articles
+		//$t_from = date("Y-m-d", strtotime("-1 day")); 
+		//$t_to = date("Y-m-d", strtotime("-10 day"));		
+		$query = "SELECT * FROM  ws_articles
 					WHERE stock > 2
 					AND active = 'y'
+					and ws_articles.status = 3
 					AND category_id NOT IN(54, 55, 65, 71, 74, 84, 137, 138, 139, 152, 157, 158, 163, 249, 297,140,74,296,137)
 					AND dop_cat_id NOT IN (54, 55, 65, 71, 74, 84, 137, 138, 139, 152, 157, 158, 163, 249, 297,140,74,296,137)
-					and (`data_new`  <  '$t_from' and `data_new`  >  '$t_to' or get_now = 1)
-					ORDER BY views DESC LIMIT 0, 10";
+					ORDER BY ws_articles.views DESC  LIMIT 0, 10";
 					
-		$sql = "SELECT ws_articles.`id`, ws_articles.`brand`, ws_articles.`price`, ws_articles.`model`, ws_articles.`image` FROM  ws_articles
+		$sql = "SELECT ws_articles.* FROM  ws_articles
 			inner join ws_articles_top ON ws_articles.id = ws_articles_top.article_id
-					WHERE ws_articles.active = 'y' and ws_articles.stock > 0 and (ws_articles.`data_new`  <=  '$t_from' or get_now = 1) ORDER BY `ws_articles`.`views` DESC    LIMIT 0, 18";			
+					WHERE ws_articles.active = 'y' and ws_articles.stock > 2 and ws_articles.old_price = 0 and ws_articles.status = 3  ORDER BY ws_articles.views DESC   LIMIT 0, 18";			
 		$top = wsActiveRecord::useStatic('Shoparticles')->findByQuery($sql);
 		if($top->count() >= 10) {
 		$this->view->topproduct = $top;
@@ -45,9 +40,10 @@ class HomeController extends controllerAbstract {
 		
 	//topprodukt
 	//oneprodukt	
-		$query = "SELECT `id`, `brand`, `price`, `model`, `image` FROM  ws_articles
-					WHERE stock = 1
+		$query = "SELECT * FROM  ws_articles
+					WHERE stock like '1'
 					AND active = 'y'
+					and ws_articles.status = 3
 					AND category_id NOT IN(54, 55, 65, 71, 74, 84, 137, 138, 139, 152, 157, 158, 163, 249, 297,140,74,296,137)
 					AND dop_cat_id NOT IN (54, 55, 65, 71, 74, 84, 137, 138, 139, 152, 157, 158, 163, 249, 297,140,74,296,137)
 					ORDER BY views DESC LIMIT 0, 20";
@@ -93,9 +89,9 @@ $this->_global_template = 'mindex.php';
         JOIN ws_articles ON ws_articles_sizes.id_article = ws_articles.id
         WHERE ws_articles_sizes.count > 0
         AND ws_articles.active = "y"
-        AND ws_articles.stock > 0
+        AND ws_articles.stock not like "0"
+		AND ws_articles.status = 3
 		AND ws_articles.category_id = '.$m.'
-        AND (DATE_FORMAT(ws_articles.ctime,"%Y-%m-%d") < DATE_ADD(NOW(), INTERVAL -1 DAY) OR ws_articles.get_now = 1)
         ORDER BY RAND()  LIMIT 10 ');
 	}
 	return $articles;

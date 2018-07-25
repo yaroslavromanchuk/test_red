@@ -137,25 +137,29 @@
 	
 	   if(name.val() == "")
         {
-				$('#ms').html("<?=$this->trans->get("Пожалуйста, заполните поле Ваше имя")?>").fadeIn(100);
+				$('#ms').html("<?=$this->trans->get('Пожалуйста, заполните поле Ваше имя')?>").fadeIn(100);
 				name.addClass("red");
 				name.focus();
                 valid = false;
+				
         }else{ name.removeClass("red"); }
 
 	 if(middle_name.val() == "")
         {
-		$('#ms').html('<?=$this->trans->get('Пожалуйста, заполните поле Ваша фамилия')?>').fadeIn(100);
+		$('#ms').html("<?=$this->trans->get('Пожалуйста, заполните поле Ваша фамилия')?>").fadeIn(100);
 				middle_name.addClass("red");
 				middle_name.focus();
                 valid = false;
+				
         }else{ middle_name.removeClass("red");  }
+		
 		if(!isValidEmailAddress(email.val())){
 		$('#ms').html('<?=$this->trans->get('Пожалуйста, заполните коректно поле Email')?>').fadeIn(100);
 			 email.addClass("red");
 			email.focus();
 			 valid = false;
-		}else{ email.removeClass("red");}
+		
+		}else{ email.removeClass("red"); }
 		
 
 	phone = phone.replace(/[^0123456789]/g,'');
@@ -461,6 +465,7 @@ if(true){
 				</div>
 			</div>
 		</div>
+<p  class="alert alert-danger m_type" ><span style="font-size:  18px;font-weight:  bold;">Обратите внимание!</span><br>C 01.06.2018 для получения заказа в пункте самовывоза, его нужно оплатить в полном размере. За дополнительной информацией обращайтесь в Колл.центр (044) 224-40-00</p>
 <div class="col-xl-12 sv only_sv" id="pobedy" style="<?php if ($this->basket_contacts['delivery_type_id'] != 3) echo 'display: none;'; ?> " >
 			<div class="panel panel-default sv only_sv">
 				<div class="row panel-body" style="background: white;">
@@ -505,7 +510,7 @@ if(true){
 <div class="row form-group payment_panel" id="pay" style="display:none;">
 		<div class="col-xs-12 col-md-12 col-lg-12" >
 		<h3 align="center"><?=$this->trans->get('Выберите способ оплаты')?></h3>
-		<p  class="alert alert-danger" >По техническим причинам, онлайн оплаты временно недоступны.</p>
+		<!--<p  class="alert alert-danger" >Онлайн оплаты временно не доступны. Проводятся тестовые работы по настройте.</p>-->
 <?php if($this->ws->getCustomer()->isBlockNpN()) { ?>
 <p id="text_np" class="text_np alert alert-danger" style="display: none;"><?=$this->trans->get('В связи с нарушением условий оплаты заказов, наложенный платеж для Вас временно не доступен.<br>Вы можете оплачивать заказы мгновенно онлайн с помощью Visa MasterCard и Приват24.
 					<br>За детальной информацией обращайтесь в Call центр.<br>')?>
@@ -543,8 +548,8 @@ style="<?php if (!in_array($this->basket_contacts['delivery_type_id'], array(3,9
 						</label> 
 </li>
 <?php 
-if($this->ws->getCustomer()->getId() == 8005){
-//if(true){
+//if($this->ws->getCustomer()->getId() == 8005){
+if(false){
  ?>
 <li>
 <label id="l_o" class="btn btn-default k_p s_m_p s_p_p np_p up_p label_payment"  style="<?php
@@ -558,7 +563,10 @@ if($this->ws->getCustomer()->getId() == 8005){
 						</label>
 </li>
 <?php } ?>
-<!--
+<?php 
+//if($this->ws->getCustomer()->getId() == 8005){
+if(true){
+ ?>
 <li>
 <label id="l_vs" class="btn btn-default k_p s_m_p s_p_p np_p up_p label_payment"  style="<?php
 						if (!in_array($this->basket_contacts['delivery_type_id'], array(4, 8, 9, 5, 3)))
@@ -570,12 +578,9 @@ if($this->ws->getCustomer()->getId() == 8005){
 							</div>
 						</label>
 </li>
-
 <li>
 <label id="l_privat" class="btn btn-default k_p s_m_p s_p_p np_p up_p label_payment" style="<?php
-						if (!in_array($this->basket_contacts['delivery_type_id'], array(4, 8, 9, 5, 3)))
-							echo 'display: none;';
-					?>">
+						if (!in_array($this->basket_contacts['delivery_type_id'], array(4, 8, 9, 5, 3))) echo 'display: none;'; ?>">
 					<div class="media">
 					<input class="payment_method" hidden name="payment_method_id" id="payment_method_6" value="6" type="radio" autocomplete="on">
 					<img class="align-self-center mr-2"  src="/img/delivery/p24.png"/>
@@ -583,6 +588,7 @@ if($this->ws->getCustomer()->getId() == 8005){
 							</div>
 						</label>
 </li>
+<!--
 <li>
 <label id="l_wb" class="btn btn-default k_p s_m_p s_p_p np_p up_p label_payment"  style="<?php
 						if (!in_array($this->basket_contacts['delivery_type_id'], array(4, 8, 9, 5, 3)))
@@ -593,8 +599,8 @@ if($this->ws->getCustomer()->getId() == 8005){
 							<div class="media-body" >WebMoney</div>
 							</div>
 						</label>
-</li>
--->
+</li>-->
+<?php } ?>
 </ul>
 </div>
 	<!-- дополнительный текст о доставке-->

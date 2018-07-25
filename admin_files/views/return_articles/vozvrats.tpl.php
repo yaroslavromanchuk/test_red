@@ -1,6 +1,7 @@
 <img src="<?=SITE_URL.$this->getCurMenu()->getImage();?>" alt=""  class="page-img" />
 <h1><?=$this->getCurMenu()->getTitle();?></h1><br/>
 <form action="" method="get" id="myform">
+
 	<table style="width: 100%;" class="table">
 	<tr>
 	<th>Статус</th>
@@ -23,7 +24,7 @@
 </select>
 </td>
 	<td ><input type="text" style="width:75px;" value="<?php echo @$_GET['order']?>" autofocus class="form-control input" name="order" id="order"/></td>
-	<td><input type="text" style="width:120px;" value="<?php echo @$_GET['articul']?>" class="form-control input" name="articul"/></td>
+	<td><input type="text"  value="<?php echo @$_GET['articul']?>" class="form-control input" name="articul"/></td>
 	<td>
 	<select name="delivery" class="form-control input">
     <option value="">Все</option>
@@ -42,8 +43,8 @@ $owner = new Customer($m->admin_id);
 	<?php } ?>
 </select>
 </td>
-	<td><input type="date" style="width:120px;" value="<?php echo @$_GET['create_from']?>"  class="form-control input" name="create_from"/></td>
-	<td><input type="date" style="width:120px;" value="<?php echo @$_GET['create_to']?>" class="form-control input" name="create_to"/></td>
+	<td><input type="date"  value="<?php if(@$_GET['create_from']) echo date('Y-m-d', strtotime($_GET['create_from']));?>"  class="form-control input" name="create_from"/></td>
+	<td><input type="date"  value="<?php if(@$_GET['create_to']) echo date('Y-m-d', strtotime($_GET['create_to']));?>" class="form-control input" name="create_to"/></td>
 	<td>
 	<select name="deposit" class="form-control input">
     <option value="">Все</option>
@@ -53,6 +54,10 @@ $owner = new Customer($m->admin_id);
 </td>
 	</tr>
 	</table>
+	<div style="float: right;">
+<label for="nakladna">Номер накладной:</label>
+<input type="text" id="nakladna" name="nakladna" value="<?php if (isset($_GET['nakladna'])) echo$_GET['nakladna']; ?>" class="form-control input w100">
+<button onclick="$('#nakladna').val('');return false;" class="btn btn-primary pd-x-20">Завершить</button></div>
 	<button type="submit"   class="btn btn-default"><span style="font-weight: bold;font-size: 16px;"><i class="glyphicon glyphicon-search" aria-hidden="true"></i> Найти</span></button>
 
 </form>
@@ -61,26 +66,23 @@ if (@$this->getArticles()) {
 $deli = array(12 => 'Мишуга', 3 => 'Победа', 5 => 'Строителей');
 ?> 
 <script type="text/javascript">
-    var clik_ok = 0;
-    function chekAll() {
-        if (!clik_ok) {
-            $('.cheker').attr('checked', true);
-            clik_ok = 1;
-        } else {
-            $('.cheker').attr('checked', false);
-            clik_ok = 0;
+        function chekAll() {
+		if($('.chekAll').is(":checked")){
+		$('.cheker').prop('checked', true);
+		}else{
+		$('.cheker').prop('checked', false);
+		}
+            return false;
         }
-        return false;
-    }
 </script>
-<a href="#" onclick="chekAll(); return false;" style="display:inline-block;margin-right: 20px;float: left;">Отметить/Снять все</a>
-<img id="p_all" name="p_all" src="<?=SITE_URL?>/img/icons/check.png" style="width: 30px;padding: 2px;border: 1px solid red;border-radius: 5px; display:none;"  onclick="return pr(this);" alt="Принять"  class="img_return" data-placement="right"  data-tooltip="tooltip"  title="Принять отмеченый товар"/>
+<i class="icon ion-checkmark green tx-30 pd-5 mg-5" id="p_all" name="p_all"  onclick="return pr('p_all');" data-tooltip="tooltip" data-original-title="Принять отмеченый товар"></i>
 <?php if($this->user->getId()== 8005){ ?>
-<img src="<?=SITE_URL?>/img/icons/error.png" id="dell_all" name="dell_all" style="width: 30px;padding: 2px;border: 1px solid red;border-radius: 5px;" onclick="return dell(this);" alt="Удалить без возврата"  class="img_return" data-placement="right"  data-tooltip="tooltip"  title="Удалить без возврата" >
+<i class="icon ion-close red tx-30 pd-5"  id="dell_all" name="dell_all" onclick="return dell('dell_all');" data-tooltip="tooltip" data-original-title="Удалить без возврата на сайт"></i>
 <?php }?>
 <table cellspacing="0" cellpadding="4" id="orders" class="table table-hover" >
     <tr>
-        <th colspan="3">Действия</th>
+		<th><label class="ckbox" data-tooltip="tooltip" title="Выделить все товары"><input onchange="chekAll();" class="chekAll" type="checkbox"/><span></span></label></th>
+        <th>Действия</th>
         <th>Статус</th>
         <th>Заказ</th>
         <th>Артикул</th>
@@ -101,14 +103,20 @@ $deli = array(12 => 'Мишуга', 3 => 'Победа', 5 => 'Строител�
     ?>
     <tr class="<?=$row;?>" <?php if($order->deposit == 1) echo 'style="background: #11c118b5;"'; ?> id="<?=$order->getId();?>">
         <td>
-           <?php if($order->count > 0 and  $this->admin_rights['492']['right'] == 1) { ?> <input type="checkbox" class="order-item cheker" name="item_<?=$order->getId();?>"/><?php } ?>
+<?php if($order->count > 0 and  $this->admin_rights['492']['right'] == 1) { ?>
+ <label class="ckbox"><input type="checkbox" class="order-item cheker" name="item_<?=$order->getId()?>"/><span></span></label>
+ <?php } ?>
         </td>
-        <td class="kolomicon">
-		<?php if($order->count > 0 and  $this->admin_rights['492']['right'] == 1) { ?><img src="<?=SITE_URL?>/img/icons/check.png" name="<?=$order->getId();?>" onclick="return pr(this);" alt="Принять"   class="img_return" data-placement="bottom"  data-tooltip="tooltip"  title="Принять товар"/><?php } ?>
-		<?php if($order->count > 0 and  $this->admin_rights['493']['right'] == 1) { ?><img src="<?=SITE_URL;?>/img/icons/return_order.png" name="ret_<?=$order->getId();?>" onclick="return ret_ord(this);" alt="Вернуть"  class="img_return" data-placement="bottom"  data-tooltip="tooltip"  title="Вернуть товар в заказ"/><?php } ?>
-		</td>
-		<td class="kolomicon">		 
-		<?php if($order->count > 0 and  $this->admin_rights['492']['right'] == 1) { ?><img src="<?=SITE_URL;?>/img/icons/remove-small.png" name="<?=$order->getId();?>" onclick="return dell(this);" alt="Удалить без возврата"  class=" img_return" data-placement="bottom"  data-tooltip="tooltip"  title="Удалить без возврата на сайт"/><?php } ?>
+        <td>
+		<?php if($order->count > 0 and  $this->admin_rights['492']['right'] == 1) { ?>
+		<i class="icon ion-checkmark green tx-30 pd-5 mg-5"   onclick="return pr(<?=$order->getId()?>);" data-tooltip="tooltip" data-original-title="Принять товар"></i>
+		<?php } ?>
+		<?php if($order->count > 0 and  $this->admin_rights['493']['right'] == 1) { ?>
+		<i class="icon ion-refresh bleak tx-30 pd-5 mg-5"  name="ret_<?=$order->getId()?>" onclick="return ret_ord(<?=$order->getId()?>);" data-tooltip="tooltip" data-original-title="Вернуть товар в заказ"></i>
+		<?php } ?>		 
+		<?php if($order->count > 0 and  $this->admin_rights['492']['right'] == 1) { ?>
+		<i class="icon ion-close red tx-30 pd-5"   onclick="return dell(<?=$order->getId();?>);" data-tooltip="tooltip" data-original-title="Удалить без возврата на сайт"></i>
+		<?php } ?>
         </td>
         <td><?=$this->order_status[$order->status];?></td>
 		<td><a href="<?=$this->path;?>shop-orders/edit/id/<?=$order->order_id;?>/"><?=$order->order_id;?></a></td>
@@ -116,9 +124,7 @@ $deli = array(12 => 'Мишуга', 3 => 'Победа', 5 => 'Строител�
         <td><?=$order->title;?></td>
         <td><?=$order->count;?></td>
         <td><?=$order->price;?></td>
-        <td><?=$order->old_price;?>
-            <!--<b>Сумма: <?php //echo number_format($order->getVSum(), 2, ',', ''); ?></b>-->
-        </td>
+        <td><?=$order->old_price;?></td>
 		<td><?=$owner_add->middle_name;?></td>
         <td><?=$order->ctime;?></td>
 		<td><?=$owner_pr->middle_name;?></td>
@@ -172,32 +178,25 @@ $deli = array(12 => 'Мишуга', 3 => 'Победа', 5 => 'Строител�
         $paginator .= '&nbsp;<a href="' . $pager . ($this->page + 1) . $get . '">></a>&nbsp;<a href="' . $pager . $this->totalPages . $get . '">>></a>';
     }
     echo $paginator;
-
     ?><br/>
 Всего страниц: <?=$this->totalPages?>,  записей: <?=$this->count ?>
 <?php } else echo 'Нет записей'; ?>
 <script>
-
 var $i = 0;
 $('#order').keypress(function(e){
  //if(e.key == 'Enter')  $('#myform').submit(); 
  if($i == 6) {
- 
 	  $i = 0;
 	  console.log($("#order").val());
 	//$("#order").val('');
 	//$("#order").focus();
 	$('#myform').submit(); 
 	  } 
-	  
-
       e = e || event;
       if (e.ctrlKey || e.altKey || e.metaKey) return;
 	  if(e.which > 47 && e.which < 58 ){
 	  $i++;
 	 // console.log($i);
-	 
-	  
 	  return true;
 	  }else{
 	   return false;
@@ -208,9 +207,10 @@ $('#order').keypress(function(e){
 var ch = $('input:radio:checked').prop("checked");
 //return confirm('Удалить товар без возврата на склад? (товар не вернется на склад)');
 function pr(th){
-//alert(th.id);
- if ($('.order-item:checked').val() && th.name == 'p_all') {
+var nakladna = $('#nakladna').val();
+if(nakladna.length == 0){ alert('Введите номер накладной!'); return false;}
 
+ if ($('.order-item:checked').val() && th == 'p_all') {
                    var id = '';
                     i = 0;
                     jQuery.each($('.order-item:checked'), function () {
@@ -221,31 +221,23 @@ function pr(th){
                         }
                         i++;
                     });
-                }else if(th.name != 'p_all'){ var id = th.name; }
-
-//var dat = '&id='+th.name;
-var dat = '&id='+id;
-//alert(id);
-//var value = confirm("Принять?");
+                }else if(th != 'p_all'){ var id = th; }
+var dat = '&id='+id+'&nakladna='+nakladna;
 if(id){
 $.ajax({
-			beforeSend: function( data ) {
-			//console.log(dat);
-			fopen('Возвраты', '<img  id="loading" src="/img/loader-article.gif">');
-			},
+			beforeSend: function( data ) { fopen('Возвраты', '<img  id="loading" src="/img/loader-article.gif">'); },
 			type: "POST",
 			url: '/admin/vozvrats/',
 			dataType: 'json',
 			data: '&method=priyom'+dat,
 			success: function( data ) {
-			//console.log(data);
 			if(data.send == 1){
 			var t = '';
 			for (index = 0; index < data.text.length; ++index) {
 			t +=data.text[index]+'<br>';
 			}
 			//console.log(data);
-			$('#'+th.name).hide();
+			$('#'+th).hide();
 			//fopen('Возвраты', t);
 			//setTimeout(FormClose, 700);
 			}
@@ -266,51 +258,35 @@ $.ajax({
 			FormClose();
 			$("#order").val('');
 			$("#order").focus();
-			//$('#save').attr('value', 'Создать');
 			},
-			error: function( e ) {
-			//console.log(e);
-			fopen('Ощибка', 'Что-то пошло нетак! Заказ не добавлен, внесите изменения и попробуйте снова!');
-			//alert('Что-то пошло нетак! Заказ не добавлен, внесите изменения и попробуйте снова!');
-			}
+			error: function( e ) { fopen('Ощибка', 'Что-то пошло нетак! Заказ не добавлен, внесите изменения и попробуйте снова!');}
 		});
 }else{
 fopen('Ощибка', 'Вы не выбрали товары который нужно принять!');
-//setTimeout(FormClose, 700);
 }
 return false;
 }
 
 function ret_ord(th){
-var dat = '&id='+th.name.substr(4);
+var dat = '&id='+th;
 var value = prompt("Введите причину возврата товара в заказ: ", '');
 if(value === null) return false;
 if(value === '') return false;
-if(value.length > 1){
-		dat +='&mes='+value;
 
+if(value.length > 1){
+dat +='&mes='+value;
 $.ajax({
-			beforeSend: function( data ) {
-			fopen('Загрузка', '<img  id="loading" src="/img/loader-article.gif">');
-			},
+			beforeSend: function( data ) { fopen('Загрузка', '<img  id="loading" src="/img/loader-article.gif">'); },
 			type: "POST",
 			url: '/admin/vozvrats/',
 			dataType: 'json',
 			data: '&method=return_order'+dat,
 			success: function( data ) {
 			console.log(data);
-			if(data.send == 1){
-			$('#'+th.name).hide();
+			if(data.send == 1){ $('#'+th).hide(); }
 			fopen('Возвращение товара', data.text+' ( '+data.ss+' )');
-			}else{
-			fopen('Возвращение товара', data.text+' ( '+data.ss+' )');
-			}
-			},
-			complete: function( data ) {
-			//$('#save').attr('value', 'Создать');
 			},
 			error: function( e ) {
-			//console.log(e);
 			fopen('Ошибка', 'Что-то пошло нетак! Заказ не добавлен, внесите изменения и попробуйте снова!');
 			}
 		});
@@ -318,8 +294,9 @@ $.ajax({
 return false;
 }	
 function dell(th){
- if ($('.order-item:checked').val() && th.name == 'dell_all') {
-
+var nakladna = $('#nakladna').val();
+if(nakladna.length == 0){ alert('Введите номер накладной!'); return false; }
+if ($('.order-item:checked').val() && th == 'dell_all') {
                    var id = '';
                     i = 0;
                     jQuery.each($('.order-item:checked'), function () {
@@ -330,21 +307,18 @@ function dell(th){
                         }
                         i++;
                     });
-                }else if(th.name != 'dell_all'){ var id = th.name; }
+                }else if(th != 'dell_all'){ var id = th; }
 
-//var dat = '&id='+th.name;
-var dat = '&id='+id;
+var dat = '&id='+id+'&nakladna='+nakladna;
 
 //var value = prompt("Введите причину удаления товара: ", '');
 //if(value === null) return false;
 //if(value === '') return false;
 //if(value.length > 1){
 	//	dat +='&mes='+value;
-	if(id){
-
+if(id){
 $.ajax({
 			beforeSend: function( data ) {
-			//console.log(dat);
 			fopen('Удаление товара','<img  id="loading" src="/img/loader-article.gif">');
 			},
 			type: "POST",
@@ -352,19 +326,10 @@ $.ajax({
 			dataType: 'json',
 			data: '&method=deleteshop'+dat,
 			success: function( data ) {
-			//console.log(data);
-			if(data.send == 1){
-			$('#'+th.name).hide();
+			if(data.send == 1){ $('#'+th).hide(); }
 			fopen('Удаление товара',data.text+' ( '+data.ss+' )');
-			}else{
-			fopen('Удаление товара',data.text+' ( '+data.ss+' )');
-			}
-			},
-			complete: function( data ) {
-			//$('#save').attr('value', 'Создать');
 			},
 			error: function( e ) {
-			//console.log(e);
 			fopen('Ошибка', 'Что-то пошло нетак! Заказ не добавлен, внесите изменения и попробуйте снова!');
 			}
 		});

@@ -1,17 +1,20 @@
 <!DOCTYPE html">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
 <head>
 	<meta name="robot" content="no-index,no-follow"/>
-	<meta name="author" content="Internet solution for business"/>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title><?php echo ($this->getCurMenu()->getTitle()) ? $this->getCurMenu()->getTitle() : 'Система Управления Сайтом '.$this->website->getSite()->getName();?></title>
-	<link rel="stylesheet" type="text/css" href="<?=$this->files?>css/bs/css/bootstrap.css?v=1.0"/>
-	<link rel="stylesheet" type="text/css" href="<?=$this->files?>css/bs/css/bootstrap-select.css?v=1.0"/>
-	<link rel="stylesheet" href="<?=$this->files?>css/layout.css?v=1.8" type="text/css" media="screen"/>
-	<link href="<?=$this->files?>css/Ionicons/css/ionicons.css" rel="stylesheet">
+
+	<link rel="stylesheet" type="text/css" href="<?=$this->files?>css/bs/css/bootstrap.css?v=1.1">
+	<!--<link rel="stylesheet" type="text/css" href="<?=$this->files?>css/bs/css/bootstrap-select.css?v=1.0">-->
+	<link rel="stylesheet" type="text/css" href="<?=$this->files?>css/layout.css?v=1.9">
+	<link rel="stylesheet" type="text/css" href="<?=$this->files?>css/Ionicons/css/ionicons.css">
+	<!--
+	<link href="<?=$this->files?>css/font-awesome/css/font-awesome.css" rel="stylesheet">-->
 	 
 	
-		<script  type="text/javascript"  src="<?=$this->files?>scripts/jquery.js" charset="utf-8"></script>
+<script  type="text/javascript"  src="<?=$this->files?>scripts/jquery.js"></script>
+
 		
 	 
 </head>
@@ -21,7 +24,7 @@ $days = array( 1 => 'Понедельник' , 'Вторник' , 'Среда' ,
  if($this->user->getId() == 8005){
 //echo $this->files;
 } ?>
-<?php if(in_array($this->user->getId(), array(27391,6741,25129,22609,34608,28767,26187,8985,7668,73412993,1,8005))) echo $this->render('poll/poll_box.tpl.php');
+<?php //if(in_array($this->user->getId(), array(27391,6741,25129,22609,34608,28767,26187,8985,7668,73412993,1,8005))) echo $this->render('poll/poll_box.tpl.php');
 //array(33929,22832,31748,29397,24148,22699,8005,24150)
 ?>
 <?php
@@ -139,11 +142,6 @@ if($menu->getSection() != 5) continue;
 	<img src="<?=$this->user->getLogo() ? $this->user->getLogo() : Config::findByCode('admin_logo_folder')->getValue().'error.png'?>" class="wd-32 rounded-circle" style="width: 30px;vertical-align: middle;border-style: none; border-radius: 50%;" alt=""></div>
 <div style="clear: both;"></div>
 </div>
-<!--
-<div class="lng" style="top: 15px;position: absolute; <?php if($this->user->getId() == 8005 or $this->user->getId() == 1){ echo 'display: block;';}else{ echo 'display:none;';}?>right: 15px;">
-<img style="width: 30px;<?php if(!@$_SESSION['lang'] or $_SESSION['lang'] == 'ru') {echo 'opacity: 0.5;';}else{ echo 'cursor: pointer;';}?>"  name="ru" src="/img/ru.png" onclick="setUk(this);"> 
-<img style="width: 30px; <?php if($_SESSION['lang'] == 'uk'){ echo 'opacity: 0.5;';}else{ echo 'cursor: pointer;';} ?>" name="uk" src="/img/uk.png" onclick="setUk(this);">  
-</div>-->
 </div>
 <?=$this->message;?>
 <div id="content"><?=$this->render($this->middle_template);?></div>
@@ -152,8 +150,11 @@ if($menu->getSection() != 5) continue;
 </div>
 <!--end container -->
 <p id="back-top"><a href="#top"><span></span></a></p>
+
 <script  type="text/javascript"  src="<?=$this->files?>css/bs/js/bootstrap.min.js"></script>
-		<script  type="text/javascript"  src="<?=$this->files?>css/bs/js/bootstrap-select.js"></script>
+
+<!--<script  type="text/javascript"  src="<?=$this->files?>css/bs/js/bootstrap-select.js"></script>-->
+<!--<script  type="text/javascript"  src="<?=$this->files?>css/bs/js/jquery-ui.js"></script>-->
 <script>
 $(document).ready(function(){
 $("[data-tooltip='tooltip']").tooltip();

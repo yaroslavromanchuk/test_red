@@ -2,7 +2,7 @@
 class OrderHistory extends wsActiveRecord
 {
     protected $_table = 'order_history';
-    protected $_orderby = array('ctime' => 'DESC');
+    protected $_orderby = array('id' => 'DESC');
 
     protected function _defineRelations()
     {
@@ -87,6 +87,45 @@ class OrderHistory extends wsActiveRecord
         $history->setName($name);
         $history->setInfo($text);
         $history->setArticleId($article_id);
+        $history->save();
+        return true;
+    }
+	static function newOrder($customer, $order, $sum_order = 0, $count_order = 0)
+    {
+        $history = new OrderHistory();
+        $history->setCustomerId($customer);
+        $history->setOrderId($order);
+        $history->setName('Заказ оформлен');
+       // $history->setInfo($text);
+        //$history->setArticleId($article_id);
+		$history->setSumOrder($sum_order);
+		$history->setCountArticle($count_order);
+        $history->save();
+        return true;
+    }
+	static function cancelOrder($customer, $order, $sum_order = 0, $count_order = 0)
+    {
+        $history = new OrderHistory();
+        $history->setCustomerId($customer);
+        $history->setOrderId($order);
+        $history->setName('Отмена заказа');
+       // $history->setInfo($text);
+        //$history->setArticleId($article_id);
+		$history->setSumOrder($sum_order);
+		$history->setCountArticle($count_order);
+        $history->save();
+        return true;
+    }
+	static function returnOrder($customer, $order, $sum_order = 0, $count_order = 0)
+    {
+        $history = new OrderHistory();
+        $history->setCustomerId($customer);
+        $history->setOrderId($order);
+        $history->setName('Отмена заказа');
+       // $history->setInfo($text);
+        //$history->setArticleId($article_id);
+		$history->setSumOrder($sum_order);
+		$history->setCountArticle($count_order);
         $history->save();
         return true;
     }

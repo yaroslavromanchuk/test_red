@@ -9,9 +9,9 @@ $desctop = false;
 $(function(){
 $(".zxz_post p img").each(function() {
 var img = this;
-$(this).replaceWith('<a href="'+img.src+'"><img src="'+img.src+'" width="50%"></a>');
-});
-$(".zxz_post p a").lightBox({
+$(this).replaceWith('<a href="'+img.src+'" class="im"><img src="'+img.src+'" width="50%"></a>');
+});	
+$(".zxz_post p a.im").lightBox({
   //  overlayBgColor: '#FFF',
   fixedNavigation: true,
     overlayOpacity: 0.6,
@@ -26,9 +26,8 @@ $(".zxz_post p a").lightBox({
 	keyToPrev: 'Назад',
 	keyToNext: 'Далее'
    });
-
-	
 });
+
 </script>
 <div class="row mx-0">
 <div class="col-lg-2 col-xl-2 d-none d-lg-block d-xl-block">
@@ -66,10 +65,9 @@ $(".zxz_post p a").lightBox({
 				<span style="color: darkgrey;font-size: 12px;margin-left: 1%;margin-right: 1%;"><?=$value->getAutor();?></span>
 			</div> 
 			<div class="col-md-12 m-2 zxz_post">
-				<?php echo $value->getContentPost(); ?>
+				<?=$value->getContentPost()?>
 			</div>
 <?php if(@$this->onepostblog){?></br><div class="fb-like" data-href="https://<?=$_SERVER['HTTP_HOST'].'/blog/id/' .$value->getId();?>" data-layout="button" data-action="like" data-show-faces="true" data-share="true"></div><?php } ?>
-
 			<?php } ?>
 	</div>
 </div>			
@@ -84,13 +82,16 @@ $(".zxz_post p a").lightBox({
 </div>			
 </div>
 <script>
-
 (function(d, s, id) {
+console.log(d);
+console.log(s);
+console.log(id);
                 var js, fjs = d.getElementsByTagName(s)[0];
+				console.log(fjs);
                 if (d.getElementById(id)) return;
                 js = d.createElement(s);
                 js.id = id;
                 js.src = "//connect.facebook.net/ru_RU/all.js#xfbml=1";
                 fjs.parentNode.insertBefore(js, fjs);
             }(document, 'script', 'facebook-jssdk'));
-			</script>
+</script>

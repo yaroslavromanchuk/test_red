@@ -3,6 +3,7 @@
 <?php
 $text = explode(',', $this->trans->get('цвет,размер,количество,цена,всего,продолжить покупки,оформить заказ'));
 	$status = explode(',', $this->trans->get('new,processing,canceled,ready_shop,ready_post'));
+	$status[100] = $this->trans->get('new');
 	$order_sa = $this->trans->get('Заказ за');
 	$st = $this->trans->get('Статус заказа');
 	foreach ($this->orders as $order) {
@@ -14,7 +15,7 @@ $text = explode(',', $this->trans->get('цвет,размер,количеств
 <b><?php if(in_array($order->status, array(15, 16, 9))){ echo $status[9]; }else{ echo $status[$order->status]; } ?></b>
 </h5>
 <?php
-	if (in_array($order->status, array(0, 1, 9, 11, 10)) and false) { ?>
+	if (in_array($order->status, array(100, 1, 9, 11, 10)) and false) { ?>
 <a href="/account/orderhistory/?deleteorder=<?php echo $order->getId(); ?>">Отменить заказ</a><?php }
 	$t_price = 0.00;
 	$t_count = 0;
@@ -158,6 +159,14 @@ echo '<span style="text-decoration: line-through;color: #666;font-weight: normal
 	  </b>
 			</td>
         </tr>
+		<?php if($order->payment_method_id == 4 or $order->payment_method_id == 6){ ?>
+		<td colspan="4" class="text-left">
+		<b><?=$this->trans->get('Статус оплаты')?>: </b>
+		</td>
+		<td>
+		<?=$order->liqpay_status->name?>
+		</td>
+		<?php } ?>
 				<?php if($order->payment_method_id == 7){ ?>
 		<tr>
 		<td colspan="4" class="text-left">

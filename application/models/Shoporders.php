@@ -87,7 +87,7 @@ class Shoporders extends wsActiveRecord
         $articles = $this->getArticles();
         if ($articles->count())
             foreach ($articles as $article){
-             if($article->getCount() > 0) $total += $article->getCount();
+             if($article->getCount() > 0) $total++;
 				}
         return $total;
     }
@@ -174,7 +174,7 @@ class Shoporders extends wsActiveRecord
 				JOIN ws_orders
 				ON ws_order_articles.order_id = ws_orders.id
 			WHERE
-				ws_orders.status in(0,1,3,4,6,8,9,10,11,13,14,15,16)
+				ws_orders.status in(1,3,4,6,8,9,10,11,13,14,15,16,100)
 				AND ws_orders.id <= '.$this->getId().'
 				AND ws_orders.customer_id = '.$this->getCustomerId())->at(0)->getSumAmount();
     }
@@ -241,6 +241,8 @@ class Shoporders extends wsActiveRecord
 
     public function getPriceWithSkidka()
     {
+		//$this->getOneOneThree();// акция 1+1=3
+		
         $to_pay = 0;
         foreach ($this->getArticles() as $article_rec) {
 		if($article_rec->getCount() > 0){
@@ -250,6 +252,52 @@ class Shoporders extends wsActiveRecord
         }
         return $to_pay;
     }
+	
+	public function getOneOneThree(){ // акция 1+1=3
+	
+	if($this->getArticlesCount() >= 3){
+	$mas = array();
+	$min = array();
+	foreach ($this->getArticles() as $art) {
+	if(($art->getArticleDb()->getCategoryId() == 117 or $art->getArticleDb()->getCategoryId() == 70) and $art->getCount() > 0){
+	$mas[$art->getId().'_'.$art->getArtikul()] = $art->getPrice();
+	}
+	$art->setOptionId(0);
+	$art->save();
+	}
+	$resul = count($mas);
+	//d($mas, false);
+	if($resul >=3 and $resul < 6 ){
+	$m1 = array_keys($mas, min($mas))[0];
+		$min[] = $m1;
+	}elseif($resul >=6 and $resul < 9){
+	$m1 = array_keys($mas, min($mas))[0];
+	$min[] = $m1;
+	 unset($mas[$m1]);
+	 $m2 = array_keys($mas, min($mas))[0];
+	 $min[] = $m2;
+	}
+	
+	if(count($min) > 0){
+	//d($min, false);
+	foreach ($this->getArticles() as $ar) {
+	if(in_array($ar->getId().'_'.$ar->getArtikul(), $min)) {
+	$ar->setOptionId(1);
+	$ar->save();
+	}
+	}
+	
+	}
+	}else{
+	foreach ($this->getArticles() as $art) {
+	$art->setOptionId(0);
+	$art->save();
+	}
+	}
+
+	
+	
+	}
 
     public function calculateOrderPrice($use_deposit = true, $use_format = true, $delivery = true, $bonus = false)
     {
@@ -274,8 +322,8 @@ class Shoporders extends wsActiveRecord
 		$price_2 = round($price_2, 2);
 		
 		if ($price_2 != $this->getAmount()){
-		d($price_2, false);
-		d((float)$this->getAmount(), false);
+		//d($price_2, false);
+		//d((float)$this->getAmount(), false);
 			$this->save();
 		}
 		 

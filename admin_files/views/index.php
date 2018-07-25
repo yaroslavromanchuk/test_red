@@ -19,10 +19,13 @@
 	
 	 <link href="<?=$this->files?>views/template/lib/highlightjs/github.css" rel="stylesheet">
    <!-- <link href="<?=$this->files?>views/template/lib/rickshaw/rickshaw.min.css" rel="stylesheet">-->
+   <link href="<?=$this->files?>views/template/lib/datatables/jquery.dataTables.css" rel="stylesheet">
 	<link href="<?=$this->files?>views/template/lib/select2/css/select2.min.css" rel="stylesheet">
 	<link href="<?=$this->files?>views/template/lib/spectrum/spectrum.css" rel="stylesheet">
 	
 	<link href="<?=$this->files?>views/template/lib/morris.js/morris.css" rel="stylesheet">
+	
+	 <link href="<?=$this->files?>views/template/lib/jquery.steps/jquery.steps.css" rel="stylesheet">
     <!-- Starlight CSS -->
 	<link rel="stylesheet" href="<?=$this->files?>views/template/css/starlight.css">
     
@@ -347,8 +350,13 @@
 	
 
 	<script src="<?=$this->files?>views/template/lib/highlightjs/highlight.pack.js"></script>
+			<script src="<?=$this->files?>views/template/lib/datatables/jquery.dataTables.js"></script>
+			<script src="<?=$this->files?>views/template/lib/datatables-responsive/dataTables.responsive.js"></script>
 	<script src="<?=$this->files?>views/template/lib/select2/js/select2.min.js"></script>
     <script src="<?=$this->files?>views/template/lib/spectrum/spectrum.js"></script>
+		
+		<script src="<?=$this->files?>views/template/lib/jquery.steps/jquery.steps.js"></script>
+		<script src="<?=$this->files?>views/template/lib/parsleyjs/parsley.js"></script>
 	
 	<script src="<?=$this->files?>views/template/js/starlight.js"></script>
 

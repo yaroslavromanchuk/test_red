@@ -145,9 +145,37 @@ class Customer extends wsCustomer
     }
 
 	
-    // public function countOrder(){
-		// $co = wsActiveRecord::findByQueryFirstArray('SELECT COUNT(id) as c FROM `ws_orders` WHERE customer_id='.$this->getId());
-		// return $co['c'];
-    // }
+    public function getCountAllOrder(){
+		 $co = wsActiveRecord::findByQueryFirstArray('SELECT COUNT(id) as c FROM `ws_orders` WHERE customer_id='.$this->getId().' and status !=17 ');
+		return $co['c'];
+    }
+	public function getCountAllArticlesOrder(){
+		 $co = wsActiveRecord::findByQueryFirstArray('SELECT SUM( IF(  `ws_order_articles`.`count` >0,  `ws_order_articles`.`count` , 1 ) ) AS suma
+FROM  `ws_order_articles` 
+JOIN  `ws_orders` ON  `ws_order_articles`.`order_id` =  `ws_orders`.`id` 
+WHERE  `ws_orders`.`customer_id` ='.$this->getId());
+		return $co['suma'];
+    }
+	public function getCountFactOrder(){
+		 $co = wsActiveRecord::findByQueryFirstArray('SELECT COUNT(id) as c FROM `ws_orders` WHERE customer_id='.$this->getId().' and status not in(17,7,2)');
+		return $co['c'];
+    }
+	public function getCountFactArticlesOrder(){
+		 $co = wsActiveRecord::findByQueryFirstArray('SELECT SUM(`ws_order_articles`.`count`) AS suma
+FROM  `ws_order_articles` 
+JOIN  `ws_orders` ON  `ws_order_articles`.`order_id` =  `ws_orders`.`id` 
+WHERE  `ws_orders`.`customer_id` ='.$this->getId());
+		return $co['suma'];
+    }
+	public function getSumOrder(){
+		 $co = wsActiveRecord::findByQueryFirstArray('SELECT SUM(`ws_orders`.`amount`+`ws_orders`.`deposit`) AS suma FROM  `ws_orders` 
+WHERE  `ws_orders`.`customer_id` ='.$this->getId());
+		return $co['suma'];
+    }
+	public function getDateOrderP(){
+		 $co = wsActiveRecord::useStatic('Shoporders')->findFirst(array('customer_id'=>$this->getId()),array('id' => 'DESC'))->date_create;
+		return $co;
+    }
+	
 }
 ?>

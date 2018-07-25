@@ -1112,12 +1112,12 @@ $date_birth = '';
 					ON ws_order_articles.order_id = ws_orders.id
 				WHERE
 					ws_orders.customer_id = ' . $this->ws->getCustomer()->getId() . '
-					AND ws_orders.status IN (0,1,3,4,6,8,9,10,11,13,15,16) ')->at(0);
+					AND ws_orders.status IN (100,1,3,4,6,8,9,10,11,13,15,16) ')->at(0);
 
             $this->view->all_orders_amount = $all_orders->getAmount();
 
             $this->view->allcount = wsActiveRecord::useStatic('Shoporders')->count(array('customer_id' => $this->ws->getCustomer()->getId()));
-            $this->view->orders = wsActiveRecord::useStatic('Shoporders')->findAll(array(' status IN (0,2,1,3,4,5,6,7,8,9,10,11,12,13,15,16)','customer_id' => $this->ws->getCustomer()->getId()), array(), array($onPage * ($page - 1), $onPage));
+            $this->view->orders = wsActiveRecord::useStatic('Shoporders')->findAll(array(' status IN (100,2,1,3,4,5,6,7,8,9,10,11,12,13,15,16)','customer_id' => $this->ws->getCustomer()->getId()), array(), array($onPage * ($page - 1), $onPage));
 
             echo $this->view->render('account/orderhistory.tpl.php');
 
@@ -1231,12 +1231,12 @@ $date_birth = '';
                       SELECT IF(SUM(price*count) IS NULL,0,SUM(price*count)) AS amount
           			        FROM ws_order_articles
           			        JOIN ws_orders ON ws_order_articles.order_id = ws_orders.id
-          			WHERE ws_orders.customer_id = ' . $customer_id . ' AND ws_orders.status IN (0,1,3,4,6,8,9,10,11,13,15,16) ')->at(0);
+          			WHERE ws_orders.customer_id = ' . $customer_id . ' AND ws_orders.status IN (100,1,3,4,6,8,9,10,11,13,15,16) ')->at(0);
                 $all_orders_2 = wsActiveRecord::useStatic('Customer')->findByQuery('
           			        SELECT IF(SUM(price*count) IS NULL,0,SUM(price*count)) AS amount
           			        FROM ws_order_articles
           			        JOIN ws_orders ON ws_order_articles.order_id = ws_orders.id
-          			        WHERE ws_orders.customer_id = ' . $customer_id . ' AND ws_orders.status IN (0,1,3,4,6,8,9,10,11,13,15,16) AND ws_orders.id <=' . $this->get->id)->at(0);
+          			        WHERE ws_orders.customer_id = ' . $customer_id . ' AND ws_orders.status IN (100,1,3,4,6,8,9,10,11,13,15,16) AND ws_orders.id <=' . $this->get->id)->at(0);
 
                 $this->view->all_orders_amount = $all_orders->getAmount();
                 $this->view->all_orders_amount_total = $all_orders_2->getAmount();

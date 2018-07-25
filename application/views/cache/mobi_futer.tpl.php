@@ -1,4 +1,4 @@
-<script async type="text/javascript" src="/js/common.js?v=1.1"></script>
+<script async  src="/js/common.js?v=1.1"></script>
 <footer>
 		<div class="w-100 mx-auto text-center ">
 				<a href="#" data-evaluation="rss" data-toggle="modal" data-target="#subscribe"  class="btn btn-light" style="background-color: #d3d3d399;font-size: 100%;">
@@ -15,6 +15,7 @@
 					<a class="bad" data-toggle="modal" href="#" data-target="#saymail" data-evaluation="bad"></a>
 					<div class="clearfix"></div>
 				</div>
+				<div class="mt-2"><a href="tel:+380442244000" class="d-block btn btn-light py-1 my-1 "><span>+38(044) 224-40-00</span></a></div>
 			</div>
 		</div>
 		<div class="mx-auto w-100">
@@ -124,7 +125,8 @@
 	</div>	
 	<!-- End Comment modal -->	
 	</footer>
-<script defer type="text/javascript">
+	
+<script>
     /* <![CDATA[ */
     var google_conversion_id = 1005381332;
     var google_conversion_label = "1vqdCJyg5gMQ1M2z3wM";
@@ -132,15 +134,13 @@
     var google_remarketing_only = true;
     /* ]]> */
 </script>
-<script  type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js"></script>
+<script   src="//www.googleadservices.com/pagead/conversion.js"></script>
 <noscript><div style="display:inline;">
 <img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/1005381332/?value=0&amp;label=1vqdCJyg5gMQ1M2z3wM&amp;guid=ON&amp;script=0"/>
 </div></noscript>
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5DFS2PQ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
+
 <script async src='//uaadcodedsp.rontar.com/rontar_aud_async.js'></script>
-<script  type='text/javascript'>
+<script>
 /*widget*/
 (function() {
 var widgetId = 'a977b0023f4594ba63190bf5ca00d6ba';

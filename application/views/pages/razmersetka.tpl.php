@@ -6,7 +6,7 @@
 									<a class="close"
 									   onclick="$('.mask').hide(); $('#rozmerSetka1').toggle('slow', function() {});  $('.popap_blok').hide(); return false;">
 									</a>
-									<div class="quik_frame" style="auto; padding: 10px; height: auto;">
+									<div class="quik_frame" style="padding: 10px; height: auto;">
 										<div class="sizebloc">
 											<div class="size_tabs">
 <?php

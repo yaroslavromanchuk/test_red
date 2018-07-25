@@ -2,7 +2,7 @@
 <footer>
 <div class="row footer">
 <div class="col-xs-12 col-sm-6 col-md-3">
-<article>
+
 <p><?=$this->trans->get('График работы Call-центра')?></p>
 <div>
 <span><i class="glyphicon glyphicon-time" aria-hidden="true"></i> Пн-Пт:	09:00 - 18:00<br>
@@ -10,20 +10,16 @@
 <span><i class="glyphicon glyphicon-earphone" aria-hidden="true"></i> (044) 224-40-00</span><br>
 <span><i class="glyphicon glyphicon-earphone" aria-hidden="true"></i> (063) 809-35-29</span><br>
 <span><i class="glyphicon glyphicon-earphone" aria-hidden="true"></i> (067) 406-90-80</span><br>
-<span><i class="glyphicon glyphicon-envelope" aria-hidden="true"></i> market@red.ua</span></br>
+<span><i class="glyphicon glyphicon-envelope" aria-hidden="true"></i> market@red.ua</span><br>
 </div>
-</article>
 </div>
 <div class="col-xs-12 col-sm-6 col-md-3">
-<article>
 <p><?=$this->trans->get('Страницы')?></p>
 <?php foreach (wsActiveRecord::useStatic('FooterMenu')->findAll() as $menu) {
  echo '<div class="list-page"><a href="'.$menu->getUrl().'"><i class="glyphicon glyphicon-hand-right" aria-hidden="true"></i> '.$menu->getTitle().'</a> </div>';
  }?>
-</article>
 </div>
 <div class="col-xs-12 col-sm-6 col-md-3">
-<article>
 <p><?=$this->trans->get('Новости')?></p>
 <span><?=$this->trans->get('Подпишитесь на нашу новостную рассылку, чтобы всегда располагать последней информацией и узнавать о наших особых предложениях')?>!</span><br><br>
 <div>
@@ -33,19 +29,16 @@
 	<input type="submit" class="form-submit" value="Подписаться">
                </form>
 </div>
-</article>
 </div>
 <div class="col-xs-12 col-sm-6 col-md-3">
-<article>
 <p><?=$this->trans->get('Соц.Сети')?></p>
 <div class="footer-soc">
 <span><?=$this->trans->get('Присоединяйтесь к нашим группам в социальных сетях. Еще больше общения, еще ярче эмоции, еще интереснее посты')?>!
 </span><br><br>
-<a href="https://www.facebook.com/lifestyle.red.ua/"><img src="/img/footer/facebuk.png"></a>
-<a href="http://instagram.com/red_ua"><img src="/img/footer/instagram.png"></a>
-<a href="https://www.youtube.com/user/SmartRedShopping"><img src="/img/footer/youtube.png"></a>
+<a href="https://www.facebook.com/lifestyle.red.ua/"><img alt="lifestyle" src="/img/footer/facebuk.png"></a>
+<a href="http://instagram.com/red_ua"><img alt="red_ua" src="/img/footer/instagram.png"></a>
+<a href="https://www.youtube.com/user/SmartRedShopping"><img alt="SmartRedShopping" src="/img/footer/youtube.png"></a>
 </div>
-</article>
 </div>
 </div>
 <div  style="text-align:center;">
@@ -58,7 +51,7 @@
     right: -1%;}
 </style>
 <script async src='//uaadcodedsp.rontar.com/rontar_aud_async.js'></script>
-<script  type='text/javascript'>
+<script>
 window.rnt=window.rnt||function(){(rnt.q=rnt.q||[]).push(arguments)};
     rnt('add_event', {advId: 20676});
     //<!-- EVENTS START -->
@@ -110,7 +103,16 @@ if(l.name != s){
          type: "POST",
          url: "/ajax/setlang/",
          data: "&lang="+l.name,
-         success: function(res){location.reload();}
+         success: function(res){
+		 hr = location.href;
+		 if(res == 'ru' && hr.indexOf('uk') != -1){
+		 location.replace(hr.replace('uk','ru'));
+		 }else if(res == 'uk' && hr.indexOf('ru') != -1) {
+		 location.replace(hr.replace('ru', 'uk'));
+		 }else{
+		 location.replace(location.origin+'/'+res+location.pathname);
+		 }
+		 }
           });
 		  }
           return false;

@@ -18,6 +18,7 @@
     .border_right {border-right: 2px solid #000;}
     .border_top {border-top: 2px solid #000;}
     .border_none {border: none;}
+	.border{ border: 1px solid black;}
 </style>
 <body onload="window.print();">
     <table border="0" cellpadding="3" cellspacing="0" width="700">
@@ -72,7 +73,7 @@
     </tr>
     <tr>
         <td colspan="10" align="center" class="fnt_size_1">
-            <strong>от <?=$this->date_today ?> года</strong>
+            <strong>от <?=$this->date_today?> года</strong>
         </td>
     </tr>
     <tr>
@@ -100,7 +101,7 @@
                 <b>Удачных покупок!</b>
             </p>
         </td>
-		<td colspan="3"><p id="qr_<?=$this->order->getId()?>"></p></td>
+		<td colspan="3"><p  class="qr<?=$this->order->getId()?>"></p></td>
     </tr>
     <!-- TOVAR TITLES-->
     <tr >
@@ -323,8 +324,8 @@ $min_sum_bonus = Config::findByCode('min_sum_bonus')->getValue();
     <tr>
         <td colspan="10" class="tt_border_bottom">
             * <i><b>
-                    Общая сумма Ваших заказов в интернет-магазине RED на <?php echo $this->exploded_date[2]?>
-                    .<?php echo $this->exploded_date[1]?>.2011 г. составляет
+                    Общая сумма Ваших заказов в интернет-магазине RED на <?=$this->exploded_date[2]?>
+                    .<?=$this->exploded_date[1]?>.<?=$this->exploded_date[0]?> г. составляет
                     <?php
                     if ($this->all_orders_amount_total == 0) {
                         echo '0 грн. 00 коп.';
@@ -353,7 +354,7 @@ if(true){
 		require_once("QRCode/qrcode.php");
 		$qr = new qrcode();
 		$qr->text($cod);
-		echo "<p id='qr".$this->order->getId()."' hidden><img src='".$qr->get_link()."' border='0'/></p>";
+		echo "<p id='qr".$this->order->getId()."' hidden><img src='".$qr->get_link(120)."' border='0'/></p>";
 		//echo $cod;
 				}?>
 
@@ -362,6 +363,6 @@ if(true){
 </html>
 <script>
 $(window).load(function(){
- $('#qr_<?=$this->order->getId()?>').html($('#qr<?=$this->order->getId()?>').html());
+ $('.qr<?=$this->order->getId()?>').html($('#qr<?=$this->order->getId()?>').html());
  });
 </script>

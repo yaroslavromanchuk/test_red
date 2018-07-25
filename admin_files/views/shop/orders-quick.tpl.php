@@ -127,7 +127,7 @@
 ?>
                 </td>
                 <td><?php echo $order->getQuickNumber(); ?></td>
-                <td><?php switch($order->getStatus()){case 0; echo 'Новая';break; case 2; echo 'Отменена';break;}; ?></td>
+                <td><?=$order->getStat()->getName()?></td>
                 <td><?php $d = new wsDate($order->getDateCreate()); echo $d->getFormattedDateTime(); ?></td>
                 <td><?php echo $order->getName() . ' ' . $order->getMiddleName(); ?></td>
                 <td><?php echo $order->getArticlesCount(); ?></td>

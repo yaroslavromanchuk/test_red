@@ -1,4 +1,4 @@
- <link href="<?=$this->files?>views/template/lib/highlightjs/github.css" rel="stylesheet">
+
     <link href="<?=$this->files?>views/template/lib/datatables/jquery.dataTables.css" rel="stylesheet">
     <link href="<?=$this->files?>views/template/lib/select2/css/select2.min.css" rel="stylesheet">
 <div class="card pd-20">
@@ -70,7 +70,7 @@
         });*/
 
         // Select2
-        $('.dataTables_length select').select2({ minimumResultsForSearch: Infinity });
+        //$('.dataTables_length select').select2({ minimumResultsForSearch: Infinity });
 
       });
     </script>	

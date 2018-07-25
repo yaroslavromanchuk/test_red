@@ -13,7 +13,8 @@ class wsCustomer extends wsActiveRecord
 
     protected function _defineRelations()
     {
-        $this->_relations = array('main_customer' => array('type' => 'hasOne', //belongs to
+        $this->_relations = array(
+		'main_customer' => array('type' => 'hasOne', //belongs to
             'class' => self::$_customer_class,
             'field' => 'parent_id'),
             'type' => array('type' => 'hasOne', //belongs to

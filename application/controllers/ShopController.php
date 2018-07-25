@@ -185,9 +185,7 @@ $search_word = false;
 				}
 			}
 			if (count($error) == 0) {
-				$change = $article->addToBasket(1, (int)@$_POST['size'], (int)@$_POST['color'], (isset($_POST['option'])
-					? (int)@$_POST['option'] : 0), 0, (isset($_POST['artikul'])
-					? $_POST['artikul'] : 0));
+$change = $article->addToBasket(1, (int)@$_POST['size'], (int)@$_POST['color'], (isset($_POST['option']) ? (int)@$_POST['option'] : 0), 0, (isset($_POST['artikul']) ? $_POST['artikul'] : 0));
 				foreach (@$_POST as $key => $value) {
 					$keys = explode('_', $key);
 					if (strcasecmp($keys[0], 'sarticle') == 0 && (int)$value && ($sa = wsActiveRecord::useStatic('Shoparticles')->findById((int)$value)) && $sa->getId())
@@ -293,9 +291,9 @@ $sum+=$item['count']*$item['price'];
 $i++;
 			}
 			if($i >=10) $rez.='<li style="list-style-type: none;"><div><p style="text-align: center;">Еще '.$j.'</p></div>';
- $rez.='</ul><p>Общее количество товаров '.$count.'</p><p>Сумма к оплате ~'.$sum.' грн.</p>';
+ $rez.='</ul><p>'.$this->trans->get("Общее количество товаров").' '.$count.'</p><p>'.$this->trans->get("Сумма к оплате").' ~'.$sum.' грн.</p>';
  }else{
-   $rez.='<p style="text-align: center;">В корзине ничего нет</p>';
+   $rez.='<p style="text-align: center;">'.$this->trans->get("В корзине ничего нет").'</p>';
  }
 //print_r($this->basket);
 die(json_encode(html_entity_decode($rez)));
@@ -335,38 +333,53 @@ die(json_encode(html_entity_decode($rez)));
 			}
 			$this->_redir('basket');
 		}
+		// запись кода в сесию
+				if($this->get->kupon){
+					$today_c = date("Y-m-d H:i:s"); 		
+			$ok_cod = wsActiveRecord::useStatic('Other')->findFirst(array("cod like '".$this->get->kupon."'", "ctime <= '".$today_c."' ", " '".$today_c."' <= utime"));
+			
+			$find_count_orders_by_user_cod = true;
+			
+			if(!$ok_cod) $_SESSION['error_cod'] = $this->trans->get('Код введен неверно! Повторите ввод кода');
+			
+			if(@$ok_cod and $ok_cod->count_order){
+			$find_count_orders_by_user = wsActiveRecord::useStatic('Shoporders')->count(array('kupon'=>$ok_cod->cod, 'customer_id' => $this->ws->getCustomer()->getId()));
+			if(@$find_count_orders_by_user and $find_count_orders_by_user >= $ok_cod->count_order){ 
+			
+			$find_count_orders_by_user_cod = false;
+			$_SESSION['error_cod'] = 'Вами превышен лимит использования этого промокода';
+			}
+			}
+			
+			//}
+			unset($_SESSION['kupon']);
+			//'customer_id' => $this->ws->getCustomer()->getId(), 
+					if(@$ok_cod and $find_count_orders_by_user_cod){
+					$_SESSION['kupon'] = $ok_cod->cod;
+					$this->view->kupon = $ok_cod->cod;
+					unset($_SESSION['error_cod']);
+					}
+					
+					
+					//$_SESSION['error_cod'] = $this->trans->get('Код введен неверно! Повторите ввод кода');
+					//$_SESSION['error_cod'] = $this->trans->get('Этим кодом уже воспользовались. Код можно использовать единоразово')."!";
+
+					
+				}else{
+				//unset($_SESSION['kupon']);
+				unset($_SESSION['error_cod']);
+				}
+				
+				
+				
+				//exit запись кода в сесию
+		
 		if (count($_POST)) {
 			if (isset($_POST['tostep2'])) {
 				foreach ($_POST as &$value) {
 					$value = stripslashes(trim($value));
 				}
-				// запись кода в сесию
-				if($this->post->kupon){
-					$today_c = date("Y-m-d H:i:s"); 		
-		//$sql = "SELECT * FROM ws_other_code WHERE cod = '".$this->post->kupon."' and '".$today_c."' <= utime";
-			$ok_cod = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$this->post->kupon, "ctime <= '".$today_c."' ", " '".$today_c."' <= utime"));
-			if(true){
-			$find_count_orders_by_user_cod = 0;
-			}else{
-			$find_count_orders_by_user_cod = wsActiveRecord::useStatic('Shoporders')->count(array('kupon'=>$this->post->kupon));
-			}
-			
-			//'customer_id' => $this->ws->getCustomer()->getId(), 
-					if(@$ok_cod and $find_count_orders_by_user_cod == 0){
-					$_SESSION['kupon'] = $this->post->kupon;
-					}else{
-					$_SESSION['error_cod'] = $this->trans->get('Код введен неверно! Повторите ввод кода').".";
-					//$_SESSION['error_cod'] = $this->trans->get('Этим кодом уже воспользовались. Код можно использовать единоразово')."!";
-						unset($_SESSION['kupon']);
-							$this->_redir('basket');				
-					}
-				}else{
-				unset($_SESSION['kupon']);
-				}
 				
-				
-				unset($_SESSION['error_cod']);
-				//exit запись кода в сесию
 
 				if ($this->post->deposit == 1) {
 					$_SESSION['deposit'] = $this->ws->getCustomer()->getDeposit();
@@ -405,6 +418,7 @@ die(json_encode(html_entity_decode($rez)));
 		foreach ($basket as $item)
 			if ($item['option_id'] > 0)
 				$bool = true;
+				
 		if (!$bool)
 			$options[] = array(
 				'id' => 0,
@@ -415,25 +429,32 @@ die(json_encode(html_entity_decode($rez)));
 				'price' => $del_cost,
 				'artikul' => $item['artikul']
 				);
+				
 		$sum = 0;
 		foreach ($basket as $item) {
 			if (($article = wsActiveRecord::useStatic('Shoparticles')->findById($item['article_id'])) && $article->getId()) {
 				$title = $article->getTitle();
-				if (isset($item['title'])) {
-					$title = $item['title'];
-				}
-$code = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery("SELECT code FROM ws_articles_sizes WHERE id_article = ".$item['article_id']." and id_size = ".$item['size']." and id_color = ".$item['color']." ")->at(0)->code;
+				if (isset($item['title'])) { $title = $item['title']; }
+				
+$code = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery("SELECT code FROM ws_articles_sizes WHERE id_article = ".$item['article_id']." and id_size = ".$item['size']." and id_color = ".$item['color']." and `count` > 0 ")->at(0)->code;
 
 				$articles[] = array(
 					'id' => $article->getId(),
 					'title' => $title,
 					'count' => $item['count'],
 					'option_id' => $item['option_id'],
+					'option_price' => $item['option_price'],
 					'size' => $item['size'],
 					'color' => $item['color'],
-					'artikul' => $code,
-					'price' => $article->getRealPrice());
+					'artikul' => $code,/*$item['artikul']*/
+					'category' => $item['category'],
+					'price' => $article->getRealPrice()
+					);
+					
+					$real_price = ($item['option_price']>0)?$article->getRealPrice($item['option_price']):$article->getRealPrice();
+					
 				$sum += $article->getRealPrice() * $item['count'];
+				
 				$op = $article->getOptions();
 				if (isset($op[$item['option_id']]) && $item['option_id'] > 0) {
 					$options[] = array(
@@ -484,8 +505,10 @@ public function basketcontactsAction() {
 			$_SESSION['basket_contacts'] = $_POST;
 
 			$info = $_SESSION['basket_contacts'];
+			
 			$info['kupon'] = $_SESSION['kupon'];
-			//unset($_SESSION['kupon']);
+			
+			unset($_SESSION['kupon']);
 			
             $error_email = 0;
             if (!$this->ws->getCustomer()->getIsLoggedIn()) {
@@ -494,9 +517,7 @@ public function basketcontactsAction() {
 					 $errors['error'][] = $this->trans->get('Такой email уже используется.<br /> Поменяйте email или зайдите как зарегистрированный пользователь').'.';
                    // $this->view->error_email = $this->trans->get('Такой email уже используется.<br /> Поменяйте email или зайдите как зарегистрированный пользователь').'.';
 					$errors['Email'] = 'Email';
-				}
-				
-				
+				}	
             }
             $tel = Number::clearPhone(trim($info['telephone']));
 			$tel = preg_replace('/[^0-9]/', '', $info['telephone']);
@@ -615,10 +636,11 @@ $ord.=$r->id.', ';
             if (!$errors and $error_email == 0 and !$err_m) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				list($articles, $options) = $this->createBasketList();
+				
 				$_SESSION['basket_articles'] = $articles;
-				$this->view->articles = $articles;
+					$this->view->articles = $articles;
 				$_SESSION['basket_options'] = $options;
-				$this->view->options = $options;
+					$this->view->options = $options;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				$t_count = 0;
 				$t_price = 0.00;
@@ -638,7 +660,7 @@ $ord.=$r->id.', ';
 			if(@$ok_kupon){
 			$kupon = $ok_kupon->cod;
 			$info['kupon_price'] = $ok_kupon->skidka;
-			$find_count_orders_by_user_cod = 0;
+			//$find_count_orders_by_user_cod = 0;
 			}
 					}
 				
@@ -661,10 +683,23 @@ $ord.=$r->id.', ';
 					$t_price += $article['price'] * $article['count'];
 				}
 				$now_orders += $t_price;
+				
 				foreach ($articles as $article) {
 					$at = new Shoparticles($article['id']);
-					$to_pay_perc = $at->getProcent($now_orders, $skidka);
+					//$to_pay_perc = $at->getProcent($now_orders, $skidka);
+					switch($article['option_id']){
+					case 0: $price = $at->getPerc($now_orders, $article['count'], $skidka, $event_skidka, $kupon, $t_price); break;
+					case 1: $price = $at->getPerc($now_orders, $article['count'], $skidka, 99, $kupon, $t_price); break;
+					case 2: $price = $at->getPerc($now_orders, $article['count'], $skidka, 50, $kupon, $t_price); break;
+					default: $price = $at->getPerc($now_orders, $article['count'], $skidka, $event_skidka, $kupon, $t_price);
+					}
+					
+					/*if($article['option_id'] == 1){
+					$price = $at->getPerc($now_orders, $article['count'], $skidka, 99, $kupon, $t_price);
+					}else{
 					$price = $at->getPerc($now_orders, $article['count'], $skidka, $event_skidka, $kupon, $t_price);
+					}*/
+							//$price = $at->getPerc($now_orders, $article['count'], $skidka, $event_skidka, $kupon, $t_price);
 					$to_pay += $price['price'];
 					$to_pay_minus += $price['minus'];
 				}
@@ -676,6 +711,7 @@ $ord.=$r->id.', ';
 				
 				$_SESSION['sum_to_ses'] = $total_price;
 				$_SESSION['sum_to_ses_no_dos'] = $to_pay;
+				
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				$check_c = array();
 				$this->basket_articles = $this->view->basket_articles = $_SESSION['basket_articles'];
@@ -766,7 +802,7 @@ $ord.=$r->id.', ';
 					$phone = substr($phone, -10);
 					$phone = '38'.$phone;
 					$data = array(
-						'status' => 0,
+						'status' => 100,
 						'date_create' => $curdate->getFormattedMySQLDateTime(),
 						'company' => isset($info['company']) ? $info['company'] : '',
 						'name' => @$info['l_name'],
@@ -794,8 +830,8 @@ $ord.=$r->id.', ';
 						'oznak' => @$info['oznak'] ? 1 : 0,
 						'call_my' => @$info['callmy'] ? 1 : 0,
 						'quick' => 0,
-						'kupon' => @$info['kupon'] ? @$info['kupon'] : '',
-						'kupon_price' => @$info['kupon_price'] ? @$info['kupon_price'] : ''
+						'kupon' => @$info['kupon']?$info['kupon']:'',
+						'kupon_price' => @$info['kupon_price']?$info['kupon_price']:''
 							
 					);
 
@@ -852,8 +888,10 @@ $ord.=$r->id.', ';
 				}
 					$order->save();
 					
-					// dlya onlayn oplat
-					//$payment_method_id = $info['payment_method_id'];
+				
+					
+					
+					$payment_method_id = $info['payment_method_id'];// dlya onlayn oplat
 
 					
 					if (!$order->getId()) {$this->_redir('basket');}
@@ -910,12 +948,11 @@ $ord.=$r->id.', ';
 							$a->setArtikul(trim($article['artikul']));
 							$a->setOldPrice($item->getOldPrice());
 							$s = Skidki::getActiv($item->getId());
-							$c = Skidki::getActivCat($item->getCategoryId(), $item->getDopCatId());
+							$c = false;//Skidki::getActivCat($item->getCategoryId(), $item->getDopCatId());
 							if(@$c){
 							$a->setEventSkidka($c->getValue());
 								$a->setEventId($c->getId());
-							}
-							if(@$s){
+							}elseif(@$s){
 								$a->setEventSkidka($s->getValue()+$event_skidka_klient);
 								$a->setEventId($s->getId()+$event_skidka_klient);
 							}else{
@@ -934,12 +971,11 @@ $ord.=$r->id.', ';
 							unset($data['id']);
 							$a->import($data);
 							$s = Skidki::getActiv($item->getId());
-							$c = Skidki::getActivCat($item->getCategoryId(), $item->getDopCatId());
+							$c = false;//Skidki::getActivCat($item->getCategoryId(), $item->getDopCatId());
 							if(@$s){
 								$a->setEventSkidka($s->getValue());
 								$a->setEventId($s->getId());
-							}
-							if(@$c){
+							}elseif(@$c){
 								$a->setEventSkidka($c->getValue());
 								$a->setEventId($c->getId());
 							}
@@ -1001,6 +1037,8 @@ $info['s_service'],
 						$order = new Shoporders($order->getId());
 						
 						$order->reCalculate(true, $bonus);
+				
+				OrderHistory::newOrder($this->ws->getCustomer()->getId(), $order->getId(), $order->calculateOrderPrice2(true, false, true, $bonus), $order->getArticlesCount());
 						
 						
 						
@@ -1051,7 +1089,7 @@ $info['s_service'],
 			if($order->getPaymentMethodId() == 7){
 			LiqPayHistory::newHistory($order->getId(), 1, '');
 			}
-					if (in_array($payment_method_id, array(4, 5, 6)) and false) {
+					if (in_array($payment_method_id, array(4, 5, 6))) {
 						if ($payment_method_id == 4) {
 							$paymaster = 21;
 						}
@@ -1059,7 +1097,7 @@ $info['s_service'],
 							$paymaster = 1;
 						}
 						if ($payment_method_id == 6) {
-							$paymaster = 20;
+							$paymaster = 49;
 						}
 
 						$order_id = $order->getId();
@@ -1076,7 +1114,7 @@ $info['s_service'],
 		15 = NSMEP
 		17 = Webmoney Terminal
 		21 = PaymasterCard
-		20 = Приват 24
+		49 = Приват 24
 		19 = LiqPay
 		23 = Київстар
 		2 = x20 WebMoney моб. платежи
@@ -1118,8 +1156,8 @@ $info['s_service'],
 		
 		$this->view->err_m = $err_m;
 		$this->view->errors = $errors;
-		if(!$post_order)
-			echo $this->render('shop/basket-step2.tpl.php');
+
+		if(!$post_order) echo $this->render('shop/basket-step2.tpl.php');
 	}
 	
 }
@@ -1431,7 +1469,7 @@ $info['s_service'],
 			$phone = substr($phone, -10);
 			$phone = '38'.$phone;
 			$data = array(
-				'status' => 0,
+				'status' => 100,
 				'date_create' => $curdate->getFormattedMySQLDateTime(),
 				'company' => isset($info['company']) ? $info['company'] : '',
 				'name' => @$info['name'],
@@ -1600,11 +1638,11 @@ $info['s_service'],
 					$a->import($data);
 					$a->setOldPrice($item->getOldPrice());
 					$s = Skidki::getActiv($item->getId());
-					$c = Skidki::getActivCat($item->getCategoryId(), $item->getDopCatId());
+					$c = false;//Skidki::getActivCat($item->getCategoryId(), $item->getDopCatId());
 					if (@$s) {
 						$a->setEventSkidka($s->getValue()+$event_skidka_klient);
 						$a->setEventId($s->getId());
-					}else if(@$c){
+					}elseif(@$c){
 							$a->setEventSkidka($c->getValue()+$event_skidka_klient);
 							$a->setEventId($c->getId());
 						}else{
@@ -1623,7 +1661,7 @@ $info['s_service'],
 					unset($data['id']);
 					$a->import($data);
 					$s = Skidki::getActiv($item->getId());
-					$c = Skidki::getActivCat($item->getCategoryId(), $item->getDopCatId());
+					$c = false;//Skidki::getActivCat($item->getCategoryId(), $item->getDopCatId());
 					if ($s) {
 						$a->setEventSkidka($s->getValue());
 						$a->setEventId($s->getId());
@@ -1858,7 +1896,7 @@ $this->sendMessageTelegram($this->ws->getCustomer()->getTelegram(), $message);
 				$errors['error'][] = $this->trans->get('Доступ заблокирован');
 				
 			if ($this->ws->getCustomer()->isBlockQuick())
-				$errors['error'][] = $this->trans->get('Заблокировано оформление быстрых заказов');
+					$errors['error'][] = $this->trans->get('Заблокировано оформление быстрых заказов');
 
 			if ($this->ws->getCustomer()->isNoPayOrder())
 				$errors['error'][] = $this->trans->get('Доступ заблокирован');
@@ -1913,7 +1951,7 @@ $this->sendMessageTelegram($this->ws->getCustomer()->getTelegram(), $message);
 				$phone = substr($phone, -10);
 				$phone = '38'.$phone;
 				$data = array(
-					'status' => 0,
+					'status' => 100,
 					'date_create' => $curdate->getFormattedMySQLDateTime(),
 					'company' => isset($info['company']) ? $info['company'] : '',
 					'name' => @$info['name'],
@@ -1933,12 +1971,12 @@ $this->sendMessageTelegram($this->ws->getCustomer()->getTelegram(), $message);
 					'comments' => isset($info['comments']) ? $info['comments'] : '',
 					'delivery_cost' => 0,
 					'delivery_type_id' => isset($info['delivery_type_id']) ? $info['delivery_type_id'] : '',
-					'payment_method_id' => isset($info['payment_method_id']) ? $info['payment_method_id'] : '',
+					'payment_method_id' => isset($info['payment_method_id']) ? $info['payment_method_id'] : 1,
 					'amount' => @$_SESSION['order_amount'],
 					'soglas' => 1,
 					'oznak' => 1,
 					//'deposit' => @$_SESSION['deposit'],
-					'call_my' => @$info['callmy'] ? 1 : 0,
+					//'call_my' => @$info['callmy'] ? 1 : 0,
 					'quick' => 1,
 					'from_quick' => 1
 				);
@@ -1952,10 +1990,10 @@ $this->sendMessageTelegram($this->ws->getCustomer()->getTelegram(), $message);
 				$order->setQuickNumber(++$lastnq['quick_number']);
 				$order->save();
 
-				if ($order->getAmount() == 0) {
-					$order->setStatus(0);
-					$order->save();
-				}
+				//if ($order->getAmount() == 0) {
+				//	$order->setStatus(0);
+				//	$order->save();
+				//}
 
 				//________________________put order_to_db______________________________________________
 				$this->set_customer($order);
@@ -1964,8 +2002,8 @@ $this->sendMessageTelegram($this->ws->getCustomer()->getTelegram(), $message);
 				
 				foreach ($_SESSION['basket_articles'] as $article) {
 
-					$item = new Shoparticles($article['id']);
-					$itemcs = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $article['id'], 'id_size' => $article['size'], 'id_color' => $article['color']));
+		$item = new Shoparticles($article['id']);
+		$itemcs = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $article['id'], 'id_size' => $article['size'], 'id_color' => $article['color']));
 
 					if ($itemcs->getCount() > 0) {
 						$item->setStock($item->getStock() - $article['count']);
@@ -1981,11 +2019,11 @@ $this->sendMessageTelegram($this->ws->getCustomer()->getTelegram(), $message);
 						$a->import($data);
 						$a->setOldPrice($item->getOldPrice());
 						$s = Skidki::getActiv($item->getId());
-						$c = Skidki::getActivCat($item->getCategoryId(), $item->getDopCatId());
+						$c = false;//Skidki::getActivCat($item->getCategoryId(), $item->getDopCatId());
 						if (@$s) {
 							$a->setEventSkidka($s->getValue());
 							$a->setEventId($s->getId());
-						}else if(@$c){
+						}elseif(@$c){
 							$a->setEventSkidka($c->getValue());
 							$a->setEventId($c->getId());
 						}
@@ -2000,11 +2038,11 @@ $this->sendMessageTelegram($this->ws->getCustomer()->getTelegram(), $message);
 						unset($data['id']);
 						$a->import($data);
 						$s = Skidki::getActiv($item->getId());
-						$c = Skidki::getActivCat($item->getCategoryId(), $item->getDopCatId());
+						$c = false;//Skidki::getActivCat($item->getCategoryId(), $item->getDopCatId());
 						if ($s) {
 							$a->setEventSkidka($s->getValue());
 							$a->setEventId($s->getId());
-						}else if(@$c){
+						}elseif(@$c){
 							$a->setEventSkidka($c->getValue());
 							$a->setEventId($c->getId());
 						}
@@ -2052,6 +2090,8 @@ $this->sendMessageTelegram($this->ws->getCustomer()->getTelegram(), $message);
 				$this->basket = $_SESSION['basket'] = array();
 				$this->basket_articles = $_SESSION['basket_articles'] = array();
 				$this->basket_options = $_SESSION['basket_options'] = array();
+				
+				OrderHistory::newOrder($order->getCustomerId(), $order->getId(), $order->calculateOrderPrice2(true, false, true, $bonus), $order->getArticlesCount());
 
 			}
 		} else $errors['error'][] = $this->trans->get('Ошибка с передачей информации');

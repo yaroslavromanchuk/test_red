@@ -131,7 +131,7 @@ if ($order_owner->getAdminComents()) { ?>
 				$('#savepage').attr('value', 'Сохраняется...');
 			},
 			type: "POST",
-			url: '/admin/orderinfo/id/'+<?php echo $this->getOrder()->getId(); ?>,
+			url: '/admin/orderinfo/id/'+<?=$this->getOrder()->getId()?>,
 			data: $("#user_info").serialize()+'&ajax=1',
 			success: function( data ) {
 				console.log('success');
@@ -293,8 +293,8 @@ if ($order_owner->getAdminComents()) { ?>
     <td></td>
 </tr>
     <?php $t_price = 0.00; $t_option = 0.00; if ($this->getOrder()->getArticles()->count()) { ?>
-        <?php $bool = false;
-        foreach ($this->getOrder()->getArticles() as $item_tmp) if ($item_tmp->getOptionId() > 0) $bool = true;
+        <?php //$bool = false;
+       // foreach ($this->getOrder()->getArticles() as $item_tmp) if ($item_tmp->getOptionId() > 0) $bool = true;
         foreach ($this->getOrder()->getArticles() as $main_key => $article_rec) {
             $article = new Shoparticles($article_rec->getArticleId());
             ?>
@@ -669,7 +669,7 @@ $(document).ready(function () {
 		var data_to_post = new Object();
 		data_to_post.id = category_id;
 		data_to_post.getarticles = '1';
-		$.post('<?php echo $this->path . "shop-orders/"; ?>', data_to_post, function (data) {
+		$.post('<?=$this->path."shop-orders/"?>', data_to_post, function (data) {
 			createSelectList(data);
 		}, 'json');
 		$('#article_id').html('');
@@ -838,8 +838,11 @@ $(document).ready(function () {
 </table>
 
 <form method="post" action="" style="text-align: center; padding-top:20px;">
-	<?php if ($this->getOrder()->getStatus()!=2){?>
+	<?php if ($this->getOrder()->getStatus()!=2){ ?>
 	<input type="submit" name="converting_to_order" class="buttonps" style="font-size: 16px;" value="В заказы">
 	<input type="submit" name="delete_qo" class="buttonps" style="font-size: 16px;background:#E00;" value="Отмена">
 	<?php } ?>
 </form>
+<script>
+//delivery_type_id
+</script>

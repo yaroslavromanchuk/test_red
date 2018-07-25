@@ -19,60 +19,31 @@ $result = explode(',',$this->trans->get('Избранное,В избранно�
 		$word = $this->trans->get("товаров");
 	}
 ?>
-<div class="modal fade" id="myBasket" tabindex="-1" role="dialog" aria-labelledby="myBasketLabel" aria-hidden="true">
+<div class="modal fade" id="myBasket" tabindex="-1" role="dialog"  aria-hidden="true">
 	<div class="modal-dialog modal-md">
 		<div class="modal-content">
 		<div class="modal-header">
-		<h5 class="modal-title">СОДЕРЖИМОЕ КОРЗИНЫ</h5>
+		<h5 class="modal-title"><?=$this->trans->get('СОДЕРЖИМОЕ КОРЗИНЫ')?></h5>
 		<button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
 		</div>
 		<div class="modal-body mess_backet" >
-		<table  class=""> 
-					<tr>
-						<td>
-						<label>Эл. почта</label>
-						<div class="input-group mx-2">
-							<div class="input-group-prepend">
-							<span class="input-group-text" id="basic-addon1"><i class="glyphicon glyphicon-user" aria-hidden="true"></i></span>
-							</div>
-							<input type="text"  placeholder="email" autocomplete="off" class="form-control" name="login" aria-label="email" aria-describedby="basic-addon1">
-							</div>
-						</td>
-						<td>
-							<label>Пароль</label>
-							<div class="input-group mx-2">
-							<div class="input-group-prepend">
-							<span class="input-group-text pencil" id="basic-addon2"><i class="glyphicon glyphicon-pencil" aria-hidden="true"></i></span>
-							</div>
-							<input type="password"  class="form-control" autocomplete="off" placeholder="Пароль"  name="password" aria-label="Пароль" aria-describedby="basic-addon2" >
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<a class="input-group mx-2" href="/account/register/" ><?=$result[4]?></a>
-						</td>
-						<td>
-							<a class="input-group mx-2" href="/account/resetpassword/"><?=$result[5]?>?</a>
-						</td>
-					</tr>
-               </table>
+
 		</div>
 		<div class="modal-footer">
-			<button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true">Продолжить покупки</button>
-			<button class="btn btn-danger" data-dismiss="modal" onclick="location.href='/basket/'" aria-hidden="true">Перейти в корзину</button>
+			<button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><?=$this->trans->get('Продолжить покупки')?></button>
+			<button class="btn btn-danger" data-dismiss="modal" onclick="location.href='/basket/'" aria-hidden="true"><?=$this->trans->get('Перейти в корзину')?></button>
 		</div>
 		</div>
 	</div>
 </div>
 
-<div class="modal fade" id="myModalLogin" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="myModalLogin" tabindex="-1" role="dialog"  aria-hidden="true">
 	<div class="modal-dialog modal-md">
 		<div class="modal-content">
 		<div class="modal-header">
-		<h5 class="modal-title">Вход в личный кабинет</h5>
+		<h5 class="modal-title"><?=$this->trans->get('Вход в личный кабинет')?></h5>
 		<button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -82,7 +53,7 @@ $result = explode(',',$this->trans->get('Избранное,В избранно�
 				<table  class=""> 
 					<tr>
 						<td>
-						<label>Эл. почта</label>
+						<label><?=$this->trans->get('Эл. почта')?></label>
 						<div class="input-group mx-2">
 							<div class="input-group-prepend">
 							<span class="input-group-text" id="basic-addon1"><i class="glyphicon glyphicon-user" aria-hidden="true"></i></span>
@@ -113,8 +84,8 @@ $result = explode(',',$this->trans->get('Избранное,В избранно�
 			</form>
 		</div>
 		<div class="modal-footer">
-			<button class="btn" data-dismiss="modal" aria-hidden="true">Закрыть</button>
-			<button class="btn btn-primary" onclick="$('#authenticateByLogin').submit(); return false;">Войти</button>
+			<button class="btn" data-dismiss="modal" aria-hidden="true"><?=$this->trans->get('Закрыть')?></button>
+			<button class="btn btn-primary" onclick="$('#authenticateByLogin').submit(); return false;"><?=$this->trans->get('Войти')?></button>
 		</div>
 		</div>
 	</div>
@@ -144,7 +115,7 @@ $result = explode(',',$this->trans->get('Избранное,В избранно�
 	 <?php $des = 0; if (!$this->ws->getCustomer()->getIsLoggedIn()) { ?>
 				<div>
 				<a href="#" role="button" class="nav-link" data-placement="left"  data-tooltip="tooltip"     title="<?=$result[3]?>">
-				<img src="/img/top_menu/sign-input.png" data-toggle="modal" data-target="#myModalLogin" >
+				<img src="/img/top_menu/sign-input.png" data-toggle="modal" alt="<?=$result[3]?>" data-target="#myModalLogin" >
 				</a>
 					</div>
                 <?php } else {
@@ -173,7 +144,7 @@ $result = explode(',',$this->trans->get('Избранное,В избранно�
 					?>
 	</div>
 <div>
-	<a href="#" class="nav-link" data-placement="left" onclick="basket_view()"; data-tooltip="tooltip" title="<?php if($articles_count > 0){echo $result[6].' '.$articles_count.' '.$word;}else{echo $result[7];}?>" >					
+	<a href="#" class="nav-link" data-placement="left" onclick="basket_view()" data-tooltip="tooltip" title="<?php if($articles_count > 0){echo $result[6].' '.$articles_count.' '.$word;}else{echo $result[7];}?>" >					
 					<img class="img_bag"      src="/img/top_menu/backet.png" alt="Корзина"/>
 					<span id="span_ok" class="rounded-circle <?php if($articles_count > 0) echo 'span_ok'; ?>"><?php if($articles_count > 0) echo $articles_count; ?></span>
 	</a>

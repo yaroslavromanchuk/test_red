@@ -6,14 +6,23 @@
 
         protected function _defineRelations()
         {
-            $this->_relations = array('article_db' => array(
+            $this->_relations = array(
+			'article_db' => array(
                 'type' => 'hasOne',
                 'class' => self::$_shop_articles_class,
                 'field' => 'article_id'),
-                'order' => array(
+           'order' => array(
                     'type' => 'hasOne',
                     'class' => self::$_shop_orders_class,
                     'field' => 'order_id'),
+		'sizes' => array(
+                                    'type'=>'hasOne',
+                                    'class'=>'Size',
+                                    'field'=>'size'), 
+        'colors' => array(
+                                     'type'=>'hasOne',
+                                     'class'=>'Shoparticlescolor',
+                                     'field'=>'color'), 
 					 
 					);
         }
@@ -45,17 +54,32 @@
 		public function getPerc($all_orders_amount, $sum_order = 0)
 			{
 			
-			$minus = 0.00;
-			
-			$price = $this->getPrice() * $this->getCount();
+			$mas = array();
+				$minus = 0.00;
+				$price = $this->getPrice() * $this->getCount();
 			
 		 
 	if (!$this->getSkidkaBlock()) {
+	 if($this->getOptionId()){ // Ð°ÐºÑ†Ð¸Ñ 1+1=3
+	  $mas['minus'] = $price - $this->getOptionPrice()*$this->getCount();
+		$mas['price'] = $this->getOptionPrice();
+		$mas['comment'] = 'Ð¦ÐµÐ½Ð° Ð¿Ð¾ Ð°ÐºÑ†Ð¸Ð¸.';
+			return $mas;
+	 }
 	
-		$today = date("Y-m-d H:i:s");
+		//$today = date("Y-m-d H:i:s");
 			$kod = false;
 			if(@$this->order->getKupon()){				
-$kod = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$this->order->getKupon(), "ctime <= '".$today."' ", " '".$today."' <= utime"));
+$kod = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$this->order->getKupon()));
+
+
+
+	if(@$kod->category_id){
+	if($kod->category_id != $this->article_db->category_id) {
+	$kod = false;
+	}
+	
+	}
 if($this->order->getSumOrder() < $kod->min_sum) {
 $kod = false;
 }
@@ -67,9 +91,22 @@ $kod = false;
 		$skidka = $this->order->getSkidka();
 		
 	 //d($this->order, false);
+	
 	 
 	 $event_skidka = $this->getEventSkidka();
-	if ($event_skidka != 0) {$s = (int)$event_skidka;}
+	if ($event_skidka != 0) {
+
+	$s = (int)$event_skidka;
+	if($s == 50){
+	$minus = (($price / 100) * $s);
+    $price -= $minus;
+	 $mas['price'] = $price;
+     $mas['minus'] = $minus;
+	 $mas['comment'] = 'ÐÐ° ÑÑ‚Ð¾Ñ‚ Ñ‚Ð¾Ð²Ð°Ñ€ Ð´ÐµÐ¹ÑÑ‚Ð²ÑƒÐµÑ‚ ÑÐºÐ¸Ð´ÐºÐ° Ð¿Ð¾ Ð°ÐºÑ†Ð¸Ð¸ -50% ÐÐ Ð¨Ð›Ð•ÐŸÐšÐ˜';
+        return $mas;
+	}
+	
+	}
 	 
 			//d($skidka, false);
 
@@ -122,11 +159,11 @@ $kod = false;
 						}
 		}
 		
-		//ñêèäêà ê îêðåìîìó  òîâàðó â çàêàçå
+		//ÑÐºÐ¸Ð´ÐºÐ° Ðº Ð¾ÐºÑ€ÐµÐ¼Ð¾Ð¼Ñƒ  Ñ‚Ð¾Ð²Ð°Ñ€Ñƒ Ð² Ð·Ð°ÐºÐ°Ð·Ðµ
 					
-			//ñêèäêà ê îêðåìîìó  òîâàðó â çàêàçå
+			//ÑÐºÐ¸Ð´ÐºÐ° Ðº Ð¾ÐºÑ€ÐµÐ¼Ð¾Ð¼Ñƒ  Ñ‚Ð¾Ð²Ð°Ñ€Ñƒ Ð² Ð·Ð°ÐºÐ°Ð·Ðµ
 			
-			// ñêèäêà ê âñåìó çàêàçàçó				
+			// ÑÐºÐ¸Ð´ÐºÐ° Ðº Ð²ÑÐµÐ¼Ñƒ Ð·Ð°ÐºÐ°Ð·Ð°Ð·Ñƒ				
 			/*$event_order_skidka = $this->order->getEventSkidka();
 			//d($event_order_skidka, false);
 			 if ($event_order_skidka != NULL and $event_order_skidka > 0) {
@@ -135,7 +172,7 @@ $kod = false;
                         $price -= $m;
 						//d($price, false);
 									}*/
-			// ñêèäêà ê âñåìó çàêàçàçó
+			// ÑÐºÐ¸Ð´ÐºÐ° Ðº Ð²ÑÐµÐ¼Ñƒ Ð·Ð°ÐºÐ°Ð·Ð°Ð·Ñƒ
 									
 			if(@$kod and $kod->all == 1){
 			$m = (($price / 100) * $kod->skidka);

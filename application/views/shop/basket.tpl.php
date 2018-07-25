@@ -9,20 +9,18 @@ if (isset($this->error)) {
 	}
 	echo "</div>";
 }
-if(isset($_SESSION['error_cod'])){
-echo "<div class='alert alert-danger'>".$_SESSION['error_cod']."</div>";
-}
+//if(isset($_SESSION['error_cod'])){
+//echo "<div class='alert alert-danger'>".$_SESSION['error_cod']."</div>";
+//}
 if($_SESSION['count_basket'] > 5){
 echo '<div class="col-xs-10 col-xs-offset-1">
 <div class="alert alert-danger">'.$this->trans->get('Обратите внимание, мы ограничили количество единиц товара в заказе для пунктов выдачи до 5 единиц.</br>
 				У Вас в корзине').' '.$_SESSION['count_basket'].' '.$this->trans->get('единиц товара. Если Вы хотите оформить заказ через пункт выдачи, удалите из корзины').'  '.($_SESSION['count_basket']-5).' '.$this->trans->get('единиц').'.
 				</div>
-			</div>
-				';
+			</div>';
 }
 
-if ($this->getBasket()) {
-?>
+if ($this->getBasket()) { ?>
 <div class="row mx-auto">
 <div class="col-md-12">
 <form action="<?=wsActiveRecord::useStatic('Menu')->findByUrl('basket')->getPath()?>" method="post" id="basket1" >
@@ -44,16 +42,21 @@ if ($this->getBasket()) {
 	$skidka = 0;
 	$kupon = 0;
 	$event_skidka = 0;
-	if(isset($_GET['kupon']) and $_GET['kupon'] != ''){
+	if(isset($_SESSION['kupon'])){
+	$kupon = $_SESSION['kupon'];
+	}elseif(isset($_SESSION['error_cod'])){
+	echo '<tr><td colspan="6"><div class="alert alert-danger">'.$_SESSION['error_cod'].'!</div></td></tr>';
+	}
+	/*if(isset($_GET['kupon']) and $_GET['kupon'] != ''){
 	$today_c = date("Y-m-d H:i:s"); 
 $ok_kupon = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$_GET['kupon'], "ctime <= '".$today_c."' ", " '".$today_c."' <= utime"));
 	if(@$ok_kupon){
 			//$find_count_orders_by_user_codd = 0;//wsActiveRecord::useStatic('Shoporders')->count(array('kupon'=>$_GET['kupon']));
 			$kupon = $_GET['kupon'];
 			}else{
-			echo '<tr><td colspan="6"><span class="alert alert-danger" style="padding:0px;">Вы ввели не действительный промокод!</span></td></tr>';
+			echo '<tr><td colspan="6"><div class="alert alert-danger">Вы ввели не действительный промокод!</div></td></tr>';
 			}
-	}
+	}*/
 
 	if ($this->ws->getCustomer()->getIsLoggedIn()) {
 		$skidka = $this->ws->getCustomer()->getDiscont(false, 0, true);
@@ -71,29 +74,91 @@ $ok_kupon = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$_GET['ku
 		')->at(0);
 		$now_orders = $all_orders->getAmount();
 	}
-	
+	$mas_akciya = array();
+	$mas_akciya_futbolki = array();
+	$min = array();
 	foreach ($this->getBasket() as $key => $item) {
 		if (($article = wsActiveRecord::useStatic('Shoparticles')->findById($item['article_id'])) && $article->getId() && $item['count'] > 0) {
-		
 			$t_price += $article->getPriceSkidka() * $item['count'];
 			
 		}
+	if($article->getCategoryId() == 147 or $article->getCategoryId() == 70){
+	$mas_akciya[$article->getId().'_'.$item['artikul']] = $article->getFirstPrice();
+	}
+	if($article->getCategoryId() == 30 and $article->getBrandId() == 1562){
+	$mas_akciya_futbolki[$article->getId().'_'.$item['artikul']] = $article->getFirstPrice();
+	}
 		
 	}
+	if(true){
+	$resul = count($mas_akciya);
+	if($resul >= 3){
+	//echo $resul;
+	if($resul >=3 and $resul < 6 ){
+	$m1 = array_keys($mas_akciya, min($mas_akciya))[0];
+		$min[] = $m1;
+	}elseif($resul >=6 and $resul < 9){
+	$m1 = array_keys($mas_akciya, min($mas_akciya))[0];
+	$min[] = $m1;
+	 unset($mas_akciya[$m1]);
+	 $m2 = array_keys($mas_akciya, min($mas_akciya))[0];
+	 $min[] = $m2;
+	}
+	}
+	$fut = count($mas_akciya_futbolki);
+	if($fut >=3){
+	if($fut >=3 and $fut < 6 ){
+	$m1 = array_keys($mas_akciya_futbolki, min($mas_akciya_futbolki))[0];
+		$min[] = $m1;
+	}elseif($fut >=6 and $fut < 9){
+	$m1 = array_keys($mas_akciya_futbolki, min($mas_akciya_futbolki))[0];
+	$min[] = $m1;
+	 unset($mas_akciya_futbolki[$m1]);
+	 $m2 = array_keys($mas_akciya_futbolki, min($mas_akciya_futbolki))[0];
+	 $min[] = $m2;
+	}
+	
+	}
+	//echo '<pre>';
+	//echo print_r($this->getBasket());
+	//echo print_r($mas_akciya);
+	//echo print_r($min);
+	//echo '</pre>';
+	
+	}
+	
 	$now_orders += $t_price;
 	$sum_order = $t_price;
 	$t_price = 0.00;
 	foreach ($this->getBasket() as $key => $item){
 		if (($article = wsActiveRecord::useStatic('Shoparticles')->findById($item['article_id'])) && $article->getId() && $item['count'] > 0) {
-			//$t_price += $article->getPriceSkidka() * $item['count'];
-			$price = $article->getPerc($now_orders, $item['count'], $skidka, $event_skidka, $kupon, $sum_order);
+		$_SESSION['basket'][$key]['option_price'] = 0;
+		$_SESSION['basket'][$key]['option_id'] = 0;
+		$size = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $article->getId(), 'id_size' => $item['size'], 'id_color' => $item['color']));
+		
+		if(in_array($article->getId().'_'.$size->code, $min)){
+		$price = $article->getPerc($now_orders, $item['count'], $skidka, 99, $kupon, $sum_order);
+		$mes = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">Обратите внимание, в Вашем заказе присутствует акционный товар.</div>';
+		}else{
+		$mes = '';
+		$price = $article->getPerc($now_orders, $item['count'], $skidka, $event_skidka, $kupon, $sum_order);
+		}
+		if(@$price['option_id']){
+		$_SESSION['basket'][$key]['option_price'] = $price['option_price'];
+		$_SESSION['basket'][$key]['option_id'] = $price['option_id'];
+		}
+
+			//echo $price['price'];
+		//echo 	$price['minus'];
+
 			$to_pay += $price['price'];
 			$to_pay_minus += $price['minus'];
+		
 ?>
 	<tr>
 		<td>
-			<a href="<?=$article->getPath();?>" class="img_pre" rel="#imgiyem<?=$article->getId()?>">
-				<img src="<?=$article->getImagePath('listing');?>" style="max-width:150px;"  alt="<?=htmlspecialchars($article->getTitle());?>" />
+			<a href="<?=$article->getPath()?>" class="img_pre" rel="#imgiyem<?=$article->getId()?>">
+				<img src="<?=$article->getImagePath('listing')?>" style="max-width:150px;"  alt="<?=htmlspecialchars($article->getTitle());?>" />
 			</a>
 			<div class="simple_overlay" id="imgiyem<?=$article->getId(); ?>" style="position: fixed;top: 20%;left: 30%">
                     <img src="<?=$article->getImagePath('detail'); ?>" 
@@ -103,7 +168,8 @@ $ok_kupon = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$_GET['ku
 		</td>
 		<td class="text-left">
 		<b><?=$article->getTitle()?></b></br>
-		<?=$text[0];?>:<?=wsActiveRecord::useStatic('Shoparticlescolor')->findById($item['color'])->getName();?> | <?=$text[1];?>:<?=wsActiveRecord::useStatic('Size')->findById($item['size'])->getSize();?>
+		<?=$text[0];?>:<?=$size->color->name?> | <?=$text[1];?>:<?=$size->size->size?>
+		<br><?=$mes;?>	<?php if($price['comment']){ echo $price['comment'];} ?> 
 		</td>
 		<td><?php
 		$FirsPrrice = $article->getFirstPrice();
@@ -113,19 +179,29 @@ $ok_kupon = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$_GET['ku
 
 						if($FirsPrrice != ($price['price']/$item['count'])){
 						$pr = $FirsPrrice; 
-						$skid = '  -'.ceil(100- (($price['price']/$pr)*100)).'%';
+						$skid = '  -'.ceil(100- ((($price['price']/$item['count'])/$pr)*100)).'%';
 						}
 						//if($this->ws->getCustomer()->getId() == 8005) echo $price['minus'];
 						echo '<span style="text-decoration: line-through;color: #666;font-weight: normal;font-size: 11px;">'.$pr.'</span><span style="font-size: 10px;color:red;font-weight: bold;position: relative;top: -5px;"> '.$skid.'</span><br>'.Shoparticles::showPrice($price['price']/$item['count']); ?> грн
 		</td>
 		<td>
-			<select name="select" class="form-control"
+			
+<?php
+$c_al = $size->getCount();
+if($c_al > 1 and $article->getCategoryId() != 147 and $article->getCategoryId() != 70){
+?>
+<select name="select" class="form-control"
 				onchange="document.location='<?=wsActiveRecord::useStatic('Menu')->findByUrl('shop-checkout-step1-change')->getPath()."point/{$key}/count/"; ?>'+this.value+'/';">
 <?php
-								for ($i = 1; $i <= wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $article->getId(), 'id_size' => $item['size'], 'id_color' => $item['color']))->getCount(); $i++)
-									echo ($i != $item['count']) ? "<option value=\"{$i}\">{$i}</option>" : "<option value=\"{$i}\" selected=\"selected\">{$i}</option>";
-?>
-							</select>
+for ($i = 1; $i <= $c_al; $i++)
+	echo ($i != $item['count']) ? "<option value=\"{$i}\">{$i}</option>" : "<option value=\"{$i}\" selected=\"selected\">{$i}</option>";
+	?>
+		</select>
+<?php	
+}else{
+echo $c_al;
+}								
+?>			
 		</td>
 		<td>
 			<div class="price-cart">
@@ -138,6 +214,7 @@ $ok_kupon = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$_GET['ku
 				</a>
 		</td>
 	</tr>
+
 <?php if (in_array($article->getCategoryId(), array(74, 84, 137, 138, 139, 157, 158, 249, 140, 163))) { ?>
 			<tr><td colspan="6" class="t_bord">
 				<span class="attention"><?=$this->trans->get('Будьте внимательны, заказывая этот товар! Бельё не подлежит обмену и возврату'); ?></span>
@@ -148,6 +225,26 @@ $ok_kupon = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$_GET['ku
 ?>
 </table>
 <table class="table cart-table">
+	<?php //для не активных пользователей
+				if(true){
+			//if ($this->ws->getCustomer()->getIsLoggedIn() and $total_price > 350) {
+			if(/*$this->ws->getCustomer()->isNoActive() and $this->ws->getCustomer()->getId() == 8005*/$this->ws->getCustomer()->getIsLoggedIn()){
+			?>
+			<tr>
+			<td class="text-left" colspan="4">
+			<strong>
+			<?php echo $this->trans->get('Код с рассылки'); ?>:
+			</strong>
+			</td>
+			<td class="text-right1" style="text-align: -webkit-center;" >
+			<input type="text" name="kupon" class="form-control" id="kupon" value="<?=@$this->kupon?$this->kupon:''?>" style="width: 150px; " pattern="[A-Za-z0-9]{7}" maxlength="7" placeholder="123f8T1"/>
+			</td>
+			<td class="text-right" >
+			<input type="button" class="btn btn-secondary btn-sm"  name="perschet" id="perschet" onClick="Perschet(); return false;" value="<?=$this->trans->get('Пересчитать')?>">
+			</td>
+			</tr>
+			<?php }
+			}?>
 			<tr>
 				<td class="text-left" colspan="4">
 					<strong>
@@ -208,7 +305,7 @@ $ok_kupon = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$_GET['ku
 			
 			<!-- для ввода кода на получение скидки -->
 			
-			<?php if ( date("Y-m-d H:i:s") < '2017-11-01 00:00:00' ) { //
+			<?php if (false) { //
 			//echo $sum_order;
 			//if (!$this->ws->getCustomer()->getIsLoggedIn() and $total_price > 500) {$this->ws->getCustomer()->getId() == 8005
 			?>
@@ -226,23 +323,7 @@ $ok_kupon = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$_GET['ku
 			<?php } ?> 
 				<!-- //для ввода кода на получение скидки -->
 			
-				<?php //для не активных пользователей
-				if(false){
-			//if ($this->ws->getCustomer()->getIsLoggedIn() and $total_price > 350) {
-			if($this->ws->getCustomer()->isNoActive()){
-			?>
-			<tr>
-			<td class="text-left" colspan="4">
-			<strong>
-			<?php echo $this->trans->get('Код с рассылки'); ?>:
-			</strong>
-			</td>
-			<td class="text-right" colspan="2">
-			<input type="text" name="kupon" id="kupon" value="" style="width: 120px; " pattern="[A-Za-z0-9]{10}" maxlength="10" placeholder="123f8T1zA7"/>
-			</td>
-			</tr>
-			<?php }
-			}?>
+			
 				<!-- //для не активных пользователей -->	
 			
 		</table>
@@ -270,10 +351,9 @@ $ok_kupon = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$_GET['ku
 echo $this->getCurMenu()->getPageBody();
 ?>
 
-<script type="text/javascript">
+<script>
 function Perschet(){
-var kp = $('#kupon').val();
-location.replace("/basket/?kupon="+kp);
+location.replace("/basket/?kupon="+$('#kupon').val());
 }
 							$(document).ready(function () {
 								 $('a.img_pre').hover(function () {

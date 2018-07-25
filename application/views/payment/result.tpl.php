@@ -1,6 +1,1 @@
-<?php
-	echo 'result';
-	echo '<pre>';
-	print_r($_POST);
-	echo '</pre>';
-?>
+<?php if($this->messega) echo $this->messega; ?>

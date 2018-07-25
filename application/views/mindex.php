@@ -23,15 +23,15 @@ define("EXEC", TRUE);
 	<title><?=Config::findByCode('home_title')->getValue();?></title>
 	
 	
-	<link defer href="/js/slider-fhd/slick.css" rel="stylesheet" type="text/css" />
-	<link defer href="/js/slider-fhd/slick-theme.css" rel="stylesheet" type="text/css" />
+	<link  href="/js/slider-fhd/slick.css" rel="stylesheet" type="text/css" />
+	<link href="/js/slider-fhd/slick-theme.css" rel="stylesheet" type="text/css" />
 	
 	<script  src="mobil/mjs/jquery.min.js"></script>
-	<script defer  src="mobil/mjs/jquery.mask.js" type="text/javascript"></script>
+	<script  src="mobil/mjs/jquery.mask.js" ></script>
 	<script  src="/css/bs/js/bootstrap.js?v=1.5"></script>
-    <script defer  src="mobil/mjs/common.js"></script>
-<script defer  src="/js/slider-fhd/slick.min.js" type="text/javascript"></script>
-	 <script defer   type="text/javascript">
+    <script src="mobil/mjs/common.js"></script>
+<script   src="/js/slider-fhd/slick.min.js" ></script>
+	 <script>
         jQuery.browser = {};
         (function () {
             jQuery.browser.msie = false;
@@ -58,6 +58,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- End Google Tag Manager -->
 </head>
 <body style="padding-top: 48px;">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5DFS2PQ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
  <?php echo $this->cached_mobi_menu;?>
 	<!--главная центр меню-->
 	<div class="container-fluid <?=$page?> ">
@@ -68,20 +71,5 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <div align="center" style="padding-top:10px;">
 <input type="button" name="mobi" class="btn btn-secondary btn-sm" onClick="setCooki(10);" value="<?=$this->trans->get('Полная версия сайта');?>">
 </div>
-<script defer type="text/javascript">
-    /* <![CDATA[ */
-    var google_conversion_id = 1005381332;
-    var google_conversion_label = "1vqdCJyg5gMQ1M2z3wM";
-    var google_custom_params = window.google_tag_params;
-    var google_remarketing_only = true;
-    /* ]]> */
-</script>
-<script  type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js"></script>
-<noscript><div style="display:inline;">
-<img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/1005381332/?value=0&amp;label=1vqdCJyg5gMQ1M2z3wM&amp;guid=ON&amp;script=0"/>
-</div></noscript>
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5DFS2PQ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
 </body>
 </html>

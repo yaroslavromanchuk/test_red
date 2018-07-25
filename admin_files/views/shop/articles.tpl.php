@@ -1,5 +1,5 @@
-<span ><img src="<?=SITE_URL.$this->getCurMenu()->getImage();?>" width="32" class="page-img"/>
-<h1><?php echo $this->getCurMenu()->getTitle();?> <?php echo $this->cur_category ? '('.$this->cur_category->getName().')' : '';?></h1></span>
+<img src="<?=SITE_URL.$this->getCurMenu()->getImage();?>"  class="page-img"/>
+<h1><?=$this->getCurMenu()->getTitle()?> <?php echo $this->cur_category ? '('.$this->cur_category->getName().')' : '';?></h1>
 <form method="get" action="/admin/shop-articles/">
 <style type="text/css">#search {border: 1px solid #EEE;} #search td {vertical-align: middle; } #search tr:nth-child(even) { background: #F8F8F8; }</style>
 
@@ -61,24 +61,45 @@ if(strripos($value, 'SALE') === FALSE){
 		<label for="whith_kids">С подкатегорями</label></td>
 	</tr>
 	<tr>
-	<td>Доп.параметры:</td>
-		<td colspan="3">
-			<p>
-				<input type="checkbox" id='nughoucenyat'
-					   value="1" <?php if ($_GET['ucenka'] == 1) { ?>checked="checked"<?php } ?> name="ucenka"/>
+	<td>Уценка:</td>
+	<td><input type="checkbox" id='ucenalos' value="1" <?php if (@$_GET['ucenalos'] == 1) { ?>checked="checked"<?php } ?>
+					   name="ucenalos"/>
+				<label for="ucenalos">Уценялось</label></td>
+				<td>Процент %</td>
+				<td><select class="form-control select2" name="proc">
+				<option value="">%</option>
+				<option value="20">20%</option>
+				<option value="30">30%</option>
+				<option value="40">40%</option>
+				<option value="50">50%</option>
+				<option value="60">60%</option>
+				</select></td>
+				
+	</tr>
+	<tr>
+	<td>Активность:</td>
+	<td>
+				<!--<input type="checkbox" id='nughoucenyat'
+					   value="1" <?php //if ($_GET['ucenka'] == 1) { ?>checked="checked"<?php //} ?> name="ucenka"/>
 				<label for="nughoucenyat">Нужно уценять</label>
 				<input type="checkbox" id='oneekzemplar'
-					   value="1" <?php if ($_GET['issetone'] == 1) { ?>checked="checked"<?php } ?> name="issetone"/>
-				<label for="oneekzemplar">1 в наличии</label>
-				<input type="checkbox" id='ucenalos' value="1" <?php if (@$_GET['ucenalos'] == 1) { ?>checked="checked"<?php } ?>
-					   name="ucenalos"/>
-				<label for="ucenalos">Уценялось</label>
+					   value="1" <?php //if ($_GET['issetone'] == 1) { ?>checked="checked"<?php //} ?> name="issetone"/>
+				<label for="oneekzemplar">1 в наличии</label>-->
+				
 				<input type="checkbox" id='active'
 					   value="1" <?php if (@$_GET['active'] == 1) { ?>checked="checked"<?php } ?> name="active"/>
 				<label for="active">неактивные</label>
-				
-			</p>
 		</td>
+		<td>Статус:</td>
+		<td>
+		<select class="form-control select2" name="status" data-placeholder="Статус товара">
+				  <option value="">Статус</option>
+		<?php foreach(wsActiveRecord::useStatic('Shoparticlesstatus')->findAll() as $s){ ?>
+               <option value="<?=$s->id?>"><?=$s->name?></option>
+					<?php } ?>
+		</select>
+		</td>
+
 
 	</tr>
 	<tr>
@@ -109,7 +130,7 @@ if(strripos($value, 'SALE') === FALSE){
 			</select>
 		</td>
 		<td>Цена:</td>
-		<td><input type="text" class="form-control input" value="<?= @$_GET['price'] ?>" name="price"></td>
+		<td><input type="text" class="form-control input" value="<?=@$_GET['price']?>" name="price"></td>
 	</tr>
 	<tr>
 		<td colspan="2" align="center" style="padding:10px 0px;">
@@ -122,20 +143,6 @@ if(strripos($value, 'SALE') === FALSE){
 </table>
 
 </form>
-<?php if(false){?>
-<p>
-    Все товары в Excel
-    <?php $count = wsActiveRecord::useStatic('Shoparticles')->count();
-    $parts = $count / 1000;
-    for ($ip = 1; $ip <= $parts + 1; $ip++) {
-        ?>
-        <a href="/admin/articleexcel?part=<?php echo $ip ?>">часть <?php echo $ip?></a>,
-    <?php
-    }
-    ?>
-</p>
-<?php }?>
-
 <table align="center" style="padding-bottom: 10px;">
 <tr>
 <td class="td_ss">
@@ -147,9 +154,7 @@ if(strripos($value, 'SALE') === FALSE){
    <span class="ss">
     <select name="id" class="form-control input" id="select_dop_cat" style="max-width: 165px;">
         <option value="">Выберите категорию</option>
-        <?php 
-        foreach ($mas as $kay => $value) {
-        ?>
+        <?php foreach ($mas as $kay => $value) { ?>
         <option value="<?=$kay?>"><?=$value?></option>
 		<?php } ?>
     </select> 
@@ -158,7 +163,9 @@ if(strripos($value, 'SALE') === FALSE){
 </td>
 <td  class="td_ss">
 <span class="ss">
-<button id='article_exel' class=" add_dop_cat btn btn-small btn-default"><i class="glyphicon glyphicon-floppy-save" aria-hidden="true"></i> Экспорт артикулов Excel</button>
+<form action="/admin/otchets/type/5/" method="post">
+<button id='article_exel11' type="submit" class=" btn btn-small btn-default"><i class="glyphicon glyphicon-floppy-save" aria-hidden="true"></i> Экспорт артикулов Excel</button>
+</form>
 </span>
 </td>
 <td  class="td_ss">
@@ -170,38 +177,9 @@ if(strripos($value, 'SALE') === FALSE){
 <tr>
 </table>
 <script type="text/javascript">
-
-function Activ(e){
-var code = e;
-                    if (code > 0 && code != '') {
-					var url = '/admin/activearticle/';
-					var new_data = '&code='+code;
-					console.log(new_data);
-					$.ajax({
-                type: "POST",
-                url: url,
-				dataType: 'json',
-                data: new_data,
-                success: function (data) {
-				console.log(data);
-fopen('Товар с накладной активирован', data);
-                },
-				error: function(data){
-				console.log(data);
-				
-				}
-            });
-			 return true;
-					}
-}
     $(document).ready(function () {
-		 $('img.img_pre').hover(function () {
-		$(this).parent().find('div.simple_overlay').show();
-        }, function () {
-		$(this).parent().find('div.simple_overlay').hide();
-        });
         $('#article_exel').click(function () {
-            if ($('.article_check_box:checked').val()) {
+           /* if ($('.article_check_box:checked').val()) {
                 var id = '';
                 var i = 0;
                 jQuery.each($('.article_check_box:checked'), function () {
@@ -212,51 +190,41 @@ fopen('Товар с накладной активирован', data);
                     }
                     i++;
                 });
-                window.location = '/admin/otchets/type/5/id/' + id;
-
-            }
-        });
-$('.add_dop_cat').click(function () {
-                if ($('.article_check_box:checked').val()) {
-                    id = '';
-                    i = 0;
-                    jQuery.each($('.article_check_box:checked'), function () {
-                        if (i != 0) {
-                            id += ',' + $(this).attr('name').substr(28);
-                        } else {
-                            id += $(this).attr('name').substr(28);
-                        }
-                        i++;
-                    });
-                    cat = parseInt($('#select_dop_cat').val());
-                    if (cat > 0) {
-                        window.location.href = '/admin/adddopcat?cat=' + cat + '&ids=' + id;
-                    } else {
-                        alert('Выбирите категорию');
-                    }
-                } else {
-                    alert('Выбирите товары');
-                }
+				}*/
+					var url = '/admin/otchets/type/5/';
+					//var new_data = '&id='+id;
+					$.ajax({
+                type: "POST",
+                url: url,
+				dataType: 'json',
+                //data: new_data,
+                success: function (data) {
+				console.log(data);
+//fopen('Товар с накладной активирован', data);
+                },
+				error: function(data){
+				console.log(data);
+				
+				}
             });
+			
+              //  window.location = '/admin/otchets/type/5/id/' + id;
+
+            
+        });
+		
     });
-	
-    function chekAll() {
-	if($('.chekAll').is(":checked")){
-		$('.article_check_box').prop('checked', true);
-		}else{
-		$('.article_check_box').prop('checked', false);
-		}
-        return false;
-    }
 </script>
 <?php $count = $this->articles->count(); ?>
 <form method="post" action="/admin/shop-articles/changeinfo/">
 <table id="products1" cellpadding="4" cellspacing="0" class="table">
     <tr>
-	<th><label class="ckbox" data-tooltip="tooltip" title="Выделить все товары"><input onchange="chekAll();" class="chekAll" type="checkbox"/><span></span></label></th>
-        <th></th>
+		<th>
+		<label class="ckbox" data-tooltip="tooltip" title="Выделить все товары"><input onchange="chekAll();return false;" class="chekAll" type="checkbox"/><span></span></label>
+		</th>
+        <th>Действие</th>
 		<th>Покупки</th>
-		<th colspan="2">Позиция</th>
+		<th>Статус</th>
         <th>История</th>
         <th>Товар</th>
         <th>Цена</th>
@@ -283,13 +251,13 @@ $('.add_dop_cat').click(function () {
                 <label class="ckbox"><input type="checkbox" class="article_check_box"
                        name="articel_for_change_category_<?=$article->getId();?>"/><span></span></label>
             </td>
-            <td class="kolomicon">
+            <td>
 			<a href="<?=$article->getPath();?>" target="_blank" style="display: inline-block;">
 			<i class="icon ion-monitor bleak tx-30 pd-5" alt="Просмотр" data-id="<?=$article->getId();?>" data-placement="left" title="Смотреть на сайте"  data-tooltip="tooltip" class="img_return view_article"></i>
 			</a>
 			<a href="<?=$this->path?>shop-articles/edit/id/<?=$article->getId()?>/"  style="display: inline-block;">
 			<i class="icon ion-clipboard bleak1 tx-30 pd-5" alt="Редактировать" data-placement="left" title="Редактировать"  data-tooltip="tooltip"></i></a></td>
-            <td class="kolomicon">
+            <td>
                 <?php if ($article->ArtycleBuyCount() == 0) { ?>
                 <a href="<?=$this->path;?>shop-articles/delete/id/<?=$article->getId();?>/"  style="display: inline-block;"
                    onclick="return confirm('Удалить товар?')">
@@ -299,42 +267,10 @@ $('.add_dop_cat').click(function () {
 				<i class="icon ion-android-cart green tx-30 pd-5 shoping" data-id="<?=$article->getId()?>"   data-tooltip="tooltip"  title="Товар покупался <?=$article->ArtycleBuyCount()?> раз"></i>
 					<?php } ?>
             </td>
-            <?php
-            if ($count > 1) {
-            if (!$is_first) {
-            ?>
-            <td class="kolomicon">
-			<a href="<?php echo $this->path; ?>shop-articles/moveup/id/<?php echo $article->getId(); ?>/">
-			<i class="icon ion-chevron-up green tx-30 pd-5" alt="Вверх" data-placement="bottom" title="Вверх"  data-tooltip="tooltip"></i>
-			</a>
+            <td>
+			<?=$article->name_status->name?>
 			</td>
-            <?php
-
-            } else {
-            ?>
-            <td class="kolomicon">&nbsp;</td>
-            <?php
-
-            }
-            if (!$is_last) {
-            ?>
-            <td class="kolomicon">
-			<a href="<?=$this->path?>shop-articles/movedown/id/<?=$article->getId()?>/">
-				<i class="icon ion-chevron-down green tx-30 pd-5" alt="Вниз" data-placement="top" title="Вниз"  data-tooltip="tooltip"></i>
-				</a>
-				</td>
-            <?php
-
-            } else {
-            ?>
-            <td class="kolomicon">&nbsp;</td><?php
-
-            }
-            } else { ?>
-                <td class="kolomicon">&nbsp;</td>
-                <td class="kolomicon">&nbsp;</td>
-            <?php } ?>
-            <td  class="kolomicon" >
+            <td>
 			<i class="icon ion-clock bleak tx-30 pd-5 history" alt="История" data-id="<?=$article->getId()?>" data-placement="left" title="Смотреть историю"  data-tooltip="tooltip" ></i>
             </td>
             <td>
@@ -342,7 +278,7 @@ $('.add_dop_cat').click(function () {
                 <div class="simple_overlay" id="imgiyem<?=$article->getId(); ?>" style="position: fixed;top: 20%;left: 45%;z-index:100">
                     <img src="<?=$article->getImagePath('detail'); ?>" alt="<?=htmlspecialchars($article->getTitle()); ?>"/>
                 </div><br>
-                <?=$article->getTitle();?>
+               <span class=""><?=$article->getTitle();?></span>
             </td>
             <td style="width: 75px;"><?php echo $article->getPrice();
 			if($article->getOldPrice() > 0){ echo '<br><span style="color: #af241b;">'.$article->getOldPrice().'</span>';}?>
@@ -353,43 +289,18 @@ $('.add_dop_cat').click(function () {
 			echo '<br><span style="color: #af241b; font-size:10px;font-family: monospace;">max-'.$article->getMaxSkidka().'%</span>';
 			echo '<br><span style="color: #af241b; font-size:10px;font-family: monospace;">min-'.$article->getMinPrice().'грн</span>';
 			} ?>
-			<!--
-                <a href="#" class="real_price" onclick="return showPriceEditor(<?php //echo $article->getId(); ?>)"
-                   id="link_edit_<?php //echo $article->getId(); ?>">
-                    <?php //echo $article->getPrice();?>
-                </a>
-
-                <div class="for_hide_<?php //echo $article->getId(); ?>" style="display: none;">
-                    Новая:<input type="text" class="art_price" id="art_price_<?php //echo $article->getId(); ?>"
-                                 value="<?php //echo $article->getPrice(); ?>"/><br/>
-                    Старая:<input type="text" class="art_price_old"
-                                  id="art_price_old_<?php //echo $article->getId(); ?>"
-                                  value="<?php //echo $article->getOldPrice(); ?>"/>
-                </div>
-                <input type="button" id="btn_edit_<?php //echo $article->getId(); ?>" value="Сохранить"
-                       onclick="update_price(<?php //echo $article->getId(); ?>)" class="for_hide"
-                       style="display: none"/>
-                <br/>
-                <a href="" class="priceProc_30" onclick=" return showPriceEditor(<?php //echo $article->getId(); ?>);">-30%</a>
-                <a href="" class="priceProc_50" onclick=" return showPriceEditor(<?php //echo $article->getId(); ?>);">-50%</a>
-                <a href="" class="priceProc_70" onclick=" return showPriceEditor(<?php //echo $article->getId(); ?>);">-70%</a>
-                <a href="" class="priceProc_90" onclick=" return showPriceEditor(<?php //echo $article->getId(); ?>);">-90%</a>
-
--->
             </td>
             <td><?=$article->getViews();?></td>
             <td><?=strftime('%d.%m.%Y %H:%M', strtotime($article->getCtime()))?></td>
-            <td><?php
-                foreach ($article->sizes as $sizes) {
-                    if ($sizes) {
-                        echo '<p>' . @$sizes->color->getName() . '-' . @$sizes->size->getSize() . ": " . @$sizes->getCount() . '</p>';
-                    }
-                } ?></td>
+            <td><?php foreach ($article->sizes as $sizes) {
+                    if ($sizes){ echo '<p>' . @$sizes->color->getName() . '-' . @$sizes->size->getSize() . ": " . @$sizes->getCount() . '</p>';}
+					} ?>
+			</td>
             <td><?php if ($article->getActive() == 'n') { ?>
-                <a href="javascript:void(0);" class="active" id='a_<?= $article->getId(); ?>'>
-				<i class="icon ion-close-circled red tx-30 pd-5" alt="No active"></i>
+                <a href="javascript:void(0);" class="active" id="a_<?=$article->getId();?>">
+				<i class="icon ion-close-circled red tx-30 pd-5 " alt="No active"></i>
 							</a><?php } else { ?>
-                    <a href="javascript:void(0);" class="active" id='d_<?= $article->getId(); ?>'>
+                    <a href="javascript:void(0);" class="active" id='d_<?=$article->getId();?>'>
 					<i class="icon ion-checkmark-circled green tx-30 pd-5" alt="Active"></i>
 							</a>
                 <?php } ?></td>
@@ -405,6 +316,125 @@ $('.add_dop_cat').click(function () {
     }
     ?>
 </table>
+<script type="text/javascript">
+$(document).ready(function(){
+		 $('img.img_pre').hover(function () {
+		$(this).parent().find('div.simple_overlay').show();
+        }, function () {
+		$(this).parent().find('div.simple_overlay').hide();
+        });
+	
+    });
+		function chekAll() {
+	if($('.chekAll').is(":checked")){
+		$('.article_check_box').prop('checked', true);
+		}else{
+		$('.article_check_box').prop('checked', false);
+		}
+        return false;
+    }
+	
+    
+    function delTovar(object, id) {
+        var url = '/admin/shop-articles/delete/id/';
+        if (confirm('Удалить товар?')) {
+            $(object).parent().parent().hide();
+            $.get(
+                url + id,
+                function (result) {
+                },
+                "json"
+            );
+        }
+        return true;
+    }
+	
+function Activ(e){
+var code = e;
+                    if (code > 0 && code != '') {
+					var url = '/admin/activearticle/';
+					var new_data = '&code='+code;
+					console.log(new_data);
+					$.ajax({
+                type: "POST",
+                url: url,
+				dataType: 'json',
+                data: new_data,
+                success: function (data) {
+				console.log(data);
+fopen('Товар с накладной активирован', data);
+                },
+				error: function(data){
+				console.log(data);
+				
+				}
+            });
+			 return true;
+					}
+}
+
+	
+
+	$('.add_dop_cat').click(function () {
+                if ($('.article_check_box:checked').val()) {
+                    id = '';
+                    i = 0;
+                    jQuery.each($('.article_check_box:checked'), function () {
+                        if (i != 0) {
+                            id += ',' + $(this).attr('name').substr(28);
+                        } else {
+                            id += $(this).attr('name').substr(28);
+                        }
+                        i++;
+                    });
+                    cat = parseInt($('#select_dop_cat').val());
+                    if (cat > 0) {
+                        window.location.href = '/admin/adddopcat?cat=' + cat + '&ids=' + id;
+                    } else {
+                        alert('Выбирите категорию');
+                    }
+                } else {
+                    alert('Выбирите товары');
+                }
+            });
+$('.history').click(function (e) {
+//console.log(e);
+
+var id = e.target.attributes.getNamedItem("data-id").value;
+$.get('/admin/articlehistory/id/'+id+'/m/1',function (data) {fopen('История изменения товара', data);});	
+
+});
+$('.shoping').click(function (e) {
+var id = e.target.attributes.getNamedItem("data-id").value;
+$.get('/admin/ordersbyartycle/id/'+id+'/m/1',function (data) {fopen('История покупок товара', data);});	
+});
+
+$('a.active').click(function () {
+		console.log($(this).attr('id'));
+		
+            var element = $(this);
+            var id = $(this).attr('id');
+			var type = id.charAt(0);
+			id=id.substring(2);
+			console.log(type);
+            $.get('/admin/activearticle/id/'+id+'/type/'+type,function (result) {
+			result = JSON.parse(result);
+			console.log(result);
+                    if (result.type == 'error') {
+                        return(false);
+                    }else{
+					element.attr('id', result.id);
+                        if (result.func == 'd') {
+                            element.html('<i class="icon ion-checkmark-circled green tx-30 pd-5" alt="Active"></i>');
+                        }else {
+                            element.html('<i class="icon ion-close-circled red tx-30 pd-5" alt="No active"></i>');
+                        }
+
+                    }
+			});
+        });
+
+</script>
 <?php
 $limitLeft = 2;
 $limitRight = 2;
@@ -459,116 +489,3 @@ echo $paginator;
 </select>
 <input type="submit" value="Перенести" onclick="return confirm('Вы действительно хотите перенести выбранные товары в категорию ?')" class="btn btn-small btn-default" />
 </form>
-<script type="text/javascript">
-$('.history').click(function (e) {
-var id = e.target.attributes.getNamedItem("data-id").value;
-$.get('/admin/articlehistory/id/'+id+'/m/1',function (data) {fopen('История изменения товара', data);});	
-});
-$('.shoping').click(function (e) {
-var id = e.target.attributes.getNamedItem("data-id").value;
-$.get('/admin/ordersbyartycle/id/'+id+'/m/1',function (data) {fopen('История покупок товара', data);});	
-});
-
-    function delTovar(object, id) {
-        var url = '/admin/shop-articles/delete/id/';
-        if (confirm('Удалить товар?')) {
-            $(object).parent().parent().hide();
-            $.get(
-                url + id,
-                function (result) {
-                },
-                "json"
-            );
-        }
-        return true;
-    }
-
-    function update_price(id) {
-        var price = $('#art_price_' + id).val().replace(',', '.');
-        var old_price = $('#art_price_old_' + id).val();
-        $('#link_edit_' + id).show();
-        $('#btn_edit_' + id).hide();
-        $('.for_hide_' + id).hide();
-        if (price != '') {
-            $('#link_edit_' + id).text(price);
-            $.ajax({
-                type: "POST",
-                url: "/admin/shop-articles/changeinfo",
-                data: {update_price: 1, id: id, price: price, old_price: old_price},
-                success: function (msg) {
-			
-                }
-            });
-        }
-    }
-
-    function showPriceEditor(id) {
-        $('#link_edit_' + id).hide();
-        $('#btn_edit_' + id).show();
-        $('.for_hide_' + id).show();
-
-
-        return false;
-    }
-    $(document).ready(function () {
-        $('.priceProc_30').click(function () {
-            price = parseInt($(this).parent().find('.art_price_old').val());
-            if (price == 0) {
-                price = parseInt($(this).parent().find('.art_price').val());
-                $(this).parent().find('.art_price_old').val(price)
-            }
-            $(this).parent().find('.art_price').val(Math.ceil(price * 0.7));
-        });
-        $('.priceProc_50').click(function () {
-            price = parseInt($(this).parent().find('.art_price_old').val());
-            if (price == 0) {
-                price = parseInt($(this).parent().find('.art_price').val());
-                $(this).parent().find('.art_price_old').val(price)
-            }
-            $(this).parent().find('.art_price').val(Math.ceil(price * 0.5));
-        });
-        $('.priceProc_70').click(function () {
-            price = parseInt($(this).parent().find('.art_price_old').val());
-            if (price == 0) {
-                price = parseInt($(this).parent().find('.art_price').val());
-                $(this).parent().find('.art_price_old').val(price)
-            }
-            $(this).parent().find('.art_price').val(Math.ceil(price * 0.3));
-        });
-        $('.priceProc_90').click(function () {
-            price = parseInt($(this).parent().find('.art_price_old').val());
-            if (price == 0) {
-                price = parseInt($(this).parent().find('.art_price').val());
-                $(this).parent().find('.art_price_old').val(price)
-            }
-            $(this).parent().find('.art_price').val(Math.ceil(price * 0.1));
-        });
-
-
-        $('a.active').click(function () {
-            var element = $(this);
-            var id = $(this).attr('id');
-            var url = '/admin/activearticle';
-            $.get(
-                url,
-                "id=" + id,
-                function (result) {
-                    if (result.type == 'error') {
-                        return(false);
-                    }
-                    else {
-                        element.attr('id', result.id);
-                        if (result.func == 'd') {
-                            element.html('<i class="icon ion-checkmark-circled green tx-30 pd-5" alt="Active"></i>');
-                        }
-                        else {
-                            element.html('<i class="icon ion-close-circled red tx-30 pd-5" alt="No active"></i>');
-                        }
-
-                    }
-                },
-                "json"
-            );
-        });
-    });
-</script>

@@ -1,0 +1,22 @@
+User-agent: *
+Disallow: /admin
+Allow: /?
+Allow: /?s=             
+Allow: /&
+Allow: /*/*.js
+Allow: /*/*.css
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.jpeg
+
+User-Agent: Yandex
+Disallow: /admin
+Allow: /?
+Allow: /?s=             
+Allow: /&
+Allow: /*/*.js
+Allow: /*/*.css
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.jpeg
+Sitemap: https://www.red.ua/sitemap.xml

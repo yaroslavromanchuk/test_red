@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html id="html"  xmlns="http://www.w3.org/1999/xhtml" prefix="og: http://ogp.me/ns#" >
+<html id="html"  xmlns="http://www.w3.org/1999/xhtml" prefix="og: http://ogp.me/ns#" lang="ru" >
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <meta name="google-site-verification" content="5KsgGP4-JCTjV0dafIfi5_AI73MIryFuGqLvAgIthAI" />
@@ -58,17 +58,17 @@ if(Registry::get('device') == 'computer' or ($_COOKIE['mobil'] and $_COOKIE['mob
 		echo $title ? $title . ' - ' . Config::findByCode('website_name')->getValue() : Config::findByCode('website_name')->getValue();
 		} ?>
     </title>    
-		<link defer rel="shortcut icon" href="/favicon.ico"/>
+		<link  rel="shortcut icon" href="/favicon.ico"/>
 		<link href="/js/slider-fhd/slick.css" rel="stylesheet" type="text/css" />
 		<link href="/js/slider-fhd/slick-theme.css" rel="stylesheet" type="text/css" />
         
 		<?php if($desctop == true){ ?>
 		<link rel="stylesheet" type="text/css" href="/css/bs/css/bootstrap.css?v=1.0"/>
-		<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.6"/>
+		<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.8"/>
 		<?php }else{ ?>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
 		<link rel="stylesheet" type="text/css" href="/css/bs/css/bootstrap.css?v=1.1"/>
-		<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.6"/>
+		<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.8"/>
 		<link rel="stylesheet" type="text/css" href="/css/common.css?v=1.9"/>
 	<?php } ?>	
 		
@@ -78,11 +78,11 @@ if(Registry::get('device') == 'computer' or ($_COOKIE['mobil'] and $_COOKIE['mob
 		<link rel="stylesheet" type="text/css" href="/css/cloud-zoom.css"/>
 		<link rel="stylesheet" type="text/css" href="/css/jquery.lightbox-0.5.css" media="screen"/>		
 		
-	<script type="text/javascript" src="/js/jquery.js"></script>
+	<script src="/js/jquery.js"></script>
 	
 				 
     <?php if (false) { ?>
-        <script defer type="text/javascript"
+        <script  type="text/javascript"
                 src="http://maps.google.com/maps?file=api&amp;v=2.x&amp;key=<?=Config::findByCode('google_map_api')->getValue();?>"
                 type="text/javascript">
 				</script>
@@ -97,6 +97,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5DFS2PQ"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 <div id="simple_overlay_back" class="simple_overlay_back"></div>
 <header>
 <?php if($desctop == true){
@@ -106,7 +110,6 @@ echo $this->cached_topcategories;
  echo $this->cached_mobi_menu;
 } ?>
 </header>
-<section>
 <div class="container-fluid">
 	<div class="row">
 		<nav aria-label="breadcrumb" style="margin: 3px;">
@@ -128,20 +131,59 @@ $list_id = '';
         <?php if(trim($this->getCurMenu()->getUrl()) =='basket'){
 					$price_basket_hist = $this->trans->get('Цена');
 					$mas_b = array();
-					foreach ($_SESSION['basket'] as $k => $v) {$mas_b[] = $v['article_id'];}
+					foreach ($_SESSION['basket'] as $k => $v){
+					$mas_b[] = $v['article_id'];
+					}
 					$mass = array();
-if($this->history){
-foreach ($this->history as $v) {
- if(!in_array($v, $mas_b))$mass[] = $v;} 
- $mass = array_unique($mass);
-}else if(count($_SESSION['hist']) > 0){foreach ($_SESSION['hist'] as $v) {if(!in_array($v, $mas_b))$mass[] = $v;}$mass = array_unique($mass);krsort($mass);
+if($this->history){ ?>
+ <div class="row column-3">
+<div class="block-title py-4 w-100">
+	<div class="vc_separator    vc_sep_pos_align_center vc_sep_color_black double-bordered-thick ">
+	<span class="vc_sep_holder vc_sep_holder_l"><span class="vc_sep_line"></span></span>
+	<h4><?=$this->trans->get('Вы недавно смотрели');?><span><?=$this->trans->get('успейте купить пока есть в наличии')?></span></h4>
+	<span class="vc_sep_holder vc_sep_holder_r"><span class="vc_sep_line"></span></span>
+	</div>
+</div>
+<div  class=" top_articles  col-md-12 px-0"> 
+                    <?php
+					$i=0; 
+					foreach ($this->history as $v) {
+					if(in_array($v->id, $mas_b)) break;
+
+					?>
+			<div class="top_articles_item col-xs-12 col-sm-6 col-md-3" >
+         <a  href="<?=$v->getPath();?>" style="    text-align: center;">
+        <img  src="<?=$v->getImagePath('detail'); ?>" alt="<?=$v->getBrand();?>" style="max-width:100%;"  >  
+		</a>
+				<div class="post-name" >
+				<h3><a href="<?=$v->getPath();?>"><?=$v->getModel();?></a></h3>
+				<h4><a href="<?=$v->getPath();?>"><?=$v->getBrand();?></a></h4>
+				</div>
+				<hr>
+				<p><?=$v->getPrice()?> грн</p>
+     </div>
+                    <?php 
+					$i++;
+                    if($i == 15) break;
+					} ?>
+					</div>
+					</div>
+ 
+ <?php
+}elseif(count($_SESSION['hist']) > 0){
+foreach ($_SESSION['hist'] as $v) {
+if(!in_array($v, $mas_b))$mass[] = $v;
 }
+$mass = array_unique($mass);
+krsort($mass);
+
+
 if(count($mass) > 0){ ?>
 <div class="row column-3">
 <div class="block-title py-4 w-100">
 	<div class="vc_separator    vc_sep_pos_align_center vc_sep_color_black double-bordered-thick ">
 	<span class="vc_sep_holder vc_sep_holder_l"><span class="vc_sep_line"></span></span>
-	<h4><?=$this->trans->get('Вы недавно смотрели');?><span>успейте купить пока есть в наличии</span></h4>
+	<h4><?=$this->trans->get('Вы недавно смотрели');?><span><?=$this->trans->get('успейте купить пока есть в наличии')?></span></h4>
 	<span class="vc_sep_holder vc_sep_holder_r"><span class="vc_sep_line"></span></span>
 	</div>
 </div>
@@ -153,7 +195,7 @@ if(count($mass) > 0){ ?>
 						if($block and $block->getStock() > 0){
 					?>
 			<div class="top_articles_item col-xs-12 col-sm-6 col-md-3" >
-         <a name="<?=$block->getId(); ?>" href="<?=$block->getPath();?>" style="    text-align: center;">
+         <a  href="<?=$block->getPath();?>" style="    text-align: center;">
         <img  src="<?=$block->getImagePath('detail'); ?>" alt="<?=$block->getBrand();?>" style="max-width:100%;"  >  
 		</a>
 				<div class="post-name" >
@@ -170,10 +212,15 @@ if(count($mass) > 0){ ?>
 					} ?>
 					</div>
 					</div>
-					<?php }?>
+					<?php }
+
+					}?>
+					
+					
 					<?php }?>	
 <!--похожее товары-->
 <?php if(trim($this->getCurMenu()->getUrl()) == 'product'){
+
 $articles_query1 = '
 SELECT * FROM ws_articles WHERE
 ws_articles.`stock` >0
@@ -189,7 +236,7 @@ $finish_articles1 = wsActiveRecord::useStatic('Shoparticles')->findByQuery($arti
 <div class="block-title py-4 w-100">
 	<div class="vc_separator    vc_sep_pos_align_center vc_sep_color_black double-bordered-thick ">
 	<span class="vc_sep_holder vc_sep_holder_l"><span class="vc_sep_line"></span></span>
-	<h4><?=$this->trans->get('Мы рекомендуем');?><span>похожие товары с модельного ряда</span></h4>
+	<h4><?=$this->trans->get('Мы рекомендуем');?><span><?=$this->trans->get('похожие товары с модельного ряда')?></span></h4>
 	<span class="vc_sep_holder vc_sep_holder_r"><span class="vc_sep_line"></span></span>
 	</div>
 	</div>
@@ -199,7 +246,7 @@ foreach ($finish_articles1 as $block) {
 if ($block->getId()) {
 ?>
 		<div class="top_articles_item col-xs-12 col-sm-6 col-md-3" >
-        <a name="<?=$block->getId(); ?>" href="<?=$block->getPath();?>" style="    text-align: center;">
+        <a  href="<?=$block->getPath();?>" style="    text-align: center;">
         <img  src="<?=$block->getImagePath('detail'); ?>" alt="<?=$block->getBrand();?>" style="max-width:100%;"  >  
 		</a>
 				<div class="post-name" >
@@ -288,7 +335,7 @@ rnt('add_audience', {audienceId: '20676_254951d7-6d13-4ea2-a507-747c9e6fe802'});
 <?php } ?>
 <!-- socsety--><?php if(trim($this->getCurMenu()->getUrl()) != 'product' and trim($this->getCurMenu()->getUrl()) !='basket' and trim($this->getCurMenu()->getUrl()) != 'shop-checkout-step2')  echo $this->socsety;?><!-- exit socsety-->
 <!--пуш о смене email -->
-<?php if(!isset($_COOKIE['puch_close']) and isset($_COOKIE['s']) and $_COOKIE['s'] !='' ){ 
+<?php if(!isset($_COOKIE['puch_close']) and isset($_COOKIE['s']) and $_COOKIE['s'] !='' and false){ 
 if($this->ws->getCustomer()->getIsLoggedIn()){ 
 if( !$this->ws->getCustomer()->isClosePuch()){
  echo $this->puch;
@@ -299,9 +346,8 @@ echo $this->puch;
 } ?>
 <!--/пуш о смене email -->
 </div>
-</section>
 <!-- footer--><?php if($desctop == true){ echo $this->cached_bottom_menu; }else{ echo $this->cached_mobi_futer; } ?><!-- exit footer-->	
-<script defer type="text/javascript">
+<script>
     /* <![CDATA[ */
     var google_conversion_id = 1005381332;
     var google_conversion_label = "1vqdCJyg5gMQ1M2z3wM";
@@ -309,14 +355,11 @@ echo $this->puch;
     var google_remarketing_only = true;
     /* ]]> */
 </script>
-<script  type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js"></script>
+<script   src="//www.googleadservices.com/pagead/conversion.js"></script>
 <noscript><div style="display:inline;">
 <img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/1005381332/?value=0&amp;label=1vqdCJyg5gMQ1M2z3wM&amp;guid=ON&amp;script=0"/>
 </div></noscript>
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5DFS2PQ"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
+
 <script>
 function hideShowDiv(){//filter hide/show
 	$('#top').toggle();
@@ -338,19 +381,18 @@ nextArrow: '<img src="#" style="background-image:url(/img/slider/p-n-b.png);"  d
 });
 
 </script>
-</body>
-<script defer src="/js/engine.js?v=1.1"></script>
-<script defer type="text/javascript" src="/js/jquery.liFixar.js"></script>
-    <script  defer  type="text/javascript" src="/js/functions.js?v=1.2"></script>
-    <script defer  type="text/javascript" src="/js/cloud-zoom.1.0.2.js"></script>
-    <script defer  type="text/javascript" src="/js/jquery.cycle.all.js?v=3.0.3"></script>
-    <script defer type="text/javascript" src="/js/jquery.lightbox-0.5.js"></script>
+<script  src="/js/engine.js?v=1.1"></script>
+<script   src="/js/jquery.liFixar.js"></script>
+    <script src="/js/functions.js?v=1.2"></script>
+    <script   src="/js/cloud-zoom.1.0.2.js"></script>
+    <script  src="/js/jquery.cycle.all.js?v=3.0.3"></script>
+    <script  src="/js/jquery.lightbox-0.5.js"></script>
     <script  src="/css/bs/js/bootstrap.js?v=1.5"></script>
-	<script  type="text/javascript"  src="/css/bs/js/bootstrap.bundle.min.js?v=1.0"></script>
-	<script  type="text/javascript"  src="/js/select2/js/select2.min.js?v=1.0"></script>
+	<script   src="/css/bs/js/bootstrap.bundle.min.js?v=1.0"></script>
+	<script    src="/js/select2/js/select2.min.js?v=1.0"></script>
 	
-	<script  defer src="/js/slider-fhd/slick.min.js" type="text/javascript"></script>
-	<script defer type="text/javascript">
+	<script  src="/js/slider-fhd/slick.min.js" ></script>
+	<script >
         jQuery.browser = {};
         (function () {
             jQuery.browser.msie = false;
@@ -361,4 +403,5 @@ nextArrow: '<img src="#" style="background-image:url(/img/slider/p-n-b.png);"  d
             }
         })();
     </script>
+</body>
 </html>
