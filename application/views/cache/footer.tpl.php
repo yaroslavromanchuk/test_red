@@ -44,6 +44,9 @@
 <div  style="text-align:center;">
 	<span class="copirite">&copy; Интернет-магазин RED.UA, <?=date('Y');?></span>
 	<img style="-webkit-filter: grayscale(100%);margin-left: -15%;" src="/img/icons/payment_logo.png" alt="payment">
+	<?php
+//d($this->get, false);
+	if($this->get->controller == 'Home'){ ?><span class="copirite" style="left: 20px;">Раскрутка сайта — <a href="https://aweb.ua/">Aweb.ua</a></span><?php } ?>
 </div>
 </footer>
 <p id="back-top"><a href="#top"><span></span></a></p>

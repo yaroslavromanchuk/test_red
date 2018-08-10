@@ -845,12 +845,11 @@ padding: 2px;
     right: 20px;
     float: right;
 }
-.s-b{
-display:none;
-}
+
+/*
 #content form{
 border:1px dashed #aaa; padding: 10px;
-}
+}*/
 td img{
 z-index:10;}
 
@@ -1237,4 +1236,7 @@ width: 55px;
 
 .fc-datepicker-dark .ui-datepicker {
   background-color: #343a40;
+}
+.s-b{
+display:none;
 }

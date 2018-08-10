@@ -6,11 +6,16 @@ class Skidki extends wsActiveRecord
 
         protected function _defineRelations()
         {
-            $this->_relations = array('article' => array(
+            $this->_relations = array(
+			'article' => array(
                 'type' => 'hasOne',
                 'class' => 'Shoparticles',
                 'field' => 'article_id'),
-                'customer' => array(
+			'category_skidka' => array(
+                'type' => 'hasOne',
+                'class' => 'Shoparticles',
+                'field' => 'category_id'),
+            'customer' => array(
                     'type' => 'hasOne',
                     'class' => 'Customer',
                     'field' => 'customer_id'),
@@ -29,8 +34,8 @@ class Skidki extends wsActiveRecord
             return wsActiveRecord::useStatic('Skidki')->findAll(array('article_id' => $article_id, 'publish' => 1, 'start <= "' . date('Y-m-d H:i:s') . '"', 'finish >= "' . date('Y-m-d H:i:s') . '"'));
         }
 		
-		static function getActivCat($category_id, $dop_cat_id = ''){
-		return wsActiveRecord::useStatic('Skidki')->findFirst(array('(category_id = '.$category_id.' or category_id = '.$dop_cat_id.') and publish = 1 and start <= "' . date('Y-m-d H:i:s') . '" and  "' . date('Y-m-d H:i:s') . '" <= finish '));
+		static function getActivCat($category_id){
+		return wsActiveRecord::useStatic('Skidki')->findFirst(array("category_id = ".$category_id." and publish = 1 and start <= '". date('Y-m-d H:i:s') ."' and  '". date('Y-m-d H:i:s') ."' <= finish"));
 		}
 
     }

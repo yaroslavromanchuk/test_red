@@ -18,7 +18,7 @@
 
         private function  __construct()
         {
-            include_once($_SERVER['DOCUMENT_ROOT'] . '/application/packages/phpmailer/my.class.phpmailer.php');
+            require_once($_SERVER['DOCUMENT_ROOT'] . '/application/packages/phpmailer/my.class.phpmailer.php');
 
             $this->mimemail = new PHPMailer(true);
 			$this->admin_email = Config::findByCode('admin_email')->getValue();
@@ -87,7 +87,7 @@
                 $this->mimemail->Password = $this->admin_email_pass;
             }
 
-
+			//$this->mimemail->SMTPDebug = 2;
             $this->mimemail->IsHTML(true);
             $this->mimemail->CharSet = 'UTF-8';
             $this->mimemail->Subject = "=?UTF-8?B?" . base64_encode($subject) . "?=\r\n";

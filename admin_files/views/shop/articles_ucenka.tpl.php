@@ -1,21 +1,7 @@
-<img src="<?=SITE_URL.$this->getCurMenu()->getImage()?>" alt=""  class="page-img" />
-<h1>
-<?php
-	echo $this->getCurMenu()->getTitle();
-	echo $this->cur_category ? '( '.$this->cur_category->getName().' )' : '';
-?>
-</h1>
-<script type="text/javascript">
-    $(document).ready(function () {
-      		 $('img.img_pre').hover(function () {
-		$(this).parent().find('div.simple_overlay').show();
-        }, function () {
-		$(this).parent().find('div.simple_overlay').hide();
-        });
-    });
-</script>
-<?php if ($this->ucenka_ok) { ?><h2>Уценено <?=$this->ucenka_ok?> товаров</h2><?php } ?>
-
+<div class="row">
+<div class="panel panel-primary">
+<div class="panel-heading"><h3 class="panel-title"><?=$this->getCurMenu()->getTitle(); echo $this->cur_category ? '( '.$this->cur_category->getName().' )' : '';?></h3></div>
+<div class="panel-body">
 <form method="get" action="/admin/ucenka/">
     <p>Поиск:</p>
     <p>
@@ -24,18 +10,18 @@
 					name="from"/>
 		<br/>
         <input type="radio" name="proc" class="" value="1" <?php if (@$_GET['proc'] == 1 or !isset($_GET['proc'])) { ?>checked="checked" <?php } ?> /> Все
-		<input type="radio" name="proc" value="5" <?php if (@$_GET['proc'] == 5) { ?>checked="checked" <?php } ?>/> 5%
+		<!--<input type="radio" name="proc" value="5" <?php if (@$_GET['proc'] == 5) { ?>checked="checked" <?php } ?>/> 5%
 		<input type="radio" name="proc" value="10" <?php if (@$_GET['proc'] == 10) { ?>checked="checked" <?php } ?>/> 10%
-		<input type="radio" name="proc" value="15" <?php if (@$_GET['proc'] == 15) { ?>checked="checked" <?php } ?>/> 15%
+		<input type="radio" name="proc" value="15" <?php if (@$_GET['proc'] == 15) { ?>checked="checked" <?php } ?>/> 15%-->
 		<input type="radio" name="proc" value="20" <?php if (@$_GET['proc'] == 20) { ?>checked="checked" <?php } ?>/> 20%
-		<input type="radio" name="proc" value="25" <?php if (@$_GET['proc'] == 25) { ?>checked="checked" <?php } ?>/> 25%
+		<!--<input type="radio" name="proc" value="25" <?php if (@$_GET['proc'] == 25) { ?>checked="checked" <?php } ?>/> 25%-->
         <input type="radio" name="proc" value="30" <?php if (@$_GET['proc'] == 30) { ?>checked="checked" <?php } ?>/> 30%
-		<input type="radio" name="proc" value="35" <?php if (@$_GET['proc'] == 35) { ?>checked="checked" <?php } ?>/> 35%
+		<!--<input type="radio" name="proc" value="35" <?php if (@$_GET['proc'] == 35) { ?>checked="checked" <?php } ?>/> 35%-->
 		<input type="radio" name="proc" value="40" <?php if (@$_GET['proc'] == 40) { ?>checked="checked" <?php } ?>/> 40%
-		<input type="radio" name="proc" value="45" <?php if (@$_GET['proc'] == 45) { ?>checked="checked" <?php } ?>/> 45%
+		<!--<input type="radio" name="proc" value="45" <?php if (@$_GET['proc'] == 45) { ?>checked="checked" <?php } ?>/> 45%-->
         <input type="radio" name="proc" value="50" <?php if (@$_GET['proc'] == 50) { ?>checked="checked" <?php } ?>/> 50%
-        <input type="radio" name="proc" value="70" <?php if (@$_GET['proc'] == 70) { ?>checked="checked" <?php } ?>/> 70%
-        <input type="radio" name="proc" value="90" <?php if (@$_GET['proc'] == 90) { ?>checked="checked" <?php } ?>/> 90%
+        <input type="radio" name="proc" value="60" <?php if (@$_GET['proc'] == 60) { ?>checked="checked" <?php } ?>/> 60%
+       <!-- <input type="radio" name="proc" value="90" <?php if (@$_GET['proc'] == 90) { ?>checked="checked" <?php } ?>/> 90%-->
         <br/>
         Текст: <input type="text" value="<?= @$_GET['search'] ?>" name="search" class="form-control input" /><br/>
      <!--   Бренд: <select name="brand" class="form-control input">
@@ -119,26 +105,53 @@ if(strripos($value, 'SALE') === FALSE and strripos($value, 'NEW') === FALSE){
     <input type="button"  class="btn btn-small btn-default" value="Очистить" onclick="location.replace('/admin/ucenka/')"><br/>
     <br/>
 </form>
+  </div>
+  </div>
+
+</div>
+
+<script>
+    $(document).ready(function () {
+      		 $('img.img_pre').hover(function () {
+		$(this).parent().find('div.simple_overlay').show();
+        }, function () {
+		$(this).parent().find('div.simple_overlay').hide();
+        });
+    });
+</script>
+
+
+<div class="row">
+<div class="panel panel-primary">
+<div class="panel-heading"><h3 class="panel-title"> Уценить отмеченный товар</h3></div>
+<div class="panel-body">
+<p style="width:200px;">
+<label class="ckbox" data-tooltip="tooltip" title="Блокировать от дополнительных скидок"><input type="checkbox" name="skidka_block" id="skidka_block" value="1"><span>Блокировать от скидок</span></label></p>
 <p>
-    Уценить отмеченные на
     <select name="ucenka_to_otm" id='ucenka_to_otm' class="form-control input">
         <option value="0">Не уценять</option>
-			<option value="5" <?php if (@$_GET['proc'] == 5) { ?>selected="selected" <?php } ?>>5%</option>
+			<!--<option value="5" <?php if (@$_GET['proc'] == 5) { ?>selected="selected" <?php } ?>>5%</option>
 			<option value="10" <?php if (@$_GET['proc'] == 10) { ?>selected="selected" <?php } ?>>10%</option>
-			<option value="15" <?php if (@$_GET['proc'] == 15) { ?>selected="selected" <?php } ?>>15%</option>
+			<option value="15" <?php if (@$_GET['proc'] == 15) { ?>selected="selected" <?php } ?>>15%</option>-->
 			<option value="20" <?php if (@$_GET['proc'] == 20) { ?>selected="selected" <?php } ?>>20%</option>
-			<option value="25" <?php if (@$_GET['proc'] == 25) { ?>selected="selected" <?php } ?>>25%</option>
+			<!--<option value="25" <?php if (@$_GET['proc'] == 25) { ?>selected="selected" <?php } ?>>25%</option>-->
             <option value="30" <?php if (@$_GET['proc'] == 30) { ?>selected="selected" <?php } ?>>30%</option>
-			<option value="35" <?php if (@$_GET['proc'] == 35) { ?>selected="selected" <?php } ?>>35%</option>
+			<!--<option value="35" <?php if (@$_GET['proc'] == 35) { ?>selected="selected" <?php } ?>>35%</option>-->
 			<option value="40" <?php if (@$_GET['proc'] == 40) { ?>selected="selected" <?php } ?>>40%</option>
-			<option value="45" <?php if (@$_GET['proc'] == 45) { ?>selected="selected" <?php } ?>>45%</option>
+			<!--<option value="45" <?php if (@$_GET['proc'] == 45) { ?>selected="selected" <?php } ?>>45%</option>-->
             <option value="50" <?php if (@$_GET['proc'] == 50) { ?>selected="selected" <?php } ?>>50%</option>
-            <option value="70" <?php if (@$_GET['proc'] == 70) { ?>selected="selected" <?php } ?>>70%</option>
-            <option value="90" <?php if (@$_GET['proc'] == 90) { ?>selected="selected" <?php } ?>>90%</option>
+            <option value="60" <?php if (@$_GET['proc'] == 60) { ?>selected="selected" <?php } ?>>60%</option>
+           <!-- <option value="90" <?php if (@$_GET['proc'] == 90) { ?>selected="selected" <?php } ?>>90%</option>-->
     </select>
-    <input type="submit" id='ucenka_otm' class="btn btn-small btn-default" onclick="return false;" value="Уценить"/>
+    <input type="button" id='ucenka_otm' class="btn btn-small btn-default" onclick="return false;" value="Уценить"/>
 </p>
-<script type="text/javascript">
+</div>
+<div class="panel-footer">
+<?php if ($this->ucenka_ok) { ?><h2>Уценено <?=$this->ucenka_ok?> товаров</h2><?php } ?>
+</div>
+</div>
+</div>
+<script>
     $('document').ready(function () {
         $('#ucenka_otm').click(function () {
             if (confirm('Уценить все отмеченные товары ?')) {
@@ -154,45 +167,90 @@ if(strripos($value, 'SALE') === FALSE and strripos($value, 'NEW') === FALSE){
                             }
                             i++;
                         });
-                        window.location = '/admin/ucenka?ucenka_id=' + id + '&usenka_id_proc=' + $('#ucenka_to_otm option:selected').val();
+						block = 0;
+						proc = $('#ucenka_to_otm option:selected').val();
+				//	url = 'ucenka_id=' + id + '&usenka_id_proc=' + $('#ucenka_to_otm option:selected').val();
+					if($('#skidka_block').is(":checked")) block = 1; //url+='&skidka_block='+$('#skidka_block').val();
+                 //   alert(url);
+					sendUcenka(id, proc, block);
+					
+					
+					//    window.location = url;
 
                     }
                 }
             }
         });
     });
+
+	
+function sendUcenka(id = '', proc = 0, block = 0){
+	
+var url = '';
+
+if(id != '') url+='ucenka_id=' + id + '&usenka_id_proc=' + proc;
+
+if(block !=0) url+='&skidka_block='+block;
+
+	if(url != ''){
+	$.ajax({
+                type: "POST",
+                url: "/admin/ucenka/",
+				dataType: 'json',
+                data: url,
+                success: function (data) {
+				if(data.uceneno > 0){
+				for(var key in data.id){
+				$('.'+data.id[key]).hide();
+				}
+				}
+					console.log(data);
+                },
+				error:function(e){
+				console.log(e);
+						//$('.sarticle_return span').html('error_ajax');
+						//$('.sarticle_return').show();
+					}
+            });
+			}
+			return false;
+	
+	}
 </script>
 
-<a onclick="chekAll(); return false;" href="#">Отметить/Снять все</a>
+<!--<a onclick="chekAll(); return false;" href="#">Отметить/Снять все</a>-->
 <script type="text/javascript">
-    var clik_ok = 0;
-    function chekAll() {
-        if (!clik_ok) {
-            $('.article_check_box').attr('checked', true);
-            clik_ok = 1;
-        } else {
-            $('.article_check_box').attr('checked', false);
-            clik_ok = 0;
+ function chekAll() {
+		if($('.chekAll').is(":checked")){
+		$('.article_check_box').prop('checked', true);
+		}else{
+		$('.article_check_box').prop('checked', false);
+		}
+            return false;
         }
-
-        return false;
-    }
 </script>
+<div class="row">
+<div class="panel panel-primary">
+<div class="panel-heading"><h3 class="panel-title">Товар</h3></div>
+<div class="panel-body">
 <form method="post" action="/admin/shop-articles/changeinfo/">
-    <table id="products1" cellpadding="4" cellspacing="0" style="" class="table">
+    <table id="products1" cellpadding="4" cellspacing="0" style="" class="table table-bordered table-hover table-striped">
         <tr>
-            <th colspan="2">Действия</th>
+		<th><label class="ckbox" data-tooltip="tooltip" title="Выделить все заказы"><input onchange="chekAll();" class="chekAll" type="checkbox"/><span></span></label></th>
+            <th>Действия</th>
+			<th>Куплено</th>
             <th>Товар</th>
             <th>Цена</th>
-            <th>Уценен</th>
+			<th>Уценен</th>
+			<th>СБ</th>
+			<th>Скидка</br>(max)</th>
             <th>История</th>
             <th>Просмотров</th>
             <th>Дата создания</th>
             <th>Наличие</th>
             <th>Активность</th>
             <th>Категория</th>
-			<th>СБ</th>
-			<th>Скидка</br>(max)</th>
+			
         </tr>
         <?php
         $row = 'row1';
@@ -208,10 +266,10 @@ if(strripos($value, 'SALE') === FALSE and strripos($value, 'NEW') === FALSE){
             $is_first = (0 == $cur);
             $is_last = ($count == $cur + 1);
             ?>
-            <tr class="<?=$row?>">
+            <tr class="<?=$article->id?>">
+			<td><label class="ckbox"><input type="checkbox" class="article_check_box cheker" name="articel_for_change_category_<?=$article->id?>"/><span></span></label></td>
                 <td width="50px" class="kolomicon" valign="top">
-                    <input type="checkbox" class="article_check_box"
-                           name="articel_for_change_category_<?=$article->id?>"/>
+                    
                     <a href="<?=$article->getPath()?>" target="_blank">
 						<img src="<?=SITE_URL?>/img/icons/view-small.png" alt="Просмотр" data-placement="left" title="Смотреть на сайте"  data-tooltip="tooltip" class="img_return view_article"/>
 					</a>
@@ -238,21 +296,27 @@ if(strripos($value, 'SALE') === FALSE and strripos($value, 'NEW') === FALSE){
                 </td>
                 <td>
 
-                    <a href="#" class="real_price" onclick="return showPriceEditor(<?php echo $article->id; ?>)"
-                       id="link_edit_<?php echo $article->id; ?>">
-                        <?php echo $article->price;?>
-                    </a>
+                   <!-- <a href="#" class="real_price" onclick="return showPriceEditor(<?=$article->id?>)"
+                       id="link_edit_<?=$article->id?>">-->
+                      <p onclick="return showPriceEditor(<?=$article->id?>)" id="link_edit_<?=$article->id?>" style="cursor: pointer;font-size: 100%;"><?=$article->price?></p>
+                   <!-- </a>-->
 
-                    <div class="for_hide_<?php echo $article->id; ?>" style="display: none;">
-                        Новая:<input type="text" class="art_price" id="art_price_<?php echo $article->id; ?>"
-                                     value="<?php echo $article->price; ?>"/><br/>
-                        Старая:<input type="text" class="art_price_old"
-                                      id="art_price_old_<?php echo $article->id; ?>"
-                                      value="<?php echo $article->old_price; ?>"/>
+                    <div class="for_hide_<?=$article->id?>" style="display: none;">
+<div class="list-group">
+<?php
+for($i=20; $i<=60; $i+=10){ if($article->ucenka >= $i or $article->max_skidka <=$i) continue; ?>
+  <a href="#" onclick="return sendUcenka(<?=$article->id?>,<?=$i?>, 1);"  class="list-group-item list-group-item-action"><?=$i?></a>
+  <?php } ?>
+</div>
+
+
+                      <!--  Новая:<input type="text" class="art_price" id="art_price_<?=$article->id?>" value="<?=$article->price?>"/><br/>
+                        Старая:<input type="text" class="art_price_old" id="art_price_old_<?=$article->id?>" value="<?=$article->old_price?>"/>-->
                     </div>
-                    <input type="button" id="btn_edit_<?php echo $article->id; ?>" value="Сохранить"
-                           onclick="update_price(<?php echo $article->id; ?>)" class="for_hide"
-                           style="display: none"/>
+					
+                   <!-- <input type="button" id="btn_edit_<?=$article->id?>" value="Уценить" onclick="update_price(<?=$article->id?>)" class="for_hide" style="display: none"/>
+					
+					<input type="button" id="btn_edit_<?=$article->id?>" value="Сохранить" onclick="update_price(<?=$article->id?>)" class="for_hide" style="display: none"/>-->
       <!--              <br/>
 					<a href="" class="priceProc_5"
                        onclick=" return showPriceEditor(<?php echo $article->id; ?>);">-5%</a>
@@ -281,13 +345,16 @@ if(strripos($value, 'SALE') === FALSE and strripos($value, 'NEW') === FALSE){
 	-->
 
                 </td>
-                <td>
+				 <td>
                     <?php if ((int)$article->old_price and $article->old_price != $article->price) {
                         echo round((1 - $article->price / $article->old_price) * 100, 0)?> %
                     <?php } else { ?>
                         Не уценен.
                     <?php } ?>
                 </td>
+				<td><?=$article->min_price?></td>  
+				<td><?=$article->max_skidka?> %</td>
+               
                 <td>
 <?php foreach (wsActiveRecord::useStatic('UcenkaHistory')->findAll(array('article_id' => $article->id)) as $h) { 
  echo date('d-m-Y', strtotime($h->getCtime())).' - '.$h->getProc().'% ';
@@ -313,8 +380,7 @@ if(strripos($value, 'SALE') === FALSE and strripos($value, 'NEW') === FALSE){
                 <td>
                     <?php echo $mas[$article->category_id] ?>
                 </td>
-				<td><?php echo $article->min_price; ?></td>  
-				<td><?php echo $article->max_skidka; ?></td>
+				
             </tr>
         <?php
      $j++;   }
@@ -377,6 +443,9 @@ if(strripos($value, 'SALE') === FALSE and strripos($value, 'NEW') === FALSE){
     <br/>
 
 </form>
+</div>
+</div>
+</div>
 
 <script type="text/javascript">
     function delTovar(object, id) {
@@ -420,11 +489,9 @@ if(strripos($value, 'SALE') === FALSE and strripos($value, 'NEW') === FALSE){
     }
 
     function showPriceEditor(id) {
-        $('#link_edit_' + id).hide();
-        $('#btn_edit_' + id).show();
+       // $('#link_edit_' + id).hide();
+       // $('#btn_edit_' + id).show();
         $('.for_hide_' + id).show();
-
-
         return false;
     }
     $(document).ready(function () {
@@ -511,7 +578,7 @@ if(strripos($value, 'SALE') === FALSE and strripos($value, 'NEW') === FALSE){
             }
             $(this).parent().find('.art_price').val(Math.ceil(price * 0.5));
         });
-        $('.priceProc_70').click(function () {
+        $('.priceProc_60').click(function () {
             price = parseInt($(this).parent().find('.art_price_old').val());
             if (price == 0) {
                 price = parseInt($(this).parent().find('.art_price').val());

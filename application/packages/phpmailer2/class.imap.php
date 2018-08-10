@@ -48,27 +48,27 @@ public $do_debug = 2;
   }
    public function Authorise ($host = '', $port = false, $tval = false, $username ='', $password='', $debug_level = 0) {
  
-		//$this->host = $this->host;
+		$this->host = $this->host;
 
     //  If no port value is passed, retrieve it
    
-     // $this->port =$this->port;
+      $this->port =$this->port;
   
 
     //  If no port value is passed, retrieve it
   
-     // $this->tval = $this->tval;
+      $this->tval = $this->tval;
  
 
-    //$this->do_debug = $this->debug_level;
-   // $this->username = $this->username;
-    //$this->password = $this->password;
+    $this->do_debug = $this->debug_level;
+    $this->username = $this->username;
+    $this->password = $this->password;
 
     //  Refresh the error log
     $this->error = null;
 
     //  Connect
-    $result = $this->Connect($this->host, $this->port, $this->tval);
+    $result = $this->Connect($this->host, $this->port);
 
     if ($result) {
       $login_result = $this->Login($this->username, $this->password);
@@ -87,7 +87,7 @@ public $do_debug = 2;
     return false;
 	}
   
-   public function Connect ($host, $port = false, $username, $password) {
+   public function Connect ($host, $port = 0, $tval = 30) {
    //$mail = imap_open('{mail.server.com:143}', 'username', 'password');
     //  Are we already connected?
     if ($this->connected) {

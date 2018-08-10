@@ -1,15 +1,7 @@
 ﻿<img src="<?=SITE_URL.$this->getCurMenu()->getImage();?>" width="32" class="page-img" />
 <h2><?=$this->getCurMenu()->getTitle();?></h2>
 <?=$this->getCurMenu()->getPageBody();?>
-<?php
-
-
-
-	$type = array(
-	8 => 'Онлайн',
-	16 =>'Наложка'
-	);
- ?>
+<?php $type = array(8 => 'Онлайн', 16 =>'Наложка'); ?>
 <div style="display:none;">
 <!--<input type="text" name="city" placeholder="Город"  id="city" autocomplete="off" value=""/>
 	<input type="text" name="cityx"  id="cityx"  value=""/>-->
@@ -42,25 +34,101 @@ $uuid_branch = $mm->uuid_branch;
 $name = $or->middle_name.' '.$or->name.' '.$or->telephone;
 echo '<input type="text" hidden id="name" value="'.$name.'">';
  ?>
-<table  class="table" style=" width: 500px;   margin: auto;">
-<tr><td colspan="2"><?=$name?></td></tr>
-<tr><th>Заказ</th><td><input type="text" class="form-control input" name="clientbarcode" id="clientbarcode" disabled value="<?=$or->id;?>" ></td></tr>
-<tr><th>Статус</th><td><input type="text" class="form-control input" name="status"  disabled id="Status" value="<?=$this->order_status[$or->status];?>"></td></tr>
-<tr><th>Тип оплаты</th><td><input type="text" class="form-control input" name="type"  disabled id="Type" data-id="<?=$or->delivery_type_id?>" value="<?=$type[$or->delivery_type_id]?>"></td></tr>
-<tr><th>Город</th><td><input type="text" class="form-control input" name="sityrecipient_np" autocomplete="off" id="CityRecipient_np" value="<?php if(@$uuid_city){ echo $or->city;}?>"><input type="text" hidden name="citycecipient" id="CityRecipient" value="<?=$uuid_city?>" ></td>
-</tr><tr><th>Отделение</th><td><input class="form-control input" type="text" autocomplete="off" name="recipient_np" id="Recipient_np" value="<?php if(@$uuid_branch){ echo $or->sklad;}?>"><input type="text" hidden name="recipient" id="Recipient" value="<?=$uuid_branch?>" ></td></tr>
-<tr><th>Получатель</th><td><input class="form-control input" type="text" autocomplete="off" name="recipientname_np" id="RecipientName_np" value="">
-<input type="text" hidden name="recipientname" id="RecipientName" value="" ><input type="button" class="btn btn-small btn-default" data-placement="right"  data-tooltip="tooltip" title="Добавить новый контакт" value="+" id="new_contr"><input type="button" style="display:none;" class="btn btn-small btn-default" data-placement="right"  data-tooltip="tooltip" title="Редактировать контакт" value="..." id="update_contr"></td></tr>
-<tr><th>Телефон</th><td><input class="form-control input" type="text" autocomplete="off" name="phones" id="Phones" value=""></td></tr>
-<tr><th>Масса</th><td><input class="form-control input" type="text" name="weight" id="weight"  value="1"></td></tr>
-<tr><th>Тип посылки</th><td><select name="сargoеype" id="сargoеype" class="form-control input" data-placement="right"  data-tooltip="tooltip" title="Посылка <= 30кг. Вантаж > 30кг." ><option value="Parcel" >Посилка</option><option  value="Cargo">Вантаж</option></select><input type="text" name="s" id="s" placeholder="Ш" class="form-control input" style="width:50px;"><input type="text" name="d" id="d" class="form-control input" style="width:50px;" placeholder="Д"><input type="text" name="v" id="v" placeholder="В" class="form-control input" style="width:50px;"> см</td></tr>
-<tr><th>Объём</th><td><input disabled  class="form-control input" type="text" name="volumegeneral" id="volumegeneral" value="0.0004"  ></td></tr>
-<tr><th>Сумма</th><td><input class="form-control input" type="text" name="cost" id="cost" value="<?=$or->amount;?>" ></td></tr>
-<tr><th>Мест</th><td><input class="form-control input" type="text" name="seatsamount" id="seatsamount" value="1"></td></tr>
-</table>
-<input align="center" type="button" style="margin-top: 15px;" class="btn btn-small btn-default" data-placement="right"  data-tooltip="tooltip" title="Создать накладную" value="Создать" id="new_ttn">
+ <div class="row">
+ <div class="panel panel-danger">
+ <div class="panel-heading"><h3 class="panel-title"><?=$name?></h3></div>
+ <div class="panel-body">
+  <div class="row">
+  <div class="col-sm-12 col-md-12 col-lg-12">
+  <div class="panel panel-default" style="margin-bottom:5px;">
+  <div class="panel-body">
+ <div class="form-group" style="display:  inline-block;">
+    <label for="order" class="ct-110 control-label">Заказ:</label>
+    <div class="col-xs-6">
+	<input type="text" class="form-control input" name="clientbarcode" id="clientbarcode" disabled value="<?=$or->id;?>" >
+    </div>
+  </div>
+   <div class="form-group" style="display:  inline-block;">
+    <label for="order" class="ct-110 control-label">Статус:</label>
+    <div class="col-xs-6">
+	<input type="text" class="form-control input" name="status"  disabled id="Status" value="<?=$this->order_status[$or->status];?>">
+    </div>
+  </div>
+     <div class="form-group" style="display:  inline-block;">
+    <label for="order" class="ct-110 control-label">Тип оплаты:</label>
+    <div class="col-xs-6">
+	<input type="text" class="form-control input" name="type"  disabled id="Type" data-id="<?=$or->delivery_type_id?>" value="<?=$type[$or->delivery_type_id]?>">
+    </div>
+  </div>
+
+  <div class="form-group" style="display:  inline-block;">
+    <label for="order" class="ct-110 control-label">Объём:</label>
+    <div class="col-xs-6">
+	<input disabled  class="form-control input" type="text" name="volumegeneral" id="volumegeneral" value="0.0004"  >
+    </div>
+  </div>
+  </div>
+  </div>
+   </div>
+   <div class="col-sm-12 col-md-12 col-lg-12">
+   
+     <div class="panel panel-default" style="margin-bottom:5px;">
+  <div class="panel-body">
+<div class="col-sm-12 col-md-12 col-lg-6" style="    text-align: left;">
+			<div class="form-group">
+     <label class="form-control-label">Город: <span class="tx-danger">*</span></label>
+	<input type="text" class="form-control " name="sityrecipient_np" autocomplete="off" required id="CityRecipient_np" value="<?php if(@$uuid_city){ echo $or->city;}?>"><input type="text" hidden name="citycecipient" id="CityRecipient" value="<?=$uuid_city?>" >
+      </div>
+	  
+		<div class="form-group">
+     <label class="form-control-label">Отделение: <span class="tx-danger">*</span></label>
+<input class="form-control " type="text" autocomplete="off" name="recipient_np" id="Recipient_np" value="<?php if(@$uuid_branch){ echo $or->sklad;}?>"><input type="text" hidden name="recipient" id="Recipient" value="<?=$uuid_branch?>" >
+      </div>
+
+		<div class="form-group">
+     <label class="form-control-label">Получатель: <span class="tx-danger">*</span></label>
+	 <div>
+<input class="form-control" type="text" autocomplete="off" name="recipientname_np" id="RecipientName_np" value="" style="width:80%; float:left;" required>
+<input type="text" hidden name="recipientname" id="RecipientName" value="" ><input type="button" class="btn btn-small btn-default" data-placement="right"  data-tooltip="tooltip" title="Добавить новый контакт" value="+" id="new_contr"><input type="button" style="display:none;" class="btn btn-small btn-default" data-placement="right"  data-tooltip="tooltip" title="Редактировать контакт" value="..." id="update_contr">
+</div>
+      </div>
+		<div class="form-group">
+     <label class="form-control-label">Телефон: <span class="tx-danger">*</span></label>
+<input class="form-control" type="text" autocomplete="off" name="phones" id="Phones" value="" required>
+      </div>
+	</div>
+	
+	<div class="col-sm-12 col-md-12 col-lg-6" style="    text-align: left;">
+	<div class="form-group">
+     <label class="form-control-label">Масса: <span class="tx-danger">*</span></label>
+<input class="form-control" type="text" name="weight" id="weight"  value="1" required>
+      </div>
+	  	<div class="form-group">
+     <label class="form-control-label">Тип посылки: <span class="tx-danger">*</span></label>
+	 <div>
+<select name="сargoеype" id="сargoеype" class="form-control " style="width: 50%;    float: left;" data-placement="right" required  data-tooltip="tooltip" title="Посылка <= 30кг. Груз > 30кг." ><option value="Parcel" >Посылка</option><option  value="Cargo">Груз</option></select><input type="text" name="s" id="s" placeholder="Ш" class="form-control " style="width:50px;    float: left;"><input type="text" name="d" id="d" class="form-control" style="width:50px;    float: left;" placeholder="Д"><input type="text" name="v" id="v" placeholder="В" class="form-control " style="width:50px;">
+      </div>
+	  </div>
+<div class="form-group">
+     <label class="form-control-label">Сумма: <span class="tx-danger">*</span></label>
+<input class="form-control " type="text" name="cost" required id="cost" value="<?=$or->amount;?>" >
+      </div>
+	  <div class="form-group">
+     <label class="form-control-label">Мест: <span class="tx-danger">*</span></label>
+<input class="form-control " type="text" name="seatsamount" required id="seatsamount" value="1">
+      </div>
+	</div>
+  </div>
+   </div>
+   </div>
+ </div>
+<input align="center" type="button" style="margin-top: 15px;" class="btn btn-lg btn-primary" data-placement="right"  data-tooltip="tooltip" title="Создать накладную" value="Создать" id="new_ttn">
 <p align="center" id="pageslist"></p>
+</div>
+</div>
+</div>
 <?php } ?>
+
 	<?php 
 	if($this->all_order and !isset($_GET['id'])){
 	//require_once('np/NovaPoshta.php');
@@ -70,7 +138,7 @@ echo '<input type="text" hidden id="name" value="'.$name.'">';
 	<a onclick="chekAll(); return false;" style="padding-right: 5px;" href="#">Отметить/Снять все</a> -  <span id="ck_l">0</span>
 	<a onclick="printRegistr(); return false;" class="button" href="#">Создать/Печать реестр</a>
 	<a href="#" class="button" onclick="GoNp(); return false;" id="np_go" style="display:none;float: right;" >Сменить статус на "Отправлен Новой Почтой"</a></div>
-	<script type="text/javascript">
+	<script>
     var clik_ok = 0;
     function chekAll() {
         if (!clik_ok) {
@@ -137,13 +205,12 @@ echo '<input type="text" hidden id="name" value="'.$name.'">';
 	?>
 </div>
 <link rel="stylesheet" href="/admin_files/scripts/jquery-ui.css" type="text/css" media="screen">
-<script type="text/javascript" src="/admin_files/scripts/jquery-ui.js">
-</script><script type="text/javascript" src="/js/call/jquery.mask.js?v=20131212"></script>
+<script  src="/admin_files/scripts/jquery-ui.js"></script>
+<script src="/js/call/jquery.mask.js?v=20131212"></script>
+
 <script>
 $(function(){ $("#Phone").mask("389999999999");});
 $(function(){ $("#Phones").mask("389999999999");});
-</script>
-<script type="text/javascript">
     $(document).ready(function () {
 	
 //var ck = (':checkbox:checked').length;
@@ -184,34 +251,23 @@ $(function(){ $("#Phones").mask("389999999999");});
 				}
 	
 	if( id != ''){
-	var dat = 'metod=new_registr&id='+id;
-	var url = '/admin/novapochta/?';
 	$.ajax({
-		beforeSend: function( data ) {
-		$('#popup').html('<img  id="loading" src="/img/loader-article.gif">');
-		fopen();
-			},
-                url: url,
+                url: '/admin/novapochta/?',
                 type: 'POST',
                 dataType: 'json',
-                data: dat,
+                data: 'metod=new_registr&id='+id,
                 success: function (res) {
-				FormClose();
 				console.log(res);
 				if(res.data[0].Ref){
-				$('#popup').html('СОЗДАН РЕЕСТР №'+res.data[0].Number);
-				fopen();
+				fopen('РЕЕСТР','СОЗДАН РЕЕСТР №'+res.data[0].Number);
 				window.open("https://my.novaposhta.ua/scanSheet/printScanSheet/refs%5B%5D/"+res.data[0].Ref+"/type/html/apiKey/2c28a9c1a5878cb01c8f9c440e827a61");
 				}
                 }
             });
 	
 	}else{
-
-	$('#popup').html('Вы не выбрали накладные для побавления в реестр');
-	fopen();
+	fopen('Создание реестра','Вы не выбрали накладные для побавления в реестр');
 	}
-	
 	return false;
 	}
 	
@@ -283,9 +339,6 @@ $(function(){ $("#Phones").mask("389999999999");});
 var new_data = 'metod=update_counterparties&ref='+$('#ref').val()+'&lastname='+$('#LastName').val()+'&firstname='+$('#FirstName').val()+'&middlename='+$('#MiddleName').val()+'&phone='+$('#Phone').val();
 		//console.log(url+new_data);
 	$.ajax({
-		beforeSend: function( data ) {
-		//$('#pageslist').html('<img  id="loading" src="/img/loader-article.gif">');
-			},
                 url: url,
                 type: 'POST',
                 dataType: 'json',
@@ -326,9 +379,6 @@ var url = '/admin/novapochta/?';
 var new_data = 'metod=new_counterparties&lastname='+$('#LastName').val()+'&firstname='+$('#FirstName').val()+'&middlename='+$('#MiddleName').val()+'&phone='+$('#Phone').val();
 		//console.log(url+new_data);
 	$.ajax({
-		beforeSend: function( data ) {
-		//$('#pageslist').html('<img  id="loading" src="/img/loader-article.gif">');
-			},
                 url: url,
                 type: 'POST',
                 dataType: 'json',

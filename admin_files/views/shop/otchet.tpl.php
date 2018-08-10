@@ -49,7 +49,6 @@ AND  `ws_articles`.`active` =  'y'";
     <p class="checkbox" >
         Дата с: <input type="date" class="form-control input" value="<?=date('Y-m-d'); ?>" name="order_from"/>
         по: <input type="date" class="form-control input" value="<?=date('Y-m-d'); ?>" name="order_to"/>   <input type="submit" class="btn btn-small btn-default" value="Скачать"/>
-     
 	 <br>
 	 <label class="ckbox">
 			 <input type="checkbox" class="order-item cheker" name="no_new" id="no_new"  value="1" >

@@ -256,7 +256,7 @@
 		this.each(function () {
 			var relOpts,
 			opts;
-			eval('var	a = {' + $(this).attr('rel') + '}');
+			eval('var	a = {' + $(this).attr('data-rel') + '}');
 			relOpts = a;
 			if ($(this).is('.cloud-zoom')) {
 				$(this).css({
@@ -275,19 +275,22 @@
 			} else if ($(this).is('.cloud-zoom-gallery')) {
 				opts = $.extend({}, relOpts, options);
 				$(this).data('relOpts', opts);
+				
 				$(this).bind('click', $(this), function (event) {
+				
 					var data = event.data.data('relOpts');
 					$('#cloud_big_src').html($(this).attr('href'));
 					$('#' + data.useZoom).data('zoom').destroy();
 					$('#cloud_big_src').html(event.data.attr('href'));
 					if ($(this).children('div').html() == null) {
-						$('#' + data.useZoom).attr('href', $('#zoom1').attr('href'))
+						$('#' + data.useZoom).attr('href', $('#zoom').attr('href'))
 					} else {
 						$('#' + data.useZoom).attr('href', $(this).children('div').html())
 					}
 					$('#' + data.useZoom + ' img').attr('src', event.data.data('relOpts').smallImage);
 					$('#' + event.data.data('relOpts').useZoom).CloudZoom();
 					return false;
+					
 				});
 			}
 		});

@@ -55,7 +55,8 @@ class Finder extends wsActiveRecord
 		}elseif($category_id == 999){
 		$where .= ' AND `ws_articles`.`data_ucenki` > "' . date('Y-m-d 00:00:00').'" and `ws_articles`.`ucenka` > 20';
 		}elseif($category_id and $category_id != 267){
-            $where .= ' AND (ws_articles.category_id IN (' . (implode(',', $category_kids)) . ') OR ws_articles.dop_cat_id IN (' . (implode(',', $category_kids)) . '))';
+		//d($category_kids, false);
+		if(count($category_kids) > 0 and @$category_kids[0]) $where .= ' AND (ws_articles.category_id IN (' . (implode(',', $category_kids)) . ') OR ws_articles.dop_cat_id IN (' . (implode(',', $category_kids)) . '))';
         }
 
         if ($search) {
@@ -74,18 +75,18 @@ class Finder extends wsActiveRecord
                                         or long_text like "%' . mysql_real_escape_string($search) . '%" or long_text_uk like "%' . mysql_real_escape_string($search) . '%"))';
 
             } else {
-                $where .= ' AND ( model like "%' . mysql_real_escape_string($search) . '%" or model_uk like "%' . mysql_real_escape_string($search) . '%"
-            or brand like "%' . mysql_real_escape_string($search) . '%"
-            or long_text like "%' . mysql_real_escape_string($search) . '%" or long_text_uk like "%' . mysql_real_escape_string($search) . '%" or ws_articles_sizes.code like "' . mysql_real_escape_string($search) . '" )';
+                $where .= ' AND ( ws_articles.model like "%' . mysql_real_escape_string($search) . '%" or ws_articles.model_uk like "%' . mysql_real_escape_string($search) . '%"
+            or ws_articles.brand like "%' . mysql_real_escape_string($search) . '%"
+            or ws_articles.long_text like "%' . mysql_real_escape_string($search) . '%" or ws_articles.long_text_uk like "%' . mysql_real_escape_string($search) . '%" or ws_articles_sizes.code like "%' . mysql_real_escape_string($search) . '%" )';
             }
         }
-        if (count(@$addtional['prices_min_max'])) {
-            $where .= ' AND (ws_articles.price >= ' . (float)$addtional['prices_min_max']['min'] . ' AND ws_articles.price <= ' . (float)$addtional['prices_min_max']['max'] . ')';
-        }
+       // if (count(@$addtional['prices_min_max'])) {
+       //     $where .= ' AND (ws_articles.price >= ' . (float)$addtional['prices_min_max']['min'] . ' AND ws_articles.price <= ' . (float)$addtional['prices_min_max']['max'] . ')';
+       // }
 
 
         if (count(@$addtional['categories'])) {
-           $where .= ' AND (ws_articles.category_id IN (' . implode(',', $addtional['categories']) . ') OR ws_articles.dop_cat_id IN (' . implode(',', $addtional['categories']) . '))';
+   $where .= ' AND (ws_articles.category_id IN (' . implode(',', $addtional['categories']) . ') OR ws_articles.dop_cat_id IN (' . implode(',', $addtional['categories']) . '))';
         }
 
         if (count(@$addtional['colors'])) {
@@ -114,14 +115,12 @@ class Finder extends wsActiveRecord
         }
 
         $count_article_query = 'SELECT count(distinct(ws_articles.id)) as cnt' . $where;
+//d($count_article_query, false);
+        $min_max_price = false;//'SELECT MIN(price) as min, MAX(price) as max ' . $where;
 
-        $min_max_price = 'SELECT MIN(price) as min, MAX(price) as max ' . $where;
 
-
-        $total_articles = wsActiveRecord::useStatic('Shoparticles')->findByQuery($count_article_query)->at(0);
-        if ($total_articles->getCnt() > 0){
-            $total_articles = $total_articles->getCnt();
-			}else{
+        $total_articles = wsActiveRecord::useStatic('Shoparticles')->findByQuery($count_article_query)->at(0)->getCnt();
+        if (!$total_articles){
 			$rest = iconv_substr($search, 0, -1, 'UTF-8');
 			$total_articles = 0;
 			$where = str_replace($search, mysql_real_escape_string($rest), $where);
@@ -133,7 +132,8 @@ class Finder extends wsActiveRecord
 
         $articles = wsActiveRecord::useStatic('Shoparticles')->findByQuery($articles_query);
 
-        $min_max_price = wsActiveRecord::useStatic('Shoparticles')->findByQuery($min_max_price)->at(0);
+        $min_max_price =  false;//wsActiveRecord::useStatic('Shoparticles')->findByQuery($min_max_price)->at(0);
+		
         return array(
 			'search'=> $search,
             'count' => $total_articles,
@@ -174,7 +174,7 @@ class Finder extends wsActiveRecord
 		$where .= ' AND `ws_articles`.`data_new` < "' . date('Y-m-d') . '" AND `ws_articles`.`data_new` >= "' .$c_d. '" ';
 		//var_dump($c_d);
 		}elseif ($category_id and $category_id != 267) {
-            $where .= ' AND (ws_articles.category_id IN (' . (implode(',', $category_kids)) . ') OR ws_articles.dop_cat_id IN (' . (implode(',', $category_kids)) . '))';
+         if(count($category_kids) > 0 and @$category_kids[0]) $where .= ' AND (ws_articles.category_id IN (' . (implode(',', $category_kids)) . ') OR ws_articles.dop_cat_id IN (' . (implode(',', $category_kids)) . '))';
         }
 	
 
@@ -194,9 +194,9 @@ class Finder extends wsActiveRecord
                                         or long_text like "' . mysql_real_escape_string($search) . '%"))';
 
             } else {
-                $where .= ' AND ( model like "%' . mysql_real_escape_string($search) . '%"
-            or brand like "%' . mysql_real_escape_string($search) . '%"
-            or long_text like "' . mysql_real_escape_string($search) . '%")';
+                $where .= ' AND ( ws_articles.model like "%' . mysql_real_escape_string($search) . '%"
+            or ws_articles.brand like "%' . mysql_real_escape_string($search) . '%"
+            or ws_articles.long_text like "%' . mysql_real_escape_string($search) . '%" or ws_articles_sizes.code like "%'.mysql_real_escape_string($search).'%")';
             }
         }
 
@@ -230,7 +230,7 @@ class Finder extends wsActiveRecord
         }
 
         //Categories
-        $categories = 'SELECT ws_articles.category_id, COUNT( DISTINCT (`ws_articles`.`id`) ) AS cnt ' . $where.' group by ws_articles.category_id order by ws_articles.category_id';
+        $categories = 'SELECT ws_articles.category_id, COUNT(`ws_articles`.`id`) AS cnt ' . $where.' group by ws_articles.category_id order by ws_articles.category_id';
         $categories = wsActiveRecord::useStatic('Shoparticles')->findByQuery($categories);
         //convert to array
         $array = array();
@@ -275,7 +275,7 @@ class Finder extends wsActiveRecord
         //Colors
         $arr = array();
 		$array = array();
-        $colors = 'SELECT  ws_articles_sizes.id_color, COUNT( DISTINCT (ws_articles_sizes.id_article) ) AS ctn ' . $where.' group by ws_articles_sizes.id_color';
+        $colors = 'SELECT  ws_articles_sizes.id_color, COUNT(ws_articles_sizes.id_article) AS ctn ' . $where.' group by ws_articles_sizes.id_color';
 		//d($colors, true);
         $colors = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery($colors);
 		
@@ -290,7 +290,7 @@ class Finder extends wsActiveRecord
 		
         //Sizes
         $array = array();
-        $sizes = 'SELECT ws_articles_sizes.id_size, COUNT( DISTINCT (ws_articles_sizes.id_article) ) AS ctn ' . $where.' group by ws_articles_sizes.id_size';
+        $sizes = 'SELECT ws_articles_sizes.id_size, COUNT(ws_articles_sizes.id_article) AS ctn ' . $where.' group by ws_articles_sizes.id_size';
 		
         $sizes = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery($sizes);
         foreach ($sizes as $size) {
@@ -304,7 +304,7 @@ class Finder extends wsActiveRecord
         $sizes = $array;
 		
         //Label
-        $labels = 'SELECT ws_articles.label_id, COUNT( DISTINCT (ws_articles_sizes.id_article) ) AS ctn ' . $where.' and ws_articles.label_id !=0 group by label_id';
+        $labels = 'SELECT ws_articles.label_id, COUNT(ws_articles.id) AS ctn ' . $where.' and ws_articles.label_id !=0 group by ws_articles.label_id';
         $labels = wsActiveRecord::useStatic('Shoparticles')->findByQuery($labels);
 		$array = array();
         foreach ($labels as $lab) {
@@ -319,7 +319,7 @@ class Finder extends wsActiveRecord
         //Brand
 
         $array = array();
-        $brands = 'SELECT brand_id, brand, COUNT( DISTINCT (`ws_articles`.`id`) ) AS cnt '. $where.' group by brand_id ORDER BY brand ';
+        $brands = 'SELECT brand_id, brand, COUNT( `ws_articles`.`id` ) AS cnt '. $where.' group by `ws_articles`.brand_id ORDER BY `ws_articles`.brand ';
         $brands = wsActiveRecord::useStatic('Shoparticles')->findByQuery($brands);
         $i = 0;
         foreach ($brands as $brand) {
@@ -347,7 +347,7 @@ class Finder extends wsActiveRecord
 		
 		//Sezon
 		$array = array();
-		$sezons = 'SELECT `ws_articles`.`sezon`, COUNT( DISTINCT (`ws_articles`.`id`) ) AS ctn ' . $where.' AND  `ws_articles`.`sezon` IS NOT NULL GROUP BY  `ws_articles`.`sezon`';
+		$sezons = 'SELECT `ws_articles`.`sezon`, COUNT(`ws_articles`.`id` ) AS ctn ' . $where.' AND  `ws_articles`.`sezon` IS NOT NULL GROUP BY  `ws_articles`.`sezon`';
         $sezons = wsActiveRecord::useStatic('Shoparticles')->findByQuery($sezons);
         foreach ($sezons as $sez) {
 		if($sez->getSezon() > 0){
@@ -361,7 +361,7 @@ class Finder extends wsActiveRecord
 		$sezons = $array;
 		//Ucenka
 		$array = array();
-		$ucenka = 'SELECT `ws_articles`.`ucenka`, COUNT( DISTINCT (`ws_articles`.`id`) ) AS cnt ' . $where;
+		$ucenka = 'SELECT `ws_articles`.`ucenka`, COUNT(`ws_articles`.`id`) AS cnt ' . $where;
         $ucenka = wsActiveRecord::useStatic('Shoparticles')->findByQuery($ucenka.' and `ws_articles`.`ucenka` != 0 GROUP BY  `ws_articles`.`ucenka`');
         foreach ($ucenka as $uc) {
 		if($uc->getCnt() > 0){

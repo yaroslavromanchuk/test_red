@@ -1,7 +1,25 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 <?php
 $days = array( 1 => 'Понедельник' , 'Вторник' , 'Среда' , 'Четверг' , 'Пятница' , 'Суббота' , 'Воскресенье' );
-echo date( $days[date( 'N' )] . ' d.m.Y' );
+//echo date( $days[date( 'N' )] . ' d.m.Y' );
+//$html=file_get_contents('https://www.red.ua/statusorder');
+//echo print_r($html);
+$p = array('send'=>'go');
+//$p = json_encode($p);
+//echo print_r($p);
+//$p = json_decode($p);
+//echo print_r($p->send);
+$myCurl = curl_init();
+curl_setopt_array($myCurl, array(
+    CURLOPT_URL => 'https://www.red.ua/statusorder',
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_POST => true,
+    CURLOPT_POSTFIELDS => $p
+));
+$response = curl_exec($myCurl);
+curl_close($myCurl);
+echo json_decode($response)->result;
+//echo "Ответ на Ваш запрос: ".$response;
 //$today = date("D M j G:i:s T Y"); 
 // $item_time = strtotime('2018-05-13');
       //  $day = (time() - $item_time) / (24 * 60 * 60);

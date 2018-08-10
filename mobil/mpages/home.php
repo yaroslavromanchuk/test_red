@@ -1,4 +1,3 @@
-<?php defined('EXEC') or die; ?>
 <!--новый банер-->
 <div class="row">
 	<div class="slider-baner col-md-12 col-xl-12 px-0" >
@@ -15,31 +14,23 @@
 <!--для акции-->
 <?php
 $cats = wsActiveRecord::useStatic('Shopcategories')->findAll(array('active'=>1, 'parent_id'=>0), array(), array('sequence'=>'ASC'));
-$exit = $cats->count();
-$i = 0;
 ?>
 <div class="row categories-navigation">
 	<div class="col-md-12">
+			<div class="row">
 	<?php
-		for($i=0; $i<$exit; $i++){
+	$i=0;
+		foreach($cats as $c){
+		if($i == 2 or $i == 4 or $i == 6 or $i == 8) echo '</div><div class="row">';
 		?>
-		<div class="row">
-		<?php if($i==$exit)break;?>
 			<div class="col-xs-12" style="width:50%;">
-				<a class="category" href="<?php if($cats[$i]->id==106 ||$cats[$i]->id==146 ||$cats[$i]->id==12 || $cats[$i]->id==248 || $cats[$i]->id==11){echo $cats[$i]->getPath();}else if($cats[$i]->id==267){ echo '/category/id/';}else{echo'?page=m_g&id='.$cats[$i]->id;} ?>">
-					<div class="category-logo" style="background-image: url('<?php echo $cats[$i]->getLogo();?>');" > </div>
-					<p class="category-header"><?=$cats[$i]->getName();?></p>
+				<a class="category" href="<?php if($c->id==106 ||$c->id==146 ||$c->id==12 || $c->id==248 || $c->id==11){echo $c->getPath();}else if($c->id==267){ echo '/category/id/';}else{echo'?page=m_g&id='.$c->id;} ?>">
+					<div class="category-logo" style="background-image: url('<?php echo $c->getLogo();?>');" > </div>
+					<p class="category-header"><?=$c->getName();?></p>
 				</a>
 			</div>
-		<?php $i++; if($i==$exit)break;?>
-			<div class="col-xs-4" style="width:50%;">
-				<a class="category" href="<?php  if($cats[$i]->id==106 || $cats[$i]->id== 146 || $cats[$i]->id == 12 || $cats[$i]->id==248 || $cats[$i]->id==11){echo $cats[$i]->getPath();}else if($cats[$i]->id==267){ echo '/category/id/';}else{echo '?page=m_g&id='.$cats[$i]->id;}?>">
-					<div class="category-logo" style="background-image: url('<?=$cats[$i]->getLogo();?>');" ></div>
-					<p class="category-header"><?=$cats[$i]->getName();?></p>
-				</a>
-			</div>
-		</div>
-	<?php } ?>
+	<?php $i++; } ?>
+	</div>
 	</div>
 </div>
 </div>

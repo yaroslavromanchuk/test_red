@@ -103,11 +103,11 @@ $( document ).ready(function() {
    }
   </script>
 
-<form method="POST" id="mail_form" action="<?php echo $this->path; ?>generalmailing/" target="_blank">
+<form method="POST" id="mail_form" action="<?=$this->path?>generalmailing/" target="_blank">
     <table id="editpage" cellpadding="5" cellspacing="0" class="table">
         <tr>
 		    <td class="kolom1">Начало обращения</td>
-            <td><input type="hidden" id="id_post"  name="id_post" value="<?php if($this->pemail->id){ echo $this->pemail->id;} ?>"/>
+            <td><input type="hidden" id="id_post"  name="id_post" value="<?=@$this->pemail->id?$this->pemail->id:''?>">
 			<input name="subject_start" type="text" class="form-control input w500"  disabled
                        value="<?php if(@$this->post->subject_start){ echo $this->post->subject_start;}elseif($this->pemail->subject_start){ echo $this->pemail->subject_start;} ?>"/><label><input type="checkbox" id="s_start" name="s_start" onclick="agreeForm(this.form)" value="1">Добавить приветствие</label></td>
 					   </tr>
@@ -120,7 +120,7 @@ $( document ).ready(function() {
             <td class="kolom1">Ссылка для статистики<br/>
             	http://www.red.ua/?</td>
             <td><input name="extra_url" type="text" class="form-control input w500" 
-                       value="<?php echo @$this->post->extra_url ? $this->post->extra_url : 'utm_source=emailletter_'.date('d.m.Y').'&utm_medium=email&utm_content=EmailLetter&utm_campaign=EmailLetter'; ?>"/>
+                       value="<?=@$this->post->extra_url ? $this->post->extra_url : 'utm_source=emailletter_'.date('d.m.Y').'&utm_medium=email&utm_content=EmailLetter&utm_campaign=EmailLetter'; ?>"/>
 					   <input name="unsubscribe" hidden type="text" 
                        value="<?=@$this->post->unsubscribe ? $this->post->unsubscribe : '&utm_source=unsubscribe_'.date('d.m.Y').'&utm_medium=email&utm_content=EmailLetter&utm_campaign=EmailLetter'?>"/>
 					   </td>
@@ -302,7 +302,7 @@ var new_data = data + '&intro='+intro+'&ending='+ending+ '&save='+ save;
         function sendMail(url, data, go) {
 		var intro = tinymce.get('page_body').getContent().replace(/&/g,"#");
 		var ending = tinymce.get('page_ending').getContent().replace(/&/g,"#");
-var new_data = data + '&from_mail=' + send_mail + '&count=' + count +'&intro='+encodeURIComponent(intro)+'&ending='+encodeURIComponent(ending)+ '&go='+go;
+var new_data = data + '&from_mail=' + send_mail + '&count=' + count +'&intro='+intro+'&ending='+ending+'&go='+go;
 
 //			console.log(new_data);
 //			url=url+"&"+new_data;

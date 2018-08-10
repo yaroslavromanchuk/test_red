@@ -1,10 +1,13 @@
-<img src="<?=SITE_URL.$this->getCurMenu()->getImage()?>" class="page-img">
-<h1><?=$this->getCurMenu()->getTitle()?></h1>
-<table style="width: 100%;" class="table">
-	<tr>
-		<td style="width:40%;">
-<div class="">
-<form action="/admin/shop-orders/" method="get" class="form-horizontal">
+ <div class="panel panel-primary" style="background-color: #ffffff78;">
+ <div class="panel-heading"><h3 class="panel-title"><?=$this->getCurMenu()->getTitle()?></h3></div>
+<div class="panel-body">
+<div class="row">
+<div class="col-sm-12 col-md-5 col-lg-5">
+ <div class="panel panel-success">
+ <div class="panel-heading"><h3 class="panel-title">Форма поиска</h3></div>
+ <form action="/admin/shop-orders/" method="get" class="form-horizontal">
+<div class="panel-body">
+
 	 <div class="form-group">
     <label for="order" class="ct-110 control-label">№ заказа:</label>
     <div class="col-xs-6">
@@ -91,32 +94,47 @@
   </div>
   </div>
   <div class="form-group " style="padding-left: 15px;">
-  <label class="control-label" style="padding: 5px;"><input type="checkbox" name="is_admin" value="1" <?php if ($_GET['is_admin'] == 1) { ?>checked="checked" <?php } ?>>Заказы администрации </label>
-  <label class="control-label s-b" style="padding: 5px;"><input type="checkbox" name="nall" id="nall" value="1" <?php if ($_GET['nall'] == 1) { ?>checked="checked" <?php } ?>>С наличием товара</label><br>
-  <label class="control-label s-b" style="padding: 5px;"><input type="checkbox" name="detail" value="1" <?php if ($_GET['detail'] == 1) { ?>checked="checked" <?php } ?>>Уточнить детали</label>
-  <label class="control-label s-b" style="padding: 5px;"><input type="checkbox" name="online" value="1" <?php if ($_GET['online'] == 1) { ?>checked="checked" <?php } ?>> Онлайн оплаты </label><br>
-  <label class="control-label s-b" style="padding: 5px;"><input type="checkbox" name="kupon" value="1" <?php if ($_GET['kupon'] == 1) { ?>checked="checked" <?php } ?>> Заказы по штрихкоду</label>
-  <label class="control-label s-b" style="padding: 5px;"><input type="checkbox" name="bonus" value="1" <?php if ($_GET['bonus'] == 1) { ?>checked="checked" <?php } ?>> Заказы с бонусами</label><br>
-  <label class="control-label s-b" style="padding: 5px;"><input type="checkbox" name="quick_order" value="1" <?php if ($_GET['quick_order'] == 1) { ?>checked="checked" <?php } ?>> Заказы из заявок</label>
+  <label class="ckbox"><input type="checkbox" name="is_admin" value="1" <?php if ($_GET['is_admin'] == 1) { ?>checked="checked" <?php } ?>>
+  <span>Заказы администрации</span></label>
+  <label class="ckbox "><input type="checkbox" name="nall" id="nall" value="1" <?php if ($_GET['nall'] == 1) { ?>checked="checked" <?php } ?>>
+  <span>С наличием товара</span></label>
+  <label class="ckbox "><input type="checkbox" name="detail" value="1" <?php if ($_GET['detail'] == 1) { ?>checked="checked" <?php } ?>>
+  <span>Уточнить детали</span></label>
+  <label class="ckbox "><input type="checkbox" name="online" value="1" <?php if ($_GET['online'] == 1) { ?>checked="checked" <?php } ?> >
+  <span>Онлайн оплаты</span></label>
+  <label class="ckbox "><input type="checkbox" name="kupon" value="1" <?php if ($_GET['kupon'] == 1) { ?>checked="checked" <?php } ?>>
+  <span>Заказы по штрихкоду</span></label>
+  <label class="ckbox "><input type="checkbox" name="bonus" value="1" <?php if ($_GET['bonus'] == 1) { ?>checked="checked" <?php } ?>><span>
+  Заказы с бонусами</span></label>
+  <label class="ckbox "><input type="checkbox" name="quick_order" value="1" <?php if ($_GET['quick_order'] == 1) { ?>checked="checked" <?php } ?>> 
+  <span>Заказы из заявок</span></label>
   </div>
+</div>
+<div class="panel-footer">
 <div class="form-group">
     <div class="col-xs-offset-1 col-xs-11" style="text-align:center;">
-      <button type="submit"  name="go" class="btn  btn-lg btn-default"><i class="glyphicon glyphicon-search" aria-hidden="true"></i> Найти</button>
-    </div>
+      <button type="submit"  name="go" class="btn  btn-lg btn-dark"><i class="glyphicon glyphicon-search" aria-hidden="true"></i> Найти</button>
+  </div>
+  </div>
   </div>
 </form>
 </div>
-</td>
-
-<td style="width:60%;" >
-<form action="/admin/ordersexcel/" method="get" class=" form-horizontal form-inline form-style" >
-<div class="form-group">
+</div>
+<div class="col-sm-12 col-md-7 col-lg-7">
+ <div class="panel panel-danger">
+ <div class="panel-heading"><h3 class="panel-title">Операции</h3></div>
+<div class="panel-body">
+<div class="panel panel-default" style="margin-bottom:5px;">
+  <div class="panel-body">
+<form action="/admin/ordersexcel/" method="get" style="margin-bottom: 0px;">
 <label>В Excel: №</label>
 <input type="text" class="form-control input w100" placeholder="c" name="min" size="6" /><input type="text" class="form-control input w100" placeholder="до"  name="max" size="6"/>
 <button class="btn btn-small btn-default " type="submit" ><i class="glyphicon glyphicon-save-file" aria-hidden="true"></i> Получить</button>
-	</div>
 </form>
-<div class="form-group form-style">
+  </div>
+</div>
+<div class="panel panel-default" style="margin-bottom:5px;">
+  <div class="panel-body" style="padding: 10px;">
    <label for="order_status_all">Массовое изменение статуса:</label><br>
     <select name="order_status_all" id='order_status_all' class="form-control input" >
         <option>Выберите статус</option>
@@ -126,7 +144,8 @@
     </select>
 	<button class="btn btn-small btn-default" id="all_status" type="button" ><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Изменить</button>
 </div>
-<script type="text/javascript">
+</div>
+<script>
 function view_block(e){
 if($('.s-b').is(":visible")){
 $('#view_serch').css('background-image', 'url("/admin_files/img/icons/niz.png")');
@@ -158,9 +177,9 @@ $(".s-b").slideDown();
         });
     });
 </script>
-<div class="form-group form-style">
-<div style="width: 40%;display: inline-block;">
- <label for="all_articles">Получить Excel:</label><br>
+<div class="panel panel-default" style="margin-bottom:5px;">
+  <div class="panel-body" style="padding: 10px;">
+ <label for="all">Получить Excel:</label>
  <select class="form-control input" name="all" id="all">
 	<option value="0">Выберите действие</option>
 	<option value="1">Товары в заказах</option>
@@ -168,9 +187,8 @@ $(".s-b").slideDown();
 	<option value="2">Экспорт товаров в заказах</option>
 	<option value="3">Excel выделеных заказов</option>
 	<option value="4">Excel курьерских заказов</option>
- </select>
- <span class="form-group  fade all-error" style="color: #ce0000;"><i class="glyphicon glyphicon-ban-circle" aria-hidden="true"></i> Выберите нужные заказы!</span>
-<script type="text/javascript">
+ </select><span class="form-group  fade all-error" style="color: #ce0000;"><i class="glyphicon glyphicon-ban-circle" aria-hidden="true"></i> Выберите заказы!</span>
+<script>
     $(document).ready(function () {
 	$('#all').change(function () {
 	if ($('.order-item:checked').val()) {
@@ -212,27 +230,31 @@ $(".s-b").slideDown();
     });
 </script>
 </div>
-<div style="width: 50%;display: inline-block;">
+</div>
+<div class="panel panel-default" style="margin-bottom:5px;">
+  <div class="panel-body" style="padding: 10px;">
 <label>Excel заказов с начальной стоимостю</label><br>
 <button class="btn btn-small btn-default" id='order_nachal' type="button"><i class="glyphicon glyphicon-floppy-saved" aria-hidden="true"></i> Експорт</button>
     <input type="date" class="form-control input w150" id="order_date" value="<?=date('Y-m-d');?>"  size="9" />
 	 <span class="form-group  fade order_nachal-error" style="color: #ce0000;"><i class="glyphicon glyphicon-arrow-left" aria-hidden="true"></i> Выберите дату</span>
 </div>
 </div>
-<script type="text/javascript">
+<script>
     $(document).ready(function () {
         $('#order_nachal').click(function () {
 		if($('#order_date').val()) { window.location = '/admin/otchets/type/3/?day=' + $('#order_date').val();}else{ $('.order_nachal-error').toggleClass('in'); }
         });
     });
 </script>
-<div class="form-group form-style">
+<div class="panel panel-default" style="margin-bottom:5px;">
+  <div class="panel-body" style="padding: 10px;">
 <label>Действия над заказами:</label><br>
 <button class="btn btn-small btn-default" id='ordercomplect' type="button"><i class="glyphicon glyphicon-resize-small" aria-hidden="true"></i> Совместить заказы</button>
 <button class="btn btn-small btn-default" id='order_uncomplect' type="button"><i class="glyphicon glyphicon-resize-full" aria-hidden="true"></i> Разъединить заказ</button>
 <span class="form-group  fade complect-error" style="color: #ce0000;"><i class="glyphicon glyphicon-arrow-left" aria-hidden="true"></i> Выберите заказы</span>
 </div>
-<script type="text/javascript">
+</div>
+<script>
     function NowaMail(id, object) {
         $.post('/admin/nowamail/', {id: id}, function (data) {
             object.parent().html(data);
@@ -277,7 +299,8 @@ $(".s-b").slideDown();
         });
     });
 </script>
-<div class="form-group form-style">
+<div class="panel panel-default" style="margin-bottom:5px;">
+  <div class="panel-body" style="padding: 10px;">
 <div style="width: 49%;display: inline-block;vertical-align: top;">
 <label>Масcовая печать:</label><br>
 <select name="masrintordertype" id="masrintordertype" class="form-control input">
@@ -305,7 +328,7 @@ $(".s-b").slideDown();
 	
 	<?php } ?>
  </div>
-<script type="text/javascript">
+<script>
     $(document).ready(function () {
         $('#masrintorder').click(function () {
             if ($('.order-item:checked').val()) {
@@ -388,7 +411,7 @@ $(".s-b").slideDown();
         });
 </script>
  </div>
-    <script type="text/javascript">
+    <script>
         $(document).ready(function () {
 		$('#all_print').change(function () {
 		  if ($('.order-item:checked').val()) {
@@ -426,10 +449,15 @@ $(".s-b").slideDown();
 <p><input type="button" id='view_ttn_np' class="btn" value="Внести ТТН-НП"/></p>
 <?php } ?>
 
-</td>
-</tr>
-</table>
-<script type="text/javascript">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<script>
 $('#view_ttn_np').click(function () {
 	fopen('Внесение ТТН', '<p>ОТСКАНИРУЙТЕ ТТН:</p><form action="" method="POST" id="myform" align="center"><input type="text" style="border: 1.5px solid #1963d1;" name="ttn" id="ttn" value="" autofocus maxlength="14" class="input"></form><p id="text" style="text-align:center;"> </p>');
 		var k = 0;
@@ -500,7 +528,7 @@ $("#ttn").focus();
 </script>
 <br/>
 <?php if ($this->getOrders()->count()) { ?>
-    <script type="text/javascript">
+    <script>
         function chekAll() {
 		if($('.chekAll').is(":checked")){
 		$('.cheker').prop('checked', true);
@@ -552,6 +580,7 @@ $.get('/admin/trekko/metod/status/id/'+x,
 		return false;
 }
     </script>
+	<div class="row">
     <table cellspacing="0" cellpadding="4" id="orders" class="table  table-hover">
         <tr>
 		<th><label class="ckbox" data-tooltip="tooltip" title="Выделить все заказы"><input onchange="chekAll();" class="chekAll" type="checkbox"/><span></span></label></th>
@@ -614,8 +643,7 @@ $.get('/admin/trekko/metod/status/id/'+x,
                         echo  $price_1 . ' грн<br/>' . $sttt . $price_2 . ' грн' . $sttt2;
                     } ?></td>
 
-                <td><?=$order->getDeliveryTypeId() ? $order->getDeliveryType()->getName(): ''?>
-				</td>
+                <td><?=$order->getDeliveryTypeId() ? $order->getDeliveryType()->getName(): ''?></td>
 				<td style="font-size:12px;">
 				<?=$order->getPaymentMethod()->getName()?><br>
 				<?php 
@@ -714,7 +742,8 @@ echo '<i class="icon ion-ios-close red tx-25 pd-5 history_pay_status" data-place
         <?php } ?>
 
     </table>
-<script type="text/javascript">
+	</div>
+<script>
 $('.history').click(function (e) {
 var id = e.target.attributes.getNamedItem("data-id").value;
 $.get('/admin/orderhistory/id/'+id+'/m/1',function (data) {fopen('История изменения заказа №'+id, data);});	
@@ -744,57 +773,4 @@ $.get('/admin/historypaystatus/id/'+id,function (data) {fopen('История и
 	  }
     });
 </script>
-    <p>
-        <label></label>
-    </p>
-    <?php
-    $limitLeft = 2;
-    $limitRight = 2;
-    $url = explode('?', $_SERVER['REQUEST_URI']);
-    if (count($url) == 2) {
-        $ur = $url[0];
-        $get = '?' . $url[1];
-    } else {
-        $ur = $_SERVER['REQUEST_URI'];
-        $get = '';
-    }
-    $pager = preg_replace('/\/page\/\d*/', '', $ur) . '/page/';
-    $paginator = '&nbsp;&nbsp;';
-    if ($this->page > 1) {
-        $paginator .= '<a href="' . $pager . '1' . $get . '"><<</a>&nbsp;<a href="' . $pager . ($this->page - 1) . $get . '"><</a>&nbsp;';
-    } else {
-        $paginator .= '<span class="grey"><</span>&nbsp;<span class="grey"><<</span>&nbsp;';
-    }
-    $start = 1;
-    $end = $this->totalPages;
-    if ($this->page > $limitLeft) {
-        $paginator .= '...&nbsp;';
-        $start = $this->page - $limitLeft;
-    }
-    if (($this->page + $limitRight) < $this->totalPages) {
-        $end = $this->page + $limitRight;
-    }
-    //for ($i = 1; $i <= $this->totalPages; $i++){
-    for ($i = $start; $i <= $end; $i++) {
-        if ($i == $this->page) {
-            $paginator .= '<span>' . $i . '</span>';
-        } else {
-            $paginator .= '<span><a href="' . $pager . $i . $get . '">' . $i . '</a></span>';
-        }
-        if ($i <= $end - 1) {
-            $paginator .= '<span class="delimiter">&nbsp;|&nbsp;</span>';
-        }
-
-    }
-    if ($this->page == $this->totalPages) {
-        $paginator .= '&nbsp;<span class="grey">>></span>&nbsp;<span class="grey">></span>';
-    } else {
-        $paginator .= '&nbsp;<a href="' . $pager . ($this->page + 1) . $get . '">></a>&nbsp;<a href="' . $pager . $this->totalPages . $get . '">>></a>';
-    }
-    echo $paginator;
-
-    ?><br/>
-    Всего страниц: <?=$this->totalPages?>, записей: <?=$this->count?> 
-
-
 <?php } else echo 'Нет записей'; ?>

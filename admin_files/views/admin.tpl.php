@@ -7,16 +7,12 @@
 
 	<link rel="stylesheet" type="text/css" href="<?=$this->files?>css/bs/css/bootstrap.css?v=1.1">
 	<!--<link rel="stylesheet" type="text/css" href="<?=$this->files?>css/bs/css/bootstrap-select.css?v=1.0">-->
-	<link rel="stylesheet" type="text/css" href="<?=$this->files?>css/layout.css?v=1.9">
+	<link rel="stylesheet" type="text/css" href="<?=$this->files?>css/layout.css?v=2">
 	<link rel="stylesheet" type="text/css" href="<?=$this->files?>css/Ionicons/css/ionicons.css">
 	<!--
 	<link href="<?=$this->files?>css/font-awesome/css/font-awesome.css" rel="stylesheet">-->
-	 
-	
-<script  type="text/javascript"  src="<?=$this->files?>scripts/jquery.js"></script>
 
-		
-	 
+<script src="<?=$this->files?>scripts/jquery.js"></script> 
 </head>
 <body id="body" >
 <?php
@@ -144,14 +140,17 @@ if($menu->getSection() != 5) continue;
 </div>
 </div>
 <?=$this->message;?>
-<div id="content"><?=$this->render($this->middle_template);?></div>
+<div id="content">
+<?=$this->render($this->middle_template)?>
+<?=$this->render('page/footer.tpl.php')?>
+</div>
 </div>
         <!--end center-content-->
 </div>
 <!--end container -->
 <p id="back-top"><a href="#top"><span></span></a></p>
 
-<script  type="text/javascript"  src="<?=$this->files?>css/bs/js/bootstrap.min.js"></script>
+<script  src="<?=$this->files?>css/bs/js/bootstrap.min.js"></script>
 
 <!--<script  type="text/javascript"  src="<?=$this->files?>css/bs/js/bootstrap-select.js"></script>-->
 <!--<script  type="text/javascript"  src="<?=$this->files?>css/bs/js/jquery-ui.js"></script>-->

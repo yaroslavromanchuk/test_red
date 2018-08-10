@@ -1,3 +1,7 @@
+<?php 
+header("Content-Type: text/html; charset=utf-8");
+?>
+
 <?php
 
 //$html=simplexml_load_file('https://www.red.ua/articlelist/?id=106');
@@ -5,31 +9,98 @@
     //  foreach ($html->offers->offer as $item) {
 	 //  echo $item->title.'<br>';
        // 	}
-header("Content-Type: text/html; charset=utf-8");
-require_once('../cron_init.php');
+
+
+
 //require_once('ws_articles.php');
 //require_once('ws_order_articles03.php');
 //require_once('ws_cat.php');
 require_once('parse_excel.php');
+//$mass=array();
 
-if(true){
+
+
+
+/*$path = 'phone_roz.xlsx';
+$res = parse_excel_file($path);
+$i = 0;
+foreach($res as $b){
+$p = substr(preg_replace('~\D+~','',$b[0]), -9);
+$p = '+380'.$p;
+if(strlen($p) == 13) echo $p.'<br>'; //$mass[] = $p;
+$i++;
+//if($i == 100) break;
+}
+*/
+//echo save_excel_file($mass, 'phone');
+/*
+foreach($mas as $a => $k){
+$r_ok[] = array('x'=> $a, 'u_20' =>@$k[20]?$k[20]:0,  'u_30'=>@$k[30]?$k[30]:0, 'u_40'=>@$k[40]?$k[40]:0,'u_50'=>@$k[50]?$k[50]:0,'u_60'=>@$k[60]?$k[60]:0);
+		   }
+echo '<pre>';
+echo print_r($r_ok);
+echo '</pre>';*/
+//$path = 'list_end.xlsx';
+//$res = parse_excel_file($path);
+if(false{
+$path = 'list_end_f.xlsx';
+$res = parse_excel_file($path);
+echo '<table>';
+foreach($res as $b){
+
+
+$sql = "SELECT `ws_articles`.id, `ws_articles`.`category_id` FROM `ws_articles`
+inner join `ws_articles_sizes` on `ws_articles`.`id` = `ws_articles_sizes`.`id_article`
+ WHERE `ws_articles_sizes`.`code` like '".trim($b[0])."' GROUP BY  `ws_articles`.`id`";
+//$a = wsActiveRecord::useStatic('Shoparticles')->findByQuery($sql);
+$a = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array("code LIKE'".trim($b[0])."'"));
+if($a){
+//foreach($articles as $a){
+echo '<tr>';
+ echo '<td>'.$a->article_rod->category->getRoutezGolovna().'</td><td>'.$a->article_rod->category->name.'</td><td>'.$b[0].'</td><td>'.$b[1].'</td>';
+echo '</tr>';
+//}
+}
+}
+echo '</table>';
+}
+if(false){
 $path = 'list_end.xlsx';
 $res = parse_excel_file($path);
 $i=0;
+$mass = array();
+echo '<table>';
 foreach($res as $b){
-//echo $b[0].'<br>';
+//echo $b[0].'-'.$b[1].'<br>';
 
-$articles = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array(" code LIKE'".$b[0]."' ", ' `count` > 0'));
-//echo print_r($articles);
-if($articles){ echo $articles->getCode().' '.$articles->getCount().' <br>';
+$articles = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array(" code LIKE'".trim($b[0])."' ", ' `count` >'.(int)$b[1]));
+//$articles = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array(" code LIKE'".trim($b[0])."' ", ' `count` > 0'));
+if($articles){
+//$tmp = 0;
 
+//$tmp = $tmp - 2;
 $articles->setFlag($articles->getCount());
-$articles->setCount(0);
+$tmp = $articles->getCount()-(int)$b[1];
+echo '<tr>';
+// echo '<td>'.$articles->getCode().'</td><td>'.$articles->getCount().'</td>';
+ echo '<td>'.$articles->getCode().'</td><td>'.$tmp.'</td>';
+
+//$articles->setFlag($tmp);
+//$articles->setCount(0);
+$articles->setCount((int)$b[1]);
+//
 $articles->save();
+
 $i++;
+echo '</tr>';
 }
 //if($i > 10) break;
 }
+echo '</table>';
+//echo '<pre>';
+//echo print_r($mass);
+//echo '</pre>';
+//save_excel_file($mass);
 }
 //require_once('up/UkrPostAPI.php');
 	//$api = new UkrPostAPI('f9027fbb-cf33-3e11-84bb-5484491e2c94', 'ba5378df-985e-49c5-9cf3-d222fa60aa68', '2304bbe5-015c-44f6-a5bf-3e750d753a17', false, 'POST');
@@ -360,6 +431,22 @@ $q++;
 echo $q;
 */
 ?>
+<form action="parse_excel.php" method="POST"  enctype="multipart/form-data">
+<div class="form-layout">
+            <div class="row mg-b-25">
+			 <div class="col-lg-3 mg-t-40 mg-lg-t-0">
+              <label class="custom-file">
+                <input type="file" name="excel_file" class="custom-file-input">
+                <span class="custom-file-control custom-file-control-primary"></span>
+              </label>
+            </div>
+            
+            </div>
 
+            <div class="form-layout-footer">
+              <button class="btn btn-info mg-r-5" name="save" type="submit">Загрузить</button>
+              <button class="btn btn-secondary">Очистить</button>
+            </div>
+		  </form>
 
 

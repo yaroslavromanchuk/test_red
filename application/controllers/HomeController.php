@@ -23,15 +23,16 @@ class HomeController extends controllerAbstract {
 					WHERE stock > 2
 					AND active = 'y'
 					and ws_articles.status = 3
+					and old_price = 0
 					AND category_id NOT IN(54, 55, 65, 71, 74, 84, 137, 138, 139, 152, 157, 158, 163, 249, 297,140,74,296,137)
 					AND dop_cat_id NOT IN (54, 55, 65, 71, 74, 84, 137, 138, 139, 152, 157, 158, 163, 249, 297,140,74,296,137)
-					ORDER BY ws_articles.views DESC  LIMIT 0, 10";
+					ORDER BY RAND ()  LIMIT 0, 10";
 					
 		$sql = "SELECT ws_articles.* FROM  ws_articles
 			inner join ws_articles_top ON ws_articles.id = ws_articles_top.article_id
 					WHERE ws_articles.active = 'y' and ws_articles.stock > 2 and ws_articles.old_price = 0 and ws_articles.status = 3  ORDER BY ws_articles.views DESC   LIMIT 0, 18";			
 		$top = wsActiveRecord::useStatic('Shoparticles')->findByQuery($sql);
-		if($top->count() >= 10) {
+		if($top->count() >= 10 and false) {
 		$this->view->topproduct = $top;
 		}else{
 			$this->view->topproduct = wsActiveRecord::useStatic('Shoparticles')->findByQuery($query);
@@ -46,7 +47,7 @@ class HomeController extends controllerAbstract {
 					and ws_articles.status = 3
 					AND category_id NOT IN(54, 55, 65, 71, 74, 84, 137, 138, 139, 152, 157, 158, 163, 249, 297,140,74,296,137)
 					AND dop_cat_id NOT IN (54, 55, 65, 71, 74, 84, 137, 138, 139, 152, 157, 158, 163, 249, 297,140,74,296,137)
-					ORDER BY views DESC LIMIT 0, 20";
+					ORDER BY RAND () DESC LIMIT 0, 20";
 		$this->view->oneproduct = wsActiveRecord::useStatic('Shoparticles')->findByQuery($query);
 	//oneprodukt
 	

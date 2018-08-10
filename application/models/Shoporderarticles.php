@@ -59,7 +59,7 @@
 				$price = $this->getPrice() * $this->getCount();
 			
 		 
-	if (!$this->getSkidkaBlock()) {
+	if (!$this->article_db->getSkidkaBlock() or $this->getOldPrice() == 0) {
 	 if($this->getOptionId()){ // акция 1+1=3
 	  $mas['minus'] = $price - $this->getOptionPrice()*$this->getCount();
 		$mas['price'] = $this->getOptionPrice();

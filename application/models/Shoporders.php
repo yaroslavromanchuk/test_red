@@ -312,8 +312,10 @@ class Shoporders extends wsActiveRecord
         } else {
             $price_2 = (float)$order_history_price + (float)$deli;
         }
-
-		if($price_2 >= Config::findByCode('min_sum_bonus')->getValue() and $bonus){ $price_2 = $price_2 - $this->getBonus(); }
+		
+		
+		
+		if($price_2 >= Config::findByCode('min_sum_bonus')->getValue() and $this->getBonus()){ $price_2 = $price_2 - (float)$this->getBonus(); }
 		
         if ($use_format) { $price_2 = Number::formatFloat($price_2, 2); }
 		
@@ -339,7 +341,7 @@ class Shoporders extends wsActiveRecord
         if ($use_deposit) { $price_2 = $order_history_price + $deli - $this->getDeposit();
         } else { $price_2 = $order_history_price + $deli; }
 		
-		if($price_2 >= Config::findByCode('min_sum_bonus')->getValue() and $bonus){ $price_2 = $price_2 - $this->getBonus();}
+		if($price_2 >= Config::findByCode('min_sum_bonus')->getValue() and $this->getBonus()){ $price_2 = $price_2 - $this->getBonus();}
 		
        
 		
@@ -403,11 +405,11 @@ class Shoporders extends wsActiveRecord
 
     }
 
-    public function reCalculate($delivery = true, $bonus = false)
+    public function reCalculate($delivery = true)
     {
         $order_owner = new Customer($this->getCustomerId());
         if ($order_owner->getId()) {
-            $this->setAmount(str_replace(',', '.', $this->calculateOrderPrice2(true, false, $delivery, $bonus)));
+            $this->setAmount(str_replace(',', '.', $this->calculateOrderPrice2(true, false, $delivery)));
             $this->setSkidka($order_owner->getDiscont($this->getId()));
         }
         $this->save();
@@ -419,8 +421,8 @@ class Shoporders extends wsActiveRecord
 
         $order_owner = new Customer($this->getCustomerId());
         if ($order_owner->getId()) {
-		if($this->getBonus() > 0){ $bonus = true; }else{ $bonus = false; }
-            $this->setAmount(trim(str_replace(',', '.', $this->calculateOrderPrice2(true, false, true, $bonus))));
+		//if($this->getBonus() > 0){ $bonus = true; }else{ $bonus = false; }
+            $this->setAmount(trim(str_replace(',', '.', $this->calculateOrderPrice2(true, false, true))));
 			//$this->setSkidka($order_owner->getDiscont($this->getId()));
         }
 

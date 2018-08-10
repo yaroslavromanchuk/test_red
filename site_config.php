@@ -5,10 +5,11 @@
     //if(!$_SERVER['DOCUMENT_ROOT'])
     $_SERVER['DOCUMENT_ROOT'] = dirname(__FILE__);
     define('INPATH', $_SERVER['DOCUMENT_ROOT'] . '/');
-
-  //  define('FORME', (in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '127.0.0.2'))));
-  //define('FORME', true);
-    define('LOCAL', $_SERVER['REMOTE_ADDR'] == '127.0.0.1');
+	//define('FORME', false);
+   // define('FORME', (in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '127.0.0.2', '91.225.165.62'))));
+	//define('FORME', true);
+    //define('LOCAL', $_SERVER['REMOTE_ADDR'] == '127.0.0.1');
+	
     $sql_host = "localhost";
     $sql_user = "red_site_user";
     $sql_passwd = "hx2H6xQWjsqQcuVsss!";
@@ -26,12 +27,12 @@
 		$site = array(
 	'from_name' => 'RED.UA', // from (от) имя
 	'from_email' => 'market@red.ua', // from (от) email адрес
-	'smtp_mode' => 'enabled', // enabled or disabled (включен или выключен)
+	'smtp_mode' => 'disabled', // enabled or disabled (включен или выключен)
 	'smtp_host' => 'mail.red.org.ua',
 	'smtp_port' => '25',
-	//'smtp_username' => '',
-	//'smtp_password' => '',
-	'smtp_secure' => 'tls' // ssl or tls 
+	'smtp_username' => null,
+	'smtp_password' => null,
+	'smtp_secure' => "tls" // ssl or tls 
 	);
 	$pop3 = array(
 	'tval' => 10,
@@ -130,7 +131,6 @@
         'menu_type_class' => 'wsMenuType',
         'file_size_class' => 'wsFileSize',
         'log_class' => 'wsLog',
-
         'shop_categories_class' => 'Shopcategories',
         'shop_articles_class' => 'Shoparticles',
         'shop_articles_top_class' => 'Shoparticlestop',
@@ -142,7 +142,6 @@
     );
 
     foreach ($model_substitute as $key => $value)
-        define(strtoupper($key), $value);
-
+    define(strtoupper($key), $value);
     define('DB_SUFFIX', '');
     define('PDO', 0);

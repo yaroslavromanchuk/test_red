@@ -64,15 +64,11 @@ class Shoparticles extends wsActiveRecord
         );
     }
 
-    public function getPath()
-    {
-        return '/product/id/' . $this->getId() . '/' . $this->_generateUrl($this->getTitle());
-    }
+    public function getPath(){ return '/product/id/' . $this->getId() . '/' . $this->_generateUrl($this->getTitle()); }
 
     public function getDiscount()
     { 
-	
-        if (!(int)$this->getOldPrice() || !(int)$this->getPrice() || $this->getSkidkaBlock())
+        if (!(int)$this->getOldPrice() || !(int)$this->getPrice())
             return 0;
         return 100 - round($this->getPrice() / $this->getOldPrice() * 100);
     }
@@ -243,7 +239,7 @@ class Shoparticles extends wsActiveRecord
     public function getPriceSkidka()//цена товара с доп скидкой
     {
       $s = Skidki::getActiv($this->getId());
-		$z = false;//Skidki::getActivCat($this->getCategoryId(), $this->getDopCatId());
+		$z =false;// Skidki::getActivCat($this->getCategoryId());
         if($z){
 		  return $this->getRealPrice() * ((100 - $z->getValue()) / 100);
 		}elseif($s){
@@ -458,30 +454,31 @@ class Shoparticles extends wsActiveRecord
         $minus = 0.00;
         $price = $this->getPrice() * $count;
 		$coment = '';
+		$pr_skidka = 0;
 		 
 		if (!$this->getSkidkaBlock()) {
+		if('2018-08-11' <= date("Y-m-d") and date("Y-m-d") <= '2018-08-12' and $this->getUcenka() < 50){
+		 if ((int)$this->getOldPrice() == 0) {
+		 $minus = (($price / 100) * 20);
+         $price -= $minus;
+		$pr_skidka +=20;
+		 $coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">Действует скидка 20%, только на этих выходных</div>';
+		 }else{
+		 $minus = (($price / 100) * 10);
+         $price -= $minus;
+		$pr_skidka +=10;
+		 $coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">Действует скидка  10%, только на этих выходных</div>';
+		 }
+		$mas['price'] = $price; 
+        $mas['minus'] = $minus;
+		$mas['option_id'] = 3;
+		$mas['option_price'] = $price;
+		$mas['comment'] = $coment;
+		$mas['skidka'] = $pr_skidka;
 		
-		if(count($_SESSION['basket']) == 2){//bust+trusi
-if((($_SESSION['basket'][0]['category'] == 297 and $_SESSION['basket'][1]['category'] == 296) or ($_SESSION['basket'][1]['category'] == 297 and $_SESSION['basket'][0]['category'] == 296)) and $_SESSION['basket'][0]['count'] == 1 and $_SESSION['basket'][1]['count'] == 1){
-if($this->category_id == 296) {
-$mas['minus'] = $price / 2;
-$mas['price'] = $mas['minus'];
-$mas['option_id'] = 2;
-$mas['option_price'] = $mas['minus'];
-$mas['comment'] = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка 50% по акции - "Собери комплект".</div>';
-return $mas;
-}
-if($this->category_id == 297) {
-$mas['minus'] = 0;
-$mas['price'] = $price; //($price - $minus);//round(, 2)
-$mas['option_id'] = 2;
-$mas['option_price'] = $price;
-//$mas['comment'] = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка 50% по акции - "Собери комплект".</div>';
-return $mas;
-}
-
-}
-		}// exit bust+trusi
+        return $mas;
+		 
+		}
 
 		$s = 0;
 		 if ($event_skidka != 0) {
@@ -491,16 +488,11 @@ return $mas;
 			 $mas['price'] = 0.01; //($price - $minus);//round(, 2)
 			 $mas['option_id'] = 1;
 			$mas['option_price'] = 0.01;
+			$pr_skidka += 99;
+			$mas['skidka'] = $pr_skidka;
        
 			return $mas;
 			}
-			/*if($s == 50){// na trusi
-			$minus = (($price / 100) * $s);
-			$price -= $minus;
-			 $mas['minus'] = $minus;
-			 $mas['price'] = $price; //($price - $minus);//round(, 2)
-			return $mas;
-			}*/
 		 }
 		
 		$kod = false;
@@ -508,8 +500,7 @@ return $mas;
 	if($kupon !=''){
 	$kod = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$kupon));
 	if($kod->count_order){// esli est ogranichenie po koll zakazov
-	if (false){
-	
+	if (true){
 	$k = wsActiveRecord::useStatic('Shoporders')->count(array('customer_id' => $this->ws->getCustomer()->getId(), "kupon LIKE  '".$kod->cod."' ") );
 	if($k){
 	if((int)$k >= (int)$kod->count_order){
@@ -528,22 +519,27 @@ return $mas;
 	}
 	}
 		
-	//	$c = false;// Skidki::getActivCat($this->getCategoryId(), $this->getDopCatId());
+		$c = Skidki::getActivCat($this->getCategoryId());
 		$a = Skidki::getActiv($this->getId());
-		//if($c){
-		//$minus = (($price / 100) * ($c->getValue()+$s));
-         //   $price -= $minus;
-	//	}else
+		if($c){
+		$c = $c->getValue();
+		//$minus = (($price / 100) * ($c->getValue()));
+        //$price -= $minus;
+		 //$pr_skidka += $c->getValue();
+		}
+		
 		if($a){
 		$minus = (($price / 100) * $a->getValue());
         $price -= $minus;
 		$coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка -50% НА ШЛЕПКИ.</div>';
+		$pr_skidka += $a->getValue();
 		}else{
 		
                 if ((int)$this->getOldPrice() == 0) {
                     if ($skidka != 0) {
-                        $minus = (($price / 100) * ($skidka + $s));
+                        $minus = (($price / 100) * ($skidka + $s +$c));
                         $price -= $minus;
+						$pr_skidka +=$skidka+$s+$c;
 						//
 					if(@$kod and $kod->new_cust_plus == 1){
 						if($sum_order >= $kod->min_sum){
@@ -551,23 +547,28 @@ return $mas;
 						$minus += $m;
 						$price -= $m;
 						$coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка по промокоду.</div>';
+						$pr_skidka += $kod->skidka;
 						//kupon
 										}
 							}
 //
                     }else{
                         if ($all_orders_amount <= 700) {
-							$minus = (($price / 100) * $s);
+							$minus = (($price / 100) * ($s+$c));
                             $price -= $minus;
+							$pr_skidka += $s+$c;
                         } elseif ($all_orders_amount > 700 && $all_orders_amount <= 5000) { //5%
-                            $minus = (($price / 100) * (5+$s));
+                            $minus = (($price / 100) * (5+$s+$c));
                             $price -= $minus;
+							$pr_skidka += 5+$s+$c;
                         } elseif ($all_orders_amount > 5000 && $all_orders_amount <= 12000) { //10%
-                            $minus = (($price / 100) * (10+$s));
+                            $minus = (($price / 100) * (10+$s+$c));
                             $price -= $minus;
+							$pr_skidka += 10+$s+$c;
                         } elseif ($all_orders_amount > 12000) { //15%
-                            $minus = (($price / 100) * (15+$s));
+                            $minus = (($price / 100) * (15+$s+$c));
                             $price -= $minus;
+							$pr_skidka += 15+$s+$c;
                         }
 						//
 					if(@$kod and $kod->new_sum_plus == 1){
@@ -576,6 +577,7 @@ return $mas;
 						$minus += $m;
 						$price -= $m;
 						$coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка по промокоду.</div>';
+						$pr_skidka += $kod->skidka;
 						//kupon
 }
 }
@@ -584,11 +586,20 @@ return $mas;
                     }
                 }else{
 				$minus += ($this->getOldPrice() - $this->getPrice());
-				 if ($s != 0) {
-                        $m = (($price / 100) * $s);
+				 if ($s) {
+                        $m = (($price / 100) * ($s+$c));
 						$minus += $m;
 						$price -= $m;
-						$coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка по промокоду.</div>';
+						//$coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка по промокоду.</div>';
+						$pr_skidka += $s+$c;
+					}elseif($c){
+					$m = (($price / 100) * ($c));
+						$minus += $m;
+						$price -= $m;
+						//$coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка по промокоду.</div>';
+						$pr_skidka += $c;
+					}else{
+					
 					}
 				
 				//kupon
@@ -598,6 +609,7 @@ return $mas;
 						$minus += $m;
 						$price -= $m;
 						$coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка по промокоду.</div>';
+						$pr_skidka += $kod->skidka;
 						//kupon
 				}
 			}
@@ -613,10 +625,12 @@ return $mas;
 						$minus += $m;
 						$price -= $m;
 				$coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка по промокоду.</div>';
+				$pr_skidka += $kod->skidka;
 						//kupon
 					
 					} 
 					}
+		
 				
         }
 			
@@ -624,6 +638,7 @@ return $mas;
         $mas['price'] = $price; 
         $mas['minus'] = $minus;
 		$mas['comment'] = $coment;
+		$mas['skidka'] = $pr_skidka;
 		
         return $mas;
     }
@@ -677,15 +692,14 @@ return $mas;
                     ORDER BY FIELD (ws_articles.id , '.implode(',', $ads).')
                 ';*/
                 return wsActiveRecord::useStatic('Shoparticles')->findByQuery($articles_query);
-            } else {
+            }else{
             }
-        } else {
+        }else{
             return '';
         }
     }
 
-    public function getSmallBlockCachedHtml($rewrite = true, $page = false)
-    {
+    public function getSmallBlockCachedHtml($rewrite = true, $page = false){
         $cache = Registry::get('cache');
 		$cache->setEnabled(true);
         $view = Registry::get('View');
@@ -697,7 +711,7 @@ return $mas;
             $view->article = $this;
             $label = false;
 			if($this->getLabelId() != 0){
-			$label = wsActiveRecord::useStatic('Shoparticleslabel')->findFirst(array('id' => $this->getLabelId()))->getImage();
+			$label = $this->label->getImage();
 			}
             $view->label = $label;
 			if($page == true){
@@ -723,8 +737,15 @@ return $mas;
 
     public function getSpecNakl()
     {
-       
-        if ($this->getLabelId() != 19) {
+	if($this->getSkidkaBlock() == 1){
+       if($this->getOldPrice() != 0 and $this->getLabelId() != 21){
+	   $this->setLabelId(21);
+       $this->save();
+       $this->getSmallBlockCachedHtml(true);
+	   }
+	   return true;
+	   }
+	   if ($this->getLabelId() != 19) {
             $day = date('Y-m-d', (strtotime($this->getCtime()) + (24 * 60 * 60)));
             if ($day == date('Y-m-d')) {
                 $q = 'SELECT SUM(ws_order_articles.count) as counti FROM ws_order_articles
@@ -770,7 +791,7 @@ return $mas;
                 $this->getSmallBlockCachedHtml(true);
 
             }
-        }else if($this->getLabelId() == 18 or $this->getLabelId() == 20){
+        }elseif($this->getLabelId() == 18 or $this->getLabelId() == 20){
 		$q = 'SELECT SUM(ws_articles_sizes.count) as counti FROM ws_articles_sizes
                     WHERE ws_articles_sizes.id_article =' . $this->getId();
             $res = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery($q);
@@ -786,12 +807,10 @@ return $mas;
 		 $item_time = strtotime($this->getCtime());
         $day = (time() - $item_time) / (24 * 60 * 60);
 		//$day = date("Y-m-d", strtotime("- 6 days", strtotime($this->getDataNew())));
-        if ($day < 7 and $this->getOldPrice() == 0){
-            if ($this->getLabelId() != 13) {
+        if ($day < 7 and $this->getOldPrice() == 0 and $this->getLabelId() != 13 and $this->getLabelId() != 18 and $this->getLabelId() != 20){
                 $this->setLabelId(13);
                 $this->save();
                 $this->getSmallBlockCachedHtml(true);
-            }
         }/* else {
             if ($this->getLabelId() == 13) {
                 $this->setLabelId(null);

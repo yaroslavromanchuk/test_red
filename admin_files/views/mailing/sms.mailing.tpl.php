@@ -1,29 +1,13 @@
-<?php header('Access-Control-Allow-Origin: *'); ?>
-<img src="<?=SITE_URL.$this->getCurMenu()->getImage();?>" alt=""  class="page-img"/>
-<h1><?=$this->getCurMenu()->getTitle();?></h1>
-<hr/>
-<p>Рассылка будет
-    отправлена <?php $cc = wsActiveRecord::useStatic('Customer')->count(array('time_zone_id' => 5)); echo $cc;?>
-    пользователям.</p>
-<input type="hidden" id="all_subject" name="all_subject" value="<?=$cc?>"/>   
-<?php if ($this->errors) { ?>
-    <div id="conf-error-message">
-        <p><img src="<?=SITE_URL;?>/img/icons/remove-small.png" class="iconnew" alt=""/>Возникли ошибки при
-            отправке:</p>
-        <ul>
-            <?php foreach ($this->errors as $error) { ?>
-                <li><?=$error;?></li>
-            <?php } ?>
-        </ul>
-    </div>
-<?php
-}
-if ($this->saved) { ?>
-    <div id="conf-error-message">
-        <p><img src="<?=SITE_URL?>/img/icons/accept.png" alt="" width="16" height="16" class="iconnew"/>
-            <strong><?php echo (int)$this->saved;?> sms отправленно.</strong></p>
-    </div>
-<?php } ?>
+<style>.saved{display:none;}
+</style>
+<div class="row">
+<div class="panel panel-primary">
+<div class="panel-heading"><h3 class="panel-title"><img src="<?=SITE_URL.$this->getCurMenu()->getImage();?>" alt=""  class="page-img"/><?=$this->getCurMenu()->getTitle();?></h3></div>
+<div class="panel-body">
+<p>Рассылка будет отправлена <?php $cc = wsActiveRecord::useStatic('Customer')->count(array('time_zone_id' => 5)); echo $cc;?> пользователям.</p>
+<input type="hidden" id="all_subject" name="all_subject" value="<?=$cc?>"/> 
+<div class="alert alert-success saved" role="alert"></div>
+
 
 <div class="mailing_start" style="display: none;">
 	<img src="/img/loading_trac.png" width="20" alt="loading"/> Рассылка стартовала, подождите...<br/>
@@ -37,26 +21,51 @@ if ($this->saved) { ?>
 
 <form method="POST" id="mail_form" action="<?=$this->path?>smsmailing/" target="_blank" class="form-horizontal">
 <div class="form-group">
-    <label for="sms" class="ct-110 control-label">Текст сообщения:</label>
-    <div class="col-xs-6">
+    <label for="sms" class="control-label  col-lg-2">Текст сообщения:</label>
+    <div class="col-lg-6">
 	<input name="subject" type="text" style="max-width: 550px;" placeholder="Введите сообщение" class="form-control input" id="sms" maxlength="67" value="<?=$this->post->subject; ?>"/>
     </div>
   </div>
   <div class="form-group">
-    <label for="phone" class="ct-110 control-label">Тест SMS:</label>
-    <div class="col-xs-6">
+    <label for="phone" class="control-label col-lg-2">Тест SMS:</label>
+    <div class="col-lg-6">
 	<input name="test_phone" type="text" readonly class="form-control input" id="phone" value="<?=$this->user->phone1;?>"/>
 	<input name="send_test" type="button" class="btn btn-small btn-default" id="send_test" value="Отправить"/>
+	
 	</div>
 	</div>
 	<div class="form-group">
-    <label for="savepage" class="ct-110 control-label">Разослать:</label>
-    <div class="col-xs-6">
+	<label for="phone" class="control-label col-lg-2">Все готово?</label>
+    <div class="col-lg-6">
 	<input type="button" id="send_all" class="btn btn-small btn-default" name="send_full" id="savepage" value="Отправить рассылку"/>
 	</div>
 	</div>
+	<div class="form-group">
+	<label for="phone" class="control-label col-lg-2">Баланс:</label>
+    <div class="col-lg-6">
+<input name="send_balance" type="button" class="btn btn-small btn-default" id="send_balance" value="Смотреть"/>
+	</div>
+	</div>
 </form>
-<script type="text/javascript">
+</div>
+</div>
+</div>
+
+  
+<?php if ($this->errors) { ?>
+    <div id="conf-error-message">
+        <p><img src="<?=SITE_URL;?>/img/icons/remove-small.png" class="iconnew" alt=""/>Возникли ошибки при
+            отправке:</p>
+        <ul>
+            <?php foreach ($this->errors as $error) { ?>
+                <li><?=$error;?></li>
+            <?php } ?>
+        </ul>
+    </div>
+<?php } ?>
+
+
+<script>
     $(document).ready(function () { 
 
         var count_phone = $('#all_subject').val();
@@ -105,7 +114,15 @@ var new_data = data + '&test='+ test;
                 type: 'POST',
                 dataType: 'json',
                 data: new_data,
-                success: function (res) { alert(res.ms);}
+                success: function (res) {
+				if(res.status == 'send'){ $('.saved').html('SMS на номер '+res.ms.phone+' - '+res.ms.status); $('.saved').show(); }
+				console.log(res);
+				//alert(res.ms);
+				
+				},
+				error: function (e) {
+				console.log(e);
+				}
             });
         }
 		
@@ -115,6 +132,25 @@ var new_data = data + '&test='+ test;
             var url = '/admin/smsmailing/';
             var data = $('#mail_form').serialize();
            sendMailTest(url, data, 1);
+        });
+		$('#send_balance').click(function () {
+            var url = '/admin/smsmailing/';
+            var data = '?&balance=1';
+           $.ajax({
+                url: '/admin/smsmailing/',
+                type: 'POST',
+                dataType: 'json',
+                data: '?&balance=1',
+                success: function (res) {
+				if(res.status == 'send'){ $('.saved').html('<strong>'+res.ms+'</strong>'); $('.saved').show(); }
+				console.log(res);
+				//alert(res.ms);
+				},
+				error: function (e) {
+				console.log(e);
+				}
+            });
+			return false;
         });
 
         $('#send_all').click(function () {
@@ -130,4 +166,3 @@ var new_data = data + '&test='+ test;
         });
     });
 </script>
-<!-- /TinyMCE --> 	

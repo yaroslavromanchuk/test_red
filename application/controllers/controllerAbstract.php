@@ -133,7 +133,7 @@ abstract class controllerAbstract extends Controller
 FROM  `ws_articles` 
 INNER JOIN  `ws_articles_history` ON  `ws_articles`.`id` =  `ws_articles_history`.`article_id` 
 WHERE  `ws_articles_history`.`customer_id` =".$this->ws->getCustomer()->getId()."
-AND ws_articles.`stock` >0
+AND ws_articles.`stock`  not like '0'
 GROUP BY  `ws_articles`.`id` 
 ORDER BY  `ws_articles_history`.`id` DESC 
 LIMIT 5";
@@ -200,9 +200,9 @@ LIMIT 5";
 
 class Translator
 {
-    public function get($msg = '')
+    public function get($msg)
     {
-	if(!$msg or $msg == '') return false;
+	if($msg){
         $value = wsActiveRecord::useStatic('Dictionary')->findByName(trim($msg))->at(0);
         if (!$value) {
             $value = new Dictionary();
@@ -217,6 +217,8 @@ class Translator
 		}else{
 			return $value->getTranslation();
 		}
+		}
+		return false;
         
     }
 	

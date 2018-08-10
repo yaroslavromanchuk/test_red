@@ -96,8 +96,7 @@ echo '</div>';
 			  <p><?=$this->trans->get('Выберите способ доставки')?></p>
 			  
 			  <div class="btn-group btn-group-toggle" data-toggle="buttons">
-			  <?php foreach(wsActiveRecord::useStatic('DeliveryType')->findAll(array('active_user'=> 1), array('name'=>'ASC')) as $dely){
- if($dely->getId() == 16) continue;?>
+			  <?php foreach(wsActiveRecord::useStatic('DeliveryType')->findAll(array('active_user'=> 1, 'id != 16'), array('name'=>'ASC')) as $dely){ ?>
 <label class="btn btn-danger" style="border: 2px solid;">
 <input type="radio" name="delivery" class="delivery " value="<?=$dely->getId();?>"  onChange="return loadDopFile(this);"  required style="display: inline-block;">
 				<span><?=$dely->getName()?></span>

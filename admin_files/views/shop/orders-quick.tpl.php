@@ -1,15 +1,12 @@
-<img src="<?php echo SITE_URL.$this->getCurMenu()->getImage()?>" alt=""  class="page-img"/>
-<h1><?=$this->getCurMenu()->getTitle()?></h1><br/>
-<form action="/admin/shop-orders/" method="get">
-	<style type="text/css">
-		#search td {vertical-align: middle; padding: 1px; font-size: 16px;}
-		#search tr:nth-child(even) { background: #F8F8F8; }
-		label {cursor: pointer;}
-	</style>
-	<table border="0"  style="margin: auto;" class="table" cellpadding="0" cellspacing="0" id="search">
-		<tr>
-			<td colspan="4" align="center"><strong>Поиск:</strong></td>
-		</tr>
+ <div class="row">
+ <div class="panel panel-primary">
+ <div class="panel-heading"><h3 class="panel-title"><?=$this->getCurMenu()->getTitle()?></h3></div>
+ <div class="panel-body">
+  <div class="panel panel-success" style="display:none;">
+ <div class="panel-heading"><h3 class="panel-title">Форма поиска</h3></div>
+ <div class="panel-body">
+<form action="<?=$this->path?>shop-quick-orders/" method="get">
+	<table  style="margin: auto;"  id="search">
 		<tr>
 			<td>Номер заявки:</td>
 			<td><input type="text" class="form-control input" value="<?php echo @$_GET['order']; ?>" name="order"/></td>
@@ -40,52 +37,27 @@
 		</tr>
 	</table>
 </form>
-
-<script type="text/javascript">
-
-    $(document).ready(function () {
-        $('#masrintblank').click(function () {
-            if ($('.order-item:checked').val()) {
-                id = '';
-                i = 0;
-                jQuery.each($('.order-item:checked'), function () {
-                    if (i != 0) {
-                        id += ',' + $(this).attr('name').substr(5);
-                    } else {
-                        id += $(this).attr('name').substr(5);
-                    }
-                    i++;
-                });
-                window.open ( '/admin/masgenerateblank/ids/' + id , '_blank');
-
-            }
-        });
-    });
-</script>
-<!--
-<br/>
-<a href="/admin/edit-quick-order/id/">
-<img src="<?php //echo SITE_URL; ?><?php //echo $this->getCurMenu()->getImage(); ?>" alt="" width="32" class="page-img" height="32"/>Новая заявка
-</a>
-<br/>-->
-<br/>
+</div>
+</div>
 <?php if ($this->getOrders()->count()) { ?>
-    <script type="text/javascript">
-        var clik_ok = 0;
+    <script>
         function chekAll() {
-            if (!clik_ok) {
-                $('.cheker').attr('checked', true);
-                clik_ok = 1;
-            } else {
-                $('.cheker').attr('checked', false);
-                clik_ok = 0;
-            }
+		if($('.chekAll').is(":checked")){
+		$('.cheker').prop('checked', true);
+		}else{
+		$('.cheker').prop('checked', false);
+		}
             return false;
         }
-    </script>
+		
 
-	<table cellspacing="0" cellpadding="4" id="orders" class="table">
+    </script>
+  <div class="panel panel-info">
+ <div class="panel-heading"><h3 class="panel-title">Список заявок</h3></div>
+ <div class="panel-body">
+	<table id="orders" class="table">
         <tr>
+		<th><label class="ckbox" data-tooltip="tooltip" title="Выделить все заказы"><input onchange="chekAll();" class="chekAll" type="checkbox"/><span></span></label></th>
             <th>Действия</th>
             <th>Номер</th>
             <th>Статус</th>
@@ -101,7 +73,7 @@
             $row = ($row == 'row2') ? 'row1' : 'row2';
             $order_owner = new Customer($order->getCustomerId());
 		?>
-            <tr class="<?php echo $row; ?>"
+            <tr class="<?=$row?>"
                 <?php if ($order_owner->getAdminComents()) { ?>style="background: #ff6666;" <?php
                 } else {
 					if ($order->getNowaMail() != '0000-00-00 00:00:00' and $order->getDeliveryTypeId() == 8 and strtotime($order->getNowaMail()) <= mktime(0, 0, 0, date("m"), date("d") - 5, date("Y")) and false)
@@ -113,59 +85,35 @@
 				
             }
 		?>>
-                <td class="kolomicon">
-					<input type="checkbox" class="order-item cheker" name="item_<?php echo $order->getId(); ?>" style="vertical-align: top;"/>
-					<a href="<?php echo $this->path; ?>edit-quick-order/id/<?php echo $order->getId(); ?>/">
-						<img src="<?php echo SITE_URL; ?>/img/icons/edit-small.png" alt="Редактировать" width="24" height="24"/>
+		
+                <td><label class="ckbox"><input type="checkbox" class="order-item cheker" name="item_<?=$order->getId()?>"/><span></span></label>
+				</td>
+				<td>
+					
+					<a href="<?=$this->path?>edit-quick-order/id/<?=$order->getId()?>/">
+						<i class="icon ion-clipboard bleak1 tx-30 pd-5" alt="Редактировать" data-placement="right" title="" data-tooltip="tooltip" data-original-title="Редактировать заказ"></i>
 					</a>
 					<?php if ($this->user->isSuperAdmin()) { ?>
-						<a target="_blank" href="/admin/orderhistory/id/<?php echo $order->getId(); ?>">
-							<img height="24" width="24" alt="История" src="/img/icons/histori.png">
-						</a>
+							<i class="icon ion-clock bleak tx-30 pd-5 history" alt="История" data-id="<?=$order->getId()?>" data-placement="right" title="" data-tooltip="tooltip" data-original-title="Смотреть историю заказа"></i>
 <?php
 					}
 ?>
                 </td>
-                <td><?php echo $order->getQuickNumber(); ?></td>
+                <td><?=$order->getQuickNumber()?></td>
                 <td><?=$order->getStat()->getName()?></td>
-                <td><?php $d = new wsDate($order->getDateCreate()); echo $d->getFormattedDateTime(); ?></td>
-                <td><?php echo $order->getName() . ' ' . $order->getMiddleName(); ?></td>
-                <td><?php echo $order->getArticlesCount(); ?></td>
-                <td><?php
-					if ($order->getArticlesCount() != 0) {
-                        $sttt = '';
-                        $sttt2 = '';
-                        if ($order->isUcenArticle()) {
-                            $sttt = '<span style="color:#a51515">';
-                            $sttt2 = '</span>';
-                        }
-                        $price_1 = number_format((double)$order->getTotal('a'), 2, ',', '');
-                        $price_2 = $order->getAmount();
-                        echo  $price_1 . ' грн <br/>' . $sttt . $price_2 . ' грн' . $sttt2;
-                    }
-				?></td>
-
-                <td><?php  if ($order->getSkidka() != '') {
-                        echo $order->getSkidka();
-                    } else {
-                        $order->save();
-                        echo $order->getSkidka();
-                    } ?>%
-                </td>
-
+                <td><?=$order->getDateCreate()?></td>
+                <td><?=$order->getName().' '.$order->getMiddleName()?></td>
+                <td><?=$order->getArticlesCount()?></td>
+                <td><?=$order->getArticlesCount()?$order->getAmount():''?></td>
+                <td><?=$order->getSkidka()?$order->getSkidka():0?>%</td>
 				<td>
 				<?php if ($order->getRemarks()->count() or $order->getComments()) {
 					$remar = array();
-					foreach ($order->getRemarks() as $remark) {
-					$rem = $remark->getRemark()."-".$remark->getName();
-                            //$remar[] = $remark->getRemark();
-							$remar[] = $rem;
-					}
-					?>
+					foreach ($order->getRemarks() as $remark) { $remar[] = $remark->getRemark()."-".$remark->getName(); } ?>
 						<?php if ($order->getRemarks()->count()) { ?>
 							<div style="background: #C0FFD4; border: 1px solid #000; padding: 5px; margin: 5px;">
 							<b>Внутренний комментарий :</b><br/>
-							<?php echo implode(';', $remar); ?>
+							<?=implode(';', $remar)?>
 							</div>
 <?php
 							}
@@ -173,21 +121,20 @@
 						<?php if ($order->getComments()) { ?>
 							<div style="background: #ffff33; border: 1px solid #000; padding: 5px; margin: 5px;">
 							<b>Комментарий клиента :</b><br/>
-							<?php echo $order->getComments(); ?>
+							<?=$order->getComments()?>
 							</div>
 						<?php } ?>
 				<?php } ?>
 				</td>
-				
 				<td>
-				<?php if ($order->getCallMail() == '0000-00-00 00:00:00') {
-                                ?>
-<span id="<?php echo $order->getQuickNumber();?>"> <a href="#" onclick="PhoneMail(<?php echo $order->getId();?>,$(this)); return false;"
-                                          class="nowa_mail1">Отправить письмо</a></span>
-                            <?php } else { ?>
-<span id="<?php echo $order->getQuickNumber();?>"> письмо отправлено: <?php echo date('d-m-Y', strtotime($order->getCallMail()));?>
-<a href="#" onclick="PhoneMail(<?php echo $order->getId();?>,$(this)); return false;"
-                                       class="nowa_mail1"> отправить повторно</a></span>
+				<?php if($order->getCallMail() == '0000-00-00 00:00:00') { ?>
+<span id="<?php echo $order->getQuickNumber();?>">
+<i class="icon ion-email tx-30 pd-5 " alt="отправить письмо" onclick="PhoneMail(<?=$order->getId()?>,$(this)); return false;" data-id="<?=$order->getId()?>" data-placement="left" title="" data-tooltip="tooltip" data-original-title="Отправить письмо"></i>
+										  </span>
+                            <?php }else{ ?>
+<span id="<?=$order->getQuickNumber()?>"> письмо отправлено: <?=date('d-m-Y', strtotime($order->getCallMail()))?>
+<i class="icon ion-email tx-30 pd-5 " alt="отправить повторно" onclick="PhoneMail(<?=$order->getId()?>,$(this)); return false;" data-id="<?=$order->getId()?>" data-placement="left" title="" data-tooltip="tooltip" data-original-title="Отправить письмо повторно"></i>
+</span>
                             <?php } ?>
                         
 				</td>
@@ -197,65 +144,23 @@
         <?php } ?>
 
     </table>
-
-    <?php
-    $limitLeft = 2;
-    $limitRight = 2;
-    $url = explode('?', $_SERVER['REQUEST_URI']);
-    if (count($url) == 2) {
-        $ur = $url[0];
-        $get = '?' . $url[1];
-    } else {
-        $ur = $_SERVER['REQUEST_URI'];
-        $get = '';
-    }
-    $pager = preg_replace('/\/page\/\d*/', '', $ur) . '/page/';
-    $paginator = '&nbsp;&nbsp;';
-    if ($this->page > 1) {
-        $paginator .= '<a href="' . $pager . '1' . $get . '"><<</a>&nbsp;<a href="' . $pager . ($this->page - 1) . $get . '"><</a>&nbsp;';
-    } else {
-        $paginator .= '<span class="grey"><</span>&nbsp;<span class="grey"><<</span>&nbsp;';
-    }
-    $start = 1;
-    $end = $this->totalPages;
-    if ($this->page > $limitLeft) {
-        $paginator .= '...&nbsp;';
-        $start = $this->page - $limitLeft;
-    }
-    if (($this->page + $limitRight) < $this->totalPages) {
-        $end = $this->page + $limitRight;
-    }
-    //for ($i = 1; $i <= $this->totalPages; $i++){
-    for ($i = $start; $i <= $end; $i++) {
-        if ($i == $this->page) {
-            $paginator .= '<span>' . $i . '</span>';
-        } else {
-            $paginator .= '<span><a href="' . $pager . $i . $get . '">' . $i . '</a></span>';
-        }
-        if ($i <= $end - 1) {
-            $paginator .= '<span class="delimiter">&nbsp;|&nbsp;</span>';
-        }
-
-    }
-    if ($this->page == $this->totalPages) {
-        $paginator .= '&nbsp;<span class="grey">>></span>&nbsp;<span class="grey">></span>';
-    } else {
-        $paginator .= '&nbsp;<a href="' . $pager . ($this->page + 1) . $get . '">></a>&nbsp;<a href="' . $pager . $this->totalPages . $get . '">>></a>';
-    }
-    echo $paginator;
-
-    ?><br/>
-    Всего страниц: <?php echo $this->totalPages; ?>,  <?php echo $this->count; ?> записей!
-
-
+	</div>
+	</div>
+	
+</div>
+</div>
+</div>
 <?php
 	}
 	else {
 		echo 'Нет записей';
 	}
 ?>
-<p>&nbsp;</p>
-  <script type="text/javascript">
+  <script>
+$('.history').click(function (e) {
+var id = e.target.attributes.getNamedItem("data-id").value;
+$.get('/admin/orderhistory/id/'+id+'/m/1',function (data) {fopen('История изменения заказа №'+id, data);});	
+});
 function PhoneMail(id, object) {
 var getcall = 'getcall';
 $.post('/admin/nowamail/', {

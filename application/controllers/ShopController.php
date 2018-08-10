@@ -34,6 +34,10 @@ $search_word = false;
 		$this->view->finder_category = $this->get->id;
 
 		$this->getsearch($search_word, $this->get->id, $this->get->brands, $this->get->colors, $this->get->sises, $this->get->labels, $this->get->sezons, $this->get->skidka, $this->get->categories);
+		
+		//unset($this->get[3]);
+		
+		//d($this->get, false);
 
 	}
 
@@ -384,6 +388,10 @@ die(json_encode(html_entity_decode($rez)));
 				if ($this->post->deposit == 1) {
 					$_SESSION['deposit'] = $this->ws->getCustomer()->getDeposit();
 				}else {unset($_SESSION['deposit']);}
+				if ($this->post->bonus == 1) {
+					$_SESSION['bonus'] = $this->ws->getCustomer()->getBonus();
+				}else {unset($_SESSION['bonus']);}
+				
 				if (!isset($_SESSION['basket_contacts'])) {
 					$_SESSION['basket_contacts'] = array();
 				}
@@ -648,7 +656,7 @@ $ord.=$r->id.', ';
 				$to_pay = 0;
 				$to_pay_minus = 0.00;
 				$skidka = 0;
-				$bonus = false;
+				//$bonus = false;
 				$now_orders = 0;
 				$event_skidka = 0;
 				$kupon = 0;
@@ -691,6 +699,7 @@ $ord.=$r->id.', ';
 					case 0: $price = $at->getPerc($now_orders, $article['count'], $skidka, $event_skidka, $kupon, $t_price); break;
 					case 1: $price = $at->getPerc($now_orders, $article['count'], $skidka, 99, $kupon, $t_price); break;
 					case 2: $price = $at->getPerc($now_orders, $article['count'], $skidka, 50, $kupon, $t_price); break;
+					//case 3: $price = $at->getPerc($now_orders, $article['count'], $skidka, 50, $kupon, $t_price); break;
 					default: $price = $at->getPerc($now_orders, $article['count'], $skidka, $event_skidka, $kupon, $t_price);
 					}
 					
@@ -852,14 +861,16 @@ $ord.=$r->id.', ';
 					
 					$_SESSION['deposit'] = $dep; 
 					$order->setDeposit($dep);
+					
 					//perevod v novu pochtu esly polnosty oplachen depositom
 					if($order->getDeliveryTypeId() == 16 and $dep == $total_price){
 					$order->setDeliveryTypeId(8);
 					$info['delivery_type_id'] = 8;
-					$order->setPaymentMethodId(2);
-					$info['payment_method_id'] = 2;
+					$order->setPaymentMethodId(8);
+					$info['payment_method_id'] = 8;
 					}
 					//perevod v novu pochtu esly polnosty oplachen depositom
+					
 					$am = $total_price - $dep;
 					$order->setAmount($am);
 					$order->save();
@@ -873,20 +884,33 @@ $ord.=$r->id.', ';
 				$no = '-';
 				DepositHistory::newDepositHistory($customer->getId(), $customer->getId(), $no, $order->getDeposit(), $order->getId());
 
-						$deposit = $_SESSION['deposit'];
-						unset($_SESSION['deposit']);
+				$deposit = $_SESSION['deposit'];
+				unset($_SESSION['deposit']);
 				
 				}
-		if($this->ws->getCustomer()->getBonus() > 0 and $order->getAmount() >= Config::findByCode('min_sum_bonus')->getValue()){
-				$order->setBonus($this->ws->getCustomer()->getBonus());
+				
+		if(@$_SESSION['bonus'] and $this->ws->getCustomer()->getBonus() > 0 and $order->getAmount() >= Config::findByCode('min_sum_bonus')->getValue()){
+		$total_price = $order->getAmount();
+		$bon = $this->ws->getCustomer()->getBonus() - $total_price;
+		if ($bon <= 0) $bon = $this->ws->getCustomer()->getBonus();
+					else $bon = $total_price;
+					
+			$_SESSION['bonus'] = $bon; 
+					$order->setBonus($bon);		
+		
+				//$order->setBonus($this->ws->getCustomer()->getBonus());
+				
 				$customer = new Customer($this->ws->getCustomer()->getId());
-				$customer->setBonus(0);
+				$customer->setBonus($customer->getBonus() - $bon);
 				$customer->save();
-				OrderHistory::newHistory($this->ws->getCustomer()->getId(), $order->getId(), ' Клиент использовал бонус ('.$order->getBonus().') грн. ',
-                ' ');
-				$bonus = true;
+		OrderHistory::newHistory($this->ws->getCustomer()->getId(), $order->getId(), ' Клиент использовал бонус ('.$order->getBonus().') грн. ', ' ');
+		
+		$bonus = $_SESSION['bonus'];
+				unset($_SESSION['bonus']);
+				//$bonus = true;
 				}
-					$order->save();
+				
+				$order->save();
 					
 				
 					
@@ -948,7 +972,7 @@ $ord.=$r->id.', ';
 							$a->setArtikul(trim($article['artikul']));
 							$a->setOldPrice($item->getOldPrice());
 							$s = Skidki::getActiv($item->getId());
-							$c = false;//Skidki::getActivCat($item->getCategoryId(), $item->getDopCatId());
+							$c = Skidki::getActivCat($item->getCategoryId());
 							if(@$c){
 							$a->setEventSkidka($c->getValue());
 								$a->setEventId($c->getId());
@@ -971,7 +995,7 @@ $ord.=$r->id.', ';
 							unset($data['id']);
 							$a->import($data);
 							$s = Skidki::getActiv($item->getId());
-							$c = false;//Skidki::getActivCat($item->getCategoryId(), $item->getDopCatId());
+							$c = Skidki::getActivCat($item->getCategoryId());
 							if(@$s){
 								$a->setEventSkidka($s->getValue());
 								$a->setEventId($s->getId());
@@ -1010,11 +1034,11 @@ $info['s_service'],
 					}
 					//exit meestexpres
 					
-					if($order->getBonus() > 0){$bonus = true;}
+					//if($order->getBonus() > 0){$bonus = true;}
 
 					$this->set_customer($order);
 					
-						$order->reCalculate(true, $bonus);
+						$order->reCalculate(true);
 					
 
 					$basket = $order->getArticles()->export();
@@ -1036,22 +1060,26 @@ $info['s_service'],
 					if ($order->getId()) {
 						$order = new Shoporders($order->getId());
 						
-						$order->reCalculate(true, $bonus);
+						$order->reCalculate(true);
 				
-				OrderHistory::newOrder($this->ws->getCustomer()->getId(), $order->getId(), $order->calculateOrderPrice2(true, false, true, $bonus), $order->getArticlesCount());
+				OrderHistory::newOrder($this->ws->getCustomer()->getId(), $order->getId(), $order->calculateOrderPrice2(true, false, true), $order->getArticlesCount());
 						
 						
 						
-					if($this->ws->getCustomer()->getIsLoggedIn() and $this->ws->getCustomer()->getTelegram() != NULL){
-	$message = 'Ваш заказ № '.$order->getId().' оформлен. Сумма к оплате '.$order->calculateOrderPrice2(true, true, true, $bonus).' грн. Телефон (044) 224-40-00';
+					if($this->ws->getCustomer()->getIsLoggedIn() and $this->ws->getCustomer()->getTelegram()){
+	$message = 'Ваш заказ № '.$order->getId().' оформлен. Сумма к оплате '.$order->calculateOrderPrice2(true, true, true).' грн. Телефон (044) 224-40-00';
 	$this->sendMessageTelegram($this->ws->getCustomer()->getTelegram(), $message);
 	}else{
 				$phone = Number::clearPhone($order->getTelephone());
-						include_once('smsclub.class.php');
-						$sms = new SMSClub(Config::findByCode('sms_login')->getValue(), Config::findByCode('sms_pass')->getValue());
-						//$sender = ;
-						$user = $sms->sendSMS(Config::findByCode('sms_alphaname')->getValue(), $phone, $this->trans->get('Vash zakaz').' № ' . $order->getId() . ' '.$this->trans->get('Summa').' ' . $order->calculateOrderPrice2(true, true, true,  $bonus) . ' grn. tel. (044) 224-40-00');
-						wsLog::add('SMS to user: ' . $sms->receiveSMS($user), 'SMS_' . $sms->receiveSMS($user));
+
+				require_once('alphasms/smsclient.class.php');
+				$sms = new SMSClient(Config::findByCode('sms_login')->getValue(), Config::findByCode('sms_pass')->getValue(), Config::findByCode('sms_key')->getValue());
+				$id = $sms->sendSMS(Config::findByCode('sms_alphaname')->getValue(), $phone, $this->trans->get('Vash zakaz').' № ' . $order->getId() . ' '.$this->trans->get('Summa').' ' . $order->calculateOrderPrice2(true, true, true) . ' grn. tel. (044) 224-40-00');
+
+				if($sms->hasErrors()){ $res = $sms->getErrors(); }else{ $res = $sms->receiveSMS($id); }
+				wsLog::add('Order:'.$order->id.' to SMS: '.$phone.' - '.$res, 'SMS_' . $res);
+						
+						
 						}
 //}
 
@@ -1101,7 +1129,7 @@ $info['s_service'],
 						}
 
 						$order_id = $order->getId();
-						$order_amount = $order->calculateOrderPrice2(true, false, true, $bonus);
+						$order_amount = $order->calculateOrderPrice2(true, false, true);
 
 						$pay_data['LMI_MERCHANT_ID'] = 2285;
 						$pay_data['LMI_PAYMENT_AMOUNT'] = $order_amount;//str_replace(" ","",$order_amount);
@@ -1227,6 +1255,7 @@ $info['s_service'],
 					$subscriber->setName($order->getName());
 					$subscriber->setEmail($order->getEmail());
 					$subscriber->setConfirmed(date('Y-m-d H:i:s'));
+					$subscriber->setActive(1);
 					$subscriber->save();
 					
 				$order->setCustomerId($customer->getId());
@@ -1528,8 +1557,8 @@ $info['s_service'],
 					if($order->getDelivertTypeId() == 16 and $dep == $total_price){
 					$order->setDeliveryTypeId(8);
 					$info['delivery_type_id'] = 8;
-					$order->setPaymentMethodId(2);
-					$info['payment_method_id'] = 2;
+					$order->setPaymentMethodId(8);
+					$info['payment_method_id'] = 8;
 					}
 					//perevod v novu pochtu esly polnosty oplachen depositom
 					$am = $total_price - $dep;
@@ -1638,7 +1667,7 @@ $info['s_service'],
 					$a->import($data);
 					$a->setOldPrice($item->getOldPrice());
 					$s = Skidki::getActiv($item->getId());
-					$c = false;//Skidki::getActivCat($item->getCategoryId(), $item->getDopCatId());
+					$c = Skidki::getActivCat($item->getCategoryId());
 					if (@$s) {
 						$a->setEventSkidka($s->getValue()+$event_skidka_klient);
 						$a->setEventId($s->getId());
@@ -1661,7 +1690,7 @@ $info['s_service'],
 					unset($data['id']);
 					$a->import($data);
 					$s = Skidki::getActiv($item->getId());
-					$c = false;//Skidki::getActivCat($item->getCategoryId(), $item->getDopCatId());
+					$c = Skidki::getActivCat($item->getCategoryId());
 					if ($s) {
 						$a->setEventSkidka($s->getValue());
 						$a->setEventId($s->getId());
@@ -1682,7 +1711,7 @@ $info['s_service'],
 			
 			
 					
-					$order->reCalculate(true, $bonus);
+					$order->reCalculate(true);
 			
 			
 // TO DO : send mail to customer
@@ -1730,18 +1759,18 @@ if(!$this->ws->getCustomer()->isBlockEmail()) {
 			if ($order->getId()) {
 				$order = new Shoporders($order->getId());
 
-				$order->reCalculate(true, $bonus);
-		if($this->ws->getCustomer()->getIsLoggedIn() and $this->ws->getCustomer()->getTelegram() != NULL){
-$message = 'Ваш заказ № '.$order->getId().' оформлен. Сумма к оплате '.$order->calculateOrderPrice2(true, true, true, $bonus).' грн. Телефон (044) 224-40-00';
+				$order->reCalculate(true);
+		if($this->ws->getCustomer()->getIsLoggedIn() and $this->ws->getCustomer()->getTelegram()){
+$message = 'Ваш заказ № '.$order->getId().' оформлен. Сумма к оплате '.$order->calculateOrderPrice2(true, true, true).' грн. Телефон (044) 224-40-00';
 $this->sendMessageTelegram($this->ws->getCustomer()->getTelegram(), $message);
 }else{
 				$phone = Number::clearPhone($order->getTelephone());
 
-				include_once('smsclub.class.php');
-				$sms = new SMSClub(Config::findByCode('sms_login')->getValue(), Config::findByCode('sms_pass')->getValue());
-				$sender = Config::findByCode('sms_alphaname')->getValue();
-				$user = $sms->sendSMS($sender, $phone, 'Vash zakaz № ' . $order->getId() . ' Summa ' . $order->calculateOrderPrice2(true, true, true, $bonus) . ' grn. tel. (044) 224-40-00');
-				wsLog::add('SMS to user: ' . $sms->receiveSMS($user), 'SMS_' . $sms->receiveSMS($user));
+				require_once('alphasms/smsclient.class.php');
+				$sms = new SMSClient(Config::findByCode('sms_login')->getValue(), Config::findByCode('sms_pass')->getValue(), Config::findByCode('sms_key')->getValue());
+				$id = $sms->sendSMS(Config::findByCode('sms_alphaname')->getValue(), $phone, 'Vash zakaz № ' . $order->getId() . ' Summa ' . $order->calculateOrderPrice2(true, true, true) . ' grn. tel. (044) 224-40-00');
+				if($sms->hasErrors()){ $res = $sms->getErrors(); }else{ $res = $sms->receiveSMS($id); }
+				wsLog::add('Order:'.$order->id.' to SMS: '.$phone.' - '.$res, 'SMS_' . $res);
 				}
 
 				if (!$order->getCustomerId()) {
@@ -1852,27 +1881,23 @@ $this->sendMessageTelegram($this->ws->getCustomer()->getTelegram(), $message);
 			$error_email = 0;
 			if (!$this->ws->getCustomer()->getIsLoggedIn() and wsActiveRecord::useStatic('Customer')->findByEmail($info['email'])->count() != 0) {
 				$error_email = 1;
-				$errors['error'][] = $this->trans->get('Такой email уже используется.<br /> Поменяйте email или зайдите как зарегистрированный пользователь').'.';
-			$errors[] = 'email';
+				$errors['error']['email'] = $this->trans->get('Такой email уже используется.<br /> Поменяйте email или зайдите как зарегистрированный пользователь').'.';
 			}
 			$tel = Number::clearPhone(trim($info['telephone']));
 			$tel = preg_replace('/[^0-9]/', '', $info['telephone']);
 			$tel = substr($tel, -10);
 			$allowed_chars = '1234567890';
 			if (!Number::clearPhone($tel)) {
-				$errors['error'][] = $this->trans->get('Введите телефонный номер');
-				$errors[] = 'telephone';
+				$errors['error']['telephone'] = $this->trans->get('Введите телефонный номер');
 			}
 			for ($i = 0; $i < mb_strlen($tel); $i++) {
 				if (mb_strpos($allowed_chars, mb_strtolower($tel[$i])) === false) {
-					$errors['error'][] = $this->trans->get('В номере должны быть только числа');
-					$errors[] = 'telephone';
+					$errors['error']['telephone'] = $this->trans->get('В номере должны быть только числа');
 				}
 			}
 			$alredy = wsActiveRecord::useStatic('Customer')->findFirst(array(" phone1 LIKE  '%".$tel."%' "));
 			if ($alredy and $alredy->getUsername() != null and $alredy->getId() != $this->ws->getCustomer()->getId()) {
-				$errors['error'][] = $this->trans->get('Пользователь с таким номером телефона уже зарегистрирован в системе.<br /> Поменяйте телефон или зайдите как зарегистрированный пользователь').".";
-				$errors[] = 'telephone';
+				$errors['error']['telephone'] = $this->trans->get('Пользователь с таким номером телефона уже зарегистрирован в системе.<br /> Поменяйте телефон или зайдите как зарегистрированный пользователь').".";
 			}
 			
 
@@ -1884,54 +1909,53 @@ $this->sendMessageTelegram($this->ws->getCustomer()->getTelegram(), $message);
 
 
 			if (!$info['name'])
-				$errors['error'][] = $this->trans->get('Неверное имя');
+				$errors['error']['name'] = $this->trans->get('Неверное имя');
 
 			if (!$info['email'] || !isValidEmail($info['email']))
-				$errors['error'][] = $this->trans->get('Неверный email');
+				$errors['error']['email'] = $this->trans->get('Неверный email');
 
 			if (!Number::clearPhone(trim($info['telephone'])) || !$info['telephone'] || !isValidTel)
-				$errors['error'][] = $this->trans->get('Неверный телефон');
+				$errors['error']['telephone'] = $this->trans->get('Неверный телефон');
 
 			if ($this->ws->getCustomer()->isBan())
-				$errors['error'][] = $this->trans->get('Доступ заблокирован');
+				$errors['error']['ban'] = $this->trans->get('Доступ заблокирован');
 				
 			if ($this->ws->getCustomer()->isBlockQuick())
-					$errors['error'][] = $this->trans->get('Заблокировано оформление быстрых заказов');
+					$errors['error']['block_quick'] = $this->trans->get('Заблокировано оформление быстрых заказов');
 
 			if ($this->ws->getCustomer()->isNoPayOrder())
-				$errors['error'][] = $this->trans->get('Доступ заблокирован');
+				$errors['error']['block'] = $this->trans->get('Доступ заблокирован');
 
 			if (!isset($_POST['size']) or @$_POST['size'] == 0)
-				$errors['error'][] = $this->trans->get('Выберите размер');
+				$errors['error']['size'] = $this->trans->get('Выберите размер');
 
 			if (!isset($_POST['color']) or @$_POST['color'] == 0)
-				$errors['error'][] = $this->trans->get('Выберите цвет');
+				$errors['error']['color'] = $this->trans->get('Выберите цвет');
 
 
 			//________________________end_check_inputs_________________________________________
 
 
-			if (count($errors) == 0) {
+			if (!count($errors)){
 				//____________________________start_add_to_basket____________________________________
 
 				$article = wsActiveRecord::useStatic('Shoparticles')->findById(@$_POST['id']);
 
-				$change = $article->addToBasket(1, (int)@$_POST['size'], (int)@$_POST['color'], (isset($_POST['option']) ? (int)@$_POST['option'] : 0), 1, (isset($_POST['artikul']) ? $_POST['artikul'] : 0));
-				foreach (@$_POST as $key => $value) {
+$change = $article->addToBasket(1, (int)@$_POST['size'], (int)@$_POST['color'], 0, 1, (isset($_POST['artikul'])?$_POST['artikul']:0));
+				
+			/*	foreach (@$_POST as $key => $value) {
 					$keys = explode('_', $key);
-					if (strcasecmp($keys[0], 'sarticle') == 0 && (int)$value && ($sa = wsActiveRecord::useStatic('Shoparticles')->findById((int)$value)) && $sa->getId())
-					
-						if ($sa->addToBasket(1, (int)$_POST['size'], (int)$_POST['color'], (isset($_POST['soption_' . $keys[1]]) ? (int)@$_POST['soption_' . $keys[1]] : 0), 1, (isset($_POST['artikul'])
-					? $_POST['artikul'] : 0))
-						){
-						
-							$change = true;
-							}
+			if (strcasecmp($keys[0], 'sarticle') == 0 && (int)$value && ($sa = wsActiveRecord::useStatic('Shoparticles')->findById((int)$value)) && $sa->getId())
+				if ($sa->addToBasket(1, (int)$_POST['size'], (int)$_POST['color'], (isset($_POST['soption_' . $keys[1]]) ? (int)@$_POST['soption_' . $keys[1]] : 0), 1, (isset($_POST['artikul'])? $_POST['artikul'] : 0))){ $change = true; }
 				}
-				if ($change) {
-					$this->basket = $_SESSION['basket'];
-					$this->view->ok = true;
-				}
+				*/
+				
+	if ($change) {
+	$this->basket = $_SESSION['basket']; 
+	$this->view->ok = true;
+	}else{
+	die(json_encode(array('result'=>'error', 'message'=>$errors['error']['error_articles']='Ошибка с товаром, попробуйте еще раз.')));
+	}
 
 				//____________________________end_add_to_basket____________________________________
 
@@ -1944,15 +1968,13 @@ $this->sendMessageTelegram($this->ws->getCustomer()->getTelegram(), $message);
 
 				//________________________start_added_fields____________________________________________
 
-
-				$curdate = Registry::get('curdate');
 				$order = new Shoporders();
 				$phone = preg_replace('/[^0-9]/', '', $info['telephone']);
 				$phone = substr($phone, -10);
 				$phone = '38'.$phone;
 				$data = array(
 					'status' => 100,
-					'date_create' => $curdate->getFormattedMySQLDateTime(),
+					'date_create' => date("Y-m-d H:i:s"),
 					'company' => isset($info['company']) ? $info['company'] : '',
 					'name' => @$info['name'],
 					'middle_name' => isset($info['middle_name']) ? $info['middle_name'] : '',
@@ -1998,7 +2020,7 @@ $this->sendMessageTelegram($this->ws->getCustomer()->getTelegram(), $message);
 				//________________________put order_to_db______________________________________________
 				$this->set_customer($order);
 					
-					$order->reCalculate();
+				$order->reCalculate();
 				
 				foreach ($_SESSION['basket_articles'] as $article) {
 
@@ -2019,7 +2041,7 @@ $this->sendMessageTelegram($this->ws->getCustomer()->getTelegram(), $message);
 						$a->import($data);
 						$a->setOldPrice($item->getOldPrice());
 						$s = Skidki::getActiv($item->getId());
-						$c = false;//Skidki::getActivCat($item->getCategoryId(), $item->getDopCatId());
+						$c = Skidki::getActivCat($item->getCategoryId());
 						if (@$s) {
 							$a->setEventSkidka($s->getValue());
 							$a->setEventId($s->getId());
@@ -2038,7 +2060,7 @@ $this->sendMessageTelegram($this->ws->getCustomer()->getTelegram(), $message);
 						unset($data['id']);
 						$a->import($data);
 						$s = Skidki::getActiv($item->getId());
-						$c = false;//Skidki::getActivCat($item->getCategoryId(), $item->getDopCatId());
+						$c = Skidki::getActivCat($item->getCategoryId());
 						if ($s) {
 							$a->setEventSkidka($s->getValue());
 							$a->setEventId($s->getId());
@@ -2066,20 +2088,21 @@ $this->sendMessageTelegram($this->ws->getCustomer()->getTelegram(), $message);
 				$subject = $this->trans->get('Принята заявка');
 
 				SendMail::getInstance()->sendEmail($order->getEmail(), $order->getName(), $subject, $msg);
-				//MailerNew::getInstance()->sendToEmail($order->getEmail(), $order->getName(), $subject, $msg);		
 }				
 				//____________________send_email________________
-if($this->ws->getCustomer()->getIsLoggedIn() and $this->ws->getCustomer()->getTelegram() != NULL){
+if($this->ws->getCustomer()->getIsLoggedIn() and $this->ws->getCustomer()->getTelegram()){
 $message = 'Ваша заявка № '.$order->getQuickNumber().' прийнята. Ожидайте звонок менеджера для уточнения деталей доставки и оплаты.';
 $this->sendMessageTelegram($this->ws->getCustomer()->getTelegram(), $message);
 }else{
 				//____________________send_sms__________________
-				include_once('smsclub.class.php');
+				require_once('alphasms/smsclient.class.php');
 				$phone = Number::clearPhone($order->getTelephone());
-				$sms = new SMSClub(Config::findByCode('sms_login')->getValue(), Config::findByCode('sms_pass')->getValue());
-				$sender = Config::findByCode('sms_alphaname')->getValue();
-				$user = $sms->sendSMS($sender, $phone, $this->trans->get('Vasha zajavka').' №' . $order->getQuickNumber() .' '.$this->trans->get('prinjata. Ozhidajte zvonok menedzhera'));
-				wsLog::add('SMS to user: ' . $sms->receiveSMS($user), 'SMS_' . $sms->receiveSMS($user));
+				$sms = new SMSClient(Config::findByCode('sms_login')->getValue(), Config::findByCode('sms_pass')->getValue(), Config::findByCode('sms_key')->getValue());
+				
+				$id = $sms->sendSMS(Config::findByCode('sms_alphaname')->getValue(), $phone, $this->trans->get('Vasha zajavka').' №' . $order->getQuickNumber() .' '.$this->trans->get('prinjata. Ozhidajte zvonok menedzhera'));
+				
+				if($sms->hasErrors()){ $res = $sms->getErrors(); }else{ $res = $sms->receiveSMS($id); }
+					wsLog::add('Quick:'.$order->getQuickNumber().' to SMS: '.$phone.' - '.$res, 'SMS_' . $res);
 				//____________________send_sms__________________
 }
 			
@@ -2091,15 +2114,17 @@ $this->sendMessageTelegram($this->ws->getCustomer()->getTelegram(), $message);
 				$this->basket_articles = $_SESSION['basket_articles'] = array();
 				$this->basket_options = $_SESSION['basket_options'] = array();
 				
-				OrderHistory::newOrder($order->getCustomerId(), $order->getId(), $order->calculateOrderPrice2(true, false, true, $bonus), $order->getArticlesCount());
-
-			}
-		} else $errors['error'][] = $this->trans->get('Ошибка с передачей информации');
-
-		$this->view->errors = $errors;
-
-		echo $this->render('shop/quick-order-result.php');
-		//$this->_redir('basketorderquick');
+				OrderHistory::newOrder($order->getCustomerId(), $order->getId(), $order->calculateOrderPrice2(true, false, true), $order->getArticlesCount());
+				
+die(json_encode(array('result'=>'send', 'message'=>$this->render('shop/quick-order-result.php'))));
+			
+			}else{
+		
+		die(json_encode(array('result'=>'error', 'message'=>$errors)));
+		}
+			
+		}
+		
 		exit;
 	}
 
@@ -2287,17 +2312,19 @@ $this->sendMessageTelegram($this->ws->getCustomer()->getTelegram(), $message);
 	
 	// yarik - nova pochta
 	public function novapochtaAction(){
-	$lang = $_SESSION['lang'];
+	
+if($this->get->what == 'citynpochta'){
+	die(json_encode(City::listcity($this->get->term)));
+				}
+if ($this->get->metod == 'getframe_np') {
+$lang = $_SESSION['lang'];
 	if($lang == 'uk') $lang = 'ua';
 
 	require_once('np/NovaPoshta.php');
 	require_once('np/NovaPoshtaApi2Areas.php');
 	$np = new NovaPoshta('2c28a9c1a5878cb01c8f9c440e827a61', $lang, true, 'curl');
 
-if($this->get->what == 'citynpochta'){
-	die(json_encode(City::listcity($this->get->term)));
-				}
-if ($this->get->metod == 'getframe_np') {
+
    $wh = $np->getWarehouses($this->get->getWarehouses());
 		$text = '';
     foreach ($wh['data'] as $warehouse) {

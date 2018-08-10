@@ -63,7 +63,7 @@ $owner = new Customer($m->admin_id);
 </form>
 <?php 
 if (@$this->getArticles()) {
-$deli = array(12 => 'Мишуга', 3 => 'Победа', 5 => 'Строителей');
+$deli = array(12 => 'Мишуга', 3 => 'Победа', 5 => 'Строителей', 4=>'УкрПочта', 9=>'Курьер', 8=>'НП', 16=>'НП:НП');
 ?> 
 <script type="text/javascript">
         function chekAll() {

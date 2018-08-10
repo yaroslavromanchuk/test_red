@@ -15,7 +15,7 @@
   </div>
 
 </div>
-<script type="text/javascript">
+<script >
 function Calculat(e){
 var sum = 0.00;
 //console.log(e);

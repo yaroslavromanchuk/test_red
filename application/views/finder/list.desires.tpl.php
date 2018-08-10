@@ -2,7 +2,7 @@
 <div  class="modal-dialog modal-lg">
 	<div  class="modal-content">
 	<div class="modal-header">
-	<h4 class="modal-title" id="id_comment_modal_article"><?=$this->trans->get('Áûñòðûé ïðîñìîòð òîâàðà');?></h4>
+	<h4 class="modal-title" id="id_comment_modal_article"><?=$this->trans->get('Ð‘Ñ‹ÑÑ‚Ñ€Ñ‹Ð¹ Ð¿Ñ€Ð¾ÑÐ¼Ð¾Ñ‚Ñ€ Ñ‚Ð¾Ð²Ð°Ñ€Ð°');?></h4>
 	<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 	</div>
 	<div class="modal-body" id="view_article"></div>

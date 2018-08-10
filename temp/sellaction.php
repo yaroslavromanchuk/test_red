@@ -3,14 +3,14 @@ header("Content-Type: text/html; charset=utf-8");
 require_once('../cron_init.php');
 require_once('parse_excel.php');
 
-$path = 'list.xlsx';
+$path = 'list_sellection.xlsx';
 $res = parse_excel_file($path);
 $mas = array();
-$mas[0] = 'ожидание'; 
+$mas[100] = 'ожидание'; 
 $mas[1] = 'ожидание'; 
 $mas[2] = 'отменён'; 
 $mas[3] = 'ожидание'; 
-$mas[4] = 'ожидание'; 
+$mas[4] = 'Отправлен Укр.почта'; 
 $mas[5] = 'отменён'; 
 $mas[6] = 'Отправлен Новая почта'; 
 $mas[7] = 'отменён'; 
@@ -29,13 +29,18 @@ $count = count($res);
 if($count > 0){
 $i = 0;
 $mass = array();
+echo '<table>';
 foreach ($res as $k => $l) {
 $or = wsActiveRecord::useStatic('Shoporders')->findById($l[0]);
 if($or){
-$mass[$i] =array('id' => $l[0], 'sum' => $or->amount+$or->deposit, 'status' => $mas[$or->status]); 
+echo '<tr><td>'.$l[0].'</td><td>'.($or->amount+$or->deposit).'</td><td>'.$mas[$or->status].'</td></tr>';
+//echo $mas[$or->status].'<br>';
+//echo $l[0].' - '.($or->amount+$or->deposit).' -  '.$mas[$or->status].'<br>';
+//$mass[$i] = array('id' => $l[0], 'sum' => $or->amount+$or->deposit, 'status' => $mas[$or->status]); 
 $i++;
 }
 }
-if(count($mass) > 0) echo save_excel_file($mass, 'sellaction');
+echo '</table>';
+//if(count($mass) > 0)  echo '<pre>'; echo print_r($mass); echo '</pre>';//echo save_excel_file($mass);
 }
 ?>

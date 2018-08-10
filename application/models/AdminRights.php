@@ -48,6 +48,7 @@ class AdminRights extends wsActiveRecord
 	static function getRights($page_id){
 	return wsActiveRecord::useStatic('AdminRights')->findAll(array('page_id' => $page_id, 'right'=>1));
 	}
+	
 
     static function setViews($admin_id, $page_id, $val)
     {

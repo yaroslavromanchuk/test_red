@@ -10,12 +10,27 @@ require_once('../cron_init.php');
 if(isset($_GET['sr'])){
 $mass = array();
 $subject = $_GET['sr'];
-//echo  substr($subject,0, 2);
+$order = substr($subject,-7, -1);
+if (ctype_digit($order) and strlen($order) == 6){
+ $or = wsActiveRecord::useStatic('Shoporders')->findById($order);
+if($or){
+foreach($or->getArticles() as $a){
+echo '<img src="'.$a->getArticleDb()->getImagePath('listing').'"><br>';
+echo $a->getTitle().' '.$a->sizes->size.'/'.$a->colors->name.'('.$a->count.')<br>';
+
+}
+echo 'Сумма заказа: '.$or->getAmount().'<br>';
+}else{
+echo 'Ощибка чтения заказа :'.$order;
+}
+exit;
+
+}
 $pattern = '/^SR/';
 preg_match($pattern, substr($subject, 0, 2), $matches, PREG_OFFSET_CAPTURE);
-//print_r($matches);
+echo print_r($subject);
 //echo $matches[0][0];
-if(strlen(trim($_GET['sr'])) == 16 and $matches[0][0] == 'SR'){
+if(strlen(trim($_GET['sr'])) == 16 or strlen(trim($_GET['sr'])) == 14){
 $o_stat = wsActiveRecord::useStatic('OrderStatuses')->findAll();
         $mas_os = array();
         foreach ($o_stat as $o) {

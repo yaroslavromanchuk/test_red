@@ -86,28 +86,28 @@ class FinderController extends controllerAbstract {
         $t = explode(',', $this->get->labels?$this->get->labels:$this->post->labels);
         foreach ($t as $v){
             if ($v){
-                $parametrs['labels'][] = Orm_Statement::escape($v);
+                $parametrs['labels'][] = mysql_real_escape_string($v);
             }
         }
 		//sezons
         $t = explode(',', $this->get->sezons?$this->get->sezons:$this->post->sezons);
         foreach ($t as $v){
             if ($v){
-                $parametrs['sezons'][] = Orm_Statement::escape($v);
+                $parametrs['sezons'][] = mysql_real_escape_string($v);
             }
         }
 		//sezons
         $t = explode(',', $this->get->skidka?$this->get->skidka:$this->post->skidka);
         foreach ($t as $v){
             if ($v){
-                $parametrs['skidka'][] = Orm_Statement::escape($v);
+                $parametrs['skidka'][] = mysql_real_escape_string($v);
             }
         }
         //brands
         $t = explode(',', $this->get->brands?$this->get->brands:$this->post->brands);
         foreach ($t as $v){
             if ($v){
-                $parametrs['brands'][] = Orm_Statement::escape($v);
+                $parametrs['brands'][] = mysql_real_escape_string($v);
             }
         }
         $enable_all_child_categories = false;
@@ -119,10 +119,10 @@ class FinderController extends controllerAbstract {
             $enable_all_child_categories = true;
         }
         //
-        $parametrs['prices_min_max'] = array(
-            'min'=>$this->post->price_min?$this->post->price_min:$this->get->price_min,
-            'max'=>$this->post->price_max?$this->post->price_max:$this->get->price_max
-        );
+       // $parametrs['prices_min_max'] = array(
+          //  'min'=>$this->post->price_min?$this->post->price_min:$this->get->price_min,
+          //  'max'=>$this->post->price_max?$this->post->price_max:$this->get->price_max
+      //  );
 
         $page = $this->get->page?(int)$this->get->page:$this->post->page;
         if((int)$this->post->on_page){

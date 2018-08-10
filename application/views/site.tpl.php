@@ -30,7 +30,9 @@
 	}elseif($this->getCategory()) {
 	$keywords = strip_tags(stripslashes($this->getCategory()->getName())) .' '. strip_tags(stripslashes($this->getCategory()->getDescription()));
 	}elseif ($this->getShopItem()) {
-	$keywords = strip_tags(stripslashes($this->getShopItem()->getModel())) . ', ' . strip_tags(stripslashes($this->getShopItem()->getBrand()));}
+	$keywords = strip_tags(stripslashes($this->getShopItem()->getModel())) . ', ' . strip_tags(stripslashes($this->getShopItem()->getBrand()));
+	}
+	
 	if($this->getShopItem()){
 	$view = strip_tags(stripslashes($this->getShopItem()->getImagePath('listing'))); 
 	}elseif($this->getCategory()){
@@ -48,6 +50,11 @@ if(Registry::get('device') == 'computer' or ($_COOKIE['mobil'] and $_COOKIE['mob
     <meta name="keywords" content="<?=htmlspecialchars($keywords); ?>"/>
 	<meta  name="image"  content="http://www.red.ua<?=htmlspecialchars($view);?>" />
 	<meta  property="og:image"  content="http://www.red.ua<?=htmlspecialchars($view);?>" />
+	<?php if($this->getCurMenu()->getNofollow()){ ?>
+	 <meta name="robots" content="noindex, follow"/>
+	<?php }elseif($this->get->controller == 'Account'){?>
+	<meta name="robots" content="noindex, follow"/>
+	<?php } ?>
     <title>
         <?php
 		if($this->getOnepostblog()){
@@ -228,6 +235,7 @@ AND  (ws_articles.`model` =  "'.$this->getShopItem()->getModel().'" or ws_articl
 AND  ws_articles.`category_id` ='.$this->getShopItem()->getCategoryId().'
 AND   ws_articles.id != '.$this->getShopItem()->getId().'
 AND ws_articles.active =  "y"
+and ws_articles.status = 3
 ORDER BY  `ws_articles`.`ctime` ASC 
 LIMIT 10';
 $finish_articles1 = wsActiveRecord::useStatic('Shoparticles')->findByQuery($articles_query1);
@@ -247,7 +255,7 @@ if ($block->getId()) {
 ?>
 		<div class="top_articles_item col-xs-12 col-sm-6 col-md-3" >
         <a  href="<?=$block->getPath();?>" style="    text-align: center;">
-        <img  src="<?=$block->getImagePath('detail'); ?>" alt="<?=$block->getBrand();?>" style="max-width:100%;"  >  
+        <img  src="<?=$block->getImagePath('detail')?>" alt="<?=$block->getBrand();?>" style="max-width:100%;"  >  
 		</a>
 				<div class="post-name" >
 				<h3><a href="<?=$block->getPath();?>"><?=$block->getModel();?></a></h3>
@@ -381,9 +389,9 @@ nextArrow: '<img src="#" style="background-image:url(/img/slider/p-n-b.png);"  d
 });
 
 </script>
-<script  src="/js/engine.js?v=1.1"></script>
+<script  src="/js/engine.js?v=1.3"></script>
 <script   src="/js/jquery.liFixar.js"></script>
-    <script src="/js/functions.js?v=1.2"></script>
+    <script src="/js/functions.js?v=1.3"></script>
     <script   src="/js/cloud-zoom.1.0.2.js"></script>
     <script  src="/js/jquery.cycle.all.js?v=3.0.3"></script>
     <script  src="/js/jquery.lightbox-0.5.js"></script>

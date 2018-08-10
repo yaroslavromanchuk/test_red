@@ -18,8 +18,8 @@ require_once('MobileDetect/Mobile_Detect.php');
 Zend_Loader::registerAutoload();
 //spl_autoload_register(array('Zend_Loader', 'autoload'));
 
-//$timer = new DebugTimer(4);
-//Registry::set('SQLLogger', SQLLogger::getInstance());
+$timer = new DebugTimer(4);
+Registry::set('SQLLogger', SQLLogger::getInstance());
 
 header('Content-type: text/html; charset=UTF-8');
 header('Cache-control: private');
@@ -79,6 +79,7 @@ Registry::set('lang', strtolower($lng));
 
 $detect = new Mobile_Detect;
 Registry::set('device', ($detect->isMobile() ? ($detect->isTablet() ? 'tablet' : 'phone') : 'computer'));
+
 //opredelenie device
 	function morph($n, $k) {
 		$unit=array(
@@ -268,17 +269,17 @@ set_error_handler('error_handler');
 Router::route();
 echo Controller::process();
 
-if($website->getCustomer()->getId() == 8005 and false)
-    {
+if($website->getCustomer()->getId() == 8005){
+		//	define('FORME', true);
 	
 	//echo FORME;
 	//echo '<pre>';
 	//echo print_r($_SERVER);
 	
-     // Debug::dump(SQLLogger::getInstance()->reportShort());
-        //Debug::dump(SQLLogger::getInstance()->reportBySql());
-        //Debug::dump(SQLLogger::getInstance()->reportByTime());
-    //   Debug::dump(SQLLogger::getInstance()->reportByClass());
+    // Debug::dump(SQLLogger::getInstance()->reportShort());
+      //  Debug::dump(SQLLogger::getInstance()->reportBySql());
+      //  Debug::dump(SQLLogger::getInstance()->reportByTime());
+    // Debug::dump(SQLLogger::getInstance()->reportByClass());
      // Debug::dump($timer->getResults());
 
        // $timer->stop();
@@ -286,9 +287,10 @@ if($website->getCustomer()->getId() == 8005 and false)
         //echo 'Memory: ' . number_format(memory_get_usage(true)/1024/1024,3,'.',',') . 'Mb<br>';
         //echo Registry::get('obj');
 
-		echo '<pre>';
-		print_r($_SESSION);
-		echo '</pre>';
+		//echo '<pre>';
+		//print_r($_SESSION['basket']);
+		//echo count($_SESSION['basket']);
+		//echo '</pre>';
 
     }
 	

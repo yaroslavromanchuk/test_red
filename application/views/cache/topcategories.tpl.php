@@ -2,7 +2,7 @@
 	<div class="col-xs-12 col-sm-10 col-md-3 d-none d-md-block pt-3 pl-3 pr-0 text-center">
         <form method="get" class="form-inline" action="/search/">
 		<div class="w-100">
-		<input type="text" class="form-control" style="max-width: 200px;background: url(/img/top_menu/img_search.png) no-repeat top 5px right 4px #fff;background-size: 22px;display:inline-block;" data-provide="typeahead"  maxlength="30" name="s" placeholder="<?=$this->trans->get('поиск');?>" pattern="^[A-Za-zА-Яа-яЁё ,.-_&amp;іїІЇь]+$" >
+		<input type="text" class="form-control" style="max-width: 200px;background: url(/img/top_menu/img_search.png) no-repeat top 5px right 4px #fff;background-size: 22px;display:inline-block;" data-provide="typeahead"  maxlength="30" name="s" placeholder="<?=$this->trans->get('поиск')?>" pattern="^[0-9A-Za-zА-Яа-яЁё --,._&amp;іїІЇь]+$" >
 		<input type="submit" class="btn" value="Искать" style="display:none;" >
 		</div>
 		</form>
@@ -96,7 +96,7 @@ if ($sub_sub_category->getId() != 11 and $sub_sub_category->getId() != 12 and $s
 			if ($category->getId() != 85 and $category->getId() != 11 and $category->getId() != 12 and $category->getId() !=299) {
 						$arr = $sub_category->getKidsIds();
 						$arr[] = $sub_category->getId();
-$articles = wsActiveRecord::useStatic('Shoparticles')->count(array('category_id in('.implode(",", $arr).')',' stock > 0', 'data_new < "'.$t_f.'" '));
+$articles = wsActiveRecord::useStatic('Shoparticles')->count(array('category_id in('.implode(",", $arr).')',' stock not like "0" ', 'data_new < "'.$t_f.'" '));
 						if ($articles == 0) continue;
 					}
 					//$color='';

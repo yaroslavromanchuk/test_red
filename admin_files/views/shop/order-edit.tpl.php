@@ -107,17 +107,27 @@ if ($order_owner->getAdminComents()) { ?>
     <td><?php echo trim($this->getOrder()->getComments()) ? '<div style="border:1px dashed #666; min-height: 18px;padding: 2px;background: #ffff33;">'.htmlspecialchars($this->getOrder()->getComments()).'</div>' : "отсутствует"; ?></td>
 </tr>
 <tr>
+    <td class="column-data">Способ доставки</td>
+    <td>
+        <select name="delivery_type_id" class="form-control input"  id="delivery_type">
+         <?php foreach (wsActiveRecord::useStatic('DeliveryType')->findAll(array('active'=>1), array('sort'=>'ASC')) as $method) { ?>
+         <option value="<?=$method->getId()?>" <?php if ($method->getId() == $this->getOrder()->getDeliveryTypeId()) echo 'selected="selected"'?>><?=$method->getName()?></option><?php } ?>
+        </select>
+		</td>
+</tr>
+<tr>
     <td class="column-data">Способ оплаты</td>
     <td>
         <select name="payment_method_id" class="form-control input"  id="payment_method">
-            <?php foreach (wsActiveRecord::useStatic('PaymentMethod')->findAll(array('active'=>1)) as $method) { ?>
-         <option value="<?=$method->getId()?>" <?php if ($method->getId() == $this->getOrder()->getPaymentMethodId()) echo 'selected="selected"'?>><?=$method->getName()?></option>
+            <?php foreach (wsActiveRecord::useStatic('DeliveryPayment')->findAll(array('delivery_id'=>$this->getOrder()->getDeliveryTypeId())) as $method) {
+			?>
+         <option value="<?=$method->getPaymentId()?>" <?php if ($method->getPaymentId() == $this->getOrder()->getPaymentMethodId()) echo 'selected="selected"'?>><?=$method->payment->getName()?></option>
             <?php } ?>
         </select>
 
     </td>
 </tr>
-<script type="text/javascript">
+<script>
 function parseHash(){
 
     var hash = window.location.hash;
@@ -231,15 +241,7 @@ if(page != null){
     });
 
 </script>
-<tr>
-    <td class="column-data">Способ доставки</td>
-    <td>
-        <select name="delivery_type_id" class="form-control input"  id="delivery_type">
-         <?php foreach (wsActiveRecord::useStatic('DeliveryType')->findAll(array('active'=>1), array('sort'=>'ASC')) as $method) { ?>
-         <option value="<?=$method->getId()?>" <?php if ($method->getId() == $this->getOrder()->getDeliveryTypeId()) echo 'selected="selected"'?>><?=$method->getName()?></option><?php } ?>
-        </select>
-		</td>
-</tr>
+
 <?php  $peresilka = Shoparticles::showPrice($this->getOrder()->getDeliveryCost()); ?>
 <tr>
     <td class="column-data">Стоимость доставки</td>
@@ -399,7 +401,7 @@ if(page != null){
 	<td><strong>Детали</strong></td>
 </tr>
     <?php 
-      $SumOrder = $this->getOrder()->calculateOrderPrice(true, false, true, $this->getOrder()->getBonus() > 0?true:false);
+      $SumOrder = $this->getOrder()->calculateOrderPrice(true, false, true);
 	
 	$t_price = 0.00; $t_option = 0.00;
 	$t_real_price =0.00; $sum_skudka = 0.00;
@@ -566,13 +568,13 @@ return false;
 <?php if ($this->getOrder()->getKuponPrice() > 0) { ?>
     <tr>
         <td colspan="4"><strong>Скидка по купону</strong></td>
-        <td colspan="2"><strong><?php echo $this->getOrder()->getKuponPrice() ?>%</strong></td>
+        <td colspan="2"><strong><?=$this->getOrder()->getKuponPrice()?>%</strong></td>
     </tr>
 <?php } ?>
 <?php if ($this->getOrder()->getBonus() > 0) { ?>
     <tr>
         <td colspan="4"><strong>Бонусная скидка</strong></td>
-        <td colspan="2"><strong><?php echo $this->getOrder()->getBonus() ?>грн.</strong></td>
+        <td colspan="2"><strong><?=$this->getOrder()->getBonus()?>грн.</strong></td>
     </tr>
 <?php } ?>
 <tr>
@@ -584,15 +586,15 @@ return false;
 <?php if ($this->getOrder()->getDeposit() > 0) { ?>
     <tr>
         <td colspan="4"><strong>Депозит</strong></td>
-        <td colspan="2"><strong><?php echo $this->getOrder()->getDeposit() ?> грн</strong></td>
+        <td colspan="2"><strong><?=$this->getOrder()->getDeposit()?> грн</strong></td>
     </tr>
 <?php } ?>
 
 <tr>
     <td colspan="4"><strong>У пользователя на депозите</strong></td>
-    <td colspan="4"><strong><?php echo $order_owner->getDeposit() ? $order_owner->getDeposit() : 0 ?> грн</strong><br/>
-        <?php if ($order_owner->getDeposit() and $this->getOrder()->getDeposit() == 0 ) {?><a href="/admin/usedeposit/id/<?php echo $this->getOrder()->getId(); ?>">Использовать депозит</a> <br/><?php }else{ ?>
-        <a href="/admin/unusedeposit/id/<?php echo $this->getOrder()->getId(); ?>"
+    <td colspan="4"><strong><?=$order_owner->getDeposit()?$order_owner->getDeposit():0?> грн</strong>   
+<?php if($order_owner->getDeposit() and $this->getOrder()->getDeposit() == 0){ ?><a href="/admin/usedeposit/id/<?=$this->getOrder()->getId()?>">Использовать депозит</a> 
+<?php }elseif($this->getOrder()->getDeposit() > 0){ ?><a href="/admin/unusedeposit/id/<?=$this->getOrder()->getId()?>"
            onclick="return confirm('При отмене депозита сума депозита вернется на счет клиента, а сумма заказа изменится. Продолжить ?')">Отменить
             депозит</a><?php } ?>
     </td>

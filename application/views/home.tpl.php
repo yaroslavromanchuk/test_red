@@ -211,6 +211,7 @@ rnt('add_audience', {audienceId: '20676_254951d7-6d13-4ea2-a507-747c9e6fe802'});
     //<!-- EVENTS FINISH -->
 </script>
 <!--footer--><?php echo $this->cached_bottom_menu; ?><!--footer-->
+
 <?php 
 if(Registry::get('device') != 'computer' or ($_COOKIE['mobil'] and $_COOKIE['mobil'] == 10) and false){ ?>
  <div id="slk" class="slk"><input type="button" name="mobi" class="btn btn-secondary btn-sm" onClick="setCooki(0);" value="<?=$this->trans->get('Мобильная версия');?>"><br></div>

@@ -1,20 +1,11 @@
-<style>
-#content > p {text-align:center;}
-#order-client input{width:440px;}
-.kolomicon {text-align: center;}
-</style>
-
-<div style="width: 250px;margin: 0 auto;">
-<img src="<?php echo SITE_URL; ?><?php echo $this->getCurMenu()->getImage(); ?>" alt="" style="padding: 0 0 0 30px;"
-	 xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html" width="32" class="page-img"
-	 height="32"/>
-<h1><span>Заявка <?php echo $this->getOrder()->getQuickNumber(); ?> </span>
-<?php if ($this->getOrder()->getStatus()==2){?>
-	<span style="color:red">Отменена</span>
-<?php } ?></h1>
-</div>
-
-<p><strong>Информация о покупателе</strong></p>
+ <div class="row">
+ <div class="panel panel-primary">
+ <div class="panel-heading">
+ <h3 class="panel-title">Заявка <?=$this->getOrder()->getQuickNumber(); echo $this->getOrder()->getStatus()==2 ? ' <span style="color:#FF9800">Отменена</span>':''?></h3></div>
+ <div class="panel-body">
+ <div class="panel panel-success" >
+ <div class="panel-heading"><h3 class="panel-title">Информация о покупателе</h3></div>
+ <div class="panel-body">
 <form method="POST" action="" id="user_info">
 <table cellpadding="4" cellspacing="0" id="order-client" align="center">
 <?php
@@ -35,20 +26,16 @@ if ($order_owner->getAdminComents()) { ?>
 </tr>
 <tr>
 	<td class="column-data">Имя <span class="red">*</span></td>
-	<td><input name="name" class="input" value="<?php echo ($this->getOrder()->getName() ? $this->getOrder()->getName() : "")?>"></td>
+	<td><input name="name" class="form-control input" value="<?php echo ($this->getOrder()->getName() ? $this->getOrder()->getName() : "")?>"></td>
 </tr>
 <tr>
 	<td class="column-data">Фамилия <span class="red">*</span></td>
-	<td><input name="middle_name" class="input" value="<?php echo ($this->getOrder()->getMiddleName() ? $this->getOrder()->getMiddleName() : "")?>"></td>
-</tr>
-<tr>
-	<td class="column-data"></td>
-	<td><?php echo '(всего этот клиент сделал заказов на сумму: <b>' . Shoparticles::showPrice($this->total_amount) . ' грн</b>)' ?></td>
+	<td><input name="middle_name" class="form-control input" value="<?php echo ($this->getOrder()->getMiddleName() ? $this->getOrder()->getMiddleName() : "")?>"></td>
 </tr>
 <tr>
 	<td class="column-data">Способ доставки <span class="red">*</span></td>
 	<td>
-		<select name="delivery_type_id" id="delivery_type" class="input">
+		<select name="delivery_type_id" id="delivery_type" class="form-control input">
 			<option value="0">&darr; Выберите из списка</option>
 			<?php foreach (wsActiveRecord::useStatic('DeliveryType')->findAll(array('active'=>1)) as $method) { ?>
 				<option value="<?php echo $method->getId() ?>" <?php if ($method->getId() == $this->getOrder()->getDeliveryTypeId()) echo 'selected="selected"'?>><?php echo $method->getName()?></option>
@@ -59,7 +46,7 @@ if ($order_owner->getAdminComents()) { ?>
 <tr>
 	<td class="column-data">Способ оплаты</td>
 	<td>
-		<select name="payment_method_id" id="payment_method" class="input">
+		<select name="payment_method_id" id="payment_method" class=" form-control input">
 			<?php foreach (wsActiveRecord::useStatic('PaymentMethod')->findAll() as $method) { ?>
 				<option value="<?php echo $method->getId() ?>" <?php if ($method->getId() == $this->getOrder()->getPaymentMethodId()) echo 'selected="selected"'?>><?php echo $method->getName()?></option>
 			<?php } ?>
@@ -68,62 +55,49 @@ if ($order_owner->getAdminComents()) { ?>
 </tr>
 <tr>
 	<td class="column-data">Адрес</td>
-	<td><input name="address" class="input" value="<?php echo $this->getOrder()->getAddress() ? $this->getOrder()->getAddress() : ""; ?>"></td>
-</tr>
-<tr>
-	<td colspan="2" style="padding: 10px;"></td>
+	<td><input name="address" class="form-control input" value="<?php echo $this->getOrder()->getAddress() ? $this->getOrder()->getAddress() : ""; ?>"></td>
 </tr>
 <tr>
 	<td colspan="2" style="border: 1px dashed #999; padding: 0;"></td>
 </tr>
 <tr class="dop_fields ukr novp only_ukr only_novp" <?php ?>>
 	<td class="column-data">Город</td>
-	<td><input name="city" class="input" value="<?php echo $this->getOrder()->getCity() ? $this->getOrder()->getCity() : ""; ?>"></td>
+	<td><input name="city" class="form-control input" value="<?php echo $this->getOrder()->getCity() ? $this->getOrder()->getCity() : ""; ?>"></td>
 </tr>
 <tr class="dop_fields ukr only_ukr">
 	<td class="column-data">Индекс</td>
-	<td><input name="index" class="input" value="<?php echo $this->getOrder()->getIndex() ? $this->getOrder()->getIndex() : ""; ?>"></td>
+	<td><input name="index" class="form-control input" value="<?php echo $this->getOrder()->getIndex() ? $this->getOrder()->getIndex() : ""; ?>"></td>
 </tr>
 <tr class="dop_fields ukr novp kur">
 	<td class="column-data">Улица</td>
-	<td><input name="street" class="input" value="<?php echo $this->getOrder()->getStreet() ? $this->getOrder()->getStreet() : ""; ?>"></td>
+	<td><input name="street" class=" form-control input" value="<?php echo $this->getOrder()->getStreet() ? $this->getOrder()->getStreet() : ""; ?>"></td>
 </tr>
 <tr class="dop_fields ukr kur novp">
 	<td class="column-data">Дом</td>
-	<td><input name="house" class="input" value="<?php echo $this->getOrder()->getHouse() ? $this->getOrder()->getHouse() : ""; ?>"></td>
+	<td><input name="house" class="form-control input" value="<?php echo $this->getOrder()->getHouse() ? $this->getOrder()->getHouse() : ""; ?>"></td>
 </tr>
 <tr class="dop_fields novp">
 	<td class="column-data">Квартира</td>
-	<td><input name="flat" class="input" value="<?php echo $this->getOrder()->getFlat() ? $this->getOrder()->getFlat() : ""; ?>"></td>
+	<td><input name="flat" class=" form-control input" value="<?php echo $this->getOrder()->getFlat() ? $this->getOrder()->getFlat() : ""; ?>"></td>
 </tr>
 <tr class="dop_fields novp only_novp">
 	<td class="column-data">Склад</td>
-	<td><input name="sklad" class="input" value="<?php echo $this->getOrder()->getSklad() ? $this->getOrder()->getSklad() : ""; ?>"></td>
-</tr>
-<tr>
-	<td colspan="2" style="border: 1px dashed #999; padding: 0;"></td>
+	<td><input name="sklad" class=" form-control input" value="<?php echo $this->getOrder()->getSklad() ? $this->getOrder()->getSklad() : ""; ?>"></td>
 </tr>
 <tr>
 	<td class="column-data">Телефон <span class="red">*</span></td>
-	<td><input name="telephone" class="input" value="<?php echo $this->getOrder()->getTelephone() ? $this->getOrder()->getTelephone() : ""; ?>"></td>
+	<td><input name="telephone" class=" form-control input" value="<?php echo $this->getOrder()->getTelephone() ? $this->getOrder()->getTelephone() : ""; ?>"></td>
 </tr>
 <tr>
 	<td class="column-data">E-mail <span class="red">*</span></td>
-	<td><input name="email" class="input" value="<?php echo $this->getOrder()->getEmail() ? $this->getOrder()->getEmail() : ""; ?>" type="email"></td>
+	<td><input name="email" class="form-control input" value="<?php echo $this->getOrder()->getEmail() ? $this->getOrder()->getEmail() : ""; ?>" type="email"></td>
 </tr>
-<tr>
-	<td class="column-data"></td>
-	<td>
-		<p id="save_done" style="display:none; color:red; font-size: 20px;margin: 0;padding-top: 8px;height: 45px;text-align: center;">Сохранено!</p>
-		<div id="errormessage" style="display:none;"></div>
-		<input type="button" class="button" name="savepage" id="savepage" value="Сохранить информацию о покупателе" style="background: #112F54; color: white;font-size:14px;">
-	</td>
-</tr>
+
 <tr>
 	<td class="column-data">Комментарий</td>
-	<td><?php echo trim($this->getOrder()->getComments()) ? '<div style="border:1px dashed #666; min-height: 18px;padding: 2px;background: #ffff33;">'.htmlspecialchars($this->getOrder()->getComments()).'</div>' : "отсутствует"; ?></td>
+	<td><br><?=trim($this->getOrder()->getComments()) ? '<span style="background: yellow;padding: 3px;">'.htmlspecialchars($this->getOrder()->getComments()).'</span>' : "отсутствует"?><br><br></td>
 </tr>
-<script type="text/javascript">
+<script>
 	$(document).ready(function () {
 	$('#savepage').on( "click", function () {
 		$.ajax({
@@ -239,50 +213,39 @@ if ($order_owner->getAdminComents()) { ?>
 	});
 
 </script>
-<?php  $peresilka = Shoparticles::showPrice($this->getOrder()->getDeliveryCost()); ?>
+<?php  //$peresilka = Shoparticles::showPrice($this->getOrder()->getDeliveryCost()); ?>
+<!--
 <tr>
 	<td class="column-data">Стоимость доставки</td>
-	<td><?php echo $peresilka; ?> грн</td>
+	<td><?php /*echo $peresilka;*/ ?> грн</td>
 </tr>
 <tr>
 	<td class="column-data">Акционная скидка</td>
-	<td><?php echo $this->getOrder()->getEventSkidka(); ?> % <a href="/admin/editskidkabyorder/id/<?php echo $this->getOrder()->getId() ?>">Изменить/Добавить скидки к товарам</a></td>
+	<td><?php /*echo $this->getOrder()->getEventSkidka(); ?> % <a href="/admin/editskidkabyorder/id/<?php echo $this->getOrder()->getId()*/ ?>">Изменить/Добавить скидки к товарам</a></td>
 </tr>
+<!--
 <tr>
 	<td colspan="2">
-		<a href="/admin/orderinfo/id/<?php echo $this->getOrder()->getId(); ?>" target="_blank">Редактировать</a>
+		<a href="/admin/user/edit/id/<?=$this->getOrder()->getCustomerId()?>"  target="_blank">Редактировать клиента</a>
 	</td>
-</tr>
+</tr>-->
 <tr>
-	<td colspan="2">
-		<a href="/admin/user/edit/id/<?php echo $this->getOrder()->getCustomerId(); ?>"  target="_blank">Редактировать клиента</a>
+	<td colspan="2" style="    text-align: center;">
+		<p id="save_done" style="display:none; color:red; font-size: 20px;margin: 0;padding-top: 8px;height: 45px;text-align: center;">Сохранено!</p>
+		<div id="errormessage" style="display:none;"></div>
+		<input type="button" class="btn  btn-lg btn-primary" name="savepage" id="savepage" value="Сохранить информацию о покупателе">
 	</td>
 </tr>
 </table>
 </form>
+ </div>
+ </div>
 
-<form method="POST" action="">
-<table cellspacing="0" cellpadding="4" id="order-details" align="center">
-	<tr>
-		<td class="column-data">Код купона</td>
-		<td>
-			<input type="text" name="kupon" class="input" value="<?php if($this->getOrder()->getKupon()) echo $this->getOrder()->getKupon(); else $nokupon='Отсутствует'; ?>"<?php if (isset($nokupon)) echo ' placeholder="'.$nokupon.'"'; ?> />
-		</td>
-	</tr>
-	<tr>
-		<td class="column-data">Внести скидку по купону</td>
-		<td>
-			<input type="text" class="input" name="kupon_price" value="<?php echo $this->getOrder()->getKuponPrice(); ?>"/>грн
-		</td>
-	</tr>
-	<tr>
-		<td colspan="2" align="center"><input type="submit" class="buttonps" value="Сохранить"></td>
-	</tr>
-</table>
-</form>
 
-<p><strong>Товары</strong></p>
-
+ 
+  <div class="panel panel-info" >
+ <div class="panel-heading"><h3 class="panel-title">Товары</h3></div>
+ <div class="panel-body">
 <form method="post" action="">
 <table cellpadding="4" cellspacing="0" id="order-articles" align="center">
 <tr>
@@ -293,8 +256,7 @@ if ($order_owner->getAdminComents()) { ?>
     <td></td>
 </tr>
     <?php $t_price = 0.00; $t_option = 0.00; if ($this->getOrder()->getArticles()->count()) { ?>
-        <?php //$bool = false;
-       // foreach ($this->getOrder()->getArticles() as $item_tmp) if ($item_tmp->getOptionId() > 0) $bool = true;
+        <?php
         foreach ($this->getOrder()->getArticles() as $main_key => $article_rec) {
             $article = new Shoparticles($article_rec->getArticleId());
             ?>
@@ -720,39 +682,6 @@ $(document).ready(function () {
     <td colspan="9" class="tussenrij" style="padding: 0;">&nbsp;</td>
 </tr>
 <tr>
-    <td colspan="2"><strong>Добавить</strong></td>
-    <td class="column-article" colspan="7">
-        <form method="post" action="">
-            <input type="hidden" name="add_article" value="1"/>
-            <select name="category_id" class="input" style="width: 200px;" id="category_id"
-                    onChange="loadArticles(this.value); return false;">
-                <option value="" selected>Выберите категорию</option>
-                <?php $mas = array();
-                foreach ($this->categories as $cat) {
-                    $mas[$cat->getRoute(0)] = $cat->getId();
-                }
-                ksort($mas);
-                foreach ($mas as $kay => $value) {
-                    ?>
-                    <option value="<?php echo $value; ?>"><?php echo $kay; ?></option><?php } ?>
-            </select>
-
-			<select name="size_id" class="size_id">
-			</select>
-			<br/>
-
-            <select name="article_id" class="input" style="width: 200px;" id="article_id">
-            </select>
-			<select name="color_id" class="color_id">
-			</select>
-
-			<input type="submit" class="button" name="Toevoegen" id="Toevoegen" value="+"/>
-
-            <div id="aih_box"></div>
-        </form>
-    </td>
-</tr>
-<tr>
 	<td colspan="2"></td>
 	<td colspan="7">
 		<input name="add_article_by_barcode" class="input" placeholder="Добавить по штрихкоду" style="width: 170px;"/>
@@ -764,31 +693,26 @@ $(document).ready(function () {
 </tr>
 <tr>
     <td colspan="4"><strong>Всего</strong></td>
-    <!-- <td class="column-euro"><strong></strong></td> -->
     <td colspan="2"><strong><?php echo Shoparticles::showPrice($t_price); ?> грн</strong></td>
 </tr>
 <tr>
     <td colspan="4"><strong>Доставка</strong></td>
-    <!-- <td class="column-euro"><strong></strong></td> -->
     <td colspan="2"><strong><?php echo $peresilka; ?> грн</strong></td>
 </tr>
 <?php if (!($this->getOrder()->getKuponPrice() > 0)) { ?>
 <tr>
     <td colspan="4"><strong>Скидка</strong></td>
-    <!-- <td class="column-euro"><strong></strong></td> -->
     <td colspan="2"><strong><?php
             echo $order_owner->getDiscont($this->getOrder()->getId()); ?>%</strong></td>
 </tr>
 <?php } else { ?>
     <tr>
         <td colspan="4"><strong>Скидка по купону</strong></td>
-        <!-- <td class="column-euro"><strong></strong></td> -->
         <td colspan="2"><strong><?php echo $this->getOrder()->getKuponPrice() ?> грн</strong></td>
     </tr>
 <?php } ?>
 <tr>
     <td colspan="4"><strong>Всего со скидкой и доставкой</strong></td>
-    <!-- <td class="column-euro"><strong></strong></td> -->
     <td colspan="2"><strong><?php
             //$price_with_skidka = $this->getOrder()->getPriceWithSkidka();//ЕВЖЕНЯ
             echo $this->getOrder()->calculateOrderPrice(false);
@@ -816,8 +740,11 @@ $(document).ready(function () {
 </tr>
 </table>
 </form>
-
-<p style="text-align:center"><strong>Комментарий (внутренний)</strong></p>
+</div>
+</div>
+<div class="panel panel-danger" >
+ <div class="panel-heading"><h3 class="panel-title">Комментарий (внутренний)</h3></div>
+ <div class="panel-body">
 <table cellpadding="4" cellspacing="0" id="order-remarks" align="center">
     <?php foreach ($this->getOrder()->getRemarks() as $remark) { ?>
         <tr>
@@ -836,13 +763,21 @@ $(document).ready(function () {
 		</td>
     </tr>
 </table>
+</div>
+</div>
 
-<form method="post" action="" style="text-align: center; padding-top:20px;">
 	<?php if ($this->getOrder()->getStatus()!=2){ ?>
+	<div class="panel panel-success" >
+ <div class="panel-heading"><h3 class="panel-title">Действия</h3></div>
+ <div class="panel-body">
+	<form method="post" action="" style="text-align: center; padding-top:20px;">
 	<input type="submit" name="converting_to_order" class="buttonps" style="font-size: 16px;" value="В заказы">
 	<input type="submit" name="delete_qo" class="buttonps" style="font-size: 16px;background:#E00;" value="Отмена">
+	</form>
+	 </div>
+ </div>
 	<?php } ?>
-</form>
-<script>
-//delivery_type_id
-</script>
+
+ </div>
+ </div>
+ </div>

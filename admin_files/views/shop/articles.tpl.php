@@ -169,10 +169,13 @@ if(strripos($value, 'SALE') === FALSE){
 </span>
 </td>
 <td  class="td_ss">
+<?php if($this->admin_rights['318']['right']){ ?>
 <span class="ss">
+<label>Активация товара</label><br>
 <input type="text" id="activ_article" name="act" class="form-control" style="width:100px;    display: inline-block;" >
 <button  class="btn btn-small btn-default" onclick="Activ($('#activ_article').val());" ><i class="glyphicon glyphicon-flash" aria-hidden="true"></i></button>
 </span>
+<?php } ?>
 </td>
 <tr>
 </table>
@@ -225,6 +228,7 @@ if(strripos($value, 'SALE') === FALSE){
         <th>Действие</th>
 		<th>Покупки</th>
 		<th>Статус</th>
+		<th>Накладная</th>
         <th>История</th>
         <th>Товар</th>
         <th>Цена</th>
@@ -270,6 +274,9 @@ if(strripos($value, 'SALE') === FALSE){
             <td>
 			<?=$article->name_status->name?>
 			</td>
+			<td>
+			<?=$article->code?>
+			</td>
             <td>
 			<i class="icon ion-clock bleak tx-30 pd-5 history" alt="История" data-id="<?=$article->getId()?>" data-placement="left" title="Смотреть историю"  data-tooltip="tooltip" ></i>
             </td>
@@ -282,7 +289,7 @@ if(strripos($value, 'SALE') === FALSE){
             </td>
             <td style="width: 75px;"><?php echo $article->getPrice();
 			if($article->getOldPrice() > 0){ echo '<br><span style="color: #af241b;">'.$article->getOldPrice().'</span>';}?>
-			<?php if($this->user->getId() == 8005 or $this->user->getId() == 1 or $this->user->getId() == 34608){
+			<?php if($this->user->getId() == 8005 or $this->user->getId() == 1 or $this->user->getId() == 34608 or $this->user->getId() == 36431){
 			if($article->getOldPrice() > 0){
 			echo '<br><span style="color: #af241b; font-size:10px;">- '.round((1 - ($article->getPrice() /$article->getOldPrice())) * 100, 0).' %</span>';
 			}
@@ -296,14 +303,18 @@ if(strripos($value, 'SALE') === FALSE){
                     if ($sizes){ echo '<p>' . @$sizes->color->getName() . '-' . @$sizes->size->getSize() . ": " . @$sizes->getCount() . '</p>';}
 					} ?>
 			</td>
-            <td><?php if ($article->getActive() == 'n') { ?>
+            <td><?php if($this->admin_rights['318']['right']){
+			if ($article->getActive() == 'n') { ?>
                 <a href="javascript:void(0);" class="active" id="a_<?=$article->getId();?>">
 				<i class="icon ion-close-circled red tx-30 pd-5 " alt="No active"></i>
 							</a><?php } else { ?>
                     <a href="javascript:void(0);" class="active" id='d_<?=$article->getId();?>'>
 					<i class="icon ion-checkmark-circled green tx-30 pd-5" alt="Active"></i>
 							</a>
-                <?php } ?></td>
+                <?php }
+				}elseif($this->user->getTelegram()){ ?>
+				<i class="icon ion-flag text-primary tx-30 pd-5"  id="reminder" name="reminder" onclick="return add_reminder(<?=$article->getId()?>);" data-tooltip="tooltip" data-original-title="Уведомить о активации"></i>
+				<?php } ?></td>
             <td>
                 <?=$mas[$article->category_id]?>
 				<?php if($this->user->getId() == 8005 or $this->user->getId() == 1 or $this->user->getId() == 34608){ 
@@ -363,6 +374,29 @@ var code = e;
                 success: function (data) {
 				console.log(data);
 fopen('Товар с накладной активирован', data);
+                },
+				error: function(data){
+				console.log(data);
+				
+				}
+            });
+			 return true;
+					}
+}
+function add_reminder(e){
+var code = e;
+                    if (code > 0 && code != '') {
+					var url = '/admin/activearticle/';
+					var new_data = '&add_reminder='+code;
+					console.log(new_data);
+					$.ajax({
+                type: "POST",
+                url: url,
+				dataType: 'json',
+                data: new_data,
+                success: function (data) {
+				console.log(data);
+fopen(data.title, data.message);
                 },
 				error: function(data){
 				console.log(data);
@@ -435,52 +469,6 @@ $('a.active').click(function () {
         });
 
 </script>
-<?php
-$limitLeft = 2;
-$limitRight = 2;
-$url = explode('?', $_SERVER['REQUEST_URI']);
-if (count($url) == 2) {
-    $ur = $url[0];
-    $get = '?' . $url[1];
-} else {
-    $ur = $_SERVER['REQUEST_URI'];
-    $get = '';
-}
-$pager = preg_replace('/\/page\/\d*/', '', $ur) . '/page/';
-$paginator = '&nbsp;&nbsp;';
-if ($this->page > 1) {
-    $paginator .= '<a href="' . $pager . '1' . $get . '"><<</a>&nbsp;<a href="' . $pager . ($this->page - 1) . $get . '"><</a>&nbsp;';
-} else {
-    $paginator .= '<span class="grey"><</span>&nbsp;<span class="grey"><<</span>&nbsp;';
-}
-$start = 1;
-$end = $this->totalPages;
-if ($this->page > $limitLeft) {
-    $paginator .= '...&nbsp;';
-    $start = $this->page - $limitLeft;
-}
-if (($this->page + $limitRight) < $this->totalPages) {
-    $end = $this->page + $limitRight;
-}
-for ($i = $start; $i <= $end; $i++) {
-    if ($i == $this->page) {
-        $paginator .= '<span>' . $i . '</span>';
-    } else {
-        $paginator .= '<span><a href="' . $pager . $i . $get . '">' . $i . '</a></span>';
-    }
-    if ($i <= $end - 1) {
-        $paginator .= '<span class="delimiter">&nbsp;|&nbsp;</span>';
-    }
-}
-if ($this->page == $this->totalPages) {
-    $paginator .= '&nbsp;<span class="grey">>></span>&nbsp;<span class="grey">></span>';
-} else {
-    $paginator .= '&nbsp;<a href="' . $pager . ($this->page + 1) . $get . '">></a>&nbsp;<a href="' . $pager . $this->totalPages . $get . '">>></a>';
-}
-echo $paginator;
-?><br/>
-Всего страниц: <?=$this->totalPages?>, записей: <?=$this->count?>
-<br/><br/>
 Перенести в категорию:
 <select name="category_id" id="category_id" class="form-control input">
     <?php foreach ($mas as $kay => $value) { ?>

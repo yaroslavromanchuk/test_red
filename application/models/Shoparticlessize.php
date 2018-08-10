@@ -15,7 +15,11 @@
                     'color' => array(
                                      'type'=>'hasOne',
                                      'class'=>'Shoparticlescolor',
-                                     'field'=>'id_color'), 
+                                     'field'=>'id_color'),
+					'article_rod' => array(
+                                     'type'=>'hasOne',
+                                     'class'=>self::$_shop_articles_class,
+                                     'field'=>'id_article'),									 
                                         
                                         );
    

@@ -4,7 +4,7 @@
     <title>Реестр Курьер</title>
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<script src="<?php echo $this->files; ?>scripts/jquery.js" type="text/javascript" charset="utf-8"></script>
+<script src="<?=$this->files?>scripts/jquery.js" type="text/javascript" charset="utf-8"></script>
 </head>
 <body onload="window.print();">
 <p style="margin:auto; font-family: serif;text-align: center;font-size: 16px;font-weight: 600; ">Курьерская заявка от <?=date('d.m.Y')?></p>

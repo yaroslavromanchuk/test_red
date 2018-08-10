@@ -1,9 +1,7 @@
-
-<?php  header('Access-Control-Allow-Origin: *'); 
-header('X-XSS-Protection: 0'); ?>
-<div class="col-xs-12" >
+<div class="panel panel-primary">
+<div class="panel-heading"><h3 class="panel-title">Сохраненная <?=$this->name?></h3></div>
+<div class="panel-body">
 <table class="table table-hover" style="width: 100%;">
-				<caption>Рассылки</caption>
 				<thead>
 					<tr>
 						<th>Дата создания</th>
@@ -29,11 +27,11 @@ if(@$this->semail){
 						<td><?php echo $customer_new->getFirstName()." ".$customer_new->getMiddleName(); ?></a></td>
 						<td><?php if(@$semail->go) echo $semail->go; ?></td>
 						<td><?php if(@$semail->id_customer_go) echo $customer_go->getFirstName()." ".$customer_go->getMiddleName(); ?></td>
-						<td><a href="/admin/<?= $this->flag ?>/edit/?id=<?= $semail->id ?>" target="_blank" <?php if(@$semail->id_customer_go){ echo 'style="display:none;"';}?> >Редактировать</a></td>
+						<td><a href="/admin/<?=$this->flag?>/edit/?id=<?=$semail->id ?>" class="btn btn-sm btn-info" target="_blank" <?php if(@$semail->id_customer_go){ echo 'style="display:none;"';}?> >Редактировать</a></td>
 						<td>
-						<input name="preview" type="button" style="border-radius: 5px;" class="buttonps11" id="preview" onclick="Preview(<?= $semail->id ?>)" value="Посмотреть">
+						<input name="preview" type="button"  class="btn btn-sm btn-success" id="preview" onclick="return Preview(<?=$semail->id?>);" value="Посмотреть">
 						</td>
-						<td><input name="dell" type="button" style="border-radius: 5px;" class="buttonps11" id="dell" onclick="Dell(<?= $semail->id ?>)" value="Удалить"></td>
+						<td><input name="dell" type="button" class="btn btn-sm btn-danger" id="dell" onclick="return Dell(<?=$semail->id?>);" value="Удалить"></td>
 					
 					</tr> 
 					
@@ -45,4 +43,5 @@ if(@$this->semail){
 				</tbody>
 				
 			</table>
-</div>
+			</div>
+			</div>

@@ -1,5 +1,6 @@
-<?php  header('Access-Control-Allow-Origin: *'); 
-header('X-XSS-Protection: 0'); ?>
+<?php  
+header('Access-Control-Allow-Origin', 'https://www.red.ua');
+ ?>
 <?php $dname = Config::findByCode('domain_name')->getValue();?>
 <html>
     <head>

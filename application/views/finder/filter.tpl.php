@@ -1,5 +1,5 @@
-<link type="text/css" href="/js/bs_slider/css/bootstrap-slider.min.css" rel="stylesheet"/>
-<script type="text/javascript" src="/js/bs_slider/bootstrap-slider.min.js"></script>
+<!--<link type="text/css" href="/js/bs_slider/css/bootstrap-slider.min.css" rel="stylesheet"/>
+<script src="/js/bs_slider/bootstrap-slider.min.js"></script>-->
 <?php $text = explode(',', $this->trans->get('Очистить фильтры,Применить фильтры,Категория,Размеры,Цвета,Цена,История просмотров'));
 $text_result_trans = explode(',', $this->trans->get('Вы искали,Всего найдено,Сортировать по,цена по возрастанию,цена по убыванию,популярность по возрастанию,популярность по спаданию,дате поступления по возрастанию,дате поступления по спаданию'));
  ?>  
@@ -142,7 +142,7 @@ $asc = array();
                 </div>
             <?php } ?>
             <!-- ЦЕНА -->
-			<?php if(@$this->price_min and @$this->price_max){ ?>
+			<?php if(/*@$this->price_min and @$this->price_max*/false){ ?>
            <div class="list_wrapper d-none"  >
                 <p class="sub-title"><span><?=$text[5]?></span></p>
                 <div style="clear: both;"></div>
@@ -270,5 +270,5 @@ if($i == 5) break;
 						<?php } ?>
 			    </div>
 				<script>
-				$("#ex2").slider();
+				//$("#ex2").slider();
 				</script>

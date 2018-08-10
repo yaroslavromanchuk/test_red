@@ -45,7 +45,7 @@ $i=0;
 		{
 			$articles[$i]->image=substr($articles[$i]->image,0,-4);
 		?> 
-						<div class="row">
+						<div class="row1">
 				<?php if($i==$count)break;?>
 				<div class="col-xs-5" style="width:100%;">
 				<a class="category" href="<?php echo'?page=shop&id='.$sub_cats[$i]->id;?>">

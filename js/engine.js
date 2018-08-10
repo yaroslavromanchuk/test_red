@@ -1,6 +1,7 @@
 
 $(document).ready(function () {
 if (window.location.hash) {parseHash(); }
+parsePathname();
 });
 function parseHash() {
 	var hash = window.location.hash;
@@ -18,6 +19,26 @@ function parseHash() {
 		$('#order_by').val(order_by[1]);
 	}
 	goSearch();
+}
+function parsePathname() {
+	var pathname = window.location.pathname;
+	pathname = pathname.split('/');
+	//var category = /id/(\d+)
+	console.log(pathname);
+	/*var page = /page=(\d+)/.exec(hash);
+	var order_by = /order_by=(\d+)/.exec(hash);
+	if (page == null) {
+		page = 0;
+	} else {
+		page = page[1];
+	}
+	$('#current_page').val(page - 2);
+	if (order_by == null) {
+		$('#order_by').val('');
+	} else {
+		$('#order_by').val(order_by[1]);
+	}*/
+	//goSearch();
 }
 var script_change_hash = true;
 var run = 0;
@@ -52,64 +73,80 @@ function goSearch(q) {
 	}
 	calc_hash += '&order_by=' + $('#order_by option:selected').val();
 	window.location = calc_hash;
+	
+	
 	change_page_hash = false;
 	script_change_hash = false;
 }
 function gatheringSelected(what, page, q) {
 	var zz = 0;
 	if ( false && q == 4) { zz = 1;}
-	var gettext = '?';
+	var gettext = '?';//selected_root_category=' + $('#selected_root_category').val();
 	var request = 'page=' + page + '&selected_root_category=' + $('#selected_root_category').val() + '&';
 	if (run == 0) {
-		gettext += 'categories=';
+		
 		request += 'search_word="' + $('#search_word').val() + '&categories=';
 		$('.c_category:checked').each(function () {
+		gettext += '&categories=';
 			gettext += $(this).val() + ',';
 			request += $(this).val() + ',';
 		});
 		request += '&colors=';
-		gettext += '&colors=';
+		
 		$('.c_color:checked').each(function () {
+		gettext += '&colors=';
 			gettext += $(this).val() + ',';
 			request += $(this).val() + ',';
 		});
 		request += '&sizes=';
-		gettext += '&sizes=';
+		
 		$('.s_size:checked').each(function () {
+		gettext += '&sizes=';
 			gettext += $(this).val() + ',';
 			request += $(this).val() + ',';
 		});
 		request += '&labels=';
-		gettext += '&labels=';
+		
 		$('.c_label:checked').each(function () {
+		gettext += '&labels=';
 			gettext += $(this).val() + ',';
 			request += $(this).val() + ',';
 		});
 		request += '&skidka=';
-		gettext += '&skidka=';
+		
 		$('.c_skidka:checked').each(function () {
+		gettext += '&skidka=';
 			gettext += $(this).val() + ',';
 			request += $(this).val() + ',';
 		});
 		request += '&sezons=';
-		gettext += '&sezons=';
+		
 		$('.c_sezon:checked').each(function () {
+		gettext += '&sezons=';
 			gettext += $(this).val() + ',';
 			request += $(this).val() + ',';
 		});
 		request += '&brands=';
-		gettext += '&brands=';
+		
 		$('.c_brand:checked').each(function () {
+		gettext += '&brands=';
 			gettext += $(this).val() + ',';
 			request += $(this).val() + ',';
 		});
-		request += '&price_min=' + $(".tooltip-min .tooltip-inner").html();
-		request += '&price_max=' + $(".tooltip-max .tooltip-inner").html();
+		//request += '&price_min=' + $(".tooltip-min .tooltip-inner").html();
+		//request += '&price_max=' + $(".tooltip-max .tooltip-inner").html();
+		gettext +='&page='+ page;
+		if($('#order_by option:selected')){
 		gettext += '&order_by=' + $('#order_by option:selected').val();
+		}
 		request += '&order_by=' + $('#order_by option:selected').val();
 		run = 1;
 		request += '&on_page=' + $('.items_on_page').val();
 		console.log(gettext);
+		//console.log(window);
+		//window.location.search = gettext;
+		//window.location.pathname = window.location.pathname+'sezons/3/';
+		
 		$.ajax({
 			beforeSend: function () {
 				$('#show_next_text').html('Подождите, идёт загрузка...');
@@ -144,6 +181,7 @@ function gatheringSelected(what, page, q) {
 				if (q == 2) {
 					$('#result').append(data.result);
 				} else {
+				if(page > 0) $('head').append('<link rel="canonical" href="'+window.location.pathname+'"/><meta name="robots" content="noindex, follow" />');
 					$('#result').html(data.result);
 				}
 				$('#show_next_text').html('Показать ещё 15 товаров');
@@ -223,8 +261,8 @@ function clearsearchfilters() {
 	resetOneFilter('c_sezon', true);
 	resetOneFilter('c_brand', true);
 	resetOneFilter('c_skidka', true);
-	$(".tooltip-min .tooltip-inner").html($('#minCost').val());
-	$(".tooltip-max .tooltip-inner").html($('#maxCost').val());
+	//$(".tooltip-min .tooltip-inner").html($('#minCost').val());
+	//$(".tooltip-max .tooltip-inner").html($('#maxCost').val());
 
 
 	run = 0;

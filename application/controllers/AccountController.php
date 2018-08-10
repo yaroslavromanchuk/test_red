@@ -18,25 +18,8 @@
                 $this->_redirect('/account/login/');
                 return;
             }
-			
             $this->view->user = $this->ws->getCustomer();
 			$id = $this->ws->getCustomer()->getId();
-			
-			//для вывода в личный кабинет инфи по акциям(была нова-укр почта)
-			/*
-			$this->view->action = wsActiveRecord::useStatic('Shoporders')->findByQuery("
-			SELECT SUM(  `amount`+`deposit` ) AS summ,  `customer_id`,`date_create` ,  `delivery_type_id` 
-FROM  `ws_orders` 
-WHERE  `status` 
-IN ( 14, 6, 8 )
-AND ws_orders.customer_id = ".$id."
-AND  `delivery_type_id` 
-IN ( 4, 16, 8 ) 
-AND  `date_create` >  '2016-08-17 00:00:00'
-AND  `date_create` <  '2016-09-18 00:00:00'
-GROUP BY  `customer_id` 
-ORDER BY  `summ` DESC");
-*/
             echo $this->render('account/index.tpl.php');
             return;
         }
@@ -104,158 +87,109 @@ ORDER BY  `summ` DESC");
         {
 		//session_start();
             if ($_POST){
-				
+			
 				$log =="";
 				$error="no"; //флаг наличия ошибки
+				$errors = array();
 				
                 foreach ($_POST as &$value) $value = stripslashes(trim($value));
-					
-					$info = $_POST;
-					$id = '';
+				
+				$info = $_POST;
+				//d($info);
 				
 				//Проверка правильности капчи!
 if ($info['captcha'] != $_SESSION['rand']) {
-$log.="<li>Вы ввели неверные буквы с картинки!</li>"; $error="yes"; }
+$errors['captcha'] = 'Вы ввели неверные буквы с картинки! Повторите попытку.';
+}
 //Проверка email адреса
-function isEmail($email){
-                return(preg_match("/^[-_.[:alnum:]]+@((([[:alnum:]]|[[:alnum:]][[:alnum:]-]*[[:alnum:]])\.)+(ad|ae|aero|af|ag|ai|al|am|an|ao|aq|ar|arpa|as|at|au|aw|az|ba|bb|bd|be|bf|bg|bh|bi|biz|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|co|com|coop|cr|cs|cu|cv|cx|cy|cz|de|dj|dk|dm|do|dz|ec|edu|ee|eg|eh|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gh|gi|gl|gm|gn|gov|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|in|info|int|io|iq|ir|is|it|jm|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|mg|mh|mil|mk|ml|mm|mn|mo|mp|mq|mr|ms|mt|mu|museum|mv|mw|mx|my|mz|na|name|nc|ne|net|nf|ng|ni|nl|no|np|nr|nt|nu|nz|om|org|pa|pe|pf|pg|ph|pk|pl|pm|pn|pr|pro|ps|pt|pw|py|qa|re|ro|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|st|su|sv|sy|sz|tc|td|tf|tg|th|tj|tk|tm|tn|to|tp|tr|tt|tv|tw|tz|ua|ug|uk|um|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|yu|za|zm|zw)$|(([0-9][0-9]?|[0-1][0-9][0-9]|[2][0-4][0-9]|[2][5][0-5])\.){3}([0-9][0-9]?|[0-1][0-9][0-9]|[2][0-4][0-9]|[2][5][0-5]))$/i"
-                        ,$email));
-            } 
-			
-if($info['email'] == '')
-                {
-	$log .= "<li>Пожалуйста, введите Ваш email!</li>";
-	$error = "yes";
-                  
-                }else if(!isEmail($info['email'])){
-                   
-	$log .= "<li>Вы ввели неправильный e-mail. Пожалуйста, исправьте его!</li>";
-	$error = "yes";
-                }else if(wsActiveRecord::useStatic('Customer')->findByEmail($info['email'])->count() != 0) {
-				$log .= "<li>Такой email уже используется.<br /> Поменяйте email или зайдите как зарегистрированный пользователь!</li>";
-				$error = "yes";
-                }
+if($info['email'] == ''){
+$errors['email'] = 'Пожалуйста, введите Ваш email';                
+}else if(!isValidEmailNew($info['email'])){
+$errors['email'] = 'Вы ввели не коректный e-mail. Пожалуйста, исправьте его!';          
+}elseif(wsActiveRecord::useStatic('Customer')->findByEmail($info['email'])->count() != 0) {
+$errors['email'] = 'Такой email уже используется.<br /> Поменяйте email или зайдите как зарегистрированный пользователь!';     }
 				
-if (empty($info['telephone']))
-{
-	$log .= "<li>Необходимо указать телефонный номер!</li>";
-	$error = "yes";
+if (empty($info['telephone'])){
+$errors['telephone'] = 'Необходимо указать телефонный номер!';
 }else{
 $phone = preg_replace('/[^0-9]/', '', $info['telephone']);
 $phone = substr($phone, -10);
-//$phone = '38'.$phone;
 if(strlen($phone) != 10){
-$log .= "<li>В номере должны быть только числа!</li>";
-	$error = "yes";
+$errors['telephone'] = 'В номере должны быть только числа!';
 }if(substr($phone, 0, 3) == '044'){
-$log .= "<li>Укажите мобильный номер телефона! Городские номера не допускаются</li>";
-	$error = "yes";
-
+$errors['telephone'] = 'Укажите мобильный номер телефона! Городские номера не допускаются';
 }else if(wsActiveRecord::useStatic('Customer')->findByPhone1(array(" phone1 LIKE  '%".$phone."%' "))->count() != 0){
-$log .= "<li>Пользователь с таким номером телефона уже зарегистрирован в системе!</li>";
-	$error = "yes";
+$errors['telephone'] = 'Пользователь с таким номером телефона уже зарегистрирован в системе!';
 }else{
 $phone = '38'.$phone;
 }
 }
-$date_birth = '';
-			if(@$info['date_birth'] and $info['date_birth'] != ''){
+
+			$date_birth = '';
+			if($info['date_birth'] != ''){
 			if(strlen($info['date_birth']) == 10){
 			$date_birth =  date('Y-m-d', strtotime($info['date_birth']));
 			}else{
-			$log .= "<li>Введите корректно дату рождения!</li>";
-			$error = "yes";
+			$errors['date_birth'] = 'Введите корректно дату рождения!';
 			}
 			}else{
-			$log .= "<li>Вы не ввели дату рождения!</li>";
-			$error = "yes";
+			$errors['date_birth'] = 'Вы не ввели дату рождения!';
 			}
+			
+			
  if (!@$info['password']){
-                  $log .= "<li>Необходимо указать пароль!</li>";
-	$error = "yes";
+ $errors['password'] = 'Необходимо указать пароль!';
 	}else if(strlen($info['password']) < 6){
-	 $log .= "<li>Пароль должен быть больше 6-ти символов!</li>";
-	$error = "yes";
+	$errors['password'] = 'Пароль должен быть больше 6-ти символов!';
 	}
  if (!@$info['password2']){
-                  $log .= "<li>Необходимо повторить пароль!</li>";
-	$error = "yes";
+ $errors['password2'] = 'Необходимо повторить пароль!';
 	}else if($info['password'] != $info['password2']){
-	 $log .= "<li>Пароли не совпадають. Введите пароли снова!</li>";
-	$error = "yes";
+	 $errors['password2'] = 'Пароли не совпадають. Введите пароли снова!';
 	}
+	
+	if (!isset($info['gender'])) $errors['gender'] = 'Необходимо указать '.$this->trans->get('Sex');
+	
+	if (!$info['name']) $errors['name'] = 'Необходимо указать Имя!';
+	if (!$info['middle_name']) $errors['middle_name'] = 'Необходимо указать Фамилию!';
+	//if (!$info['city']){$log .= "<li>Необходимо указать Город!</li>"; $error = "yes";}
+    //if (!$info['street']){$log .= "<li>Необходимо указать Улицу!</li>"; $error = "yes";}
 
-	if (!$info['name']){ $log .= "<li>Необходимо указать Имя!</li>";
-	$error = "yes";}
-	if (!$info['middle_name']){$log .= "<li>Необходимо указать Фамилию!</li>";
-	$error = "yes";}
-	if (!$info['city']){$log .= "<li>Необходимо указать Город!</li>";
-	$error = "yes";}
-    if (!$info['street']){$log .= "<li>Необходимо указать Улицу!</li>";
-	$error = "yes";}
-
-                if ($error=="no") {
+                if (!count($errors)){
 				
+if(iconv_substr($info['email'], 0, 4, 'UTF-8') == 'miss'){ SendMail::getInstance()->sendEmail('php@red.ua', 'Yaroslav', 'Создан новый акаунт МИСС', 'Email: '.$info['email']); }
 				
-				$em = iconv_substr($info['email'], 0, 4, 'UTF-8');
-				if($em == 'miss'){
-						$subject = 'Создан новый акаунт МИСС';
-				$msg = 'Email: '.$info['email'];
-				require_once('nomadmail/nomad_mimemail.inc.php');
-				$mimemail = new nomad_mimemail();
-				$mimemail->debug_status = 'no';
-				$mimemail->set_from(null, null);
-				$mimemail->set_to('php@red.ua', 'Yaroslav');
-				$mimemail->set_charset('UTF-8');
-				$mimemail->set_subject($subject);
-				$mimemail->set_text(make_plain($msg));
-				$mimemail->set_html($msg);
-				//@$mimemail->send();
-
-				MailerNew::getInstance()->sendToEmail('php@red.ua', 'Yaroslav', $subject, $msg);
-				}
-				
-                    $customer = new Customer($id);
-                    if (isset($_SESSION['parent_id']) and $_SESSION['parent_id'] != 0)
-                        $customer->setParentId($_SESSION['parent_id']);
+                    $customer = new Customer();
+                    if (isset($_SESSION['parent_id']) and $_SESSION['parent_id'] != 0) $customer->setParentId($_SESSION['parent_id']);
                     $customer->setUsername($info['email']);
                     $customer->setPassword(md5($info['password']));
                     $customer->setCustomerTypeId(1);
-                    $customer->setCompanyName($info['company']);
-                    $customer->setFirstName($info['name']);
-					$customer->setMiddleName($info['middle_name']);
-                    $customer->setEmail($info['email']);
-                    $customer->setPhone1($phone);
-					$customer->setDateBirth($date_birth);
-                    $customer->setCity($info['city']);
-                    $customer->setStreet($info['street']);
-					$customer->setHouse($info['house']);
-					$customer->setFlat($info['flat']);
+                    $customer->setCompanyName(@$info['company']);
+                    $customer->setFirstName(@$info['name']);
+					$customer->setMiddleName(@$info['middle_name']);
+                    $customer->setEmail(@$info['email']);
+                    $customer->setPhone1(@$phone);
+					$customer->setGender(@$info['gender']);
+					$customer->setDateBirth(@$date_birth);
+                    $customer->setCity(@$info['city']);
+                    $customer->setStreet(@$info['street']);
+					$customer->setHouse(@$info['house']);
+					$customer->setFlat(@$info['flat']);
                     $customer->save();
-					$subscriber = new Subscriber($id);
-					$subscriber->setName($info['name']);
-					$subscriber->setEmail($info['email']);
-					$subscriber->setConfirmed(date('Y-m-d H:i:s'));
+					$subscriber = new Subscriber();
+					$subscriber->setName(@$info['name']);
+					$subscriber->setEmail(@$info['email']);
+					$subscriber->setConfirmed(@date('Y-m-d H:i:s'));
+					$subscriber->setActive(1);
 					$subscriber->save();
+					
+					
                     $this->view->login = $info['email'];
                     $this->view->pass = $info['password'];
-                    $admin_name = Config::findByCode('admin_name')->getValue();
-                    $admin_email = Config::findByCode('admin_email')->getValue();
-                    $do_not_reply = Config::findByCode('do_not_reply_email')->getValue();
+					
                     $msg = $this->render('email/new-customer.tpl.php');
-                    $subject = 'Создан акаунт';
-                    require_once('nomadmail/nomad_mimemail.inc.php');
-                    $mimemail = new nomad_mimemail();
-                    $mimemail->debug_status = 'no';
-                    $mimemail->set_from($do_not_reply, $admin_name);
-                    $mimemail->set_to($info['email'], $info['name']);
-                    $mimemail->set_charset('UTF-8');
-                    $mimemail->set_subject($subject);
-                    $mimemail->set_text(make_plain($msg));
-                    $mimemail->set_html($msg);
-                    //@$mimemail->send();
-
-                    MailerNew::getInstance()->sendToEmail($info['email'], $info['name'], $subject, $msg);
+                    $subject = 'Создан новый аккаунт в интернет-магазине red.ua';
+						SendMail::getInstance()->sendEmail($info['email'], $info['name'], $subject, $msg); 
 
                     $customer = $this->ws->getCustomer();
                     $res = $customer->loginByEmail($info['email'], $info['password']);
@@ -266,11 +200,12 @@ $date_birth = '';
                     if ($res) {
                         $this->website->updateHashes();
                     }
-					 
-					die("1"); //Всё Ok!
+					 echo $this->render('account/register_ok.tpl.php');
+					return;
                 }else{
-				$z = "<p style='font: 13px Verdana;'><font color=#FF3333><strong>Ошибка !</strong></font></p><ul style='list-style: none; font: 12px Verdana; color:#000; border:1px solid #c00; border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px; background-color:#fff; padding:5px; margin:5px 10px;'>".$log."</ul><br />"; 
-				die($z);
+				$this->view->errors = $errors;
+				//$z = "<p style='font: 13px Verdana;'><font color=#FF3333><strong>Ошибка !</strong></font></p><ul style='list-style: none; font: 12px Verdana; color:#000; border:1px solid #c00; border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px; background-color:#fff; padding:5px; margin:5px 10px;'>".$log."</ul><br />"; 
+				//die($z);
 				}
 
             }
@@ -354,22 +289,9 @@ $date_birth = '';
                     $this->view->login = $info['cart'];
                     $this->view->pass = $info['password'];
                     $admin_name = Config::findByCode('admin_name')->getValue();
-                    $admin_email = Config::findByCode('admin_email')->getValue();
-                    $do_not_reply = Config::findByCode('do_not_reply_email')->getValue();
                     $msg = $this->render('email/new-customer.tpl.php');
                     $subject = 'Создан акаунт';
-                    require_once('nomadmail/nomad_mimemail.inc.php');
-                    $mimemail = new nomad_mimemail();
-                    $mimemail->debug_status = 'no';
-                    $mimemail->set_from($do_not_reply, $admin_name);
-                    $mimemail->set_to($info['email'], $info['name']);
-                    $mimemail->set_charset('UTF-8');
-                    $mimemail->set_subject($subject);
-                    $mimemail->set_text(make_plain($msg));
-                    $mimemail->set_html($msg);
-                    //@$mimemail->send();
-
-                    MailerNew::getInstance()->sendToEmail($info['email'], $info['name'], $subject, $msg);
+					SendMail::getInstance()->sendEmail($info['email'], $info['name'], $subject, $msg); 
 
                     $customer = $this->ws->getCustomer();
                     $res = $customer->loginByEmail($info['cart'], $info['password']);
@@ -409,23 +331,10 @@ $date_birth = '';
                 if (count($msg) > 0) {
                     $this->view->errors = $msg;
                 } else {
-                    $admin_name = Config::findByCode('admin_name')->getValue();
-                    $do_not_reply = Config::findByCode('do_not_reply_email')->getValue();
                     $this->view->user = $this->ws->getCustomer();
                     $subject = $this->trans->get("Mail invite subject");
                     $msg = $this->render('email/invite.tpl.php');
-                    require_once('nomadmail/nomad_mimemail.inc.php');
-                    $mimemail = new nomad_mimemail();
-                    $mimemail->debug_status = 'no';
-                    $mimemail->set_from($do_not_reply, $admin_name);
-                    $mimemail->set_to($_POST['email'], $_POST['name']);
-                    $mimemail->set_charset('UTF-8');
-                    $mimemail->set_subject($subject);
-                    $mimemail->set_text(make_plain($msg));
-                    $mimemail->set_html($msg);
-                    //@$mimemail->send();
-
-                    MailerNew::getInstance()->sendToEmail($_POST['email'], $_POST['name'], $subject, $msg);
+					SendMail::getInstance()->sendEmail($_POST['email'], $_POST['name'], $subject, $msg); 
                     
                     $this->view->ok = $this->trans->get("Email is send");
                 }
@@ -458,14 +367,10 @@ $date_birth = '';
             if ($_POST) {
 			if(@$_POST['temp_email']){
 			$temp_email = $_POST['temp_email'];
-			function isEmail($temp_email){
-                return(preg_match("/^[-_.[:alnum:]]+@((([[:alnum:]]|[[:alnum:]][[:alnum:]-]*[[:alnum:]])\.)+(ad|ae|aero|af|ag|ai|al|am|an|ao|aq|ar|arpa|as|at|au|aw|az|ba|bb|bd|be|bf|bg|bh|bi|biz|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|co|com|coop|cr|cs|cu|cv|cx|cy|cz|de|dj|dk|dm|do|dz|ec|edu|ee|eg|eh|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gh|gi|gl|gm|gn|gov|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|in|info|int|io|iq|ir|is|it|jm|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|mg|mh|mil|mk|ml|mm|mn|mo|mp|mq|mr|ms|mt|mu|museum|mv|mw|mx|my|mz|na|name|nc|ne|net|nf|ng|ni|nl|no|np|nr|nt|nu|nz|om|org|pa|pe|pf|pg|ph|pk|pl|pm|pn|pr|pro|ps|pt|pw|py|qa|re|ro|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|st|su|sv|sy|sz|tc|td|tf|tg|th|tj|tk|tm|tn|to|tp|tr|tt|tv|tw|tz|ua|ug|uk|um|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|yu|za|zm|zw)$|(([0-9][0-9]?|[0-1][0-9][0-9]|[2][0-4][0-9]|[2][5][0-5])\.){3}([0-9][0-9]?|[0-1][0-9][0-9]|[2][0-4][0-9]|[2][5][0-5]))$/i"
-                        ,$temp_email));
-            } 
 			if(strlen(trim($temp_email)) == 0){
-			$errors[] = "Вы не ввели новый Email!";
-			}else if(!isEmail($temp_email)){
-			$errors[] = "Вы ввели недопустимый Email!";
+			$errors['temp_email'] = "Вы не ввели новый Email!";
+			}else if(!isValidEmailNew($temp_email)){
+			$errors['temp_email'] = "Вы ввели недопустимый Email!";
 			}
 			$temp_email = trim($temp_email);
 			}
@@ -476,11 +381,11 @@ $date_birth = '';
 			if(strlen($_POST['date_birth']) == 10){
 			$date_birth =  date('Y-m-d', strtotime($_POST['date_birth']));
 			}else{
-			$errors[] = "Введите корректно дату рождения!";
+			$errors['date_birth'] = "Введите корректно дату рождения!";
 			
 			}
 			}else{
-			$errors[] = "Вы не ввели дату рождения!";
+			$errors['date_birth'] = "Вы не ввели дату рождения!";
 			}
 			}
               /*  $tel = Number::clearPhone(trim($_POST['phone']));
@@ -491,15 +396,15 @@ $date_birth = '';
                     if (mb_strpos($allowed_chars, mb_strtolower($tel[$i])) === false) {
                         $errors[] = "В номeре должны быть только числа";
                     }
-                }*/ 
+                } */
                 //$alredy = wsActiveRecord::useStatic('Customer')->findFirst(array('phone1' => $tel));
                // if ($alredy and $alredy->getId() != $this->ws->getCustomer()->getId()) $errors[] = "Пользователь с таким номером телефона уже существует";
-                if (strlen(trim($_POST['street'])) == 0) $errors[] = "Введите улицу";
-                if (strlen(trim($_POST['name'])) == 0) $errors[] = "Введите имя";
-				if (strlen(trim($_POST['middle_name'])) == 0) $errors[] = "Введите фамилию";
+			   
+                //if (strlen(trim($_POST['street'])) == 0) $errors[] = "Введите улицу";
+                if (strlen(trim($_POST['name'])) == 0) $errors['name'] = "Введите имя";
+				if (strlen(trim($_POST['middle_name'])) == 0) $errors['middle_name'] = "Введите фамилию";
 				//if (strlen(trim($_POST['last_name'])) == 0) $errors[] = "Введите отчество";
-				//if (strlen(trim($_POST['drawing'])) != strlen('red2014') || strlen('')) $errors[] = "Вы ввели неверный акционный код";
-					$curdate = Registry::get('curdate');
+
 					$mas_adres = array();
 					if (isset($_POST['index']) and mb_strlen($_POST['index']) > 1) {
 						$mas_adres[] = $_POST['index'];
@@ -540,47 +445,36 @@ $date_birth = '';
 					if(@$_POST['temp_email']){
 					$user->setBlockEmail(2);
 					$user->setTempEmail($temp_email);
-					$user->setEmailOk(2);}
+					$user->setEmailOk(2);
+					}
 					if(strlen($date_birth) != 0){
 					$user->setDateBirth($date_birth);
 					}
-                    ///$user->setPhone1($tel);
+					$user->setGender(@$_POST['gender']);
+                    //$user->setPhone1($tel);
 					$user->setAdress($_POST['address']);
 					//$user->setDrawing(trim($_POST['drawing']));
                     $user->save();
+					
 					if(@$_POST['temp_email'] and $user->getEmail() != $temp_email){
 					
-					$this->view->email = $temp_email;
-					$this->view->email = $temp_email;
-					
-					$admin_email = Config::findByCode('admin_email')->getValue();
-				$admin_name = Config::findByCode('admin_name')->getValue();
+					$this->view->email = $_POST['temp_email'];
 				$subject = 'Подтверждение изменения email на сайте RED.UA';
 				$msg = $this->view->render('account/edit/edit-email.tpl.php');
-	
-				require_once('nomadmail/nomad_mimemail.inc.php');
-				$mimemail = new nomad_mimemail();
-				$mimemail->debug_status = 'no';	
-				$mimemail->set_to($temp_email, $_POST['name']);
-				$mimemail->set_from($admin_email, $admin_name);
-				$mimemail->set_charset('UTF-8');
-				$mimemail->set_subject($subject);
-				$mimemail->set_text($msg);
-				$mimemail->set_html($msg);
-				//@$mimemail->send();
-			
-                MailerNew::getInstance()->sendToEmail($temp_email, $_POST['name'], $subject, $msg);
+				SendMail::getInstance()->sendEmail($temp_email, $_POST['name'], $subject, $msg);
 					
 					
 					echo $this->render('account/edit/ok_edit.tpl.php');
 					return;
 					}else{
+					//echo $this->render('account/edit/ok_edit.tpl.php');
+					//return;
                     $this->_redirect('/account/');
 					}
-                }
+                }else{
+				 $this->view->errors = $errors;
+				}
             }
-			
-            $this->view->errors = $errors;
             echo $this->render('account/edit.tpl.php');
             return;
 
@@ -596,8 +490,7 @@ $date_birth = '';
 			return base64_decode($encoded);//Вертаем расшифрованную строку
 			}
 		
-		public function activeemailAction()
-	{
+		public function activeemailAction(){
 		$ok = 0;
 		$em = $this->get->email;
 		$this->view->email = $em;
@@ -645,15 +538,15 @@ $date_birth = '';
                 $msg = array();
 
                 if (!$_POST['oldpass'])
-                    $msg[] = "Please enter old password";
+                    $msg[] = $this->trans->get("Please enter old password");
                 if ($this->ws->getCustomer()->getPassword() != md5($_POST['oldpass']))
-                    $msg[] = "Password do not match";
+                    $msg[] = $this->trans->get("Password do not match");
                 if (!$_POST['password'] || !$_POST['password2'])
-                    $msg[] = "Please enter 2 passwords";
+                    $msg[] = $this->trans->get("Please enter 2 passwords");
                 if ($_POST['password'] != $_POST['password2'])
-                    $msg[] = "Please enter the same password twice";
+                    $msg[] = $this->trans->get("Please enter the same password twice");
                 if (strlen($_POST['password']) < 6)
-                    $msg[] = "Please use minimum 6 symbols for password";
+                    $msg[] = $this->trans->get("Please use minimum 6 symbols for password");
 
                 if (count($msg) > 0) {
                     $this->view->errors = $msg;
@@ -673,14 +566,14 @@ $date_birth = '';
             $msg = array();
 
             if (!isset($_REQUEST['login']) || !$this->isValidEmail($_REQUEST['login']))
-                $msg[] = $this->_trans->get("Email is invalid");
+                $msg[] = $this->trans->get("Email is invalid");
             elseif (!$customer = Customer::findByUsername($_REQUEST['login']))
-                $msg[] = $this->_trans->get("Email is not found");
+                $msg[] = $this->trans->get("Email is not found");
 
             if (!isset($_REQUEST['password']))
-                $msg[] = $this->_trans->get("Please enter password");
+                $msg[] = $this->trans->get("Please enter password");
             elseif (strlen($_REQUEST['password']) < 6)
-                $msg[] = $this->_trans->get("Please use minimum 6 symbols for password");
+                $msg[] = $this->trans->get("Please use minimum 6 symbols for password");
 
             //everything is ok
             if (!count($msg)) die();
@@ -712,12 +605,12 @@ $date_birth = '';
             $msg = array();
 
             if (!$_REQUEST['oldpass'])
-                $msg[] = $this->_trans->get("Please enter old password");
+                $msg[] = $this->trans->get("Please enter old password");
             elseif ($this->webshop->getCustomer()->getPassword() != md5($_REQUEST['oldpass']))
-                $msg[] = $this->_trans->get("Password do not match"); elseif (!$_REQUEST['password'] || !$_REQUEST['password2'])
-                $msg[] = $this->_trans->get("Please enter 2 passwords"); elseif ($_REQUEST['password'] != $_REQUEST['password2'])
-                $msg[] = $this->_trans->get("Please enter the same password twice"); elseif (strlen($_REQUEST['password']) < 6)
-                $msg[] = $this->_trans->get("Please use minimum 6 symbols for password");
+                $msg[] = $this->trans->get("Password do not match"); elseif (!$_REQUEST['password'] || !$_REQUEST['password2'])
+                $msg[] = $this->trans->get("Please enter 2 passwords"); elseif ($_REQUEST['password'] != $_REQUEST['password2'])
+                $msg[] = $this->trans->get("Please enter the same password twice"); elseif (strlen($_REQUEST['password']) < 6)
+                $msg[] = $this->trans->get("Please use minimum 6 symbols for password");
 
             //everything is ok
             if (!count($msg)) die();
@@ -901,27 +794,9 @@ $date_birth = '';
         public function logoutAction()
         {
 			if(count($_SESSION['basket']) > 0){
-				$admin_name = Config::findByCode('admin_name')->getValue();
-					$admin_email = Config::findByCode('admin_email')->getValue();
-					$do_not_reply = Config::findByCode('do_not_reply_email')->getValue();
-				
-			$mel = $this->ws->getCustomer()->getEmail();
-			$nam = $this->ws->getCustomer()->getFirstName(); 
-				$subject = "НЕЗАВЕРШЕННЫЙ ЗАКАЗ! Успей купить, пока есть в наличии."; 
 				$msg = $this->render('email/bek.template.tpl.php');
-				$this->view->email = $mel;
-				require_once('nomadmail/nomad_mimemail.inc.php');
-				$mimemail = new nomad_mimemail();
-				$mimemail->debug_status = 'no';
-				$mimemail->set_from($do_not_reply, $admin_name);
-				$mimemail->set_to($mel, $nam);
-				$mimemail->set_charset('UTF-8');
-				$mimemail->set_subject($subject);
-				$mimemail->set_text(make_plain($msg));
-				$mimemail->set_html($msg);
-				//@$mimemail->send();
-
-				MailerNew::getInstance()->sendToEmail($mel, $nam, $subject, $msg);	
+				$this->view->email = $this->ws->getCustomer()->getEmail();
+SendMail::getInstance()->sendEmail($this->ws->getCustomer()->getEmail(), $this->ws->getCustomer()->getFirstName(), 'НЕЗАВЕРШЕННЫЙ ЗАКАЗ! Успей купить, пока есть в наличии', $msg);
 			}
 			
             $this->ws->getCustomer()->logout();
@@ -962,13 +837,6 @@ $date_birth = '';
                     while (strlen($newPass) < 8)
                         $newPass .= $allowedChars[rand(0, $allowedCharsLength - 1)];
                     if (strlen($customer->getEmail()) > 4) {
-
-                        $admin_email = Config::findByCode('admin_email')->getValue();
-                        $admin_name = Config::findByCode('admin_name')->getValue();
-                        $do_not_reply = Config::findByCode('do_not_reply_email')->getValue();
-                        //$all_email = Config::findByCode('bcc_all_emails')->getValue();
-
-
                         $customer->setPassword(md5($newPass));
                         $customer->save();
 
@@ -976,20 +844,9 @@ $date_birth = '';
                         $this->view->new_password = $newPass;
                         $this->view->customer = $customer;
                         $msg = 'Логин: ' . $customer->getUsername() . '. ' . $this->trans->get('Your new password for red.ua') . ': ' . $newPass;
-                        //echo $this->view->render('account/resetPassword-email.tpl.php');
 
-                        require_once('nomadmail/nomad_mimemail.inc.php');
-                        $mimemail = new nomad_mimemail();
-                        $mimemail->debug_status = 'no';
-                        $mimemail->set_from($do_not_reply, $admin_name);
-                        $mimemail->set_to($customer->getEmail(), $customer->getFullname());
-                        $mimemail->set_charset('UTF-8');
-                        $mimemail->set_subject($subject);
-                        $mimemail->set_text($msg);
-                        $mimemail->set_html(nl2br($msg));
-                        //@$mimemail->send();
+SendMail::getInstance()->sendEmail($customer->getEmail(), $customer->getFullname(), $subject, $msg);
 
-                        MailerNew::getInstance()->sendToEmail($customer->getEmail(), $customer->getFullname(), $subject, $msg);
 
                         $this->view->ok = 1;
                     } else {
@@ -1130,17 +987,7 @@ $date_birth = '';
                 $msg = "<a href='" . $_SERVER["HTTP_REFERER"] . "' target='_blank'>" . $_SERVER["HTTP_REFERER"] . "</a><br /><br />" . str_replace("\n", "<br />", $_POST["comment"]);
 
                 $subject = $this->_trans->get("Your friend suggested you this link");
-                $mimemail = new nomad_mimemail();
-                $mimemail->debug_status = 'no';
-                $mimemail->set_from($_POST["email_from"], $_POST["name_from"]);
-                $mimemail->set_to($_POST["email_to"], $_POST["name_to"]);
-                $mimemail->set_charset('UTF-8');
-                $mimemail->set_subject($subject);
-                $mimemail->set_text(make_plain($msg));
-                $mimemail->set_html($msg);
-                //@$mimemail->send();
-
-                MailerNew::getInstance()->sendToEmail($_POST["email_to"], $_POST["name_to"], $subject, $msg);
+SendMail::getInstance()->sendEmail($_POST["email_to"], $_POST["name_to"], $subject, $msg);
 
                 $this->_redirect($_SERVER["HTTP_REFERER"]);
             } else {

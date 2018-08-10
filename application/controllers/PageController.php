@@ -812,7 +812,7 @@ $result='Данные уценки'.PHP_EOL;
         $delivery = @intval($_GET['delivery']);
         $payment = array();
         if ($delivery != 0) {
-            $items = wsActiveRecord::useStatic('DeliveryPayment')->findAll(array('delivery_id' => $delivery, 'active' => 1));
+            $items = wsActiveRecord::useStatic('DeliveryPayment')->findAll(array('delivery_id' => $delivery));
             foreach ($items as $r) {
                 $payment[] = array('id' => $r->getPaymentId(), 'title' => $r->payment->getName());
             }
@@ -942,6 +942,9 @@ $masa =  (float)$or->getMassa();
     }
 	
 	public function questionAction(){
+	
+	$this->view->faq = wsActiveRecord::useStatic('Faq')->findAll();
+	
 	 echo $this->render('pages/question.tpl.php');
 	}
 
@@ -1284,7 +1287,7 @@ VALUES ('$code',  '$id_article',  '$ctime', NULL ,  '$email',  '$name')");
 	$i++;
 }
 
-			$this->view->desires = wsActiveRecord::useStatic('Shoparticles')->findAll(array('`id` IN (' . implode(',', array_map('intval', $array)) . ')'));
+			$this->view->desires = wsActiveRecord::useStatic('Shoparticles')->findAll(array('`id` IN (' . implode(',', array_map('intval', $array)) . ')', ' stock not like "0"'));
  
 			$this->view->resultat = $this->view->render('finder/list.desires.tpl.php');
 			echo $this->view->render('finder/resultat.tpl.php');
@@ -1298,7 +1301,7 @@ VALUES ('$code',  '$id_article',  '$ctime', NULL ,  '$email',  '$name')");
 				$array[$i]=$item;
 			$i++;
 			}
-			$this->view->desires = wsActiveRecord::useStatic('Shoparticles')->findAll(array('`id` IN (' . implode(',', array_map('intval', $array)) . ')'));	
+			$this->view->desires = wsActiveRecord::useStatic('Shoparticles')->findAll(array('`id` IN (' . implode(',', array_map('intval', $array)) . ')', ' stock not like "0"'));	
 		$this->view->resultat = $this->view->render('finder/list.desires.tpl.php');
 		echo $this->view->render('finder/resultat.tpl.php');
 

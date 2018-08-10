@@ -1,6 +1,4 @@
 <?php 
-header("Expires: " . date("r", time() + 7200));
-define("EXEC", TRUE);
 	if (isset($_GET['page']) or isset($_GET['cat'])) {
 	if(isset($_GET['page'])){
 	$page = $_GET['page'];
@@ -25,12 +23,11 @@ define("EXEC", TRUE);
 	
 	<link  href="/js/slider-fhd/slick.css" rel="stylesheet" type="text/css" />
 	<link href="/js/slider-fhd/slick-theme.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="/css/bs/css/bootstrap.min.css?v=1.0"/>
+		<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.0"/>
+		<link rel="stylesheet" type="text/css" href="/css/common.css?v=1.0"/>
 	
 	<script  src="mobil/mjs/jquery.min.js"></script>
-	<script  src="mobil/mjs/jquery.mask.js" ></script>
-	<script  src="/css/bs/js/bootstrap.js?v=1.5"></script>
-    <script src="mobil/mjs/common.js"></script>
-<script   src="/js/slider-fhd/slick.min.js" ></script>
 	 <script>
         jQuery.browser = {};
         (function () {
@@ -42,11 +39,7 @@ define("EXEC", TRUE);
             }
         })();
     </script>
-
-		<link rel="stylesheet" type="text/css" href="/css/bs/css/bootstrap.min.css?v=1.0"/>
-		<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.0"/>
-		<link rel="stylesheet" type="text/css" href="/css/common.css?v=1.0"/>
-		<style>.back{display:none;}</style>
+<style>.back{display:none;}</style>
 	<!-- Google Tag Manager -->
 <script>
 (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -70,6 +63,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <?=$this->cached_mobi_futer?>
 <div align="center" style="padding-top:10px;">
 <input type="button" name="mobi" class="btn btn-secondary btn-sm" onClick="setCooki(10);" value="<?=$this->trans->get('Полная версия сайта');?>">
+<span  style="    font-size: 10px;    display: inline-block;color: gray;">Раскрутка сайта — <a href="https://aweb.ua/">Aweb.ua</a></span>
 </div>
+	<script  src="mobil/mjs/jquery.mask.js" ></script>
+	<script  src="/css/bs/js/bootstrap.js?v=1.5"></script>
+    <script src="mobil/mjs/common.js"></script>
+<script   src="/js/slider-fhd/slick.min.js" ></script>
 </body>
 </html>

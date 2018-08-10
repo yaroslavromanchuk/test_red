@@ -1,7 +1,8 @@
 <?php
-require_once('class.phpmailer.php');
+//require_once('class.phpmailer.php');
 require_once('class.imap.php');
-
+//require_once('class.pop3.php');
+/*
 class FreakMailer extends PHPMailer
 {
     var $priority = 3;
@@ -16,22 +17,22 @@ class FreakMailer extends PHPMailer
       global $site;
       
       // Берем из файла config.php массив $site
-      
-      if($site['smtp_mode'] == 'enabled')
-      {
-	  $this->IsSMTP();
-	    $this->SMTPAuth  = true;
-        $this->Host = $site['smtp_host'];
+       $this->Host = $site['smtp_host'];
         $this->Port = $site['smtp_port'];
-		
+		 $this->SMTPSecure = $site['smtp_secure'];
+      if($site['smtp_mode'] == 'enabled' and false)
+      {
 		
        
-        // $this->Username  = $site['smtp_username'];
-        // $this->Password  =  $site['smtp_password'];
+		//$this->IsSMTP();
+	    $this->SMTPAuth  = true;
+		$this->Username  = $site['smtp_username'];
+         $this->Password  =  $site['smtp_password'];
 		 $this->SMTPSecure = $site['smtp_secure'];
-		 //$this->SMTPDebug = 1;
+		 $this->SMTPDebug = 2;
         $this->Mailer = "smtp";
       }
+	  
       if(!$this->From)
       {
         $this->From = $site['from_email'];
@@ -49,7 +50,8 @@ class FreakMailer extends PHPMailer
 	
 	
 	
-}
+}*/
+
 class FreakImap extends IMAP{
 var $do_debug = 0;
     var $tval;
@@ -66,6 +68,7 @@ function FreakImap(){
 	 $this->port = $pop3['port']; 
 	 $this->username = $pop3['username'];
 	 $this->password = $pop3['password'];
+	 
 	}
 }
 ?>

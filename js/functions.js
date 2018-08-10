@@ -45,8 +45,18 @@ function getQuickCart(id) {//dobavlenie tovara v korzinu
 	if (size > 0 && color > 0) {
 		$.ajax({
 			beforeSend: function () {
+				
+			},
+			type: "POST",
+			url: id,
+			data: '&metod=frame&size=' + size + '&color=' + color + '&artikul=' + art,
+			dataType: 'json',
+			success: function (data) {
+			//console.log(data);
+				if (data.error != 1) {
+				
 				$('#test').clone()
-				.appendTo('section')
+				.appendTo('.container-fluid')
 				.css({
 					'position': 'absolute',
 					'z-index': '9999',
@@ -81,14 +91,8 @@ function getQuickCart(id) {//dobavlenie tovara v korzinu
 				$("#error").html('');
 				//$('#quik_frame').html('');
 				$('#wait_circle').show();
-			},
-			type: "POST",
-			url: id,
-			data: '&metod=frame&size=' + size + '&color=' + color + '&artikul=' + art,
-			dataType: 'json',
-			success: function (data) {
-			//console.log(data);
-				if (data.error != 1) {
+				
+				
 					$('#span_ok1').addClass("span_ok").html(data.count).show();
 					$('#span_ok').addClass("span_ok").html(data.count).show();
 					//ga('send', 'event', 'Articles', 'tovartobacket');
@@ -96,10 +100,13 @@ function getQuickCart(id) {//dobavlenie tovara v korzinu
 					//_gaq.push(['tovarTobacket','/virtual/tovartobacket/']);
 					dataLayer.push({'event' : 'articles', 'eventAction': 'add_backet', 'eventLabel' : $("#id_tovar").val(), 'eventValue' : price });
 					console.log(dataLayer);
+					console.log(data);
+					//$("#message").html(data.message);
 					//_gaq.push(['_trackEvent', 'articles', 'add_backet']);
 					//ga('send', 'event', 'articles', 'add_backet');
 				} else {
-					//console.log(data.message);
+				
+					console.log(data.message);
 				}
 				$('#wait_circle').hide();
 				$("#message").html(data.message);
@@ -118,7 +125,7 @@ function getQuickCart(id) {//dobavlenie tovara v korzinu
 				setTimeout(function () {
 				$("#message").css({'opacity': '0'});
 					//$("#message").fadeOut(500)
-				}, 2000);
+				}, 5000);
 			}
 		});
 	}
@@ -134,8 +141,8 @@ function getQuickCart(id) {//dobavlenie tovara v korzinu
 	}
 }
 function getQuickOrder(id) {//bistriy zakaz open form
-	$('#qo-first_step').show();
-	$('#qo-load').hide();
+	//$('#qo-first_step').show();
+	//$('#qo-load').hide();
 	$('#qo-result').hide();
 	var size = $("input[name='size']:checked").val();
 	var color = $("input[name='color']:checked").val();
@@ -148,6 +155,7 @@ function getQuickOrder(id) {//bistriy zakaz open form
 	else
 		$(".error.size").html('');
 	if (size > 0 && color > 0) {
+	
 		$('#quick_order').attr('data-toggle', 'modal');
 	}
 }
@@ -275,38 +283,46 @@ $("#qo").submit(function () {//bistriy zakaz
 		//console.log($("form#qo").serialize());
 			$.ajax({
 			beforeSend: function () {
-					$('#hide').hide();
-					$('#qo-first_step').hide();
-					$('#qo-load').show();
+			$('#hide .modal-body #qo-result').html('<div style="text-align:center;"><img src="/img/loading_trac.png"></div>');
+			$('#qo-result').show();
+			$('#hide .modal-footer').hide();
+//console.log($("form#qo").serialize() + '&size=' + $("input[name='size']:checked").val() + '&color=' + $("input[name='color']:checked").val()+'&artikul='+$('#artikul').val());
+					//$('#hide').hide();
+					//$('#qo-first_step').hide();
+					//$('#qo-load').show();
 				},
 				type: 'POST',
 				url: '/quick-order/&',
-				data: $("form#qo").serialize() + '&size=' + $("input[name='size']:checked").val() + '&color=' + $("input[name='color']:checked").val(),
+				data: $("form#qo").serialize() + '&size=' + $("input[name='size']:checked").val() + '&color=' + $("input[name='color']:checked").val()+'&artikul='+$('#artikul').val(),
+				dataType: 'json',
 				success: function (data) {
 				dataLayer.push({'event' : 'quick', 'eventAction' : 'add_quick'});
 				console.log(data);
-					
-					$('#qo-result').html('');
-					$('#qo-result').css({'padding': '25px'});
-					
-					$('#qo-load').hide();
-					$('#hide').hide();
-					$('#qo-result').html(data);
-					//$('#qo-result').show();
+				if(data.result == 'send'){
+				$('#qo-result').hide();
+				$('#hide .modal-body').html(data.message);
+				$('#hide .modal-footer').hide();
+				ga('send', 'quick', '/virtual/quick/');
+				ga('send', {hitType: 'event', eventCategory: 'quick',  eventAction: 'add_quick' });
+				}else{
+				er = data.message.error;
+				//console.log(er);
+				t = '';
+				for(key in er){
+				$('#'+key).addClass('is-invalid');
+				console.log(er[key]);
+				t+=er[key];
+				
+				}
+				$('#hide .modal-body #qo-result').html(t);
 					$('#qo-result').fadeIn(300);
-
-					ga('send', 'quick', '/virtual/quick/');
-					//console.log(dataLayer);
-					ga('send', {hitType: 'event', eventCategory: 'quick',  eventAction: 'add_quick' });
-				},
-				complete: function () {
-				//dataLayer.push({'event': 'event-to-ga','eventCategory': 'quick','eventAction': 'add_quick'});
+					$('#hide .modal-footer').show();
+				}	
 				},
 				error: function (e) {
 					$('#qo-result').html('Извините, но при отправке заказа произошла ошибка, попробуйте позже');
-					$('#qo-load').hide();
-					$('#hide').hide();
 					$('#qo-result').show();
+					$('#hide .modal-footer').hide();
 				}
 			});
 		}

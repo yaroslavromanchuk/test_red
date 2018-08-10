@@ -82,15 +82,17 @@ $ok_kupon = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$_GET['ku
 			$t_price += $article->getPriceSkidka() * $item['count'];
 			
 		}
-	if($article->getCategoryId() == 147 or $article->getCategoryId() == 70){
+	if(false){
+	if($article->getCategoryId() == 147 or $article->getCategoryId() == 70){ //платья
 	$mas_akciya[$article->getId().'_'.$item['artikul']] = $article->getFirstPrice();
 	}
-	if($article->getCategoryId() == 30 and $article->getBrandId() == 1562){
+	if($article->getCategoryId() == 30 and $article->getBrandId() == 1562){ // футболки и топи
 	$mas_akciya_futbolki[$article->getId().'_'.$item['artikul']] = $article->getFirstPrice();
+	}
 	}
 		
 	}
-	if(true){
+	if(false){
 	$resul = count($mas_akciya);
 	if($resul >= 3){
 	//echo $resul;
@@ -103,6 +105,16 @@ $ok_kupon = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$_GET['ku
 	 unset($mas_akciya[$m1]);
 	 $m2 = array_keys($mas_akciya, min($mas_akciya))[0];
 	 $min[] = $m2;
+	}elseif($resul >=9 and $resul < 12){
+	$m1 = array_keys($mas_akciya, min($mas_akciya))[0];
+	$min[] = $m1;
+	 unset($mas_akciya[$m1]);
+	 $m2 = array_keys($mas_akciya, min($mas_akciya))[0];
+	 $min[] = $m2;
+	 unset($mas_akciya[$m2]);
+	  $m3 = array_keys($mas_akciya, min($mas_akciya))[0];
+	 $min[] = $m3;
+	
 	}
 	}
 	$fut = count($mas_akciya_futbolki);
@@ -136,7 +148,7 @@ $ok_kupon = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$_GET['ku
 		$_SESSION['basket'][$key]['option_id'] = 0;
 		$size = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $article->getId(), 'id_size' => $item['size'], 'id_color' => $item['color']));
 		
-		if(in_array($article->getId().'_'.$size->code, $min)){
+		if(/*in_array($article->getId().'_'.$size->code, $min)*/false){
 		$price = $article->getPerc($now_orders, $item['count'], $skidka, 99, $kupon, $sum_order);
 		$mes = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">Обратите внимание, в Вашем заказе присутствует акционный товар.</div>';
 		}else{
@@ -183,6 +195,8 @@ $ok_kupon = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$_GET['ku
 						}
 						//if($this->ws->getCustomer()->getId() == 8005) echo $price['minus'];
 						echo '<span style="text-decoration: line-through;color: #666;font-weight: normal;font-size: 11px;">'.$pr.'</span><span style="font-size: 10px;color:red;font-weight: bold;position: relative;top: -5px;"> '.$skid.'</span><br>'.Shoparticles::showPrice($price['price']/$item['count']); ?> грн
+						
+						<?php //if(@$price['skidka']) echo $price['skidka']; ?>
 		</td>
 		<td>
 			
@@ -215,9 +229,13 @@ echo $c_al;
 		</td>
 	</tr>
 
-<?php if (in_array($article->getCategoryId(), array(74, 84, 137, 138, 139, 157, 158, 249, 140, 163))) { ?>
+<?php if (in_array($article->getCategoryId(), array(74, 84, 137, 138, 139, 157, 158, 249, 140, 163, 306, 297, 307, 296))) { ?>
 			<tr><td colspan="6" class="t_bord">
-				<span class="attention"><?=$this->trans->get('Будьте внимательны, заказывая этот товар! Бельё не подлежит обмену и возврату'); ?></span>
+			<div class="alert alert-danger">
+			<span class="attention"><?=$this->trans->get('Будьте внимательны, заказывая этот товар! Бельё не подлежит обмену и возврату'); ?></span><br>
+			<span class="attention"><?=$this->trans->get('Примарка и возврат белья возможены только в пунктах самовывоза после оплаты заказа.'); ?></span>
+				</div>
+				
 			</td></tr>
 <?php 	} ?>
 <?php 	}
@@ -226,7 +244,7 @@ echo $c_al;
 </table>
 <table class="table cart-table">
 	<?php //для не активных пользователей
-				if(true){
+				if(false){
 			//if ($this->ws->getCustomer()->getIsLoggedIn() and $total_price > 350) {
 			if(/*$this->ws->getCustomer()->isNoActive() and $this->ws->getCustomer()->getId() == 8005*/$this->ws->getCustomer()->getIsLoggedIn()){
 			?>
@@ -257,6 +275,28 @@ echo $c_al;
 					</strong>
 				</td>
 			</tr>
+			<?php if ($this->ws->getCustomer()->getBonus()) { ?>
+			<tr>
+			<td class="text-left" colspan="4">
+					<strong>
+						<?=$this->trans->get('Ваши бонусы'); ?>:
+					</strong>
+				</td>
+				<td></td>
+			<td  class="text-right" >
+					<strong class="val_bonus">
+						<?=$this->ws->getCustomer()->getBonus()?> грн
+					</strong>
+					<div class="b_l" style="display: inline-flex;">
+					<label class="ckbox" for="ck_bonus" >
+						<input type="checkbox" name="bonus" id="ck_bonus" class="bonus_click" value="1"  <?php
+							if ($this->ws->getCustomer()->getBonus() <= 0) { echo 'disabled="disabled"';}?>/>
+							<span> <?=$this->trans->get('Использовать бонус')?></span>
+							</label>
+							</div>
+				</td>
+			</tr>					
+			<?php }?>
 			<?php if ($this->ws->getCustomer()->getDeposit()) { ?>
 			<tr>
 			<td class="text-left" colspan="4">
@@ -278,7 +318,7 @@ echo $c_al;
 				</td>
 				<td class="text-right" colspan="2">
 						<input type="checkbox" name="deposit" class="deposit_click" value="1" style="margin: 0;vertical-align: middle;" <?php
-							if ($this->ws->getCustomer()->getDeposit() < 0) { echo 'disabled="disabled"';}?>/>
+							if ($this->ws->getCustomer()->getDeposit() <= 0) { echo 'disabled="disabled"';}?>/>
 				</td>
 			</tr>
 									
@@ -391,6 +431,48 @@ location.replace("/basket/?kupon="+$('#kupon').val());
 										$('.val_sum').html(real_sum);
 									}
 								});
+								
+								$('.bonus_click').change(function () {
+								var real_bonus = $('.val_bonus').html();
+								var real_sum = $('.val_sum').html();
+								
+									//if (prop('checked'))
+									if($(this).is(":checked")){
+										d = $('.val_bonus').html();
+										d = d.replace(',', ".");
+										d = parseFloat(d);
+										s = $('.val_sum').html();
+										s = s.replace(',', ".");
+										s = parseFloat(s);
+										depos = d - s;
+										if (depos < 0) depos = 0;
+										sum = s - d;
+										if (sum < 0) sum = 0;
+										depos = depos.toFixed(2);
+										sum = sum.toFixed(2);
+										$('#dop_s').html('(без учета дополнительных скидок и доставки)');
+										//$('.val_bonus').html(depos.replace('.', ','));
+										$('.val_sum').html(sum.replace('.', ','));
+
+									}else{
+									$('#dop_s').html('');
+											s = $('.val_sum').html();
+										s = s.replace(',', ".");
+										s = parseFloat(s);
+										d = $('.val_bonus').html();
+										d = d.replace(',', ".");
+										d = parseFloat(d);
+										
+										//$('.val_bonus').html(d);
+										var sd =(s+d);
+										sd = sd.toString();
+										console.log(sd);
+										sd = sd.replace('.', ",");
+										$('.val_sum').html(sd);
+									}
+									console.log(real_sum);
+								});
+								
 <?php
 								if (isset($_SESSION['deposit']) and false) {
 ?>

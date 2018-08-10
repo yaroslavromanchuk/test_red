@@ -9,16 +9,12 @@
 	</div>
 </div>
 </div>
-<?php
-echo '<ul class="row articles-row">';
-foreach($this->articles as $article)
-{
+<ul class="row articles-row">
+<?php foreach($this->articles as $article){
     $article->getSpecNakl();
     echo $article->getSmallBlockCachedHtml();
-}
-echo '</ul>';
-?>
-
+} ?>
+</ul>
 <div class="col-xs-12" style="text-align: center;padding-top: 10px;">
             <input type="hidden" class="items_on_page" name="items_on_page" value="<?php echo $_SESSION['items_on_page'] ? $_SESSION['items_on_page']:32; ?>" />
 
