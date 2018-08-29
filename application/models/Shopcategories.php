@@ -4,7 +4,7 @@ class Shopcategories extends wsActiveRecord
 	protected $_table = 'ws_categories';
 	protected $_orderby = array('sequence'=>'ASC');
 
-	protected $_multilang = array('name' => 'name');
+	protected $_multilang = array('name' => 'name', 'title'=>'title', 'description'=>'description', 'footer'=>'footer', 'h1'=>'h1');
 									
 	protected function _defineRelations()
 	{	
@@ -53,15 +53,15 @@ class Shopcategories extends wsActiveRecord
         $items = array();
         $result = '';
 
-        if (!$items = $this->getParents())
-            return '/category/id/' .$this->getId() .'/'. $this->getUrl() . '/';
+        if (!$this->getParents()) return '/category/id/' .$this->getId() .'/'. $this->getUrl() . '/';
 
-        foreach ($items as $item)
-            $result .= '/' . $item->getUrl();
+        foreach ($this->getParents() as $item){
+		$result .= $item->getUrl().'/';
+		}
 
-        $result .= '/' . $this->getUrl() . '/';
+        $result .= $this->getUrl() . '/';
 
-		return '/category/id/' .$this->getId(). $result;
+		return '/category/id/' .$this->getId().'/'. $result;
     }
 	
 	/*
@@ -110,6 +110,7 @@ class Shopcategories extends wsActiveRecord
 
         return $this->_parents;
     }
+
     
     public function getRoute($links = 1)
     {

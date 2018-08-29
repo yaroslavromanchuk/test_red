@@ -236,7 +236,7 @@ class Finder extends wsActiveRecord
         $array = array();
         foreach ($categories as $cat) {
 		
-            if (in_array($category_id, array(106, 85, 299, 300, 301, 302, 303, 11))){
+            if (in_array($category_id, array(106, 85, 299, 300, 301, 302, 303, 11, 267))){
 			
               //  $array[$cat->category_id]['id'] = $cat->category_id;
 				//$array[$cat->category_id]['name'] =$cat->category->getName();
@@ -268,8 +268,7 @@ class Finder extends wsActiveRecord
 		//$array = array();
 		//sort($array);
 		//d($array, true);
-		
-		
+		if(count($array) > 0) $array = Finder::multisort($array, 'parent');
         $categories = $array;
 
         //Colors
@@ -388,6 +387,19 @@ class Finder extends wsActiveRecord
         //die($where);
         return $result;
     }
+	public function multisort($array, $index) 
+    { 
+    for($i = 0; $i < count($array); $i++) 
+    { 
+    $el_arr = $array[$i][$index];
+    $new_arr[] = $el_arr; 
+    } 
+    asort($new_arr); 
+    $keys = array_keys($new_arr); 
+    for($key=0; $key<count($keys); $key++) 
+    $result[] = $array[$keys[$key]]; 
+    return $result; 
+    } 
 	
 			
 }

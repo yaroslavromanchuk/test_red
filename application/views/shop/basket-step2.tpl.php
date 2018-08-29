@@ -465,7 +465,7 @@ if(true){
 				</div>
 			</div>
 		</div>
-<p  class="alert alert-danger m_type" ><span style="font-size:  18px;font-weight:  bold;">Обратите внимание!</span><br>C 01.06.2018 для получения заказа в пункте самовывоза, его нужно оплатить в полном размере. За дополнительной информацией обращайтесь в Колл.центр (044) 224-40-00</p>
+<p  class="alert alert-danger m_type" ><span style="font-size:  18px;font-weight:  bold;">Обратите внимание!</span><br>C 01.06.2018 для получения заказа в пункте самовывоза, его нужно оплатить в полном размере(онлайн при оформлении или в самом пункте самовывоза). За дополнительной информацией обращайтесь в Колл.центр (044) 224-40-00</p>
 <div class="col-xl-12 sv only_sv" id="pobedy" style="<?php if ($this->basket_contacts['delivery_type_id'] != 3) echo 'display: none;'; ?> " >
 			<div class="panel panel-default sv only_sv">
 				<div class="row panel-body" style="background: white;">

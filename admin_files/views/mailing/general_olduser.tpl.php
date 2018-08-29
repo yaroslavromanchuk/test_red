@@ -6,7 +6,7 @@
 <hr/>
 <?php echo $this->getCurMenu()->getPageBody(); ?>
 <p>Рассылка будет
-    отправлена <?php $cc = wsActiveRecord::useStatic('Customer')->count(array('time_zone_id' => 5)); echo $cc;?>
+    отправлена <?php $cc = wsActiveRecord::useStatic('Customer')->count(array('time_zone_id' => 7)); echo $cc;?>
     подписчикам.</p>
 <input type="hidden" id="all_subject" name="all_subject" value="<?=$cc?>"/>   
 <?php if ($this->errors) { ?>
@@ -97,7 +97,9 @@ $( document ).ready(function() {
             <td class="kolom1">Ссылка для статистики<br/>
             	https://www.red.ua/?</td>
             <td><input name="extra_url" type="text" class="formfields" id="paginatitle"
-                       value="<?=@$this->post->extra_url ? $this->post->extra_url : 'utm_source=return_user_email_'.date('d.m.Y').'&utm_medium=email&utm_content=return_user_email&utm_campaign=return_user_email'; ?>"/></td>
+                       value="<?=@$this->post->extra_url ? $this->post->extra_url : 'utm_source=deposit_email_'.date('d.m.Y').'&utm_medium=email&utm_content=DepositSubscriber&utm_campaign=DepositSubscriber'; ?>"/>
+					   <input name="unsubscribe" hidden type="text" 
+                       value="<?=@$this->post->unsubscribe ? $this->post->unsubscribe : '&utm_source=unsubscribe_'.date('d.m.Y').'&utm_medium=email&utm_content=DepositSubscriber&utm_campaign=DepositSubscriber'?>"/></td>
         </tr>        
         <tr>
             <td class="kolom1">Баннеры и текст вначале<br><br>(размер изображения по ширине нужно устанавливать = 700)<br><br>(ссылки должны начинаться c http:// <br> все относительные ссылки будут идти от домена red.ua)</td>

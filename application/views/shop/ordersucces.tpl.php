@@ -81,7 +81,7 @@ if (isset($_COOKIE["SAuid"]) && isset($_COOKIE["utm_source"]) && $_COOKIE["utm_s
 <tr style="text-align: left;"><td style=" padding: 10px;"><?=$this->trans->get('Стоимость доставки')?>:</td><td style=" padding: 10px;"><?php if($order->delivery_type_id == 8 || $order->delivery_type_id == 16){ echo "По тарифам</br>Новой Почты.";}else{ echo $order->delivery_cost." грн.";}?></td></tr>			
 <tr style="text-align: left;"><td style=" padding: 10px;"><?=$this->trans->get('Способ оплаты')?>:</td><td style=" padding: 10px;">
 <?=$order->getPaymentMethod()->getName()?></td></tr>
-<?php if($order->payment_method_id == 7){ ?>
+<?php if($order->payment_method_id == 7 and false){ ?>
 <tr>
 <td colspan="2">
 <?php $data = $order->LiqPay(); ?>

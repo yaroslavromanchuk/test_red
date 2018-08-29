@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html id="html"  xmlns="http://www.w3.org/1999/xhtml" prefix="og: http://ogp.me/ns#" lang="ru" >
+<html id="html"  xmlns="http://www.w3.org/1999/xhtml" prefix="og: http://ogp.me/ns#" lang="<?=Registry::get('lang')?>" >
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <meta name="google-site-verification" content="5KsgGP4-JCTjV0dafIfi5_AI73MIryFuGqLvAgIthAI" />
@@ -9,17 +9,15 @@
     $keywords = '';
     if ($this->getCurMenu()->getMetatagDescription()){
 	$descriptions = $this->getCurMenu()->getMetatagDescription();
-	}elseif ($this->getBlog()){ 
-	$descriptions = 'Блог интернет-магазина одежды RED — о стиле жизни, о моде.';
+	}if($this->getShopItem()) {
+	$descriptions = strip_tags(stripslashes($this->getShopItem()->getModel())) . ' ' . strip_tags(stripslashes($this->getShopItem()->getBrand())) . '. ' . strip_tags(stripslashes($this->getShopItem()->getLongText()));
 	}elseif ($this->getOnepostblog()){ 
 	if($this->onepostblog[0]->description){
 	$descriptions = $this->onepostblog[0]->description;}else{
 	$descriptions = $this->onepostblog[0]->post_name;
 	}
 	}elseif($this->getCategory()){ 
-	$descriptions = strip_tags(stripslashes($this->getCategory()->getName())) . ' ' . strip_tags(stripslashes($this->getCategory()->getDescription()));
-	}elseif ($this->getShopItem()) {
-	$descriptions = strip_tags(stripslashes($this->getShopItem()->getModel())) . ' ' . strip_tags(stripslashes($this->getShopItem()->getBrand())) . '. ' . strip_tags(stripslashes($this->getShopItem()->getLongText()));
+	$descriptions = strip_tags(stripslashes($this->getCategory()->getDescription()));
 	}
 	if ($this->getCurMenu()->getMetatagKeywords()){
 	$keywords = $this->getCurMenu()->getMetatagKeywords();
@@ -44,44 +42,78 @@
 	}else{
 	$view = '/img/logo/logo_red.jpg';
 	}
+	//2702-2018-0827
 if(Registry::get('device') == 'computer' or ($_COOKIE['mobil'] and $_COOKIE['mobil'] == 10)){ $desctop = true; }else{ $desctop = false;}
 	?>
     <meta name="description" content="<?= htmlspecialchars($descriptions); ?>"/>
     <meta name="keywords" content="<?=htmlspecialchars($keywords); ?>"/>
-	<meta  name="image"  content="http://www.red.ua<?=htmlspecialchars($view);?>" />
-	<meta  property="og:image"  content="http://www.red.ua<?=htmlspecialchars($view);?>" />
+	<meta  name="image"  content="https://www.red.ua<?=htmlspecialchars($view);?>" />
+	<meta  property="og:image"  content="https://www.red.ua<?=htmlspecialchars($view);?>" />
 	<?php if($this->getCurMenu()->getNofollow()){ ?>
 	 <meta name="robots" content="noindex, follow"/>
-	<?php }elseif($this->get->controller == 'Account'){?>
+	<?php }elseif($this->get->controller == 'Account'){ ?>
 	<meta name="robots" content="noindex, follow"/>
 	<?php } ?>
     <title>
         <?php
-		if($this->getOnepostblog()){
+		if($this->getShopItem()){
+		$title = $this->getShopItem()->getModel().' '.$this->getShopItem()->getBrand().' '.$this->trans->get('Цвет').' '.$this->getShopItem()->getColorName()->getName().' ';
+		echo $title.$this->trans->get('Цена').' '.$this->getShopItem()->getPriceSkidka().' грн. - '.Config::findByCode('website_title')->getValue();
+		}elseif($this->getOnepostblog()){
 		$title = $this->onepostblog[0]->post_name;
-		echo $title ? $title : Config::findByCode('website_name')->getValue();
+		echo $title?$title.' - '.Config::findByCode('website_name')->getValue():Config::findByCode('website_name')->getValue();
+		}elseif($this->getCategory()){
+		if(@$this->getCategory()->getTitle()){
+		if(!$this->getCategory()->getParent(1)){
+		echo $this->getCategory()->getTitle().' - '.$this->trans->get('купить в интернет магазине RED');
+		}else{
+		$price= ' ';
+		if(@$this->price_min and @$this->price_max) $price= ', '.$this->trans->get('цена').' '.(int)$this->price_min.' - '.(int)$this->price_max.' грн.';
+		echo $this->getCategory()->getTitle().' '.$this->trans->get('в Украине').': '.$this->trans->get('купить').$price.' '.$this->getCategory()->getParent(1)->getTitle().' '.Config::findByCode('website_title')->getValue();
+		}
+		}else{
+		echo $this->getCurMenu()->getTitle().' - '.Config::findByCode('website_title')->getValue();
+		}
+		} elseif ($this->getBlog()){
+		echo $this->getCurMenu()->getPageTitle().' - '.Config::findByCode('website_name')->getValue();
+		
 		}else{
 		$title = $this->getCurMenu()->getTitle();
-		echo $title ? $title . ' - ' . Config::findByCode('website_name')->getValue() : Config::findByCode('website_name')->getValue();
+		echo $title?$title.' - '.Config::findByCode('website_name')->getValue():Config::findByCode('website_name')->getValue();
 		} ?>
-    </title>    
+    </title>  
+	
+	<?php if($this->ws->getCustomer()->getId() == 8005){
+	//echo $this->getCategory()->getParent(1)->getTitle();
+	//echo $this->getCategory()->getRoutezGolovna();
+	//echo print_r($this->getCurMenu());
+	//d(,false);
+	//echo $_SERVER['REQUEST_URI'];
+	//echo $this->getCurMenu()->getPath();
+	//echo $this->getCurMenu()->getUrl();
+	//echo '<pre>';
+	//echo print_r($this->getCategory()->getParent(1)->getTitle());
+	//echo '</pre>';
+	} ?>
+	
+		<link rel="alternate" hreflang="ru-UA" href="https://www.red.ua/ru<?=$_SERVER['REQUEST_URI']?>" />
+		<link rel="alternate" hreflang="uk-UA" href="https://www.red.ua/uk<?=$_SERVER['REQUEST_URI']?>" />
 		<link  rel="shortcut icon" href="/favicon.ico"/>
 		<link href="/js/slider-fhd/slick.css" rel="stylesheet" type="text/css" />
 		<link href="/js/slider-fhd/slick-theme.css" rel="stylesheet" type="text/css" />
         
 		<?php if($desctop == true){ ?>
 		<link rel="stylesheet" type="text/css" href="/css/bs/css/bootstrap.css?v=1.0"/>
-		<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.8"/>
+		<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.0"/>
 		<?php }else{ ?>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
 		<link rel="stylesheet" type="text/css" href="/css/bs/css/bootstrap.css?v=1.1"/>
-		<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.8"/>
-		<link rel="stylesheet" type="text/css" href="/css/common.css?v=1.9"/>
+		<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.0"/>
+		<link rel="stylesheet" type="text/css" href="/css/common.css?v=2.0"/>
 	<?php } ?>	
 		
 		<link rel="stylesheet" type="text/css" href="/js/select2/css/select2.min.css?v=1.0"/>
 		<link rel="stylesheet" type="text/css" href="/css/new.css?v=1.0"/>
-		<!--<link rel="stylesheet" type="text/css" href="/css/soc.css"/>-->
 		<link rel="stylesheet" type="text/css" href="/css/cloud-zoom.css"/>
 		<link rel="stylesheet" type="text/css" href="/css/jquery.lightbox-0.5.css" media="screen"/>		
 		
@@ -89,10 +121,7 @@ if(Registry::get('device') == 'computer' or ($_COOKIE['mobil'] and $_COOKIE['mob
 	
 				 
     <?php if (false) { ?>
-        <script  type="text/javascript"
-                src="http://maps.google.com/maps?file=api&amp;v=2.x&amp;key=<?=Config::findByCode('google_map_api')->getValue();?>"
-                type="text/javascript">
-				</script>
+        <script src="http://maps.google.com/maps?file=api&amp;v=2.x&amp;key=<?=Config::findByCode('google_map_api')->getValue();?>"></script>
     <?php } ?>
 	<!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -127,7 +156,26 @@ echo $this->cached_topcategories;
 		</nav>
 	</div>
 <div class="clearfix"></div>
-<div class="row column-1"> </div>		
+<div class="row column-1">
+<div class="col-lg-12 text-center"><?php 
+	if (@$this->getShopItem()){
+	
+	 echo '<h1 class="text-dark">'.$title.'</h1>'; 
+ 
+} elseif ($this->getCurMenu()->getUrl() == 'category' and @$this->getCategory()){
+
+ echo '<h1 class="text-dark">'.$this->getCategory()->getTitle().'</h1>';
+ 
+ } elseif ($this->getBlog()){
+ echo '<h1 class="text-dark">'.$this->getCurMenu()->getPageTitle().'</h1>';
+ } elseif ($this->getOnepostblog()){
+ 
+	echo '<h1 class="text-dark">'.$this->onepostblog[0]->post_name.'</h1>';
+ 
+ }
+ ?>
+</div>
+</div>		
 <div class="row column-2">
 <div class="content-box p-1">
 <?php
@@ -135,7 +183,16 @@ $list_id = '';
  echo $this->getContent(); ?>
 </div>
 </div>
-        <?php if(trim($this->getCurMenu()->getUrl()) =='basket'){
+
+<div class="row column-3">
+<hr>
+<?php if($this->getCurMenu()->getUrl() == 'category' and $this->getCategory() and $this->getCategory()->getFooter()){ ?>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 p-3 "  >
+<div class="caregory_footer bg-white p-3 text-secondary" style="font-size:12px;">
+<?=$this->getCategory()->getFooter()?>
+</div>
+</div>
+        <?php }elseif(trim($this->getCurMenu()->getUrl()) == 'basket'){
 					$price_basket_hist = $this->trans->get('Цена');
 					$mas_b = array();
 					foreach ($_SESSION['basket'] as $k => $v){
@@ -143,7 +200,6 @@ $list_id = '';
 					}
 					$mass = array();
 if($this->history){ ?>
- <div class="row column-3">
 <div class="block-title py-4 w-100">
 	<div class="vc_separator    vc_sep_pos_align_center vc_sep_color_black double-bordered-thick ">
 	<span class="vc_sep_holder vc_sep_holder_l"><span class="vc_sep_line"></span></span>
@@ -155,7 +211,7 @@ if($this->history){ ?>
                     <?php
 					$i=0; 
 					foreach ($this->history as $v) {
-					if(in_array($v->id, $mas_b)) break;
+					if(in_array($v->id, $mas_b)) continue;
 
 					?>
 			<div class="top_articles_item col-xs-12 col-sm-6 col-md-3" >
@@ -174,7 +230,6 @@ if($this->history){ ?>
                     if($i == 15) break;
 					} ?>
 					</div>
-					</div>
  
  <?php
 }elseif(count($_SESSION['hist']) > 0){
@@ -186,7 +241,6 @@ krsort($mass);
 
 
 if(count($mass) > 0){ ?>
-<div class="row column-3">
 <div class="block-title py-4 w-100">
 	<div class="vc_separator    vc_sep_pos_align_center vc_sep_color_black double-bordered-thick ">
 	<span class="vc_sep_holder vc_sep_holder_l"><span class="vc_sep_line"></span></span>
@@ -218,19 +272,16 @@ if(count($mass) > 0){ ?>
                     if($i == 15) break;
 					} ?>
 					</div>
-					</div>
+
 					<?php }
 
 					}?>
 					
 					
-					<?php }?>	
-<!--похожее товары-->
-<?php if(trim($this->getCurMenu()->getUrl()) == 'product'){
-
+					<?php } elseif (trim($this->getCurMenu()->getUrl()) == 'product'){
 $articles_query1 = '
 SELECT * FROM ws_articles WHERE
-ws_articles.`stock` >0
+ws_articles.`stock` not like "0"
 AND  (ws_articles.`model` =  "'.$this->getShopItem()->getModel().'" or ws_articles.`model_uk` =  "'.$this->getShopItem()->getModel().'")
 AND  ws_articles.`category_id` ='.$this->getShopItem()->getCategoryId().'
 AND   ws_articles.id != '.$this->getShopItem()->getId().'
@@ -271,6 +322,7 @@ if ($block->getId()) {
 
 <?php } ?>
 <!--/похожее товары-->
+</div>
 <div class="clearfix"></div>
 <?php if(trim($this->getCurMenu()->getUrl()) == 'product'){ ?>
 <script>
@@ -389,7 +441,7 @@ nextArrow: '<img src="#" style="background-image:url(/img/slider/p-n-b.png);"  d
 });
 
 </script>
-<script  src="/js/engine.js?v=1.3"></script>
+<script  src="/js/engine.js?v=1.9"></script>
 <script   src="/js/jquery.liFixar.js"></script>
     <script src="/js/functions.js?v=1.3"></script>
     <script   src="/js/cloud-zoom.1.0.2.js"></script>

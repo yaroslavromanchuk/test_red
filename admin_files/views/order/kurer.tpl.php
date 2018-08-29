@@ -323,6 +323,7 @@ $min_sum_bonus = Config::findByCode('min_sum_bonus')->getValue();
     <div style='page-break-after: always;'></div>
 	
 	<?php } ?>
+	
 	 <table border="0" cellpadding="3" cellspacing="0" width="700" >
     <tr>
         <td colspan="10" class="tt_border_bottom">
@@ -433,6 +434,7 @@ foreach ($this->getOrder()->getArticles() as $main_key => $article_rec) {
 	</td></tr>
 	</table>
 	<div style='page-break-after: always;'></div>
+	
 </body>
 </html>
 <script>

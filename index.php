@@ -18,8 +18,8 @@ require_once('MobileDetect/Mobile_Detect.php');
 Zend_Loader::registerAutoload();
 //spl_autoload_register(array('Zend_Loader', 'autoload'));
 
-$timer = new DebugTimer(4);
-Registry::set('SQLLogger', SQLLogger::getInstance());
+//$timer = new DebugTimer(4);
+//Registry::set('SQLLogger', SQLLogger::getInstance());
 
 header('Content-type: text/html; charset=UTF-8');
 header('Cache-control: private');
@@ -288,9 +288,9 @@ if($website->getCustomer()->getId() == 8005){
         //echo Registry::get('obj');
 
 		//echo '<pre>';
-		//print_r($_SESSION['basket']);
+		//print_r($_SESSION);
 		//echo count($_SESSION['basket']);
-		//echo '</pre>';
+	//echo '</pre>';
 
     }
 	

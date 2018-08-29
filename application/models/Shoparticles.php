@@ -14,7 +14,7 @@ class Shoparticles extends wsActiveRecord
             'type' => 'hasOne',
             'class' => self::$_shop_categories_class,
             'field' => 'category_id'),
-        'color' => array(
+        'color_name' => array(
                 'type' => 'hasOne',
                 'class' => 'Shoparticlescolor',
                 'field' => 'color_id'),
@@ -323,7 +323,7 @@ class Shoparticles extends wsActiveRecord
         return $tmp;
     }
 
-    public function addToBasket($count, $size, $color, $option_id = 0, $flag = 0, $art){
+    public function addToBasket($count, $size, $color, $option_id = 0, $flag = 0, $art, $skidka_block = 0){
 
         if (!$count || strcasecmp($this->getActive(), 'y') != 0) return false;
 		
@@ -352,11 +352,12 @@ class Shoparticles extends wsActiveRecord
                 'price' => $this->getRealPrice(),
                 'count' => $count,
                 'option_id' => $option_id,
-                'option_price' => ($option_id == 0) ? 0 : 0.01,
+                'option_price' => 0,
                 'size' => $size,
                 'color' => $color,
 				'artikul' => $art,
 				'category' =>$this->getCategoryId(),
+				'skidka_block' =>$skidka_block,
             );
             $was_added = true;
         }
@@ -455,40 +456,38 @@ class Shoparticles extends wsActiveRecord
         $price = $this->getPrice() * $count;
 		$coment = '';
 		$pr_skidka = 0;
+		
+	/*	if('2018-08-23' <= date('Y-m-d') and date('Y-m-d') <= '2018-08-26' and $this->sezon == 1){
+	$mas['minus'] = $price * 0.27;
+	$mas['price'] = ($price - $mas['minus']);
+	$mas['option_id'] = 7;
+	$mas['option_price'] = $mas['price'];
+	$mas['comment'] = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">Дополнительная скидка на весь летний товар - 27%<br> в честь Дня независимости Украины.</div>';
+		return $mas;
+		}
+		
+		if ((int)$this->getOldPrice() == 0 and date('Y-m-d') <= '2018-08-22' and false) {
+		 $mas['minus'] = $price * 0.2;
+			 $mas['price'] = ($price - $mas['minus']);//round(, 2)
+			 $mas['option_id'] = 6;
+			$mas['option_price'] = $mas['price'];
+			$mas['comment'] = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">Скидка 20% на новый товар по условиям акции.</div>';
+		return $mas;
+		}*/
+		
 		 
 		if (!$this->getSkidkaBlock()) {
-		if('2018-08-11' <= date("Y-m-d") and date("Y-m-d") <= '2018-08-12' and $this->getUcenka() < 50){
-		 if ((int)$this->getOldPrice() == 0) {
-		 $minus = (($price / 100) * 20);
-         $price -= $minus;
-		$pr_skidka +=20;
-		 $coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">Действует скидка 20%, только на этих выходных</div>';
-		 }else{
-		 $minus = (($price / 100) * 10);
-         $price -= $minus;
-		$pr_skidka +=10;
-		 $coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">Действует скидка  10%, только на этих выходных</div>';
-		 }
-		$mas['price'] = $price; 
-        $mas['minus'] = $minus;
-		$mas['option_id'] = 3;
-		$mas['option_price'] = $price;
-		$mas['comment'] = $coment;
-		$mas['skidka'] = $pr_skidka;
 		
-        return $mas;
-		 
-		}
-
 		$s = 0;
 		 if ($event_skidka != 0) {
 		  $s = (int)$event_skidka;
 			if($s == 99){// 1+1=3
 			 $mas['minus'] = $price - 0.01;
 			 $mas['price'] = 0.01; //($price - $minus);//round(, 2)
-			 $mas['option_id'] = 1;
+			 $mas['option_id'] = 4;
 			$mas['option_price'] = 0.01;
 			$pr_skidka += 99;
+			$mas['comment'] = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">Вы получаете этот товар за 1 копейку.</div>';
 			$mas['skidka'] = $pr_skidka;
        
 			return $mas;
@@ -519,16 +518,18 @@ class Shoparticles extends wsActiveRecord
 	}
 	}
 		
-		$c = Skidki::getActivCat($this->getCategoryId());
+		$c = 0;
+		
+		$cat = Skidki::getActivCat($this->getCategoryId());
 		$a = Skidki::getActiv($this->getId());
-		if($c){
-		$c = $c->getValue();
+		if($cat){
+		$c += $cat->getValue();
 		//$minus = (($price / 100) * ($c->getValue()));
         //$price -= $minus;
 		 //$pr_skidka += $c->getValue();
 		}
 		
-		if($a){
+		if($a and false){
 		$minus = (($price / 100) * $a->getValue());
         $price -= $minus;
 		$coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка -50% НА ШЛЕПКИ.</div>';
@@ -634,6 +635,8 @@ class Shoparticles extends wsActiveRecord
 				
         }
 			
+		}else{
+		$mas['skidka_block'] = 1;
 		}
         $mas['price'] = $price; 
         $mas['minus'] = $minus;
@@ -745,18 +748,31 @@ class Shoparticles extends wsActiveRecord
 	   }
 	   return true;
 	   }
+	   	 $item_time = strtotime($this->getCtime());
+        $day = (time() - $item_time) / (24 * 60 * 60);
+		//$day = date("Y-m-d", strtotime("- 6 days", strtotime($this->getDataNew())));
+        if ($day <= 5 and $this->getOldPrice() == 0){
+		if($this->getLabelId() != 13){
+                $this->setLabelId(13);
+                $this->save();
+                $this->getSmallBlockCachedHtml(true);
+				}
+				return true;
+        }
+		
 	   if ($this->getLabelId() != 19) {
             $day = date('Y-m-d', (strtotime($this->getCtime()) + (24 * 60 * 60)));
             if ($day == date('Y-m-d')) {
                 $q = 'SELECT SUM(ws_order_articles.count) as counti FROM ws_order_articles
                JOIN ws_orders ON ws_orders.id = ws_order_articles.order_id
                WHERE ws_order_articles.article_id = ' . $this->getId() . ' AND ws_orders.date_create > "' . $day . ' 00:00:00" AND ws_orders.date_create < "' . $day . ' 23:59:59"';
-                $res = wsActiveRecord::useStatic('Shoporderarticles')->findByQuery($q);
-                $count = @$res->at(0)->counti;
+                $res = wsActiveRecord::useStatic('Shoporderarticles')->findByQueryArray($q)[0]->counti;
+                $count = @$res;//->at(0)->counti;
                 if ($count > 4) {
                     $this->setLabelId(19);
                     $this->save();
                     $this->getSmallBlockCachedHtml(true);
+					return true;
                 }
             }
         }
@@ -772,8 +788,8 @@ class Shoparticles extends wsActiveRecord
         if ($this->getLabelId() != 18 and $this->getLabelId() != 20) {
             $q = 'SELECT SUM(ws_articles_sizes.count) as counti FROM ws_articles_sizes
                     WHERE ws_articles_sizes.id_article =' . $this->getId();
-            $res = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery($q);
-            $count = @$res->at(0)->counti;
+            $res = wsActiveRecord::useStatic('Shoparticlessize')->findByQueryArray($q)[0]->counti;
+            $count = @$res;//->at(0)->counti;
             if ($count == 1) {
                 $cat_par = $this->category->getParents(1);
                 $find = 0;
@@ -789,37 +805,23 @@ class Shoparticles extends wsActiveRecord
                 }
                 $this->save();
                 $this->getSmallBlockCachedHtml(true);
+				return true;
 
             }
         }elseif($this->getLabelId() == 18 or $this->getLabelId() == 20){
 		$q = 'SELECT SUM(ws_articles_sizes.count) as counti FROM ws_articles_sizes
                     WHERE ws_articles_sizes.id_article =' . $this->getId();
-            $res = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery($q);
-            $count = @$res->at(0)->counti;
+            $res = wsActiveRecord::useStatic('Shoparticlessize')->findByQueryArray($q)[0]->counti;
+            $count = @$res;//->at(0)->counti;
 			if ($count != 1) {
 			$this->setLabelId(null);
 			$this->save();
                 $this->getSmallBlockCachedHtml(true);
-			
+			return true;
 			}
 		
 		}
-		 $item_time = strtotime($this->getCtime());
-        $day = (time() - $item_time) / (24 * 60 * 60);
-		//$day = date("Y-m-d", strtotime("- 6 days", strtotime($this->getDataNew())));
-        if ($day < 7 and $this->getOldPrice() == 0 and $this->getLabelId() != 13 and $this->getLabelId() != 18 and $this->getLabelId() != 20){
-                $this->setLabelId(13);
-                $this->save();
-                $this->getSmallBlockCachedHtml(true);
-        }/* else {
-            if ($this->getLabelId() == 13) {
-                $this->setLabelId(null);
-                $this->save();
-                $this->getSmallBlockCachedHtml(true);
-            }
-        }*/
-		
-
+	
     }
 
     public function getCountByDate($from, $to)

@@ -64,9 +64,9 @@ $cats = wsActiveRecord::useStatic('Shopcategories')->findAll(array('parent_id' =
 		$color='';
 			//if($this->get->id == $category->getId()) $color='style="color:#e40413;"';
 $sub_cats = wsActiveRecord::useStatic('Shopcategories')->findAll(array('parent_id' => $category->getId(), 'active' => 1), array('name'=>'ASC'));
-	if($category->getId() == 267){
-echo '<li class=" menu-item-has-children menu-item-has-mega-menu" ><a href="/category/id/" '.$color.' class="menu-item-span"><span class="menu-item-span">'.$category->getName().'</span></a>';
-			}else if($category->getId() == 11){ // vse tovary
+	if($category->getId() == 267 and false){ // vse tovary
+echo '<li class=" menu-item-has-children menu-item-has-mega-menu" ><a href="'.$category->getPath().'" '.$color.' class="menu-item-span"><span class="menu-item-span">'.$category->getName().'</span></a>';
+			}else if($category->getId() == 11){
 			$color = 'style="color:red;"';
 			echo '<li class=" menu-item-has-children menu-item-has-mega-menu"><a href="'.$category->getPath().'" '.$color.' class="menu-item-span"><span class="menu-item-span">'.$category->getName().'</span></a>';
 			}else{

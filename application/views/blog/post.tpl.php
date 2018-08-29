@@ -5,7 +5,7 @@ $desctop = true;
 $desctop = false;
 }
  ?>
-<script type="text/javascript">
+<script>
 $(function(){
 $(".zxz_post p img").each(function() {
 var img = this;
@@ -30,7 +30,7 @@ $(".zxz_post p a.im").lightBox({
 
 </script>
 <div class="row mx-0">
-<div class="col-lg-2 col-xl-2 d-none d-lg-block d-xl-block">
+<div class="col-lg-2 col-xl-2 d-none d-lg-block d-xl-block bg-white">
 <?php 
 		$d = date("Y-m-d H:i:s");
 		$post = wsActiveRecord::useStatic('Blog')->findAll(array("public"=>1, "ctime < '$d'"), array(), array(10));
@@ -49,7 +49,7 @@ $(".zxz_post p a.im").lightBox({
 		<?php } ?>
 				</ul>
 			</div>
-<div class="col-md-12 col-lg-8 col-xl-8">
+<div class="col-md-12 col-lg-8 col-xl-8 ">
 	<div class="col-xs-12 col-md-12 col-xl-12 text-center m">
 		<div class="btn-group" role="group" aria-label="Basic example">
 		<?php foreach ($this->blog_cat as $value) { ?>
@@ -57,9 +57,8 @@ $(".zxz_post p a.im").lightBox({
 		<?php } ?>
 		</div>
 	</div>
-	<div class="col-md-12 px-1">
+	<div class="col-md-12 p-2 m-1 bg-white">
 		<?php foreach ($this->onepostblog as $value) { ?>
-			<h2 style="font-size: 2rem;"><a href="<?=$value->getPath(); ?>"><?=$value->getPostName();?></a></h2>
 			<div class="col-md-12 m-2">
 				<span style="color: darkgrey;font-size: 12px;margin-left: 1%;margin-right: 1%;"><?=$value->getUtime();?></span>|
 				<span style="color: darkgrey;font-size: 12px;margin-left: 1%;margin-right: 1%;"><?=$value->getAutor();?></span>
@@ -71,7 +70,7 @@ $(".zxz_post p a.im").lightBox({
 			<?php } ?>
 	</div>
 </div>			
-<div class="col-lg-2 col-xl-2 d-none d-lg-block d-xl-block">
+<div class="col-lg-2 col-xl-2 d-none d-lg-block d-xl-block bg-white">
 <p style="font-weight: bold;text-align: center;margin-top: 5px;">FASHION RADIO</p>
 	<div style="text-align: center;">
 	<img src="/images/ofr_btn2.png" style="cursor: pointer; width: 100px;" onclick="window.open('http://ofr.fm/air/','','toolbar=no, location=no, scrollbars=no, resizable=no, top=100, left=100, width=360, height=593'); return false;" >

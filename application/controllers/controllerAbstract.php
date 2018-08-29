@@ -99,7 +99,7 @@ abstract class controllerAbstract extends Controller
 		*/
 		//top menu 2
         $cache_name = 'topcategories_3_'.$_SESSION['lang'];
-      $topcategories = $cache->load($cache_name);// меню навигации
+    //  $topcategories = $cache->load($cache_name);// меню навигации
         if (!$topcategories) { //если сломалось пищещь сюда TRUE // верхнее меню
             $topcategories = $this->view->render('/cache/topcategories.tpl.php');
             $cache->save($topcategories, $cache_name, array($cache_name), false);
@@ -128,7 +128,6 @@ abstract class controllerAbstract extends Controller
 		
 		
 			   if($this->ws->getCustomer()->getId()){ 
-		//$history =  array();
 		$sql = "SELECT  `ws_articles`. * 
 FROM  `ws_articles` 
 INNER JOIN  `ws_articles_history` ON  `ws_articles`.`id` =  `ws_articles_history`.`article_id` 
@@ -136,11 +135,7 @@ WHERE  `ws_articles_history`.`customer_id` =".$this->ws->getCustomer()->getId().
 AND ws_articles.`stock`  not like '0'
 GROUP BY  `ws_articles`.`id` 
 ORDER BY  `ws_articles_history`.`id` DESC 
-LIMIT 5";
-	
-		//	foreach(wsActiveRecord::useStatic('Shoparticleshistory')->findByQuery($sql) as $s){
-			//$history[] = $s->getArticleId();
-		//	}
+LIMIT 6";
 			$this->view->history = wsActiveRecord::useStatic('Shoparticles')->findByQuery($sql);
 		}
 		

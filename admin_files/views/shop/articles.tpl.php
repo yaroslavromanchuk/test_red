@@ -55,10 +55,18 @@ if(strripos($value, 'SALE') === FALSE){
 			?>
 			<option value="<?=$kay?>"<?php if ($this->cur_category and $kay == $this->cur_category->getId()) echo "selected";?>><?=$value?></option>
 			<?php } } ?>
-		</select>
+		</select><br><input type="checkbox" name="whith_kids" id="whith_kids" value="1" <?php if ($_GET['whith_kids'] == 1) { ?>checked="checked"<?php } ?> />
+		<label for="whith_kids">С подкатегорями</label>
 		</td>
-		<td colspan="2" ><input type="checkbox" name="whith_kids" id="whith_kids" value="1" <?php if ($_GET['whith_kids'] == 1) { ?>checked="checked"<?php } ?> />
-		<label for="whith_kids">С подкатегорями</label></td>
+		<td>Сезон</td>
+		<td><select class="form-control select2" name="sezon">
+				<option value=""></option>
+				<option <?=(@$_GET['sezon'] == 1)?'selected':''?> value="1">Лето</option>
+				<option <?=(@$_GET['sezon'] == 2)?'selected':''?> value="2">Осень-Весна</option>
+				<option <?=(@$_GET['sezon'] == 3)?'selected':''?> value="3">Зима</option>
+				<option <?=(@$_GET['sezon'] == 4)?'selected':''?> value="4">Всесезон</option>
+				<option <?=(@$_GET['sezon'] == 5)?'selected':''?> value="5">Демисезон</option>
+				</select></td>
 	</tr>
 	<tr>
 	<td>Уценка:</td>
@@ -68,11 +76,11 @@ if(strripos($value, 'SALE') === FALSE){
 				<td>Процент %</td>
 				<td><select class="form-control select2" name="proc">
 				<option value="">%</option>
-				<option value="20">20%</option>
-				<option value="30">30%</option>
-				<option value="40">40%</option>
-				<option value="50">50%</option>
-				<option value="60">60%</option>
+				<option <?=(@$_GET['proc'] == 20)?'selected':''?> value="20">20%</option>
+				<option <?=(@$_GET['proc'] == 30)?'selected':''?> value="30">30%</option>
+				<option <?=(@$_GET['proc'] == 40)?'selected':''?> value="40">40%</option>
+				<option <?=(@$_GET['proc'] == 50)?'selected':''?> value="50">50%</option>
+				<option <?=(@$_GET['proc'] == 60)?'selected':''?> value="60">60%</option>
 				</select></td>
 				
 	</tr>
@@ -95,7 +103,7 @@ if(strripos($value, 'SALE') === FALSE){
 		<select class="form-control select2" name="status" data-placeholder="Статус товара">
 				  <option value="">Статус</option>
 		<?php foreach(wsActiveRecord::useStatic('Shoparticlesstatus')->findAll() as $s){ ?>
-               <option value="<?=$s->id?>"><?=$s->name?></option>
+               <option <?=(@$_GET['status'] == $s->id)?'selected':''?> value="<?=$s->id?>"><?=$s->name?></option>
 					<?php } ?>
 		</select>
 		</td>

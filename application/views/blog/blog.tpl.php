@@ -6,9 +6,10 @@ $desctop = true;
 }else{
 $desctop = false;
 }
- echo $this->getCurMenu()->getPageBody();?>
+ //echo $this->getCurMenu()->getPageBody();
+ ?>
 <div class="row mx-0">
-<div class="col-lg-2 col-xl-2 d-none d-lg-block d-xl-block">
+<div class="col-lg-2 col-xl-2 d-none d-lg-block d-xl-block bg-white">
 				<p style="font-weight: bold;text-align: center;margin-top: 5px;"><?=$text_trans_blog[0]?></p>
 				<ul class="list-unstyled">
 		<?php foreach ($this->blog as $item) { ?>
@@ -39,7 +40,7 @@ $desctop = false;
 		width:100%;}
 		</style>
 <?php foreach ($this->blog as $value) { ?>
-		<div class="col-md-12  px-1">
+		<div class="col-md-12  m-1 p-2 bg-white">
 		<h2 style="font-size: 2rem;"><a href="<?=$value->getPath(); ?>"><?=$value->getPostName();?></a></h2> 
 		<div class="row">
 		<div class="col-md-12 m-2">
@@ -47,27 +48,39 @@ $desctop = false;
 				<span style="color: darkgrey;font-size: 12px;margin-left: 1%;margin-right: 1%;"><?=$value->getAutor();?></span>
 		</div>
 			<div class="col-md-6 media">
-			<a href="<?=$value->getPath();?>">
+			<a href="<?=$value->getPath()?>">
 			<img src="/storage<?=$value->getImage()?>">
 			</a>
 			</div>
 			<div class="col-md-6">
 			<?=$value->getPreviewPost();?>
-			<a class="btn btn-secondary" href="<?=$value->getPath();?>">
+			<a class="btn btn-secondary" href="<?=$value->getPath()?>">
 				<?=$text_trans_blog[3]?>
 			</a>
 			</div>
 			</div>
-			<hr>
 </div>					
 			<?php	} ?>
+
+</div>
+<div class="col-lg-2 col-xl-2 d-none d-lg-block d-xl-block bg-white text-center">
+<p style="font-weight: bold;margin-top: 5px;">FASHION RADIO</p>
+		<div>
+	<img src="/images/ofr_btn2.png" style="cursor: pointer; width: 100px;" onclick="window.open('http://ofr.fm/air/','','toolbar=no, location=no, scrollbars=no, resizable=no, top=100, left=100, width=360, height=593'); return false;" >
+	</div>
+	<div style="margin-top:10px;" class="fb-like-box" data-href="https://www.facebook.com/pages/RED-UA/148503625241218" data-width="198"
+                 data-height="400" data-show-faces="true" data-stream="false" data-header="true"></div>
+	<iframe id="fr" style="overflow: hidden; height: 100px; width: 198px; border: 0pt none;" src="https://www.youtube.com/subscribe_widget?p=SmartRedShopping"  scrolling="no" frameborder="0"></iframe>
+</div>
+</div>
+
 						<?php 
 
 if ($this->allcount > $this->onpage) {
 ?>
-	<div class="clear"></div>
-	<div style="text-align: center;padding:10px;">
-	<ul style="font-size: 16px;" class="finder_pages">
+<div class="row">
+<div class="col-lg-12 text-center">
+	<ul  class="finder_pages">
 		<?php
 	if ($this->page > 1) {
 ?>
@@ -127,21 +140,11 @@ echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;
 ?>
 	</ul>
 	</div>
-    <div class="clear"></div>
+</div>
 <?php
 }
 ?>
-</div>
-<div class="col-lg-2 col-xl-2 d-none d-lg-block d-xl-block">
-<p style="font-weight: bold;text-align: center;margin-top: 5px;">FASHION RADIO</p>
-		<div style="text-align: center;">
-	<img src="/images/ofr_btn2.png" style="cursor: pointer; width: 100px;" onclick="window.open('http://ofr.fm/air/','','toolbar=no, location=no, scrollbars=no, resizable=no, top=100, left=100, width=360, height=593'); return false;" >
-	</div>
-	<div style="margin-top:10px;" class="fb-like-box" data-href="https://www.facebook.com/pages/RED-UA/148503625241218" data-width="198"
-                 data-height="400" data-show-faces="true" data-stream="false" data-header="true"></div>
-	<iframe id="fr" style="overflow: hidden; height: 100px; width: 198px; border: 0pt none;" src="https://www.youtube.com/subscribe_widget?p=SmartRedShopping"  scrolling="no" frameborder="0"></iframe>
-</div>
-</div>
+
 <script>
 (function(d, s, id) {
                 var js, fjs = d.getElementsByTagName(s)[0];

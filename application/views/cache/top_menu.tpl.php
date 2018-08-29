@@ -114,7 +114,7 @@ $result = explode(',',$this->trans->get('Избранное,В избранно�
 <div class="menu_login">
 	 <?php $des = 0; if (!$this->ws->getCustomer()->getIsLoggedIn()) { ?>
 				<div>
-				<a href="#" role="button" class="nav-link" data-placement="left"  data-tooltip="tooltip"     title="<?=$result[3]?>">
+				<a  role="button" class="nav-link" data-placement="left"  data-tooltip="tooltip"     title="<?=$result[3]?>">
 				<img src="/img/top_menu/sign-input.png" data-toggle="modal" alt="<?=$result[3]?>" data-target="#myModalLogin" >
 				</a>
 					</div>

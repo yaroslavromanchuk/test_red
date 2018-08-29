@@ -734,7 +734,13 @@ echo '<i class="icon ion-ios-close red tx-25 pd-5 history_pay_status" data-place
 	if ($order->getNowaMail() != '0000-00-00 00:00:00' and $order->getDeliveryTypeId() == 8 and strtotime($order->getNowaMail()) <= mktime(0, 0, 0, date("m"), date("d") - 5, date("Y")) and false) echo '<div class="pometka" style="background: #ff9900"></div>';
 	
 	if ($order->getStatus() == 11 and $order->getDelayToPay() and $order->getDelayToPay() != '0000-00-00' and strtotime($order->getDelayToPay()) <= mktime(0, 0, 0, date("m"), date("d") - 5, date("Y"))) echo '<div class="pometka g_op" data-placement="right"  data-tooltip="tooltip" title="Превышено ожидание оплаты" style="background: #ff9900"></div>';
-			?>
+		
+if(/*$this->user->id == 8005*/ true){ ?>
+<i class="icon ion-email tx-30 pd-5 " alt="отправить письмо" onclick="return OrderEmail(<?=$order->getId()?>);" data-id="<?=$order->getId()?>" data-placement="right" title="" data-tooltip="tooltip" data-original-title="Отправить письмо"></i>
+<?php
+}
+		?>
+			
 				</td>
             </tr>
 <?php } ?>
@@ -753,7 +759,35 @@ $('.history_pay_status').click(function (e) {
 var id = e.target.attributes.getNamedItem("data-id").value;
 $.get('/admin/historypaystatus/id/'+id,function (data) {fopen('История изменения статуса оплаты №'+id, data);});	
 });
+function OrderEmail(id) {
+var form ='<div class="form-group"><label for="recipient-name" class="col-form-label">Тема:</label><input type="text" class="form-control" id="email_subject"></div><div class="form-group"><label for="message-text" class="col-form-label">Сообщение:</label><textarea class="form-control" id="mesageemail"></textarea></div>';
+footer = '<button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true">Закрыть</button><button class="btn btn-primary" onclick="return go_email('+id+');" >Отправить</button>';
 
+fopen('Отправка Email по заказу №'+id, form, footer);
+		return false;
+}
+function go_email(e){
+var message = $("#mesageemail").val(); 
+var subject = $("#email_subject").val();
+console.log(e);
+console.log(message);
+
+
+$.ajax({
+			url: '/admin/nowamail/',
+			type: 'POST',
+			dataType: 'json',
+			data: {id: e, metod:'getmail', message: message, subject: subject},
+			success: function (res) {
+				console.log(res);
+				fopen('Отправка Email по заказу №'+e, res.message, '<button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true">Закрыть</button>');
+                },
+				error: function(e){
+				console.log(e);
+				}
+		});
+return false;
+}
 	$('.order_status').change(function () {
 		$.ajax({
 			url: '/admin/shop-orders/edit/id/'+this.form.id.value+'/',

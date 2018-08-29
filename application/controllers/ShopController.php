@@ -12,8 +12,7 @@ class ShopController extends controllerAbstract
 
 	}
 
-	public function categoryAction()
-	{
+	public function categoryAction(){
 		$search_word = $this->get->s;
 
 		if (!$search_word) {
@@ -32,13 +31,75 @@ $search_word = false;
 		$this->cur_menu->name = $category->getRoutez();
 		$this->view->category = $category;
 		$this->view->finder_category = $this->get->id;
-
+		if($this->ws->getCustomer()->getId() == 8005){
+		$this->getfilter($search_word, $this->get->id, $this->get->brands, $this->get->colors, $this->get->sises, $this->get->labels, $this->get->sezons, $this->get->skidka, $this->get->categories, array('price_min'=>$this->get->price_min, 'price_max'=>$this->get->price_max));
+		}else{
 		$this->getsearch($search_word, $this->get->id, $this->get->brands, $this->get->colors, $this->get->sises, $this->get->labels, $this->get->sezons, $this->get->skidka, $this->get->categories);
+		}
 		
 		//unset($this->get[3]);
 		
 		//d($this->get, false);
 
+	}
+	function getfilter($search_word = '', $category = '', $brands = '', $colors = '', $sises = '', $labels = '', $sezons = '', $skidka = '', $categories = '', $price = array())
+	{
+		//$addtional = array();
+		$addtional = array('categories'=>array(), 'colors'=>array(), 'sizes'=>array(), 'labels'=>array(), 'brands'=>array(), 'sezons'=>array(), 'skidka'=>array(), 'price'=>array());
+		
+		//d($price, false);
+		
+		//price
+		if($price['price_min'] != NULL ) $addtional['price']['min'] =  $price['price_min'];  
+		if($price['price_max'] != NULL ) $addtional['price']['max'] =  $price['price_max']; 
+		
+		 //categories
+		$addtional['categories'] = $categories?$categories:$this->post->categories;
+		//brands
+        foreach (explode(',', $brands?$brands:$this->post->brands) as $v){ if (@$v) $addtional['brands'][] =  (int)$v; }
+		
+		//colors
+        foreach (explode(',', $colors?$colors:$this->post->colors) as $v){ if (@$v) $addtional['colors'][] = (int)$v;}
+		
+		//sizes
+        foreach (explode(',', $sises?$sises:$this->post->sizes) as $v){ if (@$v) $addtional['sizes'][] = (int)$v; }
+		
+		//labels
+        foreach (explode(',', $labels?$labels:$this->post->labels) as $v){ if (@$v) $addtional['labels'][] = (int)$v; }
+		
+		//sezons
+        foreach (explode(',', $sezons?$sezons:$this->post->sezons) as $v){ if (@$v)$addtional['sezons'][] = (int)$v; }
+		
+		//skidka
+        foreach (explode(',', $skidka?$skidka:$this->post->skidka) as $v){ if (@$v) $addtional['skidka'][] = (int)$v; }
+		
+
+		//d($addtional, false);
+		$prod_on_page = (int)@$_SESSION['items_on_page'];
+				if (!$prod_on_page) $prod_on_page = Config::findByCode('products_per_page')->getValue();
+
+		$this->view->per_page = $onPage = $prod_on_page;
+		$page = $this->get->page?(int)$this->get->page:0;
+		
+		//d($page, false);
+		$search_result = Filter::getArticlesFilter($search_word, $addtional, $category, $this->get->order_by, $page, $onPage);
+		
+		$this->view->filters = $search_result['parametr'];
+		
+		$this->view->cur_page = $page;
+		
+		$this->view->result_count = $search_result['count'];
+		
+		$this->view->total_pages = $search_result['pages'];
+		
+		$this->view->search_word = $search_word;
+		$this->view->articles = $search_result['articles'];
+		$this->view->result = $this->view->render('finder/list.tpl.php');
+		
+		
+		$this->view->price_min = $search_result['min_max'] ? $search_result['min_max'][0]->min: 0;
+		$this->view->price_max = $search_result['min_max'] ? $search_result['min_max'][0]->max : 1;
+		echo $this->render('finder/result.tpl.php');
 	}
 
 
@@ -189,13 +250,13 @@ $search_word = false;
 				}
 			}
 			if (count($error) == 0) {
-$change = $article->addToBasket(1, (int)@$_POST['size'], (int)@$_POST['color'], (isset($_POST['option']) ? (int)@$_POST['option'] : 0), 0, (isset($_POST['artikul']) ? $_POST['artikul'] : 0));
+$change = $article->addToBasket(1, (int)@$_POST['size'], (int)@$_POST['color'], (isset($_POST['option']) ? (int)@$_POST['option'] : 0), 0, (isset($_POST['artikul']) ? $_POST['artikul'] : 0) , @$_POST['skidka_block']?$_POST['skidka_block']:0);
 				foreach (@$_POST as $key => $value) {
 					$keys = explode('_', $key);
 					if (strcasecmp($keys[0], 'sarticle') == 0 && (int)$value && ($sa = wsActiveRecord::useStatic('Shoparticles')->findById((int)$value)) && $sa->getId())
 						if ($sa->addToBasket(1, (int)$_POST['size'], (int)$_POST['color'], (isset($_POST['soption_' . $keys[1]])
 							? (int)@$_POST['soption_' . $keys[1]] : 0), 0, (isset($_POST['artikul'])
-					? $_POST['artikul'] : 0))
+					? $_POST['artikul'] : 0), @$_POST['skidka_block']?$_POST['skidka_block']:0)
 						)
 							$change = true;
 				}
@@ -454,9 +515,10 @@ $code = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery("SELECT code 
 					'option_price' => $item['option_price'],
 					'size' => $item['size'],
 					'color' => $item['color'],
-					'artikul' => $code,/*$item['artikul']*/
+					'artikul' => $code,
 					'category' => $item['category'],
-					'price' => $article->getRealPrice()
+					'price' => $article->getRealPrice(),
+					'skidka_block' =>@$item['skidka_block']?$item['skidka_block']:0
 					);
 					
 					$real_price = ($item['option_price']>0)?$article->getRealPrice($item['option_price']):$article->getRealPrice();
@@ -637,7 +699,7 @@ public function basketcontactsAction() {
 foreach($or_c as $r){
 $ord.=$r->id.', ';
 }
-					$err_m[] = 'По состоянию на '.date('d.m.Y').', в пункте выдачи интернет-магазина, находятся Ваши неоплаченые заказы № '.$ord.'. В связи с этим, Вам ограничено оформление заказов в пункты самовывоза с оплатой наличными при получении, до оплаты доставленых заказов. Дополнительную информацию Вы можете получить в нашем Call-центре по номеру (044)224-40-00 Пн-Пн с 09:00-18:00.';
+					$err_m[] = 'По состоянию на '.date('d.m.Y').', в пункте выдачи интернет-магазина, находятся Ваши неоплаченные заказы № '.$ord.'. В связи с этим, Вам ограничено оформление заказов в пункты самовывоза с оплатой наличными при получении, до оплаты доставленных заказов. Дополнительную информацию Вы можете получить в нашем Call-центре по номеру (044)224-40-00 Пн-Пн с 09:00-18:00.';
 					}
 					}
 				
@@ -1940,8 +2002,14 @@ $this->sendMessageTelegram($this->ws->getCustomer()->getTelegram(), $message);
 				//____________________________start_add_to_basket____________________________________
 
 				$article = wsActiveRecord::useStatic('Shoparticles')->findById(@$_POST['id']);
-
-$change = $article->addToBasket(1, (int)@$_POST['size'], (int)@$_POST['color'], 0, 1, (isset($_POST['artikul'])?$_POST['artikul']:0));
+				$skidka_block = 0;
+			$option_id = 0;
+			//if($article->getBrandId() == 782 and '2018-08-17' <= date('Y-m-d') and date('Y-m-d') <= '2018-08-19'){
+			//$option_id = 5;
+			//}
+			if($article->getSkidkaBlock()) $skidka_block = 1;
+				
+$change = $article->addToBasket(1, (int)@$_POST['size'], (int)@$_POST['color'], $option_id, 1, (isset($_POST['artikul'])?$_POST['artikul']:0), $skidka_block);
 				
 			/*	foreach (@$_POST as $key => $value) {
 					$keys = explode('_', $key);

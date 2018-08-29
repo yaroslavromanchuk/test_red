@@ -2427,25 +2427,22 @@ die(json_encode(array('status' => 'send', 'from' => $_POST['test_email'])));
 				elseif (@$_POST['go'] == 0) {
                     $count = $this->post->count;
 					$emails = '';	
-				foreach (wsActiveRecord::useStatic('Customer')->findAll(array('time_zone_id' => 5), array(), array($this->post->from_mail, $count)) as $sub){
-							//$key = 'uhaehcv9ok';
-						 //$this->view->login = $this->encode($sub->getUsername(),$key);
-						//$this->view->pass = $this->encode($sub->getPassword(),$key);
-						
-						if(isValidEmailNew($sub->getEmail()) and isValidEmailRu($sub->getEmail())){
+				foreach (wsActiveRecord::useStatic('Customer')->findAll(array('time_zone_id' => 7), array(), array($this->post->from_mail, $count)) as $sub){
+					if (isValidEmailNew($sub->getEmail()) and isValidEmailRu($sub->getEmail())){
 
-                        wsLog::add('Sending email to ' . $sub->getEmail(), 'EMAIL');
-                        $this->view->name = $sub->getFirstName();
+                     //   wsLog::add('Sending email to ' . $sub->getEmail(), 'EMAIL');
+                        $this->view->name = $sub->getName();
                         $this->view->email = $sub->getEmail();
-						$this->view->openimg = 'https://www.google-analytics.com/collect?v=1&tid=UA-29951245-1&cid='.$sub->getId().'&t=event&ec=return_user_email_open_'.date('d.m.Y').'&ea=open&el='.$sub->getId().'&cs=return_user_email_open_'.date('d.m.Y').'&cm=email&cn=return_user_email';
-
-					   $msg = $this->view->render('mailing/general-email.tpl.php');
-					   $emails .= $sub->getEmail() . ', ';
-			SendMail::getInstance()->sendSubEmail($sub->getEmail(), $sub->getName(), $subject, $msg); 
-                        $cnt++;
+						$this->view->openimg = 'https://www.google-analytics.com/collect?v=1&tid=UA-29951245-1&cid='.$sub->getId().'&t=event&ec=deposit_subscriber_open_'.date('d.m.Y').'&ea=open&el='.$sub->getId().'&cs=deposit_subscriber_open_'.date('d.m.Y').'&cm=email&cn=DepositSubscriber';
+                        $msg = $this->view->render('mailing/general-email.tpl.php');
+						
+					$res = SendMail::getInstance()->sendSubEmail($sub->getEmail(), $sub->getName(), $subject, $msg); 
+					
+					$cnt++;
+						$emails .= $sub->getEmail() . ', ';
 						}else{
 						$er++;
-					//	wsLog::add('Error Sending email to ' . $sub->getEmail(), 'EMAIL');
+						wsLog::add('E-mail error: ' . $sub->getEmail(), 'EMAIL');
 						}
                     }
     die(json_encode(array('status' => 'send', 'from' => $this->post->from_mail, 'count' => $count, 'emails' => $emails, 'cnt'=>$cnt, 'er'=>$er)));
@@ -4047,6 +4044,11 @@ return;
 					if(strlen($data1) > 0){ $data1.=' and ';}
 					$data1.='ws_articles.ucenka ='.(int)$_GET['proc'];
                 }
+				if (@$_GET['sezon']) {
+                    $data[] = 'ws_articles.sezon = '.(int)$_GET['sezon'];
+					if(strlen($data1) > 0){ $data1.=' and ';}
+					$data1.='ws_articles.sezon ='.(int)$_GET['sezon'];
+                }
 				 if (@$_GET['status']) {
                     $data[] = 'ws_articles.status = '.$_GET['status'];
 					if(strlen($data1) > 0){ $data1.=' and ';}
@@ -5209,7 +5211,7 @@ wsLog::add('Автобан по заказу ( '.$order->getId().'). Списо�
 <p style="text-align: center; font-size: 10pt; color: &amp;808080;">Для получения скидки нужно успеть оформить заказ в течении 48 часов.</p>
 <p style="text-align: center; font-size: 10pt; color: &amp;808080;"><strong>Дополнительные условия:</strong></p>
 <p style="font-size: 10pt; color: &amp;808080; text-align: left;">		1. скидка действует единоразово (при отмене или возврате заказа скидка теряется),</p>
-<p style="font-size: 10pt; color: &amp;808080; text-align: left;">		2. скидка сумируется со всеми скидками на сайте кроме товаров со скидкой -60%,</p>
+<p style="font-size: 10pt; color: &amp;808080; text-align: left;">		2. скидка сумируется со всеми скидками на сайте кроме товаров участвующих в других акциях и товаров с этикеткой "LAST PRICE",</p>
 <p style="font-size: 10pt; color: &amp;808080; text-align: left;">		3. распространяется только на товары в заказе оформленном в период акции ( совмещение с другими заказами невозможно).</p>
 <p style="font-size: 10pt; color: &amp;808080; text-align: left;">		4. каждый покупатель может получить максимум два  предложения со скидкой в месяц,</p>
 <p style="font-size: 10pt; color: &amp;808080; text-align: left;">		5. скидка подключается при оформлении заказа через корзину, при оформлении быстрого заказа - акция не подключается.</p>
@@ -6903,9 +6905,9 @@ if($or->getDeliveryTypeId() > 0) $delivery = $or->getDeliveryType()->getName();
                             $customers[$one->getCustomerId()] = 1;
 							$status[$one->getStatus()] = 1;
 							
-							foreach ($one->getArticles() as $ar) {
-							if($ar->getOptionId()) { $blok_complikt['block'] = 1; $blok_complikt['error'] = 'Нельзя совмещать с заказом'.$ar->order_id.'.';}
-							}
+							//foreach ($one->getArticles() as $ar) {
+							//if($ar->getOptionId()) { $blok_complikt['block'] = 1; $blok_complikt['error'] = 'Нельзя совмещать с заказом'.$ar->order_id.'.';}
+							//}
 							}
 							
                         if(count($customers)!=1) die('ОШИБКА: заказы разных клиентов!');
@@ -7190,8 +7192,44 @@ ORDER BY ws_articles.model ASC, ws_articles.brand ASC');
 
     public function nowamailAction()// отаправка счета и письма - не можем связаться
     {
-	
-	if ($this->post->metod == 'getcall') {
+	if ($this->post->metod == 'getmail'){
+	$status='';
+	$error = false;
+	$message = '';
+	$order = new Shoporders((int)$this->post->id);
+	  if ($order->getId()) {
+	  
+				$this->view->name = $order->getName();
+				$this->view->email = $order->getEmail();
+			$subject = $this->post->subject;
+			$this->view->content = '<div style="margin: 10px;padding:5px;">'.$this->post->message.'</div>';			
+			$msg = $this->view->render('email/template_new.tpl.php');
+			$res = SendMail::getInstance()->sendEmail($this->view->email, $this->view->name, $subject, $msg);
+	  
+	  if($res == true){
+	  $status ='send';
+	   $message = 'Сообщение успешно отправлено';
+		$remark = new Shoporderremarks();
+        $data = array(
+                    'order_id' => $order->getId(),
+                    'date_create' => date("Y-m-d H:i:s"),
+                    'remark' => 'Email - '.$this->post->subject,
+					'name' => $this->user->getMiddleName()
+                );
+                $remark->import($data);
+                $remark->save();	   
+	  }else{
+	   $status ='error';
+	  $error = true;
+	  $message = 'Сообщение не отправлено((( Попробуте еще раз.';
+	  }
+	  }else{
+	  $status ='error';
+	  $error = true;
+	  $message = 'Ошибка в номере заказа(((';
+	  }
+	die(json_encode(array('status'=>$status, 'error'=>$error, 'message'=>$message)));
+	}elseif ($this->post->metod == 'getcall') {
 	$id = $this->post->id;
         $order = new Shoporders($this->post->id);
         if ($order->getId()) {
@@ -7231,7 +7269,7 @@ if(isValidEmailNew($this->view->email) and isValidEmailRu($this->view->email)){
             $this->view->email = $order->getEmail();
 			
 			$this->view->content = $text;			
-			$msg = $this->view->render('email/template.tpl.php');
+			$msg = $this->view->render('email/template_new.tpl.php');
 				SendMail::getInstance()->sendEmail($this->view->email, $this->view->name, $subject, $msg);
 }
 			$order->setCallMail(date('Y-m-d H:i:s'));
@@ -7845,6 +7883,8 @@ foreach ($articles_ucen as $art) {
  
 					if(@$this->post->skidka_block) $art->setSkidkaBlock(1);
 					
+					if(@$this->post->block_ucenka_end == 1) $art->setLabelid(0);
+					
                     $art->setPrice($art->getOldPrice() * $proc);
 					$art->setDataUcenki(date('Y-m-d H:i:s'));
 					$art->setUcenka((int)$this->post->usenka_id_proc);
@@ -7919,6 +7959,11 @@ die(json_encode($result));
 87 дней - 70%
 166 дней - 90%
 */
+if(!empty($_GET['block_ucenka'])){
+$where .= ' and labelid > 0 ';
+}
+
+
             if (@$_GET['proc'] and $_GET['proc'] != 1) {
 			switch((int)$_GET['proc']){
 			case 20: $interval_to = 34; $interval_n = 59;	break;
@@ -8055,7 +8100,7 @@ UcenkaHistory::newUcenka($this->user->getId(), $art->getId(), $s_p, $art->getPri
 			WHERE '.$where.' GROUP BY ws_articles.id order by '.$order_by.' '.$order_by_type.' LIMIT '.$startElement.' , '.$onPage;
 			$sql_c='SELECT count(ws_articles.id) as ctn, ws_articles.*  from ws_articles inner join ws_articles_sizes on  ws_articles.id = ws_articles_sizes.id_article
 			WHERE '.$where.' GROUP BY ws_articles.id order by '.$order_by.' '.$order_by_type;
-			//var_dump($sql_c);
+			//d($sql, false);
 			$articles = wsActiveRecord::useStatic('Shoparticles')->findByQuery($sql);
 			$total = wsActiveRecord::useStatic('Shoparticles')->findByQuery($sql_c)->count();
 			$this->view->articles_a  = $articles;
@@ -12387,7 +12432,8 @@ DepositHistory::newDepositHistory($this->user->getId(), $customer->getId(), '+',
 						}
 						
 						}
-                        $this->_redirect('/admin/vozrat/id/' . $vozrat->getId());
+                        //$this->_redirect('/admin/vozrat/');
+						 $this->_redir('vozrat');
                     }else{
 					die();
 					}
@@ -14321,7 +14367,37 @@ $h = array(
  57=>'BF',
  58=>'BG',
  59=>'BH',
- 60=>'BI'
+ 60=>'BI',
+ 61=>'BJ',
+ 62=>'BK',
+ 63=>'BL',
+ 64=>'BM',
+ 65=>'BN',
+ 66=>'BO',
+ 67=>'BP',
+ 68=>'BQ',
+ 69=>'BR',
+ 70=>'BS',
+ 71=>'BT',
+ 72=>'BU',
+ 73=>'BV',
+ 74=>'BW',
+ 75=>'BX',
+ 76=>'BY',
+ 77=>'BZ',
+ 78=>'CA',
+ 79=>'CB',
+ 80=>'CC',
+ 81=>'CD',
+ 82=>'CE',
+ 83=>'CF',
+ 84=>'CG',
+ 85=>'CH',
+ 86=>'CI',
+ 87=>'CJ',
+ 88=>'CK',
+ 89=>'CL',
+ 90=>'CM'
  );
 
 
@@ -14347,32 +14423,33 @@ $sheet->setCellValue($h[$i].'2', 'Продано');
 
 
 $mass = array();
-$brand = wsActiveRecord::useStatic('BalanceCategory')->findByQuery("SELECT DISTINCT `id_brand` FROM  `ws_balance_category`");
+//$brand = wsActiveRecord::useStatic('BalanceCategory')->findByQueryArray("SELECT * FROM  `ws_balance_category` group by `id_brand`");
 //$brand = wsActiveRecord::useStatic('BalanceCategory')->findByQuery("SELECT DISTINCT `id_brand` FROM `ws_balance_category` where id_brand = ".$where);
 
-foreach($brand as $k => $b){
-$category = wsActiveRecord::useStatic('BalanceCategory')->findByQuery("SELECT DISTINCT `id_category` FROM `ws_balance_category` where id_brand =".$b->id_brand);
+//foreach($brand as $k => $b){
+$category = wsActiveRecord::findByQueryArray("SELECT DISTINCT `id_category` FROM `ws_balance_category`");
 foreach($category as $k => $c){
 
-$sql = "SELECT `count` as ctn  FROM  `ws_balance_category` where id_brand = ".$b->id_brand." and id_balance = ".$balance->id." and id_category=".$c->id_category;
-$count = wsActiveRecord::useStatic('BalanceCategory')->findByQuery($sql)->at(0);
-if($count){ $count = $count['ctn']; }else{	$count = 0;}
-$mass[$b->getArticleBrand()->getName()][$c->getCategoryName()->getRoutez()][$balance->id][] = $count;
+$sql = "SELECT sum(`count`) as ctn  FROM  `ws_balance_category` where  id_balance = ".$balance->id." and id_category=".$c->id_category;
+$count = wsActiveRecord::findByQueryArray($sql)[0]->ctn;
 
-$sql="SELECT IF( SUM(  `count` ) IS NULL , 0, SUM(  `count` ) ) AS  `ctn` 
+if(!$count)	$count = 0;
+
+$mass[$c->id_category][$balance->id][] = (int)$count;
+
+$sql="SELECT SUM( `ws_order_articles`.`count` ) AS  `ctn` 
 FROM  `ws_order_articles` 
 INNER JOIN  `ws_orders` ON  `ws_order_articles`.`order_id` =  `ws_orders`.`id` 
 INNER JOIN  `ws_articles` ON  `ws_order_articles`.`article_id` =  `ws_articles`.`id` 
-WHERE  `ws_articles`.`brand_id` = ".$b->id_brand."
-AND  `ws_orders`.`date_create` > DATE_FORMAT( '".$balance->date."' , '%Y-%m-%d 03:00:00' )
+WHERE   `ws_orders`.`date_create` > DATE_FORMAT( '".$balance->date."' , '%Y-%m-%d 03:00:00' )
 AND `ws_orders`.`date_create` <= DATE_FORMAT(DATE_ADD('" . $balance->date . "', INTERVAL +1 DAY) , '%Y-%m-%d 03:00:00' )
 AND  `ws_articles`.`category_id` = ".$c->id_category;
+$c_r = wsActiveRecord::findByQueryArray($sql)[0]->ctn;
 
-$count_r = wsActiveRecord::useStatic('Shoporderarticles')->findByQuery($sql)->at(0)->getCtn();
-$mass[$b->getArticleBrand()->getName()][$c->getCategoryName()->getRoutez()][$balance->id][] = $count_r;
+$mass[$c->id_category][$balance->id][] = (int)$c_r;
 
 }
-}
+//}
 
 $ob = 0;
 	$i = 3;
@@ -14385,12 +14462,13 @@ $ob = 0;
 	$m_ost_pr[$k]['pr'] = $pm->pr;
 	}
 	}*/
-	foreach ($mass as $k => $brand) {
+	//foreach ($mass as $k => $brand) {
 	
-	foreach($brand as $z => $category){
+	foreach($mass as $z => $category){
 	if($start == 2){
-	$sheet->setCellValue($h[0].$i, $k);
-	$sheet->setCellValue($h[1].$i, $z);
+	//$sheet->setCellValue($h[0].$i, '');
+	$cat =  wsActiveRecord::useStatic('Shopcategories')->findById($z);
+	$sheet->setCellValue($h[1].$i, $cat->getRoutez());
 	}
 	//echo $k.' : '.$z.' : ';
 	$j = $start;
@@ -14420,7 +14498,7 @@ $ob = 0;
 	
 	$i++;
 	}
-	}
+	//}
 	
 
 
@@ -14896,7 +14974,7 @@ AND  `m`.`status` = ".$data." order by `m`.`id` DESC");
 							if(isValidEmailNew($sub->getEmail()) and isValidEmailRu($sub->getEmail())){
 							
 							$this->view->content = $text;			
-							$msg = $this->view->render('email/template.tpl.php');
+							$msg = $this->view->render('email/template_new.tpl.php');
 
                          //   $msg = 'Логин: ' . $sub->getUsername() . '. ' . $this->trans->get('Your new password for red.ua') . ': ' . $newPass;
 
@@ -15083,7 +15161,7 @@ $mass['cup'] = $img->ArtycleBuyCount();
 	$sql = "SELECT ws_articles_sizes.* FROM ws_articles_sizes
 join ws_articles on ws_articles_sizes.id_article = ws_articles.id
  	WHERE ws_articles.status != 1 and ws_articles_sizes.`ctime` !=  '0000-00-00 00:00:00'
-AND  ws_articles_sizes.`ctime` >  '2016-01-01 00:00:00'
+AND  ws_articles_sizes.`ctime` >  '2016-05-01 00:00:00'
 	ORDER BY ws_articles_sizes.id DESC
 	LIMIT ".$from.", ".$limit;
 	$articles = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery($sql);
@@ -16040,7 +16118,8 @@ if(isset($this->post->long_text) and $this->post->long_text != ''){
 									}
 								$tmp = wsActiveRecord::useStatic('Shoparticles')->findLastSequenceRecord();
                                 $art->setSequence($tmp->getSequence() + 10);
-
+									
+									$art->setColorId($a['color_id']); 
 									$art->setModel($a['model']);
 									$art->setModelUk($this->trans->translateuk($a['model'], 'ru', 'uk'));
                                     $art->setPrice($a['price']); 
@@ -16111,7 +16190,8 @@ if(isset($this->post->long_text) and $this->post->long_text != ''){
 									}
 								$tmp = wsActiveRecord::useStatic('Shoparticles')->findLastSequenceRecord();
                                 $art->setSequence($tmp->getSequence() + 10);
-									 
+									
+									$art->setColorId($a['color_id']); 
 									$art->setModelUk($a['model']);
 									$art->setModel($this->trans->translateuk(mb_strtolower($a['model']), 'uk', 'ru'));
                                     $art->setPrice($a['price']); 
@@ -16272,6 +16352,8 @@ public function parseexcelfile($file)
 		$art = wsActiveRecord::useStatic('Shoparticlessize')->count(array("code LIKE  '".trim($m[3])."' "));
 			if ($art) { $errors[] = 'Товар с штрихкодом '.trim($m[3]).' уже существует. id: '.$art->id.' Строка в накладной: '.$m[0]; }
 		
+		$mas[$m[16]]['color_id'] = $color_id;
+		
 		$mas[$m[16]]['sizes'][] = array(
 		'code'=>trim($m[3]),
 		'id_color'=>$color_id,
@@ -16319,7 +16401,9 @@ public function parseexcelfile($file)
 			if (!$color) { $errors[] = 'Ошибка с цветом "' . $m[23] . '", строка '.$m[1]; $color = 0; }else{ $color = $color->id;}
 		$art = wsActiveRecord::useStatic('Shoparticlessize')->count(array("code LIKE  '".trim($m[20])."' "));
 			if ($art) { $errors[] = 'Товар с штрихкодом '.trim($m[20]).' уже существует. id: '.$art->id.' Строка в накладной: '.$m[1]; }
-			
+		
+		
+		$mas[$m[41]]['color_id'] = $color;
 		$mas[$m[41]]['sizes'][] = array(
 		'code'=>trim($m[20]),
 		'id_color'=>$color,

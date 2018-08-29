@@ -170,5 +170,4 @@ metod: getcall
             object.parent().html(data);
         });
 }
-
 	  </script>

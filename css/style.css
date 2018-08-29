@@ -1,5 +1,6 @@
-@font-face{font-family:'Museo_Cyrillic'; src:url('Museo_Cyrillic.otf')}
-body{background: #ededed;font-family:Verdana,Tahoma,Arial;  font-size:14px}
+/*@font-face{font-family:'Museo_Cyrillic'; src:url('Museo_Cyrillic.otf')}*/
+
+body{background: #ededed;font-family:Verdana;  font-size:14px}
 /*html{overflow-y:scroll}*/
 a{color:#000000; text-decoration:none}
 a:hover{text-decoration:underline}
@@ -39,14 +40,13 @@ color: rgb(255, 255, 255);
 .menu-1-box .menu-1 a{color: #ffffff;
     display: block;
     float: left;
-    font-family: sans-serif;
     font-size: 12px;
     line-height: 25px;
     position: relative;
     margin: 0px 10px 0px 0px;}
 .center_logo_red{
-    height: 60px!important;
-    width: 200px;
+    height: 100px!important;
+    width: 192px;
 }
 .s_l{
 content: "\e090";
@@ -79,7 +79,7 @@ content: "\e090";
 .span_ok{
 	position: absolute;
 	font-size: 10px;
-    background: red;
+    background: #f00032;
     top: 5px;
     color: white;
     text-align: center;
@@ -92,11 +92,11 @@ content: "\e090";
 .basket_ok_a{
     height: 30px;
     width: 30px;}
-.red_new_input{border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;background:rgba(255, 255, 255, 0.7);color:#2D2D2D;font-family:Arial !important;font-size:11px;height:26px;border:none;padding:0 5px;}
+.red_new_input{border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;background:rgba(255, 255, 255, 0.7);color:#2D2D2D;font-size:11px;height:26px;border:none;padding:0 5px;}
 .new_enter{display:inline-block;height:35px;}
 .new_enter img{width:35px;}
 .cat_menu_border{float:left;height:46px;border-left:dotted 1px #999;}
-.new_search_box{border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;background:url(/img/_search.png) no-repeat top right #fff;color:#a6a6a6;font-family:Arial !important;font-size:11px; /*border:none;*/padding:0 10px;height:30px;padding-right:30px;width:110px;}
+.new_search_box{border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;background:url(/img/_search.png) no-repeat top right #fff;color:#a6a6a6;font-size:11px; /*border:none;*/padding:0 10px;height:30px;padding-right:30px;width:110px;}
 .new_search_button{background:url(/img/_search.png) no-repeat top right #fff;border:none;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;padding-bottom:6px;margin-left:-35px;height:22px;width:30px;cursor:pointer;}
 .new_search{/*position: relative;width: 19%;display: inline-block;top: 7px;*/}
 .phone a img{width: 25px; margin-left: 10px;margin-top: -6px;}
@@ -105,7 +105,7 @@ content: "\e090";
 .menu_new_login a.new_name{font-size:13px;color:#707070;}
 .mascet_count{margin-top:-4px;right:4%;position:absolute;font-size:14px;}
 .new_input2{border:1px solid #bababa;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;padding:0 5px;height:17px;}
-.new_submit{background:#c3c3c3;color:#fff;font-weight:bold;font-family:Arial !important;border:1px solid #d4d4d4;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;font-size:14px;padding:5px 10px;}
+.new_submit{background:#c3c3c3;color:#fff;font-weight:bold;border:1px solid #d4d4d4;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;font-size:14px;padding:5px 10px;}
 h1.logo{width:200px;height:95px;}
 .logo{
     margin-right: 0px;
@@ -358,7 +358,7 @@ footer  form .form-submit{border:0;
  div.news a.all-news{height:17px; padding:0 9px; line-height:15px; display:block; float:left; background:#e6e6e6 url(../img/news-all-bg-left.png) no-repeat 0 0; position:relative; font-size:11px; margin-bottom:4px}
  div.news a.all-news span{height:17px; width:4px; display:block; background:url(../img/news-all-bg-right.png) no-repeat 0 0; position:absolute; top:0; right:0}
 /*news*/
- div.content-box h1{text-align:center; padding:1rem}
+ div.content-box h1{text-align:center;}
  div.content-box h2{text-align:center; margin:10px 0; padding:1px 0 6px 5px; color:#fe0000; font-size:17px; min-height:16px; font-weight:normal}
  div.content-box h4{text-align:center}
 
@@ -457,7 +457,6 @@ display:block;}
     text-transform: uppercase;}
  ul.articles-row li.article-item p.name{text-transform: uppercase;font-size: 16px;}
  ul.articles-row li.article-item p.price{    font-size: 18px;
-    font-family: sans-serif;
     color: #000000;
     font-weight: bold;
     margin-bottom: 10px;
@@ -510,7 +509,7 @@ table.cart-table.all_price .left{text-align:left;}
 table.total-price2{margin-bottom:10px}
 .basket-cont{padding:15px;margin:auto;}
 */
-.label-contact{border-bottom:1px solid #fe0000; display:block; float:left; font-family:arial,verdana; font-size:90%; font-weight:bold; line-height:11px; padding:2px 1px; width:112px}
+.label-contact{border-bottom:1px solid #fe0000; display:block; float:left; font-size:90%; font-weight:bold; line-height:11px; padding:2px 1px; width:112px}
 .formfields{background:none repeat scroll 0 0 #FFF; color:#000; margin-top:6px}
 input.red, select.red{border:2px solid red}
 span.red{color:red}
@@ -633,7 +632,7 @@ div.column-1.basket-login a{margin-top:10px}
 #filterButton button:hover{background-color:#ee1c25; color:#fff}
 .filterButton_classSelect{background-color:#ee1c25; color:#fff}
 #brandList{padding-left:25px}
-#brandList h1{font-size:70px; font-family:Georgia,'Times New Roman',Times,serif; border-bottom:1px solid}
+#brandList h1{font-size:70px;  border-bottom:1px solid}
 .brand_tab_select{border-bottom:1px solid}
 #brandList ul{width:175px; float:left; display:block}
 #brandList ul li{float:left}
@@ -753,8 +752,8 @@ div.clear{padding:0}
 
 
 
-.slogon{font-family:Museo_Cyrillic, Verdana, Tahoma, Arial;color:#666;font-size:24pt;position:absolute;left:205px;top:15px;text-align:left;margin:15px;}
-.header_info{color:#bababa;font-family:Museo_Cyrillic,Verdana,Tahoma,Arial;font-size:14px;position:absolute;right:145px;top:15px;width:225px;}
+.slogon{color:#666;font-size:24pt;position:absolute;left:205px;top:15px;text-align:left;margin:15px;}
+.header_info{color:#bababa;font-size:14px;position:absolute;right:145px;top:15px;width:225px;}
 .infop{color:#404040;font-weight:bold;border-bottom:1px solid #dcdcdc;}
 
 .carousel-control{
@@ -816,7 +815,7 @@ label {
     font-size: 9px;
     text-align: center;
     color: #fff;
-    background-color: #e40413;
+    background-color: #f00032;
     line-height: 17px;
     display: none;
 }

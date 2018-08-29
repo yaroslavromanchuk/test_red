@@ -6,7 +6,7 @@
  $sql = "SELECT  count(ws_articles_sizes.id) as ctn FROM ws_articles_sizes
 join ws_articles on ws_articles_sizes.id_article = ws_articles.id
  	WHERE ws_articles.status != 1 and ws_articles_sizes.`ctime` !=  '0000-00-00 00:00:00'
-AND  ws_articles_sizes.`ctime` >  '2016-01-01 00:00:00' ";
+AND  ws_articles_sizes.`ctime` >  '2016-05-01 00:00:00' ";
  $ostatok = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery($sql)->at(0)->ctn;
  if ($this->errors) { ?>
     <div id="errormessage" style="margin: auto;">

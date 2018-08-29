@@ -1,7 +1,6 @@
 
 $(document).ready(function () {
-if (window.location.hash) {parseHash(); }
-parsePathname();
+//if (window.location.hash){ parseHash(); }
 });
 function parseHash() {
 	var hash = window.location.hash;
@@ -18,33 +17,16 @@ function parseHash() {
 	} else {
 		$('#order_by').val(order_by[1]);
 	}
+	
 	goSearch();
 }
-function parsePathname() {
-	var pathname = window.location.pathname;
-	pathname = pathname.split('/');
-	//var category = /id/(\d+)
-	console.log(pathname);
-	/*var page = /page=(\d+)/.exec(hash);
-	var order_by = /order_by=(\d+)/.exec(hash);
-	if (page == null) {
-		page = 0;
-	} else {
-		page = page[1];
-	}
-	$('#current_page').val(page - 2);
-	if (order_by == null) {
-		$('#order_by').val('');
-	} else {
-		$('#order_by').val(order_by[1]);
-	}*/
-	//goSearch();
-}
+
 var script_change_hash = true;
 var run = 0;
 var reset_params = 0;
 var prev_hash = '';
 var change_page_hash = true;
+
 function prepareSearchToPage(p, q) {
 	$('#current_page').val(p - 2);
 	change_page_hash = true;
@@ -55,6 +37,74 @@ function changeSortOrder() {
 	$('#current_page').val(-1);
 	goSearch();
 }
+
+
+
+function ToPage(page) {
+	//$('#current_page').val(p - 2);
+	//change_page_hash = true;
+	//console.log(page);
+	
+	gatfilterSelected((page-1));
+	return false;
+}
+
+function sorter(page) {
+	gatfilterSelected(page);
+}
+function gatfilterSelected(page) {
+if(!page){
+current_page = $('#current_page').val();
+if(current_page == 0){ page = current_page;}else{ page =current_page-1;}
+ //page = parseInt($('#current_page').val()-1);
+ }
+ console.log(page);
+ //return false;
+var gettext = [];
+
+c = []; 
+		$('.c_category:checked').each(function () {c.push($(this).val());});
+		if(c.length > 0) gettext.push('categories='+c.join(','));
+c = [];
+		$('.c_brand:checked').each(function () {c.push($(this).val());});
+		if(c.length > 0) gettext.push('brands='+c.join(','));
+c = [];
+		$('.c_sezon:checked').each(function () { c.push($(this).val());});
+		if(c.length > 0) gettext.push('sezons='+c.join(','));
+c = [];
+		$('.s_size:checked').each(function () { c.push($(this).val());});
+		if(c.length > 0) gettext.push('sizes='+c.join(','));
+c = [];
+		$('.c_label:checked').each(function () { c.push($(this).val());});
+		if(c.length > 0) gettext.push('labels='+c.join(','));
+c = [];
+		$('.c_skidka:checked').each(function () {c.push($(this).val());});
+		if(c.length > 0) gettext.push('skidka='+c.join(','));
+		
+		if($('#minCost').val()) gettext.push('price_min='+$('#minCost').val());
+		if($('#maxCost').val()) gettext.push('price_max='+$('#maxCost').val());
+		
+			
+		
+		if($('#order_by option:selected').val()) gettext.push('order_by='+$('#order_by option:selected').val());
+		
+		gettext.push('page='+page);
+		if(gettext.length == 0){ $('#foo').detach(); return false; }
+		gettext = '?'+gettext.join('&');
+		$('#current_page').val(page);
+		//document.location.href = act;
+		console.log(gettext);
+		$('.caregory_footer').hide();
+		return window.location.search = gettext;
+		$('#foo').detach();
+return false;
+}
+function clearallfilters(){
+window.location.search = '';
+return false;
+}
+
+////////////////
 function goSearch(q) {
 	reset_params = 0;
 	var total_pages = parseInt($('#total_pages').val());
@@ -63,8 +113,10 @@ function goSearch(q) {
 	if (page == total_pages) {
 		$('#show_next').attr('disabled', true);
 	} else {
+	$('.caregory_footer').hide();
 		gatheringSelected('', page, q);
 		$('#current_page').val(page);
+		//$('#foo').detach();
 	}
 	prev_hash = window.location.hash;
 	script_change_hash = true;
@@ -81,86 +133,48 @@ function goSearch(q) {
 function gatheringSelected(what, page, q) {
 	var zz = 0;
 	if ( false && q == 4) { zz = 1;}
-	var gettext = '?';//selected_root_category=' + $('#selected_root_category').val();
 	var request = 'page=' + page + '&selected_root_category=' + $('#selected_root_category').val() + '&';
 	if (run == 0) {
 		
 		request += 'search_word="' + $('#search_word').val() + '&categories=';
 		$('.c_category:checked').each(function () {
-		gettext += '&categories=';
-			gettext += $(this).val() + ',';
 			request += $(this).val() + ',';
 		});
 		request += '&colors=';
-		
 		$('.c_color:checked').each(function () {
-		gettext += '&colors=';
-			gettext += $(this).val() + ',';
 			request += $(this).val() + ',';
 		});
 		request += '&sizes=';
-		
 		$('.s_size:checked').each(function () {
-		gettext += '&sizes=';
-			gettext += $(this).val() + ',';
 			request += $(this).val() + ',';
 		});
 		request += '&labels=';
-		
 		$('.c_label:checked').each(function () {
-		gettext += '&labels=';
-			gettext += $(this).val() + ',';
 			request += $(this).val() + ',';
 		});
 		request += '&skidka=';
-		
 		$('.c_skidka:checked').each(function () {
-		gettext += '&skidka=';
-			gettext += $(this).val() + ',';
 			request += $(this).val() + ',';
 		});
 		request += '&sezons=';
-		
 		$('.c_sezon:checked').each(function () {
-		gettext += '&sezons=';
-			gettext += $(this).val() + ',';
 			request += $(this).val() + ',';
 		});
 		request += '&brands=';
-		
 		$('.c_brand:checked').each(function () {
-		gettext += '&brands=';
-			gettext += $(this).val() + ',';
 			request += $(this).val() + ',';
 		});
-		//request += '&price_min=' + $(".tooltip-min .tooltip-inner").html();
-		//request += '&price_max=' + $(".tooltip-max .tooltip-inner").html();
-		gettext +='&page='+ page;
-		if($('#order_by option:selected')){
-		gettext += '&order_by=' + $('#order_by option:selected').val();
-		}
+
 		request += '&order_by=' + $('#order_by option:selected').val();
 		run = 1;
 		request += '&on_page=' + $('.items_on_page').val();
-		console.log(gettext);
-		//console.log(window);
-		//window.location.search = gettext;
-		//window.location.pathname = window.location.pathname+'sezons/3/';
-		
 		$.ajax({
 			beforeSend: function () {
-				$('#show_next_text').html('Подождите, идёт загрузка...');
 				$('#show_next').hide();
-				$('.res_loader').show();
 				$('#total_founded').hide();
-				if (q == 1) {
-					$('html, body').animate({
-						scrollTop: 0
-					}, 'slow');
-				} else if (zz == 1) {
-					$('#top').toggle();
-					$('#filter').toggle();
-				}
+				
+				$('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+				
 			},
 			type: 'POST',
 			url: '/finder/ajaxsearch/&' + request,
@@ -184,7 +198,14 @@ function gatheringSelected(what, page, q) {
 				if(page > 0) $('head').append('<link rel="canonical" href="'+window.location.pathname+'"/><meta name="robots" content="noindex, follow" />');
 					$('#result').html(data.result);
 				}
-				$('#show_next_text').html('Показать ещё 15 товаров');
+				if (q == 1) {
+					$('html, body').animate({ scrollTop: 0 });
+				} else if (zz == 1) {
+					$('#top').toggle();
+					$('#filter').toggle();
+				}
+				
+				$('#foo').detach();
 				$('#show_next').show();
 				$('#total_founded').html(data.total_count);
 				reset_params = 0;
@@ -194,14 +215,15 @@ function gatheringSelected(what, page, q) {
 					$('#show_next').attr('disabled', false);
 				}
 				$('#total_pages').val(data.total_pages);
-				$('.res_loader').hide();
 				$('#total_founded').show();
+				
 				//initiateArticlesJS();
 			},
 			error: function(e){
 			console.log(data);
 			}
 		});
+		
 		return true;
 	} else {
 		return false;

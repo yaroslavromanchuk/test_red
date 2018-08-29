@@ -38,7 +38,7 @@ if ($order_owner->getAdminComents()) { ?>
 		<select name="delivery_type_id" id="delivery_type" class="form-control input">
 			<option value="0">&darr; Выберите из списка</option>
 			<?php foreach (wsActiveRecord::useStatic('DeliveryType')->findAll(array('active'=>1)) as $method) { ?>
-				<option value="<?php echo $method->getId() ?>" <?php if ($method->getId() == $this->getOrder()->getDeliveryTypeId()) echo 'selected="selected"'?>><?php echo $method->getName()?></option>
+				<option value="<?=$method->getId()?>" <?php if ($method->getId() == $this->getOrder()->getDeliveryTypeId()) echo 'selected="selected"'?>><?=$method->getName()?></option>
 			<?php } ?>
 		</select>
 	</td>
@@ -48,7 +48,7 @@ if ($order_owner->getAdminComents()) { ?>
 	<td>
 		<select name="payment_method_id" id="payment_method" class=" form-control input">
 			<?php foreach (wsActiveRecord::useStatic('PaymentMethod')->findAll() as $method) { ?>
-				<option value="<?php echo $method->getId() ?>" <?php if ($method->getId() == $this->getOrder()->getPaymentMethodId()) echo 'selected="selected"'?>><?php echo $method->getName()?></option>
+<option value="<?=$method->getId()?>" <?php if ($method->getId() == $this->getOrder()->getPaymentMethodId()) echo 'selected="selected"'?>><?=$method->getName()?></option>
 			<?php } ?>
 		</select>
 	</td>
@@ -770,10 +770,22 @@ $(document).ready(function () {
 	<div class="panel panel-success" >
  <div class="panel-heading"><h3 class="panel-title">Действия</h3></div>
  <div class="panel-body">
-	<form method="post" action="" style="text-align: center; padding-top:20px;">
-	<input type="submit" name="converting_to_order" class="buttonps" style="font-size: 16px;" value="В заказы">
-	<input type="submit" name="delete_qo" class="buttonps" style="font-size: 16px;background:#E00;" value="Отмена">
+	<form method="post" action="" style="text-align: center; padding-top:20px;" class="go_order">
+	<input type="submit" name="converting_to_order" class="btn btn-primary"  value="В заказы">
+	<input type="submit" name="delete_qo" class="btn btn-danger" value="Отмена">
 	</form>
+	<script>
+	/* $(".go_order").submit(function (e) {
+    //  e.preventDefault();
+		if(!$('#delivery_type').val()) {
+		alert('Вфыберите способ доставки');
+		return false;
+		}
+
+       $(this).submit();
+    });
+	*/
+	</script>
 	 </div>
  </div>
 	<?php } ?>

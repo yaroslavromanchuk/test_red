@@ -53,18 +53,35 @@
 		
 		public function getPerc($all_orders_amount, $sum_order = 0)
 			{
-			
+			 $s = 0;
 			$mas = array();
 				$minus = 0.00;
 				$price = $this->getPrice() * $this->getCount();
 			
+		 if($this->getOptionId() and $this->getOptionId() == 7){
+		  $mas['minus'] = $price - $this->getOptionPrice()*$this->getCount();
+		$mas['price'] = $this->getOptionPrice();
+		$mas['comment'] = '-27% ко Дню независимости Украины';
+		 return $mas;
+		 }
 		 
-	if (!$this->article_db->getSkidkaBlock() or $this->getOldPrice() == 0) {
+	if (!$this->getSkidkaBlock()) {
 	 if($this->getOptionId()){ // акция 1+1=3
+	 if($this->getOptionId() == 5){
+	 $s+=15;
+	 $mas['comment'] = '+15% на H&M';
+	// break;
+	 }else{
 	  $mas['minus'] = $price - $this->getOptionPrice()*$this->getCount();
 		$mas['price'] = $this->getOptionPrice();
-		$mas['comment'] = 'Цена по акции.';
+		switch($this->getOptionId()){
+		case 6: $mas['comment'] = 'Акция -20% на не уцененный товар<br>21-22.08.'; break;
+		case 4: $mas['comment'] = 'Акция часы в подарок<br>сумма аксессуаров > 1000 грн.'; break;
+		case 7: $mas['comment'] = '27% ко Дню независимости Украины'; break;
+		default: $mas['comment'] = 'Цена по акции.'; break;
+		}
 			return $mas;
+			}
 	 }
 	
 		//$today = date("Y-m-d H:i:s");
@@ -85,7 +102,7 @@ $kod = false;
 }
 }
 
-	 $s = 0;
+	
 	 $skidka  = 0;
 	 
 		$skidka = $this->order->getSkidka();
@@ -96,7 +113,7 @@ $kod = false;
 	 $event_skidka = $this->getEventSkidka();
 	if ($event_skidka != 0) {
 
-	$s = (int)$event_skidka;
+	$s += (int)$event_skidka;
 	if($s == 50){
 	$minus = (($price / 100) * $s);
     $price -= $minus;
@@ -160,20 +177,7 @@ $kod = false;
 		}
 		
 		//скидка к окремому  товару в заказе
-					
-			//скидка к окремому  товару в заказе
-			
-			// скидка к всему заказазу				
-			/*$event_order_skidka = $this->order->getEventSkidka();
-			//d($event_order_skidka, false);
-			 if ($event_order_skidka != NULL and $event_order_skidka > 0) {
-			 $m = (($price / 100) * $event_order_skidka);
-                        $minus += $m;
-                        $price -= $m;
-						//d($price, false);
-									}*/
-			// скидка к всему заказазу
-									
+						
 			if(@$kod and $kod->all == 1){
 			$m = (($price / 100) * $kod->skidka);
 						$minus += $m;

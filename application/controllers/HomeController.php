@@ -24,8 +24,8 @@ class HomeController extends controllerAbstract {
 					AND active = 'y'
 					and ws_articles.status = 3
 					and old_price = 0
-					AND category_id NOT IN(54, 55, 65, 71, 74, 84, 137, 138, 139, 152, 157, 158, 163, 249, 297,140,74,296,137)
-					AND dop_cat_id NOT IN (54, 55, 65, 71, 74, 84, 137, 138, 139, 152, 157, 158, 163, 249, 297,140,74,296,137)
+					AND category_id NOT IN(54, 55, 163,84,315,314,249,306,297,307,296)
+					AND dop_cat_id NOT IN (54, 55, 163,84,315,314,249,306,297,307,296)
 					ORDER BY RAND ()  LIMIT 0, 10";
 					
 		$sql = "SELECT ws_articles.* FROM  ws_articles
@@ -45,8 +45,8 @@ class HomeController extends controllerAbstract {
 					WHERE stock like '1'
 					AND active = 'y'
 					and ws_articles.status = 3
-					AND category_id NOT IN(54, 55, 65, 71, 74, 84, 137, 138, 139, 152, 157, 158, 163, 249, 297,140,74,296,137)
-					AND dop_cat_id NOT IN (54, 55, 65, 71, 74, 84, 137, 138, 139, 152, 157, 158, 163, 249, 297,140,74,296,137)
+					AND category_id NOT IN(54, 55, 163,84,315,314,249,306,297,307,296)
+					AND dop_cat_id NOT IN (54, 55, 163,84,315,314,249,306,297,307,296)
 					ORDER BY RAND () DESC LIMIT 0, 20";
 		$this->view->oneproduct = wsActiveRecord::useStatic('Shoparticles')->findByQuery($query);
 	//oneprodukt

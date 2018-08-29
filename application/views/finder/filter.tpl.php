@@ -25,39 +25,31 @@ $text_result_trans = explode(',', $this->trans->get('Вы искали,Всег�
             <div class="list_wrapper sub-title-click">
                 <p class="sub-title"><span><?=$text[2]?></span></p>
                 <div style="clear: both;"></div>
+				<!--<form action="<?=$_SERVER['REQUEST_URI'].'categories/'?>" method="get">-->
                 <div class="list_list drop_list" >
                     <?php
-					//echo print_r($this->filters['categories']);
-                  //  $groups = array();
-                 //   foreach ($this->filters['categories'] as $cat) {
-                  //      if ($cat['id'] != $this->finder_category) {
-                  //          $groups[@$cat['parent']][] = $cat;
-                   //     }
-                  //  }
-                  //  ksort($groups);
 					$asc = array();
 					$asc = explode(',' , $this->get->categories);
-                   // foreach ($groups as $k => $g) {
-					//if(@$k) echo '<h4 class="fh4">'.$k.'</h4>';
                         foreach ($this->filters['categories'] as $cat) {
 						
 ?>
                          
                                 <div>
                                     <label for="c_category_<?=$cat['id'];?>"  class="ckbox" >
-									<input type="checkbox" class="c_category"
+									<input type="checkbox" class="c_category" name="categories"
                                            id="c_category_<?=$cat['id']; ?>" value="<?=$cat['id']; ?>"  <?php if(in_array($cat['id'], $asc, true)){ ?>checked="checked" <?php } ?> />
-                                         <span><?php if($cat['parent']) echo $cat['parent'].':'; ?><?=$cat['name']?><span class="co"><?=$cat['count']?></span></span>
+                                         <span><?=@$cat['parent']?$cat['parent'].':'.$cat['name']:$cat['name']?><span class="co"><?=$cat['count']?></span></span>
                                     </label>
                                 </div>
                             <?php
                             
                         }
-                   // }
                    ?>
 				           
                 </div>
-		 <a href="#"  onclick="return gatheringSelected('categories', 0, 4)" class="openFilter drop_list"><?=$text[1]?></a>
+					<!--<input type="submit" class="openFilter drop_list" value="<?=$text[1]?>" >
+			</form> -->
+		 <a href="#"  onclick="return gatheringSelected('categories', 0, 4);" class="openFilter drop_list"><?=$text[1]?></a>
             </div>
 			<?php }?>
             <!-- Бренды -->

@@ -18,7 +18,7 @@
 <?php
 $days = array( 1 => 'Понедельник' , 'Вторник' , 'Среда' , 'Четверг' , 'Пятница' , 'Суббота' , 'Воскресенье' );
  if($this->user->getId() == 8005){
-//echo $this->files;
+//echo print_r($this->get);
 } ?>
 <?php //if(in_array($this->user->getId(), array(27391,6741,25129,22609,34608,28767,26187,8985,7668,73412993,1,8005))) echo $this->render('poll/poll_box.tpl.php');
 //array(33929,22832,31748,29397,24148,22699,8005,24150)
@@ -53,7 +53,7 @@ left:5px;
             <div> 
 			<div class="admin_cms">
 			<span style="margin-left: 15px;"><span style="color:red;">RED</span> CMS</span><br>
-			<span style="font-size:12px;"><?=date( $days[date( 'N' )] . ' d.m.Y' )?> </span>
+			<span style="font-size:12px;"><?=date($days[date( 'N' )] . ' d.m.Y')?> </span>
 			</div>
 <div class="wrapper_menu" onClick="show()">
 						<p class="top_name" ><?=$this->trans->get('Страницы');?><i class="glyphicon glyphicon-menu-down"></i></p>
@@ -172,14 +172,17 @@ $('#myModalMessage').on('hidden.bs.modal', function (event) {
 });	*/
 });
 //открытие всплывающего окна нова почта
-function fopen(header = '', body = ''){
+function fopen(header = '', body = '', footer = ''){
 if(body) $('#popup').html(body);
 if(header) $('#myModalLabel').html(header);
+if(footer){ $('#myModalFooter').html(footer);}else{ $('#myModalFooter').html('<button class="btn btn-secondary pd-x-20" data-dismiss="modal" aria-hidden="true">Закрыть</button>');}
 $('#myModalMessage').modal('show');
 }
 //закрытие всплывающего окна нова почта
 function FormClose(){$('#myModalMessage').modal('hide');}	
+
 function show(){return false;}
+
 function setUk(l) {
 var s = '<?=$_SESSION['lang']?>';
 if(l.name != s){

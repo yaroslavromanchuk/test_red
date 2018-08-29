@@ -78,6 +78,25 @@ $param = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery('SELECT DIST
 	<span class="price-old"><?=$this->article->showPrice($this->article->getPrice());?>&nbsp;грн</span>
 <?php	} ?>
 	</p>
+	<?php }elseif('2018-08-23' <= date('Y-m-d') and date('Y-m-d') <= '2018-08-26' and $this->article->sezon == 1 and false){
+$price = $this->article->getPerc(100, 1);
+
+
+	?>
+	<p class="price">
+	<?php if($this->article->getOldPrice() > 0){ ?>
+	<span style="    padding: 0px 2px;
+    background: #e40413;
+    color: white;
+    font-size: 12px;
+    display: inline-block;
+    font-weight: normal;">- <?=$this->article->getUcenka()?>% (-27%)</span><br>
+	<?php }?>
+	<span class="price-old"><?=trim($this->article->showPrice($this->article->getFirstPrice()));?>&nbsp;<span style="font-size:14px;">грн</span>
+	</span>
+	<?php $pric = trim(Number::formatFloat($price['price'], 2)); $pric = explode(',', $pric); echo $pric[0];?>
+		<span style="font-size:11px;vertical-align: text-top;margin-left: -4px;"><?=(int)$pric[1] ? ','.$pric[1] : ''; //копейки ?></span>&nbsp;<span style="font-size:14px;">грн</span>
+	</p>
 	<?php }else{?>
 	<p class="price">
 		<?php

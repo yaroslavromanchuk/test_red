@@ -15,16 +15,85 @@
     echo $article->getSmallBlockCachedHtml();
 } ?>
 </ul>
-<div class="col-xs-12" style="text-align: center;padding-top: 10px;">
-            <input type="hidden" class="items_on_page" name="items_on_page" value="<?php echo $_SESSION['items_on_page'] ? $_SESSION['items_on_page']:32; ?>" />
+<div class="row">
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center" style="padding-top: 10px;">
+<input type="hidden" class="items_on_page" name="items_on_page" value="<?=$_SESSION['items_on_page']?$_SESSION['items_on_page']:32?>" />
 
-		<div class="btn-group"  data-toggle="buttons-checkbox">
-                    <button onclick="return but_val($(this))" type="button" class="btn" <?php if(@$_SESSION['items_on_page']==30 or !@$_SESSION['items_on_page'])  echo 'disabled' ?> value="32">30</button>
-                    <button onclick="return but_val($(this))" type="button" class="btn"<?php if(@$_SESSION['items_on_page']==60)  echo 'disabled' ?> value="60">60</button>
-                    <button onclick="return but_val($(this))" type="button" class="btn"<?php if(@$_SESSION['items_on_page']==90)  echo 'disabled' ?> value="90">90</button>
-                    <button onclick="return but_val($(this))" type="button" class="btn"<?php if(@$_SESSION['items_on_page']==120) echo 'disabled' ?> value="120">120</button>
-					</div>
-            <span class="res_loader" style="display: none"><img alt="Loading" src="/img/ajax-loader.gif"/></span>
+<div class="btn-group mb-3"  data-toggle="buttons-checkbox">
+                    <button onclick="return but_val($(this))" type="button" class="btn btn-secondary <?php if(@$_SESSION['items_on_page']==32 or !@$_SESSION['items_on_page'])  echo 'active' ?>" <?php if(@$_SESSION['items_on_page']==32 or !@$_SESSION['items_on_page'])  echo 'disabled' ?> value="32">30</button>
+                    <button onclick="return but_val($(this))" type="button" class="btn btn-secondary <?php if(@$_SESSION['items_on_page']==60 or !@$_SESSION['items_on_page'])  echo 'active' ?>" <?php if(@$_SESSION['items_on_page']==60)  echo 'disabled' ?> value="60">60</button>
+                    <button onclick="return but_val($(this))" type="button" class="btn btn-secondary <?php if(@$_SESSION['items_on_page']==90 or !@$_SESSION['items_on_page'])  echo 'active' ?>" <?php if(@$_SESSION['items_on_page']==90)  echo 'disabled' ?> value="90">90</button>
+                    <button onclick="return but_val($(this))" type="button" class="btn btn-secondary <?php if(@$_SESSION['items_on_page']==120 or !@$_SESSION['items_on_page'])  echo 'active' ?>" <?php if(@$_SESSION['items_on_page']==120) echo 'disabled' ?> value="120">120</button>
+</div>
+<?php if($this->ws->getCustomer()->getId() == 8005){
+//echo $this->cur_page;
+//echo '<br>'.$this->total_pages;
+if(@$this->total_pages){
+$limit = 4;
+	$text = '';
+	$page = ($this->cur_page+1);
+$text.='<nav aria-label="Page navigation example">
+	<ul class="pagination pagination-dark mb-0" style="display: inline-flex;">';
+	if ($page > 1) {
+        $text .= '<li class="page-item"><a class="page-link" href=""  onclick="return ToPage(1)" aria-label="Previous"><span aria-hidden="true"><<</span></a></li>';
+		$text.='<li class="page-item"><a class="page-link"  href=""  onclick="return ToPage('.($page - 1).')"><span aria-hidden="true"><</span></a></li>';
+    } else {
+         $text .= '<li class="page-item disabled"><a class="page-link" aria-label="Previous"><span aria-hidden="true"><<</span></a></li>';
+		$text.='<li class="page-item disabled"><a class="page-link" ><span aria-hidden="true"><</span></a></li>';
+    }
+	 $start = 1;
+    $end = $this->total_pages;
+	 if ($page > $limit) {
+        $start = $page - $limit;
+    }
+	
+    if (($page + $limit) < $this->total_pages) {
+        $end = $page + $limit;
+    }
+	
+	for ($i = $start; $i <= $end; $i++) {
+        if ($i == $page) {
+            $text .= '<li class="page-item active"><a class="page-link" disabled >'.$i.'<span class="sr-only">(current)</span></a></li>';
+        } else {
+            $text .= '<li class="page-item"><a class="page-link" href="" onclick="return ToPage('.$i.')">' . $i . '</a></li>';
+        }
+    }
+	 if ($page == $this->total_pages) {
+	 	$text.='<li class="page-item disabled"><a class="page-link" ><span aria-hidden="true">></span></a></li>';
+	   $text .= '<li class="page-item disabled"><a class="page-link"  aria-label="Next"><span aria-hidden="true">>></span></a></li>';
+    } else {
+	$text.='<li class="page-item"><a class="page-link" href="" onclick="return ToPage('.($page+1).')"><span aria-hidden="true">></span></a></li>';
+	$text .= '<li class="page-item"><a class="page-link" href="" onclick="return ToPage('.$this->total_pages.')" aria-label="Previous"><span aria-hidden="true">>></span></a></li>';
+    }
+	$text .='</ul>
+	</nav>';
+echo $text;
+}
+
+ ?> 
+ <!--
+<nav aria-label="Page navigation example">
+  <ul class="pagination pagination-dark mg-b-0">
+    <li class="page-item">
+      <a class="page-link" href="#" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+        <span class="sr-only">Previous</span>
+      </a>
+    </li>
+    <li class="page-item"><a class="page-link" href="#">1</a></li>
+    <li class="page-item"><a class="page-link" href="#">2</a></li>
+    <li class="page-item"><a class="page-link" href="#">3</a></li>
+    <li class="page-item">
+      <a class="page-link" href="#" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+        <span class="sr-only">Next</span>
+      </a>
+    </li>
+  </ul>
+</nav>-->
+
+
+<?php }else{ ?>
             <ul class="finder_pages">
                 <?php
                 $limit = 1; 								//how many items to show per page
@@ -119,4 +188,6 @@
                 echo $pagination;
                 ?>
             </ul>
+			<?php } ?>
+</div>
 </div>

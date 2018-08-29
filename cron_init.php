@@ -8,31 +8,21 @@
 	setlocale(LC_NUMERIC,'en_US'); //dot - for MySQL
 	//setlocale(LC_MESSAGES, 'en_US');
 	mb_internal_encoding("UTF-8");
+	
+require_once('site_config.php');
+require_once('functions.php'); //move to separate class
+require_once('Zend/Loader.php');
+require_once('Orm/ormLoader.php');
+Zend_Loader::registerAutoload();
 
-	//if(!$_SERVER['DOCUMENT_ROOT'])
-		//$_SERVER['DOCUMENT_ROOT'] = dirname(__FILE__);// . '/../';
-	
-    require_once('site_config.php');    
-	require_once('functions.php'); //move to separate class
-    require_once('Zend/Loader.php');
-    require_once('Orm/ormLoader.php');
-    //Zend_Loader::registerAutoload();
-    spl_autoload_register(array('Zend_Loader', 'autoload')); 
-	
-	//require_once('nomad_mimemail.php');
-	//require_once('upload/upload.php');
-	
-    $timer = new DebugTimer(4);
-    Registry::set('timer', $timer);
+   // spl_autoload_register(array('Zend_Loader', 'autoload')); 
 
-    //load Cache
-    //require_once('Cache.class.php');
+   // $timer = new DebugTimer(4);
+    //Registry::set('timer', $timer);
+
     $cache = new Cache();
 	$cache->setEnabled(true);
     Registry::set('cache', $cache);
-    //Registry::set('locale', $locale);
-    //Registry::loadConfig($config_values);
-
 	$db_config = array(
                 'adapter' => 'PDO_MYSQL',
                 'config' => array(
@@ -52,8 +42,11 @@
  	}
 
     Registry::set('db',$db);
-	//Registry::set('SQLLogger', SQLLogger::getInstance());
 	Registry::set('site_id', Website::getSite()->getId());
-	//Registry::set('autoload', false);
 	Registry::loadDBConfig(); //loads automatically
+	
+		//������� �������� ��������� � ��������
+function sendMessageTelegram($chat_id, $message) {
+  file_get_contents('https://api.telegram.org/bot'.Config::findByCode('telegram_key')->getValue().'/sendMessage?chat_id=' . $chat_id . '&text=' . urlencode($message));
+}
 	?>

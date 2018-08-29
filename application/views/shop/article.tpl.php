@@ -351,7 +351,7 @@ $pr = $this->getShopItem()->getPrice();
 						<div class="clear" style="padding:0;"></div>
 					</div>
 					<div>
-						<?php echo $this->trans->get('Цвет');?>:
+						<?=$this->trans->get('Цвет')?>:
 						<span id="color">
 <?php
 							$mass = array();

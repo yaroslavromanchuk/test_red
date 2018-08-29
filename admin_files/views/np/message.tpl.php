@@ -8,7 +8,7 @@
 <div class="modal-body pd-25" id="popup">
 
 </div>
-<div class="modal-footer">
+<div class="modal-footer" id="myModalFooter" >
 <button class="btn btn-secondary pd-x-20" data-dismiss="modal" aria-hidden="true">Закрыть</button>
 </div>
 </div>

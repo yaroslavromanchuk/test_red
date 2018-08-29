@@ -1,5 +1,5 @@
 <!DOCTYPE html >
-<html lang="ru">
+<html lang="<?=Registry::get('lang')?>">
 <head>
 <?php //clearstatcache(); ?>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -9,12 +9,14 @@
 	<meta name="google-site-verification" content="5KsgGP4-JCTjV0dafIfi5_AI73MIryFuGqLvAgIthAI" />
     <title><?=Config::findByCode('home_title')->getValue()?></title>
 	
+	
+	<link rel="alternate" hreflang="ru-UA" href="https://www.red.ua/ru<?=$_SERVER['REQUEST_URI']?>" />
+		<link rel="alternate" hreflang="uk-UA" href="https://www.red.ua/uk<?=$_SERVER['REQUEST_URI']?>" />
 	<link rel="shortcut icon" href="/favicon.ico"/>	
-	<!--<link rel="stylesheet" type="text/css" href="/css/soc.css?z" />	-->
 	<link  rel="stylesheet" type="text/css" href="/js/slider-fhd/slick.css?v=1"  />
 	<link  rel="stylesheet" type="text/css" href="/js/slider-fhd/slick-theme.css?v=1" />
     <link rel="stylesheet" type="text/css" href="/css/bs/css/bootstrap.css?v=1.0"/>
-    <link rel="stylesheet" type="text/css" href="/css/style.css?v=1.4"/>
+    <link rel="stylesheet" type="text/css" href="/css/style.css?v=2.0"/>
     <link rel="stylesheet" type="text/css" href="/css/new.css?v=1.3"/>
     
 	

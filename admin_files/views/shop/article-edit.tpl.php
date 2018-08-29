@@ -331,19 +331,19 @@ document.getElementById('img2').addEventListener('change', handleFileSelect, fal
 <div class="form-group" >
     <label for="old_price" class="col-xs-4 control-label">Старая цена:</label>
     <div class="col-xs-8">
-	  <input type="text" class="form-control input"  name="old_price" id="old_price" value="<?php echo $this->article->getOldPrice(); ?>"/>
+	  <input type="text" class="form-control input"  name="old_price" id="old_price" value="<?=$this->article->getOldPrice()?>"/>
 	</div>
   </div>
-<div class="form-group" <?php if($this->user->getId() == 8005 or $this->user->getId() == 1){echo 'style="display: block;"';}else{ echo 'style="display: none;"';} ?> >
+<div class="form-group" >
     <label for="min_price" class="col-xs-4 control-label">Себестоимость:</label>
     <div class="col-xs-8">
-	 <input type="text" class="form-control input"  name="min_price" id="min_price" value="<?php echo $this->article->getMinPrice(); ?>"/>
+	 <input type="text" class="form-control input"  name="min_price" id="min_price" value="<?=$this->article->getMinPrice()?>"/>
 	</div>
   </div>
-<div class="form-group" <?php if($this->user->getId() == 8005 or $this->user->getId() == 1){echo 'style="display: block;"';}else{ echo 'style="display: none;"';} ?> >
+<div class="form-group"  >
     <label for="max_skidka" class="col-xs-4 control-label">MAX скидка:</label>
     <div class="col-xs-8">
-	 <input type="text" class="form-control input"  name="max_skidka" id="max_skidka" value="<?php echo $this->article->getMaxSkidka(); ?>"/>
+	 <input type="text" class="form-control input"  name="max_skidka" id="max_skidka" value="<?=$this->article->getMaxSkidka()?>"/>
 	</div>
   </div>
          <div class="form-group" >

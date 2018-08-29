@@ -1,6 +1,6 @@
 <?php
 $text = explode(',', $this->trans->get('цвет,размер,количество,цена,всего,продолжить покупки,оформить заказ'));?>
-<h1 class="violet"><?=$this->getCurMenu()->getName()?></h1>
+<h1><?=$this->getCurMenu()->getName()?></h1>
 <?php 
 if (isset($this->error)) {
 	echo "<div>";
@@ -9,31 +9,28 @@ if (isset($this->error)) {
 	}
 	echo "</div>";
 }
-//if(isset($_SESSION['error_cod'])){
-//echo "<div class='alert alert-danger'>".$_SESSION['error_cod']."</div>";
-//}
 if($_SESSION['count_basket'] > 5){
 echo '<div class="col-xs-10 col-xs-offset-1">
 <div class="alert alert-danger">'.$this->trans->get('Обратите внимание, мы ограничили количество единиц товара в заказе для пунктов выдачи до 5 единиц.</br>
 				У Вас в корзине').' '.$_SESSION['count_basket'].' '.$this->trans->get('единиц товара. Если Вы хотите оформить заказ через пункт выдачи, удалите из корзины').'  '.($_SESSION['count_basket']-5).' '.$this->trans->get('единиц').'.
 				</div>
 			</div>';
-}
+} ?>
 
-if ($this->getBasket()) { ?>
+<?php if ($this->getBasket()) { ?>
+
+<form action="<?=wsActiveRecord::useStatic('Menu')->findByUrl('basket')->getPath()?>" method="post" id="basket1" class="cart-table" >
 <div class="row mx-auto">
 <div class="col-md-12">
-<form action="<?=wsActiveRecord::useStatic('Menu')->findByUrl('basket')->getPath()?>" method="post" id="basket1" >
-<div class="table-responsive" id="backet_reload">
-<table class="table cart-table">
+<table class="table">
 <thead>
 <tr>
 <th>Продукт</th><th></th><th><?=$text[3];?></th><th><?=$text[2];?></th><th><?=$text[4];?></th><th></th>
 </tr>
 </thead>
 <?php
-	$total = 0.0;
-	$t_count = 0;
+	//$total = 0.0;
+	//$t_count = 0;
 	$t_price = 0.00;
 	$total_price = 0.00;
 	$to_pay = 0;
@@ -77,12 +74,17 @@ $ok_kupon = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$_GET['ku
 	$mas_akciya = array();
 	$mas_akciya_futbolki = array();
 	$min = array();
+	$aks = array();
+	$a_p = 0;
+	$chasy = '';
 	foreach ($this->getBasket() as $key => $item) {
 		if (($article = wsActiveRecord::useStatic('Shoparticles')->findById($item['article_id'])) && $article->getId() && $item['count'] > 0) {
 			$t_price += $article->getPriceSkidka() * $item['count'];
 			
 		}
-	if(false){
+	
+	if(false){//каждое третье в подарок за 1 коп.
+	
 	if($article->getCategoryId() == 147 or $article->getCategoryId() == 70){ //платья
 	$mas_akciya[$article->getId().'_'.$item['artikul']] = $article->getFirstPrice();
 	}
@@ -92,7 +94,30 @@ $ok_kupon = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$_GET['ku
 	}
 		
 	}
-	if(false){
+		if(false){ // часы в подарок при покупке на сумму 1000 грн аксессуаров
+		foreach ($this->getBasket() as $key => $item) {
+		if (($article = wsActiveRecord::useStatic('Shoparticles')->findById($item['article_id'])) && $article->getId() && $item['count'] > 0) {
+	if(in_array($article->getCategoryId(), array(53,71,251,79,65,114,253,55,117,115,152))){
+	$price = $article->getPerc(($now_orders+$t_price), $item['count'], $skidka, $event_skidka, false, $t_price);
+	$a_p+=$price['price'];
+	}
+	}
+	}
+	
+	
+	if($a_p > 1000){
+	foreach ($this->getBasket() as $key => $item) {
+	if($item['category'] == 154){
+	$chasy = $item['article_id'].'_'.$item['artikul'];
+	}
+	}
+	}elseif($a_p > 0 and $a_p < 1000){
+	$x= 1000 - $a_p;
+	echo '<tr><td colspan="6"><div class="alert alert-info">Сейчас проходит акция - купи аксессуары на сумму 1000 грн. и получи любые часы за 1 копейку. Вы выбрали аксессуары на сумму '.$a_p.' грн. Добавьте аксессуары на сумму '.$x.' грн. - получите часы в подарок. За дополнительной информацией обращайтесь в Колл центр.</div></td></tr>';
+	
+	}
+	}
+	if(false){//каждое третье в подарок за 1 коп.
 	$resul = count($mas_akciya);
 	if($resul >= 3){
 	//echo $resul;
@@ -148,18 +173,18 @@ $ok_kupon = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$_GET['ku
 		$_SESSION['basket'][$key]['option_id'] = 0;
 		$size = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $article->getId(), 'id_size' => $item['size'], 'id_color' => $item['color']));
 		
-		if(/*in_array($article->getId().'_'.$size->code, $min)*/false){
+		if(/*$article->getId().'_'.$size->code == $chasy*/false){
 		$price = $article->getPerc($now_orders, $item['count'], $skidka, 99, $kupon, $sum_order);
-		$mes = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">Обратите внимание, в Вашем заказе присутствует акционный товар.</div>';
+	//	$mes = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">Обратите внимание, в Вашем заказе присутствует акционный товар.</div>';
 		}else{
 		$mes = '';
 		$price = $article->getPerc($now_orders, $item['count'], $skidka, $event_skidka, $kupon, $sum_order);
 		}
-		if(@$price['option_id']){
-		$_SESSION['basket'][$key]['option_price'] = $price['option_price'];
-		$_SESSION['basket'][$key]['option_id'] = $price['option_id'];
-		}
-
+		
+		if(@$price['option_id']) $_SESSION['basket'][$key]['option_id'] = $price['option_id'];
+		
+		if(@$price['option_price']) $_SESSION['basket'][$key]['option_price'] = $price['option_price'];
+		if(@$price['skidka_block']) $_SESSION['basket'][$key]['skidka_block'] = $price['skidka_block'];
 			//echo $price['price'];
 		//echo 	$price['minus'];
 
@@ -202,9 +227,9 @@ $ok_kupon = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$_GET['ku
 			
 <?php
 $c_al = $size->getCount();
-if($c_al > 1 and $article->getCategoryId() != 147 and $article->getCategoryId() != 70){
+if($c_al > 1 /* and $article->getCategoryId() != 147 and $article->getCategoryId() != 70*/ ){
 ?>
-<select name="select" class="form-control"
+<select name="select" class="form-control" style="width: 50%;"
 				onchange="document.location='<?=wsActiveRecord::useStatic('Menu')->findByUrl('shop-checkout-step1-change')->getPath()."point/{$key}/count/"; ?>'+this.value+'/';">
 <?php
 for ($i = 1; $i <= $c_al; $i++)
@@ -229,7 +254,7 @@ echo $c_al;
 		</td>
 	</tr>
 
-<?php if (in_array($article->getCategoryId(), array(74, 84, 137, 138, 139, 157, 158, 249, 140, 163, 306, 297, 307, 296))) { ?>
+<?php if (in_array($article->getCategoryId(), array(74, 84, 137, 138, 139, 157, 158, 249, 140, 163, 306, 297, 307, 296, 3,331))) { ?>
 			<tr><td colspan="6" class="t_bord">
 			<div class="alert alert-danger">
 			<span class="attention"><?=$this->trans->get('Будьте внимательны, заказывая этот товар! Бельё не подлежит обмену и возврату'); ?></span><br>
@@ -242,7 +267,7 @@ echo $c_al;
 	}
 ?>
 </table>
-<table class="table cart-table">
+<table class="table">
 	<?php //для не активных пользователей
 				if(false){
 			//if ($this->ws->getCustomer()->getIsLoggedIn() and $total_price > 350) {
@@ -334,7 +359,22 @@ echo $c_al;
 						<span class="val_sum">
 <?php
 							$total_price = $to_pay;
-							$_SESSION['total_price'] = $total_price;
+							
+						/*	$sum = 0;
+							if($total_price > 1109){
+							foreach($_SESSION['basket'] as $k){
+							if(!in_array($k['category'], array(53,71,251,79,65,114,253,55,117,115,152,154))) break;
+							if($k['category'] == 154 and ($total_price - $k['price']) > 1000){
+							if($k['option_id'] == 4) break;
+							$k['option_id'] = 4;
+							$k['option_price'] = 0.01;
+							$total_price -=$k['price'];
+							$total_price +=0.01;
+							}
+							
+		}
+		}*/
+		$_SESSION['total_price'] = $total_price;
 							echo Shoparticles::showPrice($total_price);
 ?>
 						</span>
@@ -345,7 +385,7 @@ echo $c_al;
 			
 			<!-- для ввода кода на получение скидки -->
 			
-			<?php if (false) { //
+			<?php if(false){ //
 			//echo $sum_order;
 			//if (!$this->ws->getCustomer()->getIsLoggedIn() and $total_price > 500) {$this->ws->getCustomer()->getId() == 8005
 			?>
@@ -368,21 +408,21 @@ echo $c_al;
 			
 		</table>
 </div>
+</div>
+
 <div class="row mx-0 my-3">
-<div class="col-xs-12 col-md-6 col-lg-6 text-left">
+<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 text-center my-3">
 <?php if ($this->get->metod != 'frame') { ?>
 					<a class="btn btn-secondary btn-lg" style="text-transform: uppercase;font-size: 100%;" role="button" href="<?php
 						echo isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '/'; ?>"><?=$text[5]?>
 					</a>
 <?php } ?>
-			</div>
-			<div class="col-xs-12 col-md-6 col-lg-6 text-right">
+</div>
+<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 text-center my-3">
 				<input type="submit" name="tostep2" style="text-transform: uppercase;font-size: 100%;" value="<?=$text[6]?>" class="btn btn-danger btn-lg" >
 			</div>
 		</div>
 	</form>
-	</div>
-</div>
 
 <?php
 }else {

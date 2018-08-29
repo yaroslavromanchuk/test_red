@@ -200,13 +200,22 @@ console.log(arr_s.sort().reverse());
 function Add_Opis(){
 var arr_op = [];
 $('input:checked.long_checkbox').each(function(){
-var inp = $(this).parent().parent();
+var inp = $(this).parent().parent()[0];
 console.log(inp);
 var span = $(this).parent().parent()[0].nextElementSibling;
 var input = $(this).parent().parent()[0].nextElementSibling.nextElementSibling;
-//var input = $("#o"+this.id);
-console.log(input.value);
-arr_op.push(span.innerHTML+': '+input.value);
+var val = '';
+if(input.type == 'select-multiple'){
+console.log(input.name);
+$('[name="'+input.name+'"] option:selected').each(function() {
+      val += $(this).text() + " ";
+    });
+}else{
+val = input.value;
+}
+//console.log(input);
+//console.log(input.type);
+arr_op.push(span.innerHTML+': '+val);
 });
   long_text.innerHTML = arr_op.join(';<br>\n')+'.';
 }

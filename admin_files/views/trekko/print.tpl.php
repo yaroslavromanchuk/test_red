@@ -6,13 +6,13 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <script src="<?=$this->files?>scripts/jquery.js" type="text/javascript" charset="utf-8"></script>
 </head>
-<body onload="window.print();">
-<p style="margin:auto; font-family: serif;text-align: center;font-size: 16px;font-weight: 600; ">Курьерская заявка от <?=date('d.m.Y')?></p>
+<body onload="window.print();" style="font-family: verdana;">
+<p style="margin:auto; text-align: center;font-size: 16px;font-weight: 600; ">Курьерская заявка от <?=date('d.m.Y')?></p>
 <br>
 <br>
 <?php 
 if($this->order){?>
-<table cellpadding="2" cellspacing="0" border="1" width="1000" style="font-family: serif;text-align: center;font-size: 10px;">
+<table cellpadding="2" cellspacing="0" border="1" width="1000" style="text-align: center;font-size: 10px;">
     <tr style="background-color: #d9d9d9;font-weight: 600;">
         <td colspan="2">Дата загрузки</td>
         <td><?=date('d.m.Y')?></td>
@@ -82,7 +82,7 @@ if($price_skidka < 1) $price_skidka=0;
 ?>
 <br>
 <br>
-<div style="width:300px; height:200px;float:right;font-family: serif;    font-size: 12px;">
+<div style="width:300px; height:200px;float:right;font-size: 12px;">
 <span>Отправил: <?=$this->name;?> / __________</span><br><br>
 <span>Получил: _______________ / __________</span>
 </div>

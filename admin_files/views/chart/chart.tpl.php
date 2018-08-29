@@ -22,7 +22,7 @@
 	</table>
 	</div>
  <div id="curve_chart" ></div>
- <div class="row1">
+ <div class="row">
  <!--<select name="brand" id="brand">
  <option>Выберите бренд</option>
  <option value="0">Все</option>
@@ -35,13 +35,14 @@ if(false){
  ot <input type="date" name="b_d_from" id="b_d_from">
  do <input type="date" name="b_d_to" id="b_d_to">
  <input type="button" name="go" onclick="Otchet(this);" value="Показать">
- </div>
+
  <div class="mailing_start" style="display: none;">Формирование отчета, подождите...<br/>
 	<div class="progress">
   <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
   </div>
 </div>
 </div>
+ </div>
  <div class="row1" id="return" style="text-align:center;">
  
  </div>

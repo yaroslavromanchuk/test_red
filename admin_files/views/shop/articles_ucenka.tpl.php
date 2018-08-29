@@ -57,13 +57,7 @@ if(strripos($value, 'SALE') === FALSE and strripos($value, 'NEW') === FALSE){
     </p>
     <p>
         <input type="checkbox" name="whith_kids" id="whith_kids" value="1"
-<?php
-			if (@$_GET['whith_kids'] == 1) {
-?>
-				checked="checked"
-<?php
-			}
-?>/>
+<?php if (@$_GET['whith_kids'] == 1) { ?> checked="checked"<?php }?>/>
 		<label for="whith_kids">С подкатегорями</label>
     </p>
 
@@ -101,6 +95,11 @@ if(strripos($value, 'SALE') === FALSE and strripos($value, 'NEW') === FALSE){
             </option>
         </select>
     </p>
+	<p>
+	<input type="checkbox" name="block_ucenka" id="block_ucenka" value="1"
+<?php if (@$_GET['block_ucenka'] == 1) { ?> checked="checked"<?php }?>/>
+		<label for="block_ucenka">Выбрать товар который попал в блок уценки</label>
+	</p>
     <input type="submit" class="btn btn-small btn-default"  value="Искать">
     <input type="button"  class="btn btn-small btn-default" value="Очистить" onclick="location.replace('/admin/ucenka/')"><br/>
     <br/>
@@ -127,6 +126,9 @@ if(strripos($value, 'SALE') === FALSE and strripos($value, 'NEW') === FALSE){
 <div class="panel-body">
 <p style="width:200px;">
 <label class="ckbox" data-tooltip="tooltip" title="Блокировать от дополнительных скидок"><input type="checkbox" name="skidka_block" id="skidka_block" value="1"><span>Блокировать от скидок</span></label></p>
+<p style="width:200px;">
+<label class="ckbox" data-tooltip="tooltip" title="Снять блокировку от уценки"><input type="checkbox" name="block_ucenka_end" id="block_ucenka_end" value="1"><span>Снять блокировку от уценки</span></label></p>
+
 <p>
     <select name="ucenka_to_otm" id='ucenka_to_otm' class="form-control input">
         <option value="0">Не уценять</option>
@@ -185,12 +187,16 @@ if(strripos($value, 'SALE') === FALSE and strripos($value, 'NEW') === FALSE){
 
 	
 function sendUcenka(id = '', proc = 0, block = 0){
-	
+var b_uc = 0;
+if($('#block_ucenka_end').prop("checked")){
+b_uc =1;
+}
 var url = '';
 
 if(id != '') url+='ucenka_id=' + id + '&usenka_id_proc=' + proc;
 
 if(block !=0) url+='&skidka_block='+block;
+if(b_uc !=0) url+='&block_ucenka_end=1';
 
 	if(url != ''){
 	$.ajax({
@@ -269,21 +275,22 @@ if(block !=0) url+='&skidka_block='+block;
             <tr class="<?=$article->id?>">
 			<td><label class="ckbox"><input type="checkbox" class="article_check_box cheker" name="articel_for_change_category_<?=$article->id?>"/><span></span></label></td>
                 <td width="50px" class="kolomicon" valign="top">
-                    
-                    <a href="<?=$article->getPath()?>" target="_blank">
-						<img src="<?=SITE_URL?>/img/icons/view-small.png" alt="Просмотр" data-placement="left" title="Смотреть на сайте"  data-tooltip="tooltip" class="img_return view_article"/>
+               <a href="<?=$article->getPath()?>" target="_blank">
+			<img src="<?=SITE_URL?>/img/icons/view-small.png" alt="Просмотр" data-placement="left" title="Смотреть на сайте"  data-tooltip="tooltip" class="img_return view_article"/>
 					</a>
-					<a href="<?=$this->path?>shop-articles/edit/id/<?=$article->id?>/">
-						<img src="<?=SITE_URL?>/img/icons/edit-small.png" alt="Редактировать" data-placement="left" title="Редактировать"  data-tooltip="tooltip" class="img_return"/>
-					</a>
+			<a href="<?=$this->path?>shop-articles/edit/id/<?=$article->getId()?>/"  style="display: inline-block;">
+			<i class="icon ion-clipboard bleak1 tx-30 pd-5" alt="Редактировать" data-placement="left" title="Редактировать"  data-tooltip="tooltip"></i></a>
+			
+					<i class="icon ion-clock bleak tx-30 pd-5 history" alt="История" data-id="<?=$article->getId()?>" data-placement="left" title="Смотреть историю"  data-tooltip="tooltip" ></i>
                 </td>
                 <td class="kolomicon">
                     <?php if ($article->ArtycleBuyCount() == 0) { ?>
-                    <a href="<?php echo $this->path; ?>shop-articles/delete/id/<?php echo $article->id; ?>/"
-                       onclick="return confirm('Удалить товар?')"><img
-                            src="<?=SITE_URL?>/img/icons/remove-small.png" alt="Удалить" data-placement="left" title="Удалить"  data-tooltip="tooltip" class="img_return"/></a>
-                    <?php } else { ?><a
-                        href="/admin/ordersbyartycle/id/<?=$article->id?>">Куплено: <?php echo $article->ArtycleBuyCount() . ' шт.'; ?><?php } ?>
+                   <a href="<?=$this->path;?>shop-articles/delete/id/<?=$article->getId();?>/"  style="display: inline-block;"
+                   onclick="return confirm('Удалить товар?')">
+				   <i class="icon ion-close-circled red tx-30 pd-5" alt="Удалить" data-placement="left" title="Удалить"  data-tooltip="tooltip"></i>
+						</a>
+                    <?php } else { ?><i class="icon ion-android-cart green tx-30 pd-5 shoping" data-id="<?=$article->getId()?>"   data-tooltip="tooltip"  title="Товар покупался <?=$article->ArtycleBuyCount()?> раз"></i>
+						<?php } ?>
                 </td>
                 <td>
 <img class="img_pre" rel="#imgiyem<?=$article->getId(); ?>"src="<?=$article->getImagePath('small_basket'); ?>" alt="<?=htmlspecialchars($article->getTitle()); ?>"/>
@@ -447,7 +454,18 @@ for($i=20; $i<=60; $i+=10){ if($article->ucenka >= $i or $article->max_skidka <=
 </div>
 </div>
 
-<script type="text/javascript">
+<script >
+$('.history').click(function (e) {
+//console.log(e);
+
+var id = e.target.attributes.getNamedItem("data-id").value;
+$.get('/admin/articlehistory/id/'+id+'/m/1',function (data) {fopen('История изменения товара', data);});	
+
+});
+$('.shoping').click(function (e) {
+var id = e.target.attributes.getNamedItem("data-id").value;
+$.get('/admin/ordersbyartycle/id/'+id+'/m/1',function (data) {fopen('История покупок товара', data);});	
+});
     function delTovar(object, id) {
         var url = '/admin/shop-articles/delete/id/';
         if (confirm('Удалить товар?')) {
