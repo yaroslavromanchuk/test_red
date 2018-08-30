@@ -28,7 +28,7 @@
 	'from_name' => 'RED.UA', // from (от) имя
 	'from_email' => 'market@red.ua', // from (от) email адрес
 	'smtp_mode' => 'disabled', // enabled or disabled (включен или выключен)
-	'smtp_host' => 'mail.red.org.ua',
+	'smtp_host' => 'http://mail.red.org.ua/',
 	'smtp_port' => '25',
 	'smtp_username' => null,
 	'smtp_password' => null,

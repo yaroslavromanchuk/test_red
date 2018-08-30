@@ -1,3 +1,4 @@
+
 <?php
 //define('THROTTLE_SPEED', '10,50,400,600');//requests per second, 10 seconds, 100 seconds, 1k seconds
 //@include_once('Framework2.0/throttle.php');
@@ -9,6 +10,7 @@ setlocale(LC_ALL, $locale);
 setlocale(LC_NUMERIC, "en_US");
 mb_internal_encoding("UTF-8");
 
+//if(!in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '127.0.0.2', '91.225.165.62'))) die('Сайт на техобслуживании, вернитесь позже.');
 
 require_once('site_config.php');
 require_once('functions.php'); //move to separate class
@@ -27,7 +29,10 @@ header('Cache-Control: no-cache, must-revalidate');
 header('Expires: ' . date(DATE_RFC822, strtotime('+10 minutes')));
 
 //start session
-//if (@$_GET['PHPSESSID']) session_id($_GET['PHPSESSID']);
+//if (!$_COOKIE["PHPSESSID"]) die('Under maintaince. Please come back shortly.');
+//session_id($_GET['PHPSESSID']);
+
+
 session_start();
 
 //load Cache
@@ -275,6 +280,9 @@ if($website->getCustomer()->getId() == 8005){
 	//echo FORME;
 	//echo '<pre>';
 	//echo print_r($_SERVER);
+	//echo '</pre>';
+//echo $_SERVER[HTTP_COOKIE];
+//echo $_COOKIE["PHPSESSID"];
 	
     // Debug::dump(SQLLogger::getInstance()->reportShort());
       //  Debug::dump(SQLLogger::getInstance()->reportBySql());
@@ -291,6 +299,8 @@ if($website->getCustomer()->getId() == 8005){
 		//print_r($_SESSION);
 		//echo count($_SESSION['basket']);
 	//echo '</pre>';
+	
+
 
     }
 	
