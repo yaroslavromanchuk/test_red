@@ -33,7 +33,8 @@ echo '<table>';
 foreach ($res as $k => $l) {
 $or = wsActiveRecord::useStatic('Shoporders')->findById($l[0]);
 if($or){
-echo '<tr><td>'.$l[0].'</td><td>'.($or->amount+$or->deposit).'</td><td>'.$mas[$or->status].'</td></tr>';
+$am = $or->amount+$or->deposit;
+echo '<tr><td>'.$l[0].'</td><td>'.str_replace('.', ',', $am).'</td><td>'.$mas[$or->status].'</td></tr>';
 //echo $mas[$or->status].'<br>';
 //echo $l[0].' - '.($or->amount+$or->deposit).' -  '.$mas[$or->status].'<br>';
 //$mass[$i] = array('id' => $l[0], 'sum' => $or->amount+$or->deposit, 'status' => $mas[$or->status]); 

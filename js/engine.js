@@ -1,6 +1,12 @@
-
-$(document).ready(function () {
+﻿
+$(function () {
 //if (window.location.hash){ parseHash(); }
+//console.log(window.location.pathname);
+console.log(window.location.search.indexOf("s"));
+
+//br = window.location.pathname.indexOf("brandss");
+//br.find('brands');
+//console.log(br);
 });
 function parseHash() {
 	var hash = window.location.hash;
@@ -21,6 +27,84 @@ function parseHash() {
 	goSearch();
 }
 
+
+
+//новые фильтры
+function ToPage(page) {//пагинация по страницам
+	//$('#current_page').val(p - 2);
+	//change_page_hash = true;
+	//console.log(page);
+	$('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+	gatfilterSelected((page-1));
+	return false;
+}
+
+function sorter(page) {//сортировать товар на сайте
+	gatfilterSelected(page);
+}
+function gatfilterSelected(page) {//вызов фильтра товаров
+if(!page){
+current_page = $('#current_page').val();
+	if (current_page == 0) 
+		{ 
+			page = current_page;
+		}
+	else
+		{
+			page =current_page-1;
+		}
+ //page = parseInt($('#current_page').val()-1);
+ }
+ //console.log(page);
+ //return false;
+var gettext = [];
+if($('#search_word').val()) gettext.push('s='+$('#search_word').val());
+
+c = []; 
+		$('.c_category:checked').each(function () {c.push($(this).val());});
+		if(c.length > 0) gettext.push('categories='+c.join(','));
+c = [];
+		$('.c_brand:checked').each(function () {c.push($(this).val());});
+		if(c.length > 0 && window.location.pathname.indexOf("brands") < 0) gettext.push('brands='+c.join(','));
+c = [];
+		$('.c_sezon:checked').each(function () { c.push($(this).val());});
+		if(c.length > 0) gettext.push('sezons='+c.join(','));
+c = [];
+		$('.s_size:checked').each(function () { c.push($(this).val());});
+		if(c.length > 0) gettext.push('sizes='+c.join(','));
+c = [];
+		$('.c_color:checked').each(function () { c.push($(this).val());});
+		if(c.length > 0) gettext.push('colors='+c.join(','));
+c = [];
+		$('.c_label:checked').each(function () { c.push($(this).val());});
+		if(c.length > 0) gettext.push('labels='+c.join(','));
+c = [];
+		$('.c_skidka:checked').each(function () {c.push($(this).val());});
+		if(c.length > 0) gettext.push('skidka='+c.join(','));
+		
+		if($('#minCost').val()) gettext.push('price_min='+$('#minCost').val());
+		if($('#maxCost').val()) gettext.push('price_max='+$('#maxCost').val());
+		
+			
+		
+		if($('#order_by option:selected').val()) gettext.push('order_by='+$('#order_by option:selected').val());
+		
+		gettext.push('page='+page);
+		if(gettext.length == 0){ $('#foo').detach(); return false; }
+		gettext = gettext.join('&');
+		$('#current_page').val(page);
+		//console.log(gettext);
+		$('.caregory_footer').hide();
+			return window.location.search = '?'+gettext;
+		$('#foo').detach();
+return false;
+}
+function clearallfilters(){// уочистка фильтров
+window.location.search = '';
+return false;
+}
+//выход с новых фильтров
+////////////////старые фильтры
 var script_change_hash = true;
 var run = 0;
 var reset_params = 0;
@@ -38,73 +122,6 @@ function changeSortOrder() {
 	goSearch();
 }
 
-
-
-function ToPage(page) {
-	//$('#current_page').val(p - 2);
-	//change_page_hash = true;
-	//console.log(page);
-	
-	gatfilterSelected((page-1));
-	return false;
-}
-
-function sorter(page) {
-	gatfilterSelected(page);
-}
-function gatfilterSelected(page) {
-if(!page){
-current_page = $('#current_page').val();
-if(current_page == 0){ page = current_page;}else{ page =current_page-1;}
- //page = parseInt($('#current_page').val()-1);
- }
- console.log(page);
- //return false;
-var gettext = [];
-
-c = []; 
-		$('.c_category:checked').each(function () {c.push($(this).val());});
-		if(c.length > 0) gettext.push('categories='+c.join(','));
-c = [];
-		$('.c_brand:checked').each(function () {c.push($(this).val());});
-		if(c.length > 0) gettext.push('brands='+c.join(','));
-c = [];
-		$('.c_sezon:checked').each(function () { c.push($(this).val());});
-		if(c.length > 0) gettext.push('sezons='+c.join(','));
-c = [];
-		$('.s_size:checked').each(function () { c.push($(this).val());});
-		if(c.length > 0) gettext.push('sizes='+c.join(','));
-c = [];
-		$('.c_label:checked').each(function () { c.push($(this).val());});
-		if(c.length > 0) gettext.push('labels='+c.join(','));
-c = [];
-		$('.c_skidka:checked').each(function () {c.push($(this).val());});
-		if(c.length > 0) gettext.push('skidka='+c.join(','));
-		
-		if($('#minCost').val()) gettext.push('price_min='+$('#minCost').val());
-		if($('#maxCost').val()) gettext.push('price_max='+$('#maxCost').val());
-		
-			
-		
-		if($('#order_by option:selected').val()) gettext.push('order_by='+$('#order_by option:selected').val());
-		
-		gettext.push('page='+page);
-		if(gettext.length == 0){ $('#foo').detach(); return false; }
-		gettext = '?'+gettext.join('&');
-		$('#current_page').val(page);
-		//document.location.href = act;
-		console.log(gettext);
-		$('.caregory_footer').hide();
-		return window.location.search = gettext;
-		$('#foo').detach();
-return false;
-}
-function clearallfilters(){
-window.location.search = '';
-return false;
-}
-
-////////////////
 function goSearch(q) {
 	reset_params = 0;
 	var total_pages = parseInt($('#total_pages').val());
@@ -293,7 +310,7 @@ function clearsearchfilters() {
 	$('#curent_page').val(0);
 	return false;
 }
-
+//выход с старых фильтров
 $(window).bind('hashchange', function () {
 	var hash = window.location.hash;
 	if (!script_change_hash) {
@@ -305,5 +322,18 @@ function but_val(obj) {
 	obj.attr('disabled', 'disabled');
 	$('.items_on_page').val(obj.val());
 	prepareSearchToPage(1, 0);
+	return false;
+}
+function but_val_new(obj) {
+//console.log(obj.val());
+	//$('#page_navi button').removeAttr('disabled');
+	obj.attr('disabled', 'disabled');
+	$('.items_on_page').val(obj.val());
+	document.cookie = "items_on_page="+obj.val()+"; path=/";
+	//$.session.set("items_on_page", obj.val());
+
+//sessionStorage['items_on_page'] = obj.val();
+	//prepareSearchToPage(1, 0);
+	gatfilterSelected(0);
 	return false;
 }

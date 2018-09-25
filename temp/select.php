@@ -1,8 +1,6 @@
 <?php 
 header("Content-Type: text/html; charset=utf-8");
-?>
 
-<?php
 
 //$html=simplexml_load_file('https://www.red.ua/articlelist/?id=106');
 //var_dump($html->offers);
@@ -42,7 +40,7 @@ echo print_r($r_ok);
 echo '</pre>';*/
 //$path = 'list_end.xlsx';
 //$res = parse_excel_file($path);
-if(false{
+if(false){
 $path = 'list_end_f.xlsx';
 $res = parse_excel_file($path);
 echo '<table>';

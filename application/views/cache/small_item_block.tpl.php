@@ -1,7 +1,8 @@
 <?php
 //$cat = Skidki::getActivCat($this->article->getCategoryId(), $this->article->getDopCatId());
 //if($cat) $c = true;
-$c = Skidki::getActiv($this->article->getId());
+$c = false;//Skidki::getActiv($this->article->getId());
+$option = false;
 $param = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery('SELECT DISTINCT id_color, id_size FROM ws_articles_sizes WHERE id_article='.$this->article->getId().' AND count > 0');
 ?>
 <li class="article-item <?=$this->article->getId()?> col-xs-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 p-1">
@@ -9,34 +10,16 @@ $param = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery('SELECT DIST
   <div  class="img_art">
     <?php
 	$label = $this->label;
-	if(false){
-	$pr = $this->article->getPrice();
-	if((float)$this->article->getOldPrice()) $pr  = $this->article->getOldPrice();
-	$skid = (1-($this->article->getPriceSkidka()/$pr))*100;
-
-	?>
-	 <div class="article_label_container">
-	 <div class="article_label"><img src="<?=$label?>" alt="" style="width:90px;" ><p style="    font-size: 95%;
-    font-weight: bold;
-    color: #e20404;
-    transform: rotate(-45deg);
-    position: absolute;
-    top: 20px;
-    left: 10px;
-    padding: 0;
-    margin: 0;">
-	<?='-'.round($skid).'%'?>
-	</p>
-	</div>
-	</div> 
-	<?php
-	}else{
-	if ($label){
-	?>
-    <div class="article_label_container"><div class="article_label"><img src="<?=$label?>" alt="" ></div></div> 
-    <?php }
-}	
-	?>
+        
+	if ($label){ ?> <div class="article_label_container_left"><div class="article_label"><img src="<?=$label?>" alt="" ></div></div> <?php } ?>
+        
+    <?php
+   $option =  $this->article->getOptions();
+    if($option->value){
+        
+        ?>
+           <div class="article_label_container_right"><div class="article_label"><img src="/storage/label/promotion.png" alt="promotion"  data-tooltip="tooltip"  data-original-title="<?=$this->article->getOptions()->option_text?>" ></div> </div> 
+       <?php } ?>
 	
     
 	<?php if($c){
@@ -45,6 +28,7 @@ $param = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery('SELECT DIST
 	$skid = (1-($this->article->getPriceSkidka()/$pr))*100;?>
 	<p class="event_label" ><span><?='-'.round($skid).'%';?></span></p>
 	<?php } ?>
+        
 	<?php if($this->article->getImages()->count() > 0){ ?>
 	<div id="myCarousel_<?=$this->article->getId()?>" class="carousel slide"  data-interval="false">
 	<div class="carousel-inner">
@@ -69,18 +53,10 @@ $param = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery('SELECT DIST
 <p class="name"><span><?=$this->article->getModel();?></span></p>
 <p class="brand"><span><?=$this->article->getBrand();?></span></p>
 <hr style="margin-bottom:  5px;">
-	<?php if($c){ ?>
-	<p class="price"><?php $pric = Number::formatFloat($this->article->getPriceSkidka(), 2); $pric = explode(',', $pric); echo $pric[0];?>
-		<span style="font-size:11px;vertical-align: text-top;margin-left: -4px;"><?=(int)$pric[1] ? ','.$pric[1] : ''; //копейки ?></span>&nbsp;грн
-	<?php if((float)$this->article->getOldPrice()){ ?>
-	<span class="price-old"><?=$this->article->showPrice($this->article->getOldPrice());?>&nbsp;грн</span>
-	<?php }else{ ?>
-	<span class="price-old"><?=$this->article->showPrice($this->article->getPrice());?>&nbsp;грн</span>
-<?php	} ?>
-	</p>
-	<?php }elseif('2018-08-23' <= date('Y-m-d') and date('Y-m-d') <= '2018-08-26' and $this->article->sezon == 1 and false){
-$price = $this->article->getPerc(100, 1);
 
+	<?php if($option->value){
+$price = $this->article->getPerc(100, 1);
+$procent = ($this->article->getFirstPrice() - $price['price'])/$this->article->getFirstPrice()*100;
 
 	?>
 	<p class="price">
@@ -90,14 +66,18 @@ $price = $this->article->getPerc(100, 1);
     color: white;
     font-size: 12px;
     display: inline-block;
-    font-weight: normal;">- <?=$this->article->getUcenka()?>% (-27%)</span><br>
-	<?php }?>
-	<span class="price-old"><?=trim($this->article->showPrice($this->article->getFirstPrice()));?>&nbsp;<span style="font-size:14px;">грн</span>
-	</span>
-	<?php $pric = trim(Number::formatFloat($price['price'], 2)); $pric = explode(',', $pric); echo $pric[0];?>
+    font-weight: normal;">- <?=$procent?> %</span><br>
+	<?php } ?>
+	<span class="price-old"><?=trim($this->article->showPrice($this->article->getFirstPrice()));?>&nbsp;<span style="font-size:14px;">грн</span></span>
+        
+	<?php 
+        $pric = trim(Number::formatFloat($price['price'], 2));
+        $pric = explode(',', $pric);
+        echo $pric[0];
+        ?>
 		<span style="font-size:11px;vertical-align: text-top;margin-left: -4px;"><?=(int)$pric[1] ? ','.$pric[1] : ''; //копейки ?></span>&nbsp;<span style="font-size:14px;">грн</span>
 	</p>
-	<?php }else{?>
+	<?php }else{ ?>
 	<p class="price">
 		<?php
 $old_price = $this->article->getOldPrice();
@@ -119,10 +99,10 @@ if($old_price > 0){ ?>
 	<?php } ?>
 	
 	<div  class="size-color-box p-2">
-    <div>
+            <div class="color">
 		<div class="name_box"><?=$this->text_trans[2]?>:</div>
 	<?php
-		$col = array();
+		/*$col = array();
 		foreach($param as $color){
 		if($color){
 		if(in_array($color->id_color, $col)){ continue;
@@ -132,7 +112,15 @@ if($old_price > 0){ ?>
 		if($c){ echo '<div class="color_box" style="background: '.$c.'"></div>';} else { echo '<div class="no_color_box">'.$color->color->getName().'</div>'; }
 			}
 				} 
-								} ?>
+								}*/
+                                                                
+                  // $color =  $this->article->getColorName()->getColor();
+                    if(false){
+                         echo '<div class="color_box" style="background: '.$color.'"></div>';
+                    }else{
+                        echo '<div class="no_color_box">'.$this->article->color_name->name.'</div>';
+                    }
+                                                                ?>
     </div>
 	<div style="clear: both;"></div>
     <div class="article-size">

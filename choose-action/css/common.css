@@ -1,0 +1,71 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+html {
+	min-height: 100%;
+}
+
+body {
+	min-width: 340px;
+	min-height: 100%;
+	padding: 50px 0px;
+	background: -webkit-linear-gradient(290deg,  rgba(25,71,94,0.15) -20%,rgba(241, 251, 255, 0.3) 20%,rgba(241, 251, 255, 0.3) 60%,rgba(25,71,94,0.15) 100%),
+						url('../images/background.png');
+	background: linear-gradient(160deg,  rgba(25,71,94,0.15) -20%,rgba(241, 251, 255, 0.3) 20%,rgba(241, 251, 255, 0.3) 60%,rgba(25,71,94,0.15) 100%),
+						url('../images/background.png');
+}
+
+.button {
+	display: block;
+	position: relative;
+	margin: 0 auto;
+	box-sizing: border-box;
+	width: 330px;
+	height: 115px;
+	background-image: url('../images/button.png');
+	background-size: 330px 115px;
+	padding: 10px 10px 0px 75px;
+	text-decoration: none;
+	text-transform: uppercase;
+	color: #f50000;
+	line-height: 72px;
+	text-align: center;
+	font-family: Arial;
+	font-weight: bold;
+	font-size: 14pt;
+	cursor: pointer;
+}	
+
+.button:before {
+	content: '';
+	position: absolute;
+	display: block;
+	top: 12px;
+	left: 22px;
+	width: 45px;
+	height: 45px;
+	background-size: 45px 45px;
+}
+
+.button.shops:before {
+	background-image: url('../images/shops-icon.png');
+}
+
+.button.internet-shop:before {
+	background-image: url('../images/intenet-shop-icon.png');
+}
+
+.button.job:before {
+	background-image: url('../images/job-icon.png');
+}
+
+@media only screen and (-Webkit-min-device-pixel-ratio: 1.5),
+only screen and (-moz-min-device-pixel-ratio: 1.5),
+only screen and (-o-min-device-pixel-ratio: 3/2),
+only screen and (min-device-pixel-ratio: 1.5) {
+	.button  {
+		background-image: url('../images/button@2x.png');
+	}	
+}

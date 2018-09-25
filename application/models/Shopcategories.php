@@ -23,12 +23,6 @@ class Shopcategories extends wsActiveRecord
 													'field_foreign' => 'parent_id',
 													'orderby' => array('sequence' => 'ASC'),
 													),
-									'balance_brand' => array(
-													'type' => 'hasMany',
-													'class' => 'BalanceCategory',
-													'field_foreign' => 'id_brand',
-													'orderby' => array('id' => 'ASC')
-													),
 									'balance_category' => array(
 													'type' => 'hasMany',
 													'class' => 'BalanceCategory',
@@ -163,7 +157,11 @@ class Shopcategories extends wsActiveRecord
         $a = '';
         if($this->parent){
 		if($this->parent->parent){
+		if($this->parent->parent->parent){
 		$a .= $this->parent->parent->getName();
+		}else{
+		$a .= $this->parent->parent->getName();
+		}
 		}else{
 		$a .= $this->parent->getName();
 		}

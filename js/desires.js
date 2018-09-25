@@ -1,1 +1,48 @@
-function setDesires(x){var url='/page/desires/';if($('#d_chek-'+x).prop('checked')){var new_data='&ids='+x+'&method=add';if(true){$.ajax({url:url,type:'POST',dataType:'json',data:new_data,beforeSend:function(){$('#zet-'+x).attr('title','Удалить c избранного');},success:function(res){console.log(res);},complete:function(res){$(".desires_ok_div").load("document.location #desires");}});}return false;}else{var new_data='&ids='+x+'&method=dell';if(true){$.ajax({url:url,type:'POST',dataType:'json',data:new_data,beforeSend:function(){if(window.location.href.indexOf("desires")>-1){$('.'+x).hide();}$('#zet-'+x).attr('title','Добавить в избранное');},success:function(res){console.log(res);},complete:function(res){$(".desires_ok_div").load("document.location #desires");}});}return false;}}
+function setDesires(x){
+    console.log('tut');
+    if($('#d_chek-'+x).prop('checked')){
+            $.ajax({
+                url:'/desires/',
+                type:'POST',
+                dataType:'json',
+                data: '&method=add&ids='+x,
+                beforeSend:function(){
+                    $('#zet-'+x).attr('title','Удалить c избранного');},
+                success:function(res){
+                    console.log(res);
+                },
+        error: function(e){
+            console.log(e);
+            
+        },
+                complete:function(res){
+                    $(".desires_ok_div").load("document.location #desires");
+        }
+    });
+return false;
+}else{
+        $.ajax({
+            url:'/desires/add/',
+            type:'POST',
+            dataType:'json',
+            data:'&method=dell&ids='+x,
+            beforeSend:function(){
+                if(window.location.href.indexOf("desires")>-1){
+                    $('.'+x).hide();}
+                $('#zet-'+x).attr('title','Добавить в избранное');
+            },
+            success:function(res){
+                console.log(res);
+            },
+        error: function(e){
+            console.log(e);
+            
+        },
+            complete:function(res){
+                $(".desires_ok_div").load("document.location #desires");
+            }
+        });
+    
+    return false;
+}
+}

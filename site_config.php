@@ -1,7 +1,7 @@
 <?php
     define('APP_DIR', dirname(__FILE__) . '/application');
     define('WEBSHOP_PATH', 'Framework2.0/');
-    $old_dr = @$_SERVER['DOCUMENT_ROOT'];
+    $old_dr = $_SERVER['DOCUMENT_ROOT'];
     //if(!$_SERVER['DOCUMENT_ROOT'])
     $_SERVER['DOCUMENT_ROOT'] = dirname(__FILE__);
     define('INPATH', $_SERVER['DOCUMENT_ROOT'] . '/');
@@ -17,7 +17,7 @@
 
     //get current server
     //------------------------------------------
-    $server = str_replace('www.', '', @$_SERVER["HTTP_HOST"]);
+    $server = str_replace('www.', '', $_SERVER["HTTP_HOST"]);
     $url = str_replace($old_dr, '', $_SERVER['DOCUMENT_ROOT']);
     //define('SITE_URL', 'http://' . $server . $url );
     define('SITE_URL', '');
@@ -25,10 +25,10 @@
     $config_values = array('default_language' => 'ru', 'is_live' => 1, 'site_id' => '1');
 	
 		$site = array(
-	'from_name' => 'RED.UA', // from (от) имя
-	'from_email' => 'market@red.ua', // from (от) email адрес
-	'smtp_mode' => 'disabled', // enabled or disabled (включен или выключен)
-	'smtp_host' => 'http://mail.red.org.ua/',
+	'from_name' => 'RED.UA', // from (пїЅпїЅ) пїЅпїЅпїЅ
+	'from_email' => 'market@red.ua', // from (пїЅпїЅ) email пїЅпїЅпїЅпїЅпїЅ
+	'smtp_mode' => 'disabled', // enabled or disabled (пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
+	'smtp_host' => 'mail.red.org.ua',
 	'smtp_port' => '25',
 	'smtp_username' => null,
 	'smtp_password' => null,
@@ -69,6 +69,10 @@
             . $_SERVER['DOCUMENT_ROOT'] . '/application/controllers'
 			. PATH_SEPARATOR
             . $_SERVER['DOCUMENT_ROOT'] . '/application/languages'
+			. PATH_SEPARATOR
+            . $_SERVER['DOCUMENT_ROOT'] . '/backend/models'
+			. PATH_SEPARATOR
+            . $_SERVER['DOCUMENT_ROOT'] . '/backend/controllers'
     //. PATH_SEPARATOR
     //. get_include_path()
     );
@@ -141,7 +145,9 @@
         'shop_order_remarks_class' => 'Shoporderremarks'
     );
 
-    foreach ($model_substitute as $key => $value)
+    foreach ($model_substitute as $key => $value){
     define(strtoupper($key), $value);
+    
+    }
     define('DB_SUFFIX', '');
     define('PDO', 0);

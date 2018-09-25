@@ -17,7 +17,7 @@ class PageController extends controllerAbstract
     }
 	public function scanAction()
     {
-	if(@$this->post->sr){
+	if($this->post->sr){
 if(Scan::getCountScan($this->post->sr) == 0){
 $s = new Scan();
 $s->setCod($this->post->sr);
@@ -318,17 +318,7 @@ echo $s->cod.' - '.$s->count.'<br>';
 
     }
 
-    public function newsAction()
-    {
-        if ($news = wsActiveRecord::useStatic('News')->findById($this->get->getId())) {
-			$this->cur_menu->page_image = $news->image;
-            $this->cur_menu->page_title = $news->title;
-            $this->cur_menu->name = $news->title;
-            $this->cur_menu->page_body = $news->content;
-            echo $this->render('news/one.tpl.php');
-        } else
-            echo $this->render('news/list.tpl.php');
-    }
+    
 
     public
     function mapAction()
@@ -1233,81 +1223,7 @@ VALUES ('$code',  '$id_article',  '$ctime', NULL ,  '$email',  '$name')");
 			echo $this->render('pages/sharescustomer.tpl.php');}
 	}
 	
-	public function desiresAction() {
 	
-		if($this->post->method == 'add'){
-		$ids = $this->post->ids;
-		$result = 'on';
-	if(@$this->ws->getCustomer()->getId()){
-	$_SESSION['desires'][$ids] = $ids;
-	$id_articles = $ids;
-	$a = wsActiveRecord::useStatic('Desires')->count(array('id_customer'=>$this->ws->getCustomer()->getId(), 'id_articles'=>$id_articles));
-	if($a == 0){
-	$d = new Desires();
-	$d->setCtime(date('Y-m-d H:i:s'));
-	$d->setIdCustomer($this->ws->getCustomer()->getId());
-	$d->setIdArticles($id_articles);
-	$d->save();
-	$result = 'ok+';
-	}
-	}else{
-	$_SESSION['desires'][$ids] = $ids;
-	$result = 'ok+';
-	}
-	unset($_POST['method']);
-      die(json_encode($result));
-	}
-	if($this->post->method == 'dell'){
-	$ids = $this->post->ids;
-	$result = 'on';
-	if(@$this->ws->getCustomer()->getId()){
-	unset($_SESSION['desires'][$ids]);
-	$id = $this->ws->getCustomer()->getId();
-	$id_articles = $ids;
-	$sql = "DELETE FROM `ws_desires` WHERE `id_customer` = ".$id." AND `id_articles` =".$id_articles;
-	wsActiveRecord::query($sql);
-	$result = 'on-';
-	}else{
-	$result = 'on-';
-	unset($_SESSION['desires'][$ids]);
-	}
-	unset($_POST['method']);
-          die(json_encode($result));
-	}
-	
-
-	if($this->ws->getCustomer()->getIsLoggedIn()){
-	
-	$id = $this->ws->getCustomer()->getId();
-	$res = wsActiveRecord::useStatic('Desires')->findAll(array('id_customer'=>$id)); 
-	$array = array();
-	$i=0;
-	foreach ($res as $value) {
-	$array[$i] = $value[id_articles];
-	$i++;
-}
-
-			$this->view->desires = wsActiveRecord::useStatic('Shoparticles')->findAll(array('`id` IN (' . implode(',', array_map('intval', $array)) . ')', ' stock not like "0"'));
- 
-			$this->view->resultat = $this->view->render('finder/list.desires.tpl.php');
-			echo $this->view->render('finder/resultat.tpl.php');
-		
-		
-}elseif(!$this->ws->getCustomer()->getIsLoggedIn()){
-		if($_SESSION['desires']){
-			$array = array();
-			$i=0;
-			foreach ($_SESSION['desires'] as $item) {
-				$array[$i]=$item;
-			$i++;
-			}
-			$this->view->desires = wsActiveRecord::useStatic('Shoparticles')->findAll(array('`id` IN (' . implode(',', array_map('intval', $array)) . ')', ' stock not like "0"'));	
-		$this->view->resultat = $this->view->render('finder/list.desires.tpl.php');
-		echo $this->view->render('finder/resultat.tpl.php');
-
-		}
-			}	
-	}
 	public function flagCloseCustomerAction() {
 	if($this->post->method == 'add_flag'){
 	$id = $this->ws->getCustomer()->getId();

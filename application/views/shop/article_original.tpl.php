@@ -1,4 +1,4 @@
-<script type="text/javascript">
+<script>
 $(document).ready(function(){
 	if($("#telephone").attr('value') == '') {
 		$("#telephone").mskd("099 999-99-99");
@@ -375,7 +375,7 @@ if ($ms > 0) {
                 <a class="close"
                    onclick="$('.mask').hide(); $('#rozmerSetka1').toggle('slow', function() {});  $('.popap_blok').hide(); return false;"></a>
 
-                <div class="quik_frame" style="auto; padding: 15px; height: auto;">
+                <div class="quik_frame" style=" padding: 15px; height: auto;">
                     <div class="sizebloc">
                         <div class="size_tabs">
                             <?php

@@ -10,7 +10,6 @@ class NewsViews extends wsActiveRecord
 	
 	//if($news) return $news;
 	
-	//return ;
+	return trtue;
 	}
 }
-?>

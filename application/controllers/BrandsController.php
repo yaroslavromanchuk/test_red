@@ -29,23 +29,13 @@ class BrandsController extends controllerAbstract
     {
         $brands = Brand::findAllActive();
 
-      /*  $brandsFilter = array(
-            "See All" => array(),
-            "123" => array(),
-            "A-C" => array(),
-            "D-I" => array(),
-            "J-L" => array(),
-            "M-R" => array(),
-            "S-T" => array(),
-            "U-Z" => array()
-        );*/
 		$brandsFilter = array(
-            "See All" => array(),
-            "123" => array(),
-            "A" => array(),
+                        "See All" => array(),
+                        "123" => array(),
+                        "A" => array(),
 			"B" => array(),
 			"C" => array(),
-            "D" => array(),
+                        "D" => array(),
 			"E" => array(),
 			"F" => array(),
 			"G" => array(),
@@ -76,24 +66,8 @@ class BrandsController extends controllerAbstract
             $name = mb_strtolower(substr($name_trim, 0, 1));
 
             $brandsFilter["See All"][$name_trim] = $brand;
-
-        /*    if ($name === "0" || (int)$name > 0) {
-                $brandsFilter["123"][$name_trim] = $brand;
-            } elseif (in_array($name, array("a", "b", "c"))) {
-                $brandsFilter["A-C"][$name_trim] = $brand;
-            } elseif (in_array($name, array("d", "e", "f", "g", "h", "i"))) {
-                $brandsFilter["D-I"][$name_trim] = $brand;
-            } elseif (in_array($name, array("j", "k", "l"))) {
-                $brandsFilter["J-L"][$name_trim] = $brand;
-            } elseif (in_array($name, array("m", "n", "o", "p", "q", "r"))) {
-                $brandsFilter["M-R"][$name_trim] = $brand;
-            } elseif (in_array($name, array("s", "t"))) {
-                $brandsFilter["S-T"][$name_trim] = $brand;
-            } elseif (in_array($name, array("u", "v", "w", "x","y", "z"))) {
-                $brandsFilter["U-Z"][$name_trim] = $brand;
-            }*/
 			
-			if ($name === "0" || (int)$name > 0 || $name === "&") {
+            if ($name === "0" || (int)$name > 0 || $name === "&") {
                 $brandsFilter["123"][$name_trim] = $brand;
             } elseif ($name === 'a'){
                 $brandsFilter["A"][$name_trim] = $brand;
@@ -149,15 +123,6 @@ class BrandsController extends controllerAbstract
                 $brandsFilter["Z"][$name_trim] = $brand;
             }
         }
-
-       // ksort($brandsFilter["See All"]);
-       // ksort($brandsFilter["123"]);
-        //ksort($brandsFilter["A-C"]);
-       // ksort($brandsFilter["D-I"]);
-        //ksort($brandsFilter["J-L"]);
-       // ksort($brandsFilter["M-R"]);
-        //ksort($brandsFilter["S-T"]);
-        //ksort($brandsFilter["U-Z"]);
 
 		foreach ($brandsFilter as $key => $value) {
 			if (count($value) == 0) {

@@ -160,9 +160,9 @@ input{box-shadow:none !important;}
 .vacancy-form .vacancy-info-navigation a.btn.active,
 .vacancy-form-cashier .vacancy-info-navigation a.btn.active,
 .vacancy-form-guardian .vacancy-info-navigation a.btn.active{background-color:rgba(0, 0, 0, 0.02);box-shadow:none;}
-.vacancy-form .vacancy-info-navigation a.btn:not(.vacancy-form .vacancy-info-navigation .btn-group:last-child a.btn),
-.vacancy-form-cashier .vacancy-info-navigation a.btn:not(.vacancy-form-cashier .vacancy-info-navigation .btn-group:last-child a.btn),
-.vacancy-form-guardian .vacancy-info-navigation a.btn:not(.vacancy-form-guardian .vacancy-info-navigation .btn-group:last-child a.btn){border-right:transparent;}
+.vacancy-form .vacancy-info-navigation a.btn:not(.vacancy-form .vacancy-info-navigation .btn-group:last-child .btn),
+.vacancy-form-cashier .vacancy-info-navigation a.btn:not(.vacancy-form-cashier .vacancy-info-navigation .btn-group:last-child .btn),
+.vacancy-form-guardian .vacancy-info-navigation a.btn:not(.vacancy-form-guardian .vacancy-info-navigation .btn-group:last-child .btn){border-right:transparent;}
 .vacancy-form .tab-pane ul,
 .vacancy-form-cashier .tab-pane ul,
 .vacancy-form-guardian .tab-pane ul{margin-left:30px;}

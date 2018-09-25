@@ -6,7 +6,7 @@ $text_result_trans = explode(',', $this->trans->get('Вы искали,Всег�
  <script src="/js/bs_slider/bootstrap-slider.min.js"></script>-->
  <!--<link type="text/css" href="/js/priceslider/jquery-ui.css?v=1.2" rel="stylesheet"/>-->
   <script src="/js/priceslider/jquery-ui.min.js"></script>
-<?=@$this->search_word?$text_result_trans[0].':'.$this->search_word.'<br>':''?>			
+<span class="search_result" ><?=@$this->search_word?$text_result_trans[0].' : <span class="rez_s">'.$this->search_word.'</span><br>':''?></span>			
 <div  class="form-group" id="sersh_r"><?=$text_result_trans[1];?>: <span id="total_founded"><?=$this->result_count?></span></div>
 <div class="form-group">
 <select name="order_by" id="order_by" onchange="return sorter(0)" class="form-control select2" data-placeholder="<?=$text_result_trans[2]?>:">
@@ -57,12 +57,13 @@ $text_result_trans = explode(',', $this->trans->get('Вы искали,Всег�
                         <?php
 						$asc = array();
 					$asc = explode(',' , $this->get->brands);
+					//echo print_r($asc);
 						ksort($this->filters['brands']);
                         foreach ($this->filters['brands'] as $cat) { ?>
                             <div>
                                 <label for="c_brand<?=$cat['id']?>" class="ckbox">
 								<input type="checkbox" class="c_brand ck" id="c_brand<?=$cat['id']?>"
-<?php if ($this->get->brands == $cat['id']){ ?> checked="checked" <?php }else if(in_array($cat['id'], $asc, true)){ ?>checked="checked" <?php } ?>  value="<?=$cat['id']?>"/>
+<?php if ($this->get->brands == $cat['id']){ ?> checked="checked" <?php }else if(in_array($cat['id'], $asc)){ ?> checked="checked" <?php } ?>  value="<?=$cat['id']?>"/>
                                     <span><?=$cat['name']?><!--<span class="badge badge-secondary badge-pill ml-1"><?=$cat['count']?></span>--></span>
 									
                                 </label>
@@ -262,7 +263,7 @@ if($i == 5) break;
 						
 						<?php } ?>
 			    </div>
-				<script>
+<script>
 			
 			$("#slider").slider({
 	min: <?=$this->price_min?>,
@@ -302,18 +303,7 @@ $("input#maxCost").change(function(){
 	}
 	$("#slider").slider("values",1,value2);
 });
-			/*	$('#ex2').slider({
-	formatter: function(value) {
-	//console.log(e);
-	console.log(value);
-	$('.min_price').val(value[0]);
-	$('.max_price').val(value[1]);
-	
-	
-		return  value;
-	}
-	
-});*/
+
 				$('.goFilter').click(function() {
 				//if ($(this).is(':checked')) {
 				

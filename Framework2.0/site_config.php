@@ -57,5 +57,6 @@
 		'log_class' => 'wsLog',
 		);
 		
-	foreach($model_substitute as $key => $value)
+	foreach($model_substitute as $key => $value){
 		define(strtoupper($key), $value);
+        }

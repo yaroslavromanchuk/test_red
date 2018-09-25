@@ -23,7 +23,7 @@ class AjaxController extends controllerAbstract
     }
 	
 	public function setlangAction(){
-	if(@$this->post->lang){$_SESSION['lang'] = $this->post->lang;}
+	if($this->post->lang){ $_SESSION['lang'] = $this->post->lang; }
 	//if($this->post->lang == 'ua') 
 	 die($this->post->lang);
 	return false;

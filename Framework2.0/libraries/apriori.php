@@ -1,8 +1,5 @@
 <?php 
-	
-	
-//http://ami.nstu.ru/~vms/lecture/data_mining/rules.htm - russian docs
-//http://www.scribd.com/doc/40633773/Apriori-Report - code
+
 class Apriori
 {
 	//return ItemSet

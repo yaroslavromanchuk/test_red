@@ -2,7 +2,8 @@
 
 class Filter extends wsActiveRecord{
 
-    public static function getArticlesFilter($search = '', $addtional = false, $category_id = false, $order_by = false,  $page, $onPage){
+    public static function getArticlesFilter($search = '', $addtional = false, $category_id = false, $order_by = false,  $page, $onPage)
+	{
 
         //order by
 		switch($order_by){
@@ -62,52 +63,58 @@ class Filter extends wsActiveRecord{
 		
 		$param = array();
 		
+		//$min_max_price = 'SELECT MIN(price) as min, MAX(price) as max ' . $where;
+		
+		//if (@$addtional['price']['min']) $where .= ' AND ws_articles.price >= ' . $addtional['price']['min'];
+		//if (@$addtional['price']['max']) $where .= ' and ws_articles.price <= ' . $addtional['price']['max'];
+		
+		//$param['categories'] = Filter::getAllParametrs($where, $category->id, 'categories');
+		
+		
+		
+        if (count($addtional['categories'])) {
+   $where .= ' AND (ws_articles.category_id IN (' . $addtional['categories'] . ') OR ws_articles.dop_cat_id IN (' . $addtional['categories'] . '))';
+        }
+		
+		//$param['brands'] = Filter::getAllParametrs($where, $category->id, 'brands');
+		
+		if (count($addtional['brands'])) {
+            $where .= ' AND ws_articles.brand_id IN ("' . implode('","', $addtional['brands']) . '")';
+        }
+		//$param['sezons'] = Filter::getAllParametrs($where, $category->id, 'sezons');
+		if (count($addtional['sezons'])) {
+            $where .= ' AND ws_articles.sezon IN ('.implode(',', $addtional['sezons']).')';
+        }
+		//$param['colors'] = Filter::getAllParametrs($where, $category->id, 'colors');
+        if (count($addtional['colors'])) {
+            $where .= ' AND ws_articles.color_id IN (' . implode(',', $addtional['colors']) . ')';
+        }
+		//$param['sizes'] = Filter::getAllParametrs($where, $category->id, 'sizes');
+        if (count($addtional['sizes'])) {
+            $where .= ' AND ws_articles_sizes.id_size IN (' . implode(',', $addtional['sizes']) . ')';
+        }
+		//$param['labels'] = Filter::getAllParametrs($where, $category->id, 'labels');
+        if (count($addtional['labels'])) {
+            $where .= ' AND ws_articles.label_id IN ('.implode(',', $addtional['labels']).')';
+        }
+
+		//$param['skidka'] = Filter::getAllParametrs($where, $category->id, 'skidka');
+		 if (count($addtional['skidka'])) {
+            $where .= ' AND ws_articles.ucenka IN ("'.implode('","', $addtional['skidka']).'")';
+        }
+		$param['categories'] = Filter::getAllParametrs($where, $category->id, 'categories', $search);
+		$param['brands'] = Filter::getAllParametrs($where, $category->id, 'brands');
+		$param['sezons'] = Filter::getAllParametrs($where, $category->id, 'sezons');
+		$param['colors'] = Filter::getAllParametrs($where, $category->id, 'colors');
+		$param['sizes'] = Filter::getAllParametrs($where, $category->id, 'sizes');
+		$param['labels'] = Filter::getAllParametrs($where, $category->id, 'labels');
+		$param['skidka'] = Filter::getAllParametrs($where, $category->id, 'skidka');
+		
 		$min_max_price = 'SELECT MIN(price) as min, MAX(price) as max ' . $where;
 		
 		if (@$addtional['price']['min']) $where .= ' AND ws_articles.price >= ' . $addtional['price']['min'];
 		if (@$addtional['price']['max']) $where .= ' and ws_articles.price <= ' . $addtional['price']['max'];
 		
-		$param['categories'] = Filter::getAllParametrs($where, $category->id, 'categories');
-		
-		
-		
-        if (count(@$addtional['categories'])) {
-   $where .= ' AND (ws_articles.category_id IN (' . $addtional['categories'] . ') OR ws_articles.dop_cat_id IN (' . $addtional['categories'] . '))';
-        }
-		
-		$param['brands'] = Filter::getAllParametrs($where, $category->id, 'brands');
-		
-		if (count(@$addtional['brands'])) {
-            $where .= ' AND ws_articles.brand_id IN ("' . implode('","', $addtional['brands']) . '")';
-        }
-		$param['sezons'] = Filter::getAllParametrs($where, $category->id, 'sezons');
-		if (count(@$addtional['sezons'])) {
-            $where .= ' AND ws_articles.sezon IN ('.implode(',', $addtional['sezons']).')';
-        }
-		$param['colors'] = Filter::getAllParametrs($where, $category->id, 'colors');
-        if (count(@$addtional['colors'])) {
-            $where .= ' AND ws_articles.color_id IN (' . implode(',', $addtional['colors']) . ')';
-        }
-		$param['sizes'] = Filter::getAllParametrs($where, $category->id, 'sizes');
-        if (count(@$addtional['sizes'])) {
-            $where .= ' AND ws_articles_sizes.id_size IN (' . implode(',', $addtional['sizes']) . ')';
-        }
-		$param['labels'] = Filter::getAllParametrs($where, $category->id, 'labels');
-        if (count(@$addtional['labels'])) {
-            $where .= ' AND ws_articles.label_id IN ('.implode(',', $addtional['labels']).')';
-        }
-
-		$param['skidka'] = Filter::getAllParametrs($where, $category->id, 'skidka');
-		 if (count(@$addtional['skidka'])) {
-            $where .= ' AND ws_articles.ucenka IN ("'.implode('","', $addtional['skidka']).'")';
-        }
-		//$param['categories'] = Filter::getAllParametrs($where, $category->id, 'categories');
-		//$param['brands'] = Filter::getAllParametrs($where, $category->id, 'brands');
-		//$param['sezons'] = Filter::getAllParametrs($where, $category->id, 'sezons');
-		//$param['colors'] = Filter::getAllParametrs($where, $category->id, 'colors');
-		//$param['sizes'] = Filter::getAllParametrs($where, $category->id, 'sizes');
-		//$param['labels'] = Filter::getAllParametrs($where, $category->id, 'labels');
-		//$param['skidka'] = Filter::getAllParametrs($where, $category->id, 'skidka');
 //d($where, false);
 
         $count_article_query = 'SELECT count(distinct(ws_articles.id)) as cnt' .$where;
@@ -144,7 +151,8 @@ class Filter extends wsActiveRecord{
 	
 
 
-    public static function getAllParametrs($where, $category_id, $type=''){
+    public static function getAllParametrs($where, $category_id, $type='', $search = '')
+	{
 		$array = array();
 		switch($type){
 		case 'categories': //Categories
@@ -152,7 +160,7 @@ class Filter extends wsActiveRecord{
         $categories = wsActiveRecord::useStatic('Shoparticles')->findByQuery($categories);
         //convert to array
         foreach ($categories as $cat) {
-            if (in_array($category_id, array(106, 85, 299, 300, 301, 302, 303, 11))){
+            if (in_array($category_id, array(106, 85, 299, 300, 301, 302, 303, 11, 267)) or $search != '' ){
 				$array[] = array(
                     'id' => $cat->category_id,
                     'name' => $cat->category->getName(),
@@ -170,7 +178,7 @@ class Filter extends wsActiveRecord{
 
         } break;
 		
-		case 'brands': $brands = 'SELECT brand_id, brand, count(distinct(ws_articles.id)) AS cnt '. $where.' GROUP BY ws_articles.brand_id ORDER BY `ws_articles`.brand ';
+		case 'brands': $brands = 'SELECT `ws_articles`.brand_id, `ws_articles`.brand, count(distinct(ws_articles.id)) AS cnt '. $where.' GROUP BY ws_articles.brand_id ORDER BY `ws_articles`.brand ';
         $brands = wsActiveRecord::useStatic('Shoparticles')->findByQuery($brands);
         $i = 0;
         foreach ($brands as $brand) {
@@ -238,6 +246,171 @@ class Filter extends wsActiveRecord{
 		
 		return $array;
     }
+    /**
+     * Список выбраных товаров
+     * 
+     * @param type $articles - массив товаров
+     * @param type $order_by - тип сортировки
+     * @param type $page - отображаема страница
+     * @param type $onPage - товаров на странице
+     * @return array список полученіх товаров
+     */
+    public static function getArticlesList($articles, $order_by = false,  $page, $onPage)
+    {
+      
+        //order by
+		switch($order_by){
+		case 1: $order_by = 'price ASC'; break;
+		case 2: $order_by = 'price DESC'; break;
+		case 3: $order_by = 'views ASC'; break;
+		case 4: $order_by = 'views DESC'; break;
+		case 5: $order_by = 'ctime ASC'; break;
+		case 6: $order_by = 'ctime DESC'; break;
+		default:  $order_by = 'ctime DESC';
+		}
+             
+              $where = "
+                  FROM ws_articles_sizes
+					JOIN ws_articles ON ws_articles_sizes.id_article = ws_articles.id 
+					WHERE ws_articles_sizes.count > 0 and ws_articles.active = 'y' 
+						AND ws_articles.stock not like '0'  
+						and ws_articles.status = 3
+                 ";  
+                
+                $param = array();
+                
+               if (count($articles)) { $where .= ' AND ws_articles.id in ('.$articles.') '; } 
+               
+                $param['categories'] = Filter::getAllParametrs($where, '', 'categories');
+		$param['brands'] = Filter::getAllParametrs($where, '', 'brands');
+		$param['sezons'] = Filter::getAllParametrs($where, '', 'sezons');
+		$param['colors'] = Filter::getAllParametrs($where, '', 'colors');
+		$param['sizes'] = Filter::getAllParametrs($where, '', 'sizes');
+		$param['labels'] = Filter::getAllParametrs($where, '', 'labels');
+		$param['skidka'] = Filter::getAllParametrs($where, '', 'skidka');
+                
+        $min_max_price = 'SELECT MIN(price) as min, MAX(price) as max ' . $where;
+
+        $count_article_query = 'SELECT count(distinct(ws_articles.id)) as cnt' .$where;
+//d($count_article_query, false);
+        $total_articles = Shoparticles::findByQueryArray($count_article_query)[0]->cnt;
+		//d($total_articles, false);
+        if (!$total_articles){ $total_articles = 0; }
+			
+        $articles_query = 'SELECT distinct(ws_articles.id), ws_articles.* ' .$where. ' ORDER BY ' . $order_by . ' LIMIT ' . $page * $onPage . ',' . $onPage;	
+//d($articles_query, false);
+        $articles_list = Shoparticles::useStatic('Shoparticles')->findByQuery($articles_query);
+      //  d($articles_list, false);
+        $min_max_price =  Shoparticles::findByQueryArray($min_max_price);
+        //$m = Shoparticles::useStatic('Shoparticles')->
+		
+        return array(
+            'count' => $total_articles,
+            'articles' => $articles_list,
+            'pages' => ceil($total_articles / $onPage),
+            'parametr' =>  $param,
+            'min_max' => $min_max_price
+        );
+        
+    }
+    /**
+     * Список товаров участвующих в акции
+     * 
+     * @param type $articles - массив товаров
+     * @param type $order_by - тип сортировки
+     * @param type $page - отображаема страница
+     * @param type $onPage - товаров на странице
+     * @return array список полученіх товаров
+     */
+    public static function getArticlesOptionList($option, $order_by = false,  $page, $onPage)
+    {
+        $options =  Shoparticlesoption::useStatic('Shoparticlesoption')->findById((int)$option);
+         
+         if($options){
+             
+        
+        //order by
+		switch($order_by){
+		case 1: $order_by = 'price ASC'; break;
+		case 2: $order_by = 'price DESC'; break;
+		case 3: $order_by = 'views ASC'; break;
+		case 4: $order_by = 'views DESC'; break;
+		case 5: $order_by = 'ctime ASC'; break;
+		case 6: $order_by = 'ctime DESC'; break;
+		default:  $order_by = 'ctime DESC';
+		}
+             
+              $where = " FROM ws_articles_sizes
+					JOIN ws_articles ON ws_articles_sizes.id_article = ws_articles.id ";
+
+              switch ($options->action)
+              {
+                  case 'article':  
+                      $where .=" JOIN ws_articles_options on ws_articles.id = ws_articles_options.article_id"
+                             . " WHERE ws_articles_sizes.count > 0 and ws_articles.active = 'y' 
+						AND ws_articles.stock not like '0'  
+						and ws_articles.status = 3
+                                                AND ws_articles_options.option_id = ".$options->id;
+                      break;
+                  case 'category': 
+                      $where .=" JOIN ws_articles_options on ws_articles.category_id = ws_articles_options.category_id"
+                             . " WHERE ws_articles_sizes.count > 0 and ws_articles.active = 'y' 
+						AND ws_articles.stock not like '0'  
+						and ws_articles.status = 3
+                                                AND ws_articles_options.option_id = ".$options->id;
+                      break;
+                  case 'brand': 
+                      $where .=" JOIN ws_articles_options on ws_articles.brand_id = ws_articles_options.brand_id"
+                             . " WHERE ws_articles_sizes.count > 0 and ws_articles.active = 'y' 
+						AND ws_articles.stock not like '0'  
+						and ws_articles.status = 3
+                                                AND ws_articles_options.option_id = ".$options->id;
+                      break;
+                  default: 
+                      $where .= " WHERE ws_articles_sizes.count > 0 and ws_articles.active = 'y' 
+						AND ws_articles.stock not like '0'  
+						and ws_articles.status = 3";
+                      break;
+              }
+              
+                $param = [];
+
+                $param['categories'] = self::getAllParametrs($where, '', 'categories');
+		$param['brands'] = self::getAllParametrs($where, '', 'brands');
+		$param['sezons'] = self::getAllParametrs($where, '', 'sezons');
+		$param['colors'] = self::getAllParametrs($where, '', 'colors');
+		$param['sizes'] = self::getAllParametrs($where, '', 'sizes');
+		$param['labels'] = self::getAllParametrs($where, '', 'labels');
+		$param['skidka'] = self::getAllParametrs($where, '', 'skidka');
+                
+        $min_max_price = 'SELECT MIN(price) as min, MAX(price) as max ' . $where;
+
+        $count_article_query = 'SELECT count(distinct(ws_articles.id)) as cnt' .$where;
+//d($count_article_query, false);
+        $total_articles = Shoparticles::findByQueryArray($count_article_query)[0]->cnt;
+		//d($total_articles, false);
+        if (!$total_articles){ $total_articles = 0; }
+			
+        $articles_query = 'SELECT distinct(ws_articles.id), ws_articles.* ' .$where. ' ORDER BY ' . $order_by . ' LIMIT ' . $page * $onPage . ',' . $onPage;	
+//d($articles_query, false);
+        $articles_list = Shoparticles::useStatic('Shoparticles')->findByQuery($articles_query);
+      //  d($articles_list, false);
+        $min_max_price =  Shoparticles::findByQueryArray($min_max_price);
+        //$m = Shoparticles::useStatic('Shoparticles')->
+		
+        return [
+            'count' => $total_articles,
+            'articles' => $articles_list,
+            'pages' => ceil($total_articles / $onPage),
+            'parametr' =>  $param,
+            'min_max' => $min_max_price
+        ];
+         }else{
+             return false;
+         }
+        
+    }
+    
 	
 			
 }

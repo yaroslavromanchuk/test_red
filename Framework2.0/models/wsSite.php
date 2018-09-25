@@ -14,8 +14,12 @@ class wsSite extends wsActiveRecord
 			$site = wsActiveRecord::useStatic(self::$_site_class)->findFirst(array('hostname' => $hostname));		
 		}
 		
-		if(!$site)
-			$site = new Site(Cfg::getInstance()->getValue('site_id'));
+		if (!$site)
+                    { 
+                        $site = new Site(Cfg::getInstance()->getValue('site_id')); 
+                        
+                    }
+                
     	return $site;
     }
 
@@ -25,4 +29,3 @@ class wsSite extends wsActiveRecord
 	}
 
 }
-?>

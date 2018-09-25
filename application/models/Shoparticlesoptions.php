@@ -6,14 +6,19 @@ class Shoparticlesoptions extends wsActiveRecord
 	
 	protected function _defineRelations()
 	{	
-		$this->_relations = array('article' => array('type'=>'hasOne',
-													'class'=>self::$_shop_articles_class,
-													'field'=>'article_id')
-													);
+            $this->_relations = array(
+                'option' => array(
+                                'type'=>'hasOne',
+                                'class'=>'Shoparticlesoption',
+                                'field'=>'option_id'
+                    ),
+                                    );
 	}
 	
-	public function getRealPrice() {
+	/*public function getRealPrice() {
 		return $this->getPrice();
-	}
+	}*/
+	
+	
 }
 ?>

@@ -4,23 +4,11 @@ class News extends wsActiveRecord
     protected $_table = 'ws_news';
     protected $_orderby = array( 'id' => 'DESC');
 
-
-	protected function _defineRelations()
-	{
-		/*
-		$this->_composed_of = array('created' => array('field' => 'ctime',
-                                                    'class' => 'wsDate',
-                                                    'getter' => 'getIsoDate'),
-									'start_datetime' => array('field' => 'start_datetime',
-                                                    'class' => 'wsDate',
-                                                    'getter' => 'getIsoDate'),
-									'end_datetime' => array('field' => 'end_datetime',
-                                                    'class' => 'wsDate',
-                                                    'getter' => 'getIsoDate')													
-													);
-		*/
-	}
-
+        /**
+         * Возвращает статус акции
+         * 
+         * @return string
+         */
 	public function getStatusText()
 	{
 		switch($this->getStatus()) 
@@ -31,20 +19,26 @@ class News extends wsActiveRecord
 		}
 	}
 
-
+        /**
+         * Конвертация формата даты 1999-01-01 00:00:00 -> 01.01.1999
+         * @return string
+         */
 	public function getDate()
 	{
 		return date('d.m.Y', strtotime($this->getCtime()));
 	}
-
+        
+        /**
+         * Возвращает описание акции
+         * @return srting
+         */
 	public function getDescriptionShort()
 	{
-		if(trim(strip_tags($this->intro)))
-			return $this->intro;
+		if(trim(strip_tags($this->intro))){return $this->intro;}
 		
 		$sent = explode('. ', strip_tags($this->content));
 		
-		return trim(@$sent[0]);
+		return trim($sent[0]);
 	}
 
 	public function isOnline()
@@ -64,12 +58,25 @@ class News extends wsActiveRecord
 		*/
 		return true;
 	}
-
+        
+        
+        /**
+         * Ссылка на акцию
+         * 
+         * @return string
+         */
 	public function getPath()
 	{
 		return "/news/name/" . $this->_generateUrl($this->getTitle()) . "/id/" . $this->getId() .'/';
 	}
-	
+        
+      
+        
+	/**
+         * Список активных акций
+         * @param type $limit - количество возвращаемых записей, по умолчанию 5
+         * @return array
+         */
 	public static function findActiveNews($limit = 5)
 	{
 		$news = wsActiveRecord::useStatic('News')->findAll("status=0 AND (start_datetime = '0000-00-00 00:00:00' OR NOW() >= start_datetime) AND (end_datetime = '0000-00-00 00:00:00' OR NOW() <= end_datetime ) ", array(), $limit);
@@ -77,4 +84,3 @@ class News extends wsActiveRecord
 		return $news;
 	}
 }
-?>

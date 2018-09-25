@@ -1,7 +1,7 @@
 
 <?php
 //define('THROTTLE_SPEED', '10,50,400,600');//requests per second, 10 seconds, 100 seconds, 1k seconds
-//@include_once('Framework2.0/throttle.php');
+//require_once('Framework2.0/throttle.php');//v sluchi dos
 //ini_set('display_errors',1);
 //set_time_limit(600);
 date_default_timezone_set('Europe/Kiev');
@@ -11,7 +11,7 @@ setlocale(LC_NUMERIC, "en_US");
 mb_internal_encoding("UTF-8");
 
 //if(!in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '127.0.0.2', '91.225.165.62'))) die('Сайт на техобслуживании, вернитесь позже.');
-
+ 
 require_once('site_config.php');
 require_once('functions.php'); //move to separate class
 require_once('Zend/Loader.php');
@@ -27,11 +27,6 @@ header('Content-type: text/html; charset=UTF-8');
 header('Cache-control: private');
 header('Cache-Control: no-cache, must-revalidate');
 header('Expires: ' . date(DATE_RFC822, strtotime('+10 minutes')));
-
-//start session
-//if (!$_COOKIE["PHPSESSID"]) die('Under maintaince. Please come back shortly.');
-//session_id($_GET['PHPSESSID']);
-
 
 session_start();
 
@@ -84,8 +79,8 @@ Registry::set('lang', strtolower($lng));
 
 $detect = new Mobile_Detect;
 Registry::set('device', ($detect->isMobile() ? ($detect->isTablet() ? 'tablet' : 'phone') : 'computer'));
-
 //opredelenie device
+
 	function morph($n, $k) {
 		$unit=array(
 			array('гривня'  ,'гривні'  ,'гривень'    ,0),
@@ -186,8 +181,7 @@ if (isset($_GET['clearcache'])) {
 }
 
 
-if (isset($_COOKIE['cache_config']))
-    $cache->setEnabled($_COOKIE['cache_config']);
+if (isset($_COOKIE['cache_config'])) $cache->setEnabled($_COOKIE['cache_config']);
 
 
 if (isset($_REQUEST['site_date']) || isset($_SESSION['site_date'])) {
@@ -276,10 +270,10 @@ echo Controller::process();
 
 if($website->getCustomer()->getId() == 8005){
 		//	define('FORME', true);
-	
+	//echo get_include_path();
 	//echo FORME;
 	//echo '<pre>';
-	//echo print_r($_SERVER);
+	//echo print_r(define);
 	//echo '</pre>';
 //echo $_SERVER[HTTP_COOKIE];
 //echo $_COOKIE["PHPSESSID"];

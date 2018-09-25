@@ -14,11 +14,11 @@ abstract class controllerAbstract extends Controller
         if (strtotime($this->ws->getCustomer()->machine_last_visit->getCtime()) < (time() - (24 * 60 * 60))) {
             $this->ws->getCustomer()->logout();
             $this->ws->updateHashes();
-            $str = ((isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], $_SERVER['HTTP_HOST']) !== false)
-                    ? $_SERVER['HTTP_REFERER'] :  $_SERVER['REQUEST_URI']);// заменить $_SERVER['REQUEST_URI'] на '/'
-            if (isset($_GET['redirect']))
-                $str = $_GET['redirect'];
+$str = ((isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], $_SERVER['HTTP_HOST']) !== false) ? $_SERVER['HTTP_REFERER'] :  $_SERVER['REQUEST_URI']);// заменить $_SERVER['REQUEST_URI'] на '/'
+if (isset($_GET['redirect'])) $str = $_GET['redirect'];
+
             $this->_redirect($str);
+			
         } elseif ($_SERVER['REMOTE_ADDR'] != $this->ws->getCustomer()->machine_last_visit->getIpCreated()) {
             $this->ws->getCustomer()->logout();
             $this->ws->updateHashes();
@@ -54,9 +54,9 @@ abstract class controllerAbstract extends Controller
             $_SESSION['basket_articles'] = array();
         $this->basket_articles = $this->view->basket_articles = $_SESSION['basket_articles'];
 
-        if (!isset($_SESSION['basket_options']))
-            $_SESSION['basket_options'] = array();
-        $this->basket_options = $this->view->basket_options = $_SESSION['basket_options'];
+     ////   if (!isset($_SESSION['basket_options']))
+          //  $_SESSION['basket_options'] = array();
+       // $this->basket_options = $this->view->basket_options = $_SESSION['basket_options'];
 		
 		$this->view->text_trans  = explode(',', $this->trans->get('Товаров на странице,Быстрый просмотр,Цвета,Размеры'));
 		  //push
@@ -241,18 +241,23 @@ public function translateuk($str, $lang_from = 'ru', $lang_to='uk') {
  $apiKey = 'AIzaSyC5MeHPcuEKqiWH7Oqlxvp8GhY7TTYwUf8';    
   $url = 'https://www.googleapis.com/language/translate/v2?key=' . $apiKey . '&q=' . rawurlencode($str) . '&source='.$lang_from.'&target='.$lang_to;  
   $handle = curl_init($url);  
-  curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);  
+	curl_setopt($handle, CURLOPT_RETURNTRANSFER, true); 
+		if (isset($_SERVER['HTTP_REFERER'])) {
+            curl_setopt($handle, CURLOPT_REFERER, $_SERVER['HTTP_REFERER']);
+        }
+     curl_setopt($handle, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.696.71 Safari/534.24");    
   $response = curl_exec($handle);  
   $responseDecoded = json_decode($response, true);  
   $responseCode = curl_getinfo($handle, CURLINFO_HTTP_CODE); 
   curl_close($handle);  
-  if($responseCode != 200) {  
-        echo 'Fetching translation failed! Server response code:' . $responseCode . '<br>';  
-        echo 'Error description: ' . $responseDecoded['error']['errors'][0]['message'];  
+  if($responseCode == 200) {  
+		return $responseDecoded['data']['translations'][0]['translatedText'];
+ 
     } else {  
        // echo 'Source: ' . $text . '<br>';  
-        $trans = $responseDecoded['data']['translations'][0]['translatedText'];  
-		return $trans;
+       return false;
+	    //  echo 'Fetching translation failed! Server response code:' . $responseCode . '<br>';  
+        //echo 'Error description: ' . $responseDecoded['error']['errors'][0]['message'];  
     }
 }
 public function translateru($str, $lang_from = 'uk', $lang_to='ru') {
@@ -260,17 +265,22 @@ public function translateru($str, $lang_from = 'uk', $lang_to='ru') {
   $url = 'https://www.googleapis.com/language/translate/v2?key=' . $apiKey . '&q=' . rawurlencode($str) . '&source='.$lang_from.'&target='.$lang_to;  
   $handle = curl_init($url);  
   curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);  
+  if (isset($_SERVER['HTTP_REFERER'])) {
+            curl_setopt($handle, CURLOPT_REFERER, $_SERVER['HTTP_REFERER']);
+        }
+     curl_setopt($handle, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.696.71 Safari/534.24"); 
   $response = curl_exec($handle);  
   $responseDecoded = json_decode($response, true);  
   $responseCode = curl_getinfo($handle, CURLINFO_HTTP_CODE); 
   curl_close($handle);  
-  if($responseCode != 200) {  
-        echo 'Fetching translation failed! Server response code:' . $responseCode . '<br>';  
-        echo 'Error description: ' . $responseDecoded['error']['errors'][0]['message'];  
+  if($responseCode == 200) {  
+		return $responseDecoded['data']['translations'][0]['translatedText'];
+ 
     } else {  
        // echo 'Source: ' . $text . '<br>';  
-        $trans = $responseDecoded['data']['translations'][0]['translatedText'];  
-		return $trans;
+       return false;
+	    //  echo 'Fetching translation failed! Server response code:' . $responseCode . '<br>';  
+        //echo 'Error description: ' . $responseDecoded['error']['errors'][0]['message'];  
     }
 }
 	

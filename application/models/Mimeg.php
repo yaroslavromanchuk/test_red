@@ -14,14 +14,19 @@ class Mimeg
         $filename_dest = '';
 
         $default = array('path', 'type', 'filename', 'id', 'width', 'height', 'crop', 'crop_coords', 'fill', 'fill_color', 'original');
+        
         $get = array();
+        
         $temp_info = explode('/', $file_name);
+        
         $path_info = array();
+        
         for ($i = 0, $c = count($temp_info); $i < $c; $i = $i+2){
-            $path_info[strtolower(@$temp_info[$i])] = @$temp_info[$i+1];
+            $path_info[strtolower($temp_info[$i])] = $temp_info[$i+1];
         }
+        
         foreach ($default as $item){
-            $get[$item] = @$path_info[$item];
+            $get[$item] = $path_info[$item];
         }
 
         $get['original'] = (int)$get['original'];
@@ -50,14 +55,18 @@ class Mimeg
         }
 
         if ($filename_original) {
+            
             $ext = pathinfo($filename_original, PATHINFO_EXTENSION);
+            
             if (!in_array(strtolower($ext), array('jpeg', 'jpg', 'gif', 'png', 'flv'), TRUE))
-                $filename_original = FALSE;
+                    {
+                        $filename_original = FALSE;
+                    }
         }
 
 
 
-        if (@$file || @$filename_original){
+        if ($file || $filename_original){
 
             if (!$filename_original){
                 $filename_original = $file->getSystemPath();
@@ -73,12 +82,15 @@ class Mimeg
 
             if ($get['original']) {
 
-                $filename_original_org = substr($filename_original, 0, strrpos($filename_original, '.')) . "_org.{$ext}";
-                if (!is_file($filename_original_org) && is_file($filename_original)){
-                    copy($filename_original, $filename_original_org);
-                }
-                $filename_original = str_replace($_SERVER['DOCUMENT_ROOT'], '' ,$filename_original_org);
+               // $filename_original_org = substr($filename_original, 0, strrpos($filename_original, '.')) . "_org.{$ext}";
+                
+                //if (!is_file($filename_original_org) && is_file($filename_original)){
+                 //   copy($filename_original, $filename_original_org);
+                //}
+                
+                $filename_original = str_replace($_SERVER['DOCUMENT_ROOT'], '' ,$filename_original);
             }
+            
 
             $filename_dest = substr($filename_original, 0, strrpos($filename_original, '.'));
 

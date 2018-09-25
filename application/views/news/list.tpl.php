@@ -1,19 +1,20 @@
-<h1><?=$this->trans->get('Акции')?></h1>
+<h1><?=$this->getCurMenu()->getName()?></h1>
 <?php //echo $this->getCurMenu()->getPageBody(); ?>
 <div class="row mx-auto">
 <?php
-$today = date("Y-m-d H:i:s"); 
-$all_news = wsActiveRecord::useStatic('News')->findAll(array("status"=> 2, "start_datetime <= '$today' and '$today' <= end_datetime"),array(),array(6));
-if($all_news->count())
-foreach($all_news as $news) { ?>
+if($this->news){
+foreach($this->news as $new) { ?>
 <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 p-1">
 <div class="bg-white p-2 h-100 text-center">
-	<h2><?=$news->getTitle()?></h2>
-	<p class="text-center"><?=$news->getIntro()?></p>
-	<a class="btn btn-danger" href="<?=$news->getPath()?>"><?=$this->trans->get('Смотреть детали')?></a><br/>
+	<h2><?=$new->option_text?></h2>
+	<p class="text-center"><?=$new->intro?></p>
+	<a class="btn btn-danger" href="<?=$new->getPath()?>"><?=$this->trans->get('Смотреть детали')?></a><br/>
 	</div>
 	</div>
-<?php }else{ ?>
+<?php
+}
+
+}else{ ?>
 <div class="col-xl-12 p-1">
 <div class="bg-white p-2 h-100 text-center">
 <h5 class="text-danger d-inline-block p-3 font-weight-bold"><?=$this->trans->get('В данный момент нет действующих акций')?></h5><br>
@@ -21,5 +22,42 @@ foreach($all_news as $news) { ?>
 </div>
 </div>
 <?php } ?>
+    </div>
 
-</div>
+
+    <?php
+if($this->ws->getCustomer()->getIsLoggedIn() and $this->ws->getCustomer()->isAdmin()){ 
+    $all_news = Shoparticlesoption::findAllActiveOption();
+    if($all_news){ ?> 
+<br>
+    <div class="row mx-auto">
+        <div class="col-sm-12">
+        <div class="card">
+            <h5 class="card-header bg-danger text-white">
+    Скрытые или не активные акции
+  </h5>
+       <div class="card-body">
+           <h5 class="card-title">Отображаются только администрации</h5>
+           <div class="row">
+    <?php 
+        foreach ($all_news as $n){ ?>
+        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 p-1">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-danger"><?=$n->option_text?></h5>
+                    <p class="card-text"><?=$n->intro?></p>
+                    <a class="btn btn-danger" href="<?=$n->getPath()?>"><?=$this->trans->get('Смотреть детали')?></a>
+                </div>
+            </div>
+        </div>
+      <?php  } ?>
+       </div>  
+       </div>
+    </div>
+        </div>  
+    </div>
+   <?php  }
+} 
+
+
+

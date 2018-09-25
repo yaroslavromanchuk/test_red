@@ -1,7 +1,7 @@
-<script src="/js/desires.js"></script>
+<script src="/js/desires.js?v=1.4"></script>
 <?php  
 //$c = Skidki::getActivCat($this->getShopItem()->getCategoryId(), $this->getShopItem()->getDopCatId());
-$c = Skidki::getActiv($this->getShopItem()->getId());
+$c = false;//Skidki::getActiv($this->getShopItem()->getId());
  ?>
 
 		<!-- Dialog return -->
@@ -242,7 +242,7 @@ $rs = 'detail';
 ?>
 <div class="row article-detail-box p-2 m-0">
 <?php if (count($this->getShopItem()->getImages()) > 0) { ?>
-<div class="photo_min col-xs-12  col-lg-1 ">
+<div class="photo_min col-xs-12  col-lg-1 col-xl-1">
 <a href='<?=$this->getShopItem()->getImagePath()?>' class="cloud-zoom-gallery" title="<?=htmlspecialchars($this->getShopItem()->getTitle())?>" data-rel="useZoom: 'zoom', smallImage: '<?=$this->getShopItem()->getImagePath($rs)?>'"
 >						
 <div class="for_cloud_big_src" style="display:none"><?=$this->getShopItem()->getImagePath();?></div>
@@ -258,15 +258,17 @@ $rs = 'detail';
 <?php } ?>
 
 <!--foto-->
-<div class="photos  col-xs-12 col-sm-12 col-lg-5">
+<div class="photos  col-xs-12 col-sm-12 col-lg-5 col-xl-4">
 
-<?php if($label == '/storage/label/final_sale_1.png'){
-	$pr = $this->getShopItem()->getPrice();
-	if((float)$this->getShopItem()->getOldPrice()) $pr  = $this->getShopItem()->getOldPrice();
-	$skid = (1-($this->getShopItem()->getPriceSkidka()/$pr))*100;
-
-	?>
-	 <div class="article_label_container_2"><div class="article_label_2"><img src="<?=$label?>" alt="" style="width:100px;"><p style="font-size: 95%;
+<?php
+if(/*$this->getShopItem()->getOptions()*/ false){
+    //echo $this->getShopItem()->getOptions()->value;
+    ?>
+    
+    <div class="article_label_container_2">
+             <div class="article_label_2">
+                 <img src="/storage/label/final_sale_1.png" alt="" style="width:100px;">
+                 <p style="font-size: 95%;
     font-weight: bold;
     color: #e20404;
     transform: rotate(-45deg);
@@ -274,25 +276,65 @@ $rs = 'detail';
     top: 20px;
     left: 10px;
     padding: 0;
-    margin: 0;"><?='-'.round($skid).'%';?></p></div></div> 
+    margin: 0;"><?='-'.$this->getShopItem()->getOptions()->value.'%';?></p></div>
+         </div> 
+ <?php   
+}
+if($label == '/storage/label/final_sale_1.png'){
+	$pr = $this->getShopItem()->getPrice();
+	if((float)$this->getShopItem()->getOldPrice()) $pr  = $this->getShopItem()->getOldPrice();
+	$skid = (1-($this->getShopItem()->getPriceSkidka()/$pr))*100;
+
+	?>
+	 <div class="article_label_container_2">
+             <div class="article_label_2">
+                 <img src="<?=$label?>" alt="" style="width:100px;">
+                 <p style="font-size: 95%;
+    font-weight: bold;
+    color: #e20404;
+    transform: rotate(-45deg);
+    position: absolute;
+    top: 20px;
+    left: 10px;
+    padding: 0;
+    margin: 0;"><?='-'.round($skid).'%';?></p></div>
+         </div> 
 	<?php
-	}elseif ($label) { ?><div class="article_label_container_2"><div class="article_label_2"><img alt="" src="<?=$label;?>"/></div></div><?php } ?>
+	} ?> 
+    <div class="">  
+ <?php if ($label) { ?>
+    <div class="article_label_container_left"><div class="article_label"><img alt="label" src="<?=$label?>" style="width: 100%"/></div></div>
+        <?php } ?>
+     <?php
+     
+   $option =  $this->getShopItem()->getOptions();
+    if($option->value){
+        ?>
+    <div class="article_label_container_right" >
+        <div class="article_label">
+            <img src="/storage/label/promotion.png" alt="promotion"  data-tooltip="tooltip"  data-original-title="<?=$option->option_text?>" >
+        </div> 
+    </div> 
+       <?php } ?>
 <div style="display:none" id="cloud_big_src"><?=$this->getShopItem()->getImagePath(); ?></div>
 
 <a onclick="$('a.cloud-zoom').css('z-index',1);" href='<?=$this->getShopItem()->getImagePath(); ?>' class='cloud-zoom' id='zoom' >
+    
 	<?php  if($c and false){
 $pr = $this->getShopItem()->getPrice();
-	if((float)$this->getShopItem()->getOldPrice()) $pr  = $this->getShopItem()->getOldPrice();
+        if((float)$this->getShopItem()->getOldPrice()) { $pr  = $this->getShopItem()->getOldPrice(); }
 	$skid = (1-($this->getShopItem()->getPriceSkidka()/$pr))*100;
 	?>
 	<p class="event_label"><span><?='-'.(int)$skid.'%';?></span></p>
 	<?php } ?>
+        
 <img class="photo-big" id="test"  src="<?=$this->getShopItem()->getImagePath($rs)?>" alt='<?=htmlspecialchars($this->getShopItem()->getTitle()); ?>' title="<?=htmlspecialchars($this->getShopItem()->getTitle()); ?>" >
 </a>
+</div>
 	</div>
 <!--/foto-->
 <!-- /text-->
-	<div class="texts col-xs-12 col-sm-12 col-lg-6 px-0">
+	<div class="texts col-xs-12 col-sm-12 col-lg-6  col-xl-7 px-0">
 	<div class="model"><?=$this->getShopItem()->getModel();?></div>
 		<div class="shop_brand">
 <?php if ($this->getShopItem()->article_brand->getText()) { ?>
@@ -464,13 +506,18 @@ $pr = $this->getShopItem()->getPrice();
 ?>
 <hr>
 <?php
-	if($c){ ?>
+	if($option->value){ ?>
 	<div class="div_price" >
-				<span class="price">
+            <span class="price">
 				<?=$this->trans->get('Цена')?> 
-<?php
-				$pric = Number::formatFloat($this->getShopItem()->getPriceSkidka(), 2);
-				$pric = explode(',', $pric);
+                            
+<?php         
+  $price   = $this->getShopItem()->getPerc(100, 1);
+ // $f = $this->getShopItem()->getFirstPrice();
+           // $procent = ($f-$price['price'])/$f*100;
+            $pric = trim(Number::formatFloat($price['price'], 2));
+            //$pric = Number::formatFloat($this->getShopItem()->getPriceSkidka(), 2);
+            $pric = explode(',', $pric);
 				echo $pric[0];
 ?>
 				<span style="font-size:11px; vertical-align: text-bottom; margin-left: -4px;">
@@ -478,21 +525,11 @@ $pr = $this->getShopItem()->getPrice();
 					echo (int)$pric[1] ? ','.$pric[1] : ''; //копейки
 ?>
 				</span> грн
-			</span>
+	</span>
 			<span class="old-price">
-			<?php
-			if ($this->getShopItem()->getDiscount()) {
-?>
-				(<?php $pric_sk = Number::formatFloat($this->getShopItem()->getOldPrice(), 2); $pric_sk = explode(',', $pric_sk);
+			(<?php $pric_sk = Number::formatFloat($this->getShopItem()->getFirstPrice(), 2); $pric_sk = explode(',', $pric_sk);
 					echo $pric_sk[0];
 					echo (int)$pric_sk[1] ? ','.$pric_sk[1] : '';?> грн)
-				
-<?php
-			} else{ ?>
-			(<?php $pric_sk = Number::formatFloat($this->getShopItem()->getPrice(), 2); $pric_sk = explode(',', $pric_sk);
-					echo $pric_sk[0];
-					echo (int)$pric_sk[1] ? ','.$pric_sk[1] : '';?> грн)
-			<?php } ?>
 			</span>
 	</div>
 	<?php }else{ ?>
@@ -532,8 +569,8 @@ if($this->ws->getCustomer()->getIsLoggedIn() and wsActiveRecord::useStatic('Desi
 			?>
 			<div style="display: inline-block;">
 			<label class="leeb" style="">
-<input hidden id="d_chek-<?=$this->getShopItem()->getId();?>" type="checkbox"  <?=$chek;?>  onclick="setDesires(<?=$this->getShopItem()->getId();?>);">
-	<span id="zet-<?=$this->getShopItem()->getId();?>" title="<?=$title; ?>" data-placement="bottom"  data-tooltip="tooltip" style="z-index:0;width: 25px;height: 22px;display: block;" >
+<input hidden id="d_chek-<?=$this->getShopItem()->getId()?>" type="checkbox"  <?=$chek?>  onclick="setDesires(<?=$this->getShopItem()->getId();?>);">
+	<span id="zet-<?=$this->getShopItem()->getId()?>" title="<?=$title?>" data-placement="bottom"  data-tooltip="tooltip" style="z-index:0;width: 25px;height: 22px;display: block;" >
 	</span>
 	</label>
 	</div>
@@ -553,8 +590,8 @@ if($this->ws->getCustomer()->getIsLoggedIn() and wsActiveRecord::useStatic('Desi
 			}elseif($this->get->metod == 'frame' and $this->getShopItem()->getCountArticles()){
 ?>
 <div class="buttom_click" >
-<span  onclick="submitCartValidator('<?=$this->getShopItem()->getPath(); ?>');ga('send', 'pageview', '/virtual/tovartobacket'); return true;" class=" btn btn-danger"  data-placement="bottom"  data-tooltip="tooltip"  title="<?=$this->trans->get('Выбраный Вами товар будет добавлен в корзину'); ?>">
-<i class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></i><span><?=$this->trans->get('В КОРЗИНУ'); ?></span>
+<span  onclick="submitCartValidator('<?=$this->getShopItem()->getPath()?>');ga('send', 'pageview', '/virtual/tovartobacket'); return true;" class=" btn btn-danger"  data-placement="bottom"  data-tooltip="tooltip"  title="<?=$this->trans->get('Выбраный Вами товар будет добавлен в корзину'); ?>">
+<i class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></i><span><?=$this->trans->get('В КОРЗИНУ')?></span>
 </span>
 </div>
 <?php
@@ -603,24 +640,24 @@ if($n){ ?>
 } ?>
 <div class="description">
 		<ul class="nav nav-tabs">
-			<?php if (@$this->getShopItem()->getLongText() or @$this->getShopItem()->getLongTextUk() ) {
+			<?php if ($this->getShopItem()->getLongText() or $this->getShopItem()->getLongTextUk() ) {
 			echo '<li class="nav-item"><a class="nav-link active" href="#tabs-1" data-toggle="tab" >'.$this->trans->get('Описание').'</a></li>'; 
 			} ?>
-			<?php if (@$this->getShopItem()->getSostav() or @$this->getShopItem()->getSostavUk()) { echo '<li class="nav-item"><a class="nav-link" href="#tabs-2" data-toggle="tab">'.$this->trans->get('Cостав').'</a></li>'; } ?>
+			<?php if ($this->getShopItem()->getSostav() or $this->getShopItem()->getSostavUk()) { echo '<li class="nav-item"><a class="nav-link" href="#tabs-2" data-toggle="tab">'.$this->trans->get('Cостав').'</a></li>'; } ?>
 			<?php if ($this->getShopItem()->getSootRozmer()) { echo '<li class="nav-item"><a class="nav-link" href="#tabs-3" data-toggle="tab">'.$this->trans->get('Соответствие').'</a></li>'; } ?>
 			<li class="nav-item"><a class="nav-link" href="#tabs-4" data-toggle="tab"><?=$this->trans->get('Способ доставки')?></a></li>
 			<li class="nav-item"><a class="nav-link" href="#tabs-5" data-toggle="tab"><?=$this->trans->get('Способ оплаты')?></a></li>
 		</ul>
 		<div class="tab-content">
-		<?php if (@$this->getShopItem()->getLongText()) { ?> 
+		<?php if ($this->getShopItem()->getLongText()) { ?> 
 		<div id="tabs-1"  class="tab-pane fade show active" >
 		<p style="line-height: 2.5;">
 		Сезон: <?=$this->getShopItem()->getNameSezon()->getName()?>
 		<br><?=$this->getShopItem()->getLongText()?>
 		</p></div>
 		<?php }?>
-		<?php if (@$this->getShopItem()->getSostav()) { ?> <div id="tabs-2" class="tab-pane fade"><p><?=$this->getShopItem()->getSostav()?></p></div> <?php } ?>
-		<?php if (@$this->getShopItem()->getSootRozmer()) { ?> 
+		<?php if ($this->getShopItem()->getSostav()) { ?> <div id="tabs-2" class="tab-pane fade"><p><?=$this->getShopItem()->getSostav()?></p></div> <?php } ?>
+		<?php if ($this->getShopItem()->getSootRozmer()) { ?> 
 		<div id="tabs-3" class="tab-pane fade"><p><?=$this->getShopItem()->getSootRozmer()?></p><br>
 		<a href="#"  class="rozmerSetka1"  style="color: red;"
 								onclick="$('.popap_blok').css('width',$(document).width()).css('height',$(document).height()).show();

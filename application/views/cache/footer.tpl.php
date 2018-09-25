@@ -53,7 +53,7 @@
 <style>#liracrm-callme{    bottom: -1%;
     right: -1%;}
 </style>
-<script async src='//uaadcodedsp.rontar.com/rontar_aud_async.js'></script>
+<script src='//uaadcodedsp.rontar.com/rontar_aud_async.js'></script>
 <script>
 window.rnt=window.rnt||function(){(rnt.q=rnt.q||[]).push(arguments)};
     rnt('add_event', {advId: 20676});
@@ -107,14 +107,33 @@ if(l.name != s){
          url: "/ajax/setlang/",
          data: "&lang="+l.name,
          success: function(res){
-		 hr = location.href;
-		 if(res == 'ru' && hr.indexOf('uk') != -1){
-		 location.replace(hr.replace('uk','ru'));
-		 }else if(res == 'uk' && hr.indexOf('ru') != -1) {
-		 location.replace(hr.replace('ru', 'uk'));
+		var  hr = location.href;
+		/* if(res == 'ru' && hr.indexOf('uk') != -1){
+		 location.replace(hr.replace('uk',''));
+		 } else */
+                 /*    if (res == 'uk') {
+                          location.replace(location.origin+'/'+res+location.pathname);
+		// location.replace(hr.replace('ru', 'uk'));
 		 }else{
-		 location.replace(location.origin+'/'+res+location.pathname);
+		 location.replace(location.origin+'/'+location.pathname);
 		 }
+                 */
+                console.log(location);
+                 console.log(res);
+                // url = location.origin+location.pathname;
+                if(l.name == 'uk'){
+                     location.replace(location.origin+'/'+res+location.pathname);
+                      //console.log(url);
+                } else if(l.name == 'ru' && location.pathname.indexOf('uk') != -1){
+                    location.replace(location.href.replace('/uk',''));
+                    
+                }else{
+                    
+                    location.replace(location.href);
+                }
+                
+           /// console.log(url);
+           // location.replace(url);
 		 }
           });
 		  }

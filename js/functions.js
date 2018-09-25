@@ -260,6 +260,7 @@ function submitCartValidator(id) {// add korzina s bistrogo prosmotra
 }
 $(document).ready(function () {
 	$('.menu-2-box').liFixar({side: 'top',position: $('.top_menu_new').innerHeight()});//
+        //$('#filter').liFixar({side: 'top',position: $('.menu-2-box').innerHeight()});//
 	
 $("#qo").submit(function () {//bistriy zakaz
 	

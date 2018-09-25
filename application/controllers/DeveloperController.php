@@ -3,15 +3,35 @@
 class DeveloperController extends controllerAbstract
 {
 
+ public function init()
+    {
+	//$this->view->setRenderPath('developer');
+	$this->_global_template = 'developer.tpl.php';
+	}
+
+
+public function indexAction(){
+
+
+echo $this->render('developer/index.php');
+}
+
+
+public function customerAction() {
+    
+    $this->view->customer = wsActiveRecord::useStatic('Customer')->findAll(['customer_type_id < 2', 'customer_status_id < 2']);
+    
+    echo $this->render('developer/customer.php');
+}
 
 
 public function basketcontactsAction() {
 			
-		if ($this->ws->getCustomer()->isBan()) $this->_redir('ban');
-        if ($this->ws->getCustomer()->isNoPayOrder()) $this->_redir('nopay');
-		if (!$this->basket) $this->_redir('index');
+		//if ($this->ws->getCustomer()->isBan()) $this->_redir('ban');
+      //  if ($this->ws->getCustomer()->isNoPayOrder()) $this->_redir('nopay');
+	//	if (!$this->basket) $this->_redir('index');
 		
-		if ($this->ws->getCustomer()->isAdmin() and !$this->ws->getCustomer()->hasRight('do_pay')) die('Нету прав на заказ');
+		//if ($this->ws->getCustomer()->isAdmin() and !$this->ws->getCustomer()->hasRight('do_pay')) die('РќРµС‚Сѓ РїСЂР°РІ РЅР° Р·Р°РєР°Р·');
 
 		$info = array();
 		$errors = array();
@@ -95,8 +115,8 @@ public function basketcontactsAction() {
             if (!$this->ws->getCustomer()->getIsLoggedIn()) {
                 if (wsActiveRecord::useStatic('Customer')->findByEmail($info['email'])->count() != 0) {
                     $error_email = 1;
-					 $errors['error'][] = $this->trans->get('Такой email уже используется.<br /> Поменяйте email или зайдите как зарегистрированный пользователь').'.';
-                   // $this->view->error_email = $this->trans->get('Такой email уже используется.<br /> Поменяйте email или зайдите как зарегистрированный пользователь').'.';
+					 $errors['error'][] = $this->trans->get('РўР°РєРѕР№ email СѓР¶Рµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ.<br /> РџРѕРјРµРЅСЏР№С‚Рµ email РёР»Рё Р·Р°Р№РґРёС‚Рµ РєР°Рє Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅРЅС‹Р№ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ').'.';
+                   // $this->view->error_email = $this->trans->get('РўР°РєРѕР№ email СѓР¶Рµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ.<br /> РџРѕРјРµРЅСЏР№С‚Рµ email РёР»Рё Р·Р°Р№РґРёС‚Рµ РєР°Рє Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅРЅС‹Р№ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ').'.';
 					$errors['Email'] = 'Email';
 				}
 				
@@ -107,24 +127,24 @@ public function basketcontactsAction() {
 			$tel = substr($tel, -10);
             $allowed_chars = '1234567890'; 
             if (!Number::clearPhone($tel)) {
-                $errors['error'][] = $this->trans->get('Введите телефонный номер');
-                $errors['telefon'] = $this->trans->get('Телефон');
+                $errors['error'][] = $this->trans->get('Р’РІРµРґРёС‚Рµ С‚РµР»РµС„РѕРЅРЅС‹Р№ РЅРѕРјРµСЂ');
+                $errors['telefon'] = $this->trans->get('РўРµР»РµС„РѕРЅ');
             }
 			if(strlen($tel) != 10){
-			$errors['error'][] = $this->trans->get('Неверный формат номера').".";
-            $errors['telefon'] = $this->trans->get('Телефон');
+			$errors['error'][] = $this->trans->get('РќРµРІРµСЂРЅС‹Р№ С„РѕСЂРјР°С‚ РЅРѕРјРµСЂР°').".";
+            $errors['telefon'] = $this->trans->get('РўРµР»РµС„РѕРЅ');
 			}
             for ($i = 0; $i < mb_strlen($tel); $i++) {
                 if (mb_strpos($allowed_chars, mb_strtolower($tel[$i])) === false) {
-                    $errors['error'][] = $this->trans->get('В номере должны быть только числа');
-                    $errors['telefon'] = $this->trans->get('Телефон');
+                    $errors['error'][] = $this->trans->get('Р’ РЅРѕРјРµСЂРµ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ С‚РѕР»СЊРєРѕ С‡РёСЃР»Р°');
+                    $errors['telefon'] = $this->trans->get('РўРµР»РµС„РѕРЅ');
                 }
             }
             $alredy = wsActiveRecord::useStatic('Customer')->findFirst(array(" phone1 LIKE  '%".$tel."%' "));
             if ($alredy) {
                 if ($alredy->getUsername() != null and $alredy->getId() != $this->ws->getCustomer()->getId()) {
-                    $errors['error'][] = $this->trans->get('Пользователь с таким номером телефона уже зарегистрирован в системе.<br /> Поменяйте телефон или зайдите как зарегистрированный пользователь').".";
-                    $errors['telefon'] = $this->trans->get('Телефон');
+                    $errors['error'][] = $this->trans->get('РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ СЃ С‚Р°РєРёРј РЅРѕРјРµСЂРѕРј С‚РµР»РµС„РѕРЅР° СѓР¶Рµ Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅ РІ СЃРёСЃС‚РµРјРµ.<br /> РџРѕРјРµРЅСЏР№С‚Рµ С‚РµР»РµС„РѕРЅ РёР»Рё Р·Р°Р№РґРёС‚Рµ РєР°Рє Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅРЅС‹Р№ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ').".";
+                    $errors['telefon'] = $this->trans->get('РўРµР»РµС„РѕРЅ');
                 }
             }
 			
@@ -134,51 +154,51 @@ public function basketcontactsAction() {
                 $info[$k] = strip_tags(stripslashes($v));
 
             if (!$info['name'])
-                $errors[] = $this->trans->get('Имя');
+                $errors[] = $this->trans->get('РРјСЏ');
 
             if (isset($info['middle_name'])) {
                 if (!$info['middle_name'])
-                    $errors[] = $this->trans->get('Фамилия');
+                    $errors[] = $this->trans->get('Р¤Р°РјРёР»РёСЏ');
             }
 			else {
-                $errors[] = $this->trans->get('Фамилия');
+                $errors[] = $this->trans->get('Р¤Р°РјРёР»РёСЏ');
             }
 
             if (!$info['delivery_type_id'])
-                $errors[] = $this->trans->get('Способ доставки');
+                $errors[] = $this->trans->get('РЎРїРѕСЃРѕР± РґРѕСЃС‚Р°РІРєРё');
             if (!isset($info['payment_method_id']))
-                $errors[] = $this->trans->get('Способ оплаты');
+                $errors[] = $this->trans->get('РЎРїРѕСЃРѕР± РѕРїР»Р°С‚С‹');
             if (!isset($info['soglas']))
-                $errors[] = $this->trans->get('Согласие');
+                $errors[] = $this->trans->get('РЎРѕРіР»Р°СЃРёРµ');
             if (!isset($info['oznak']))
-                $errors[] = $this->trans->get('С условиями ознакомлен');
+                $errors[] = $this->trans->get('РЎ СѓСЃР»РѕРІРёСЏРјРё РѕР·РЅР°РєРѕРјР»РµРЅ');
 
-            if (@$info['delivery_type_id'] == 4) { //Укр почта
+            if (@$info['delivery_type_id'] == 4) { //РЈРєСЂ РїРѕС‡С‚Р°
                 if (!$info['index'])
-                    $errors[] = $this->trans->get('Индекс');
+                    $errors[] = $this->trans->get('РРЅРґРµРєСЃ');
                 if (!$info['street'])
-                    $errors[] = $this->trans->get('Улица');
+                    $errors[] = $this->trans->get('РЈР»РёС†Р°');
                 if (!$info['house'])
-                    $errors[] = $this->trans->get('Дом');
+                    $errors[] = $this->trans->get('Р”РѕРј');
                 if (!$info['flat'])
-                    $errors[] = $this->trans->get('Квартира');
+                    $errors[] = $this->trans->get('РљРІР°СЂС‚РёСЂР°');
                 if (!$info['obl'])
-                    $errors[] = $this->trans->get('Область');
+                    $errors[] = $this->trans->get('РћР±Р»Р°СЃС‚СЊ');
                 if (!$info['rayon'])
-                    $errors[] = $this->trans->get('Район');
+                    $errors[] = $this->trans->get('Р Р°Р№РѕРЅ');
                 if (!$info['city'])
-                    $errors[] = $this->trans->get('Город');
+                    $errors[] = $this->trans->get('Р“РѕСЂРѕРґ');
             }
             if (@$info['delivery_type_id'] == 9) {
-			//Курьер
+			//РљСѓСЂСЊРµСЂ
 			
 			
                if (!$info['s_street'])
-                    $errors[] = $this->trans->get('Улица');
+                    $errors[] = $this->trans->get('РЈР»РёС†Р°');
                 if (!$info['house'])
-                    $errors[] = $this->trans->get('Дом');
+                    $errors[] = $this->trans->get('Р”РѕРј');
 					if (!$info['flat'])
-                    $errors[] = $this->trans->get('Квартира');
+                    $errors[] = $this->trans->get('РљРІР°СЂС‚РёСЂР°');
 					
 					 
 					}
@@ -193,13 +213,13 @@ public function basketcontactsAction() {
 					$info['delivery_type_id'] = 8;
 				}
 			}
-            if (@$info['delivery_type_id'] == 8 or @$info['delivery_type_id'] == 16) { //Новая почта
+            if (@$info['delivery_type_id'] == 8 or @$info['delivery_type_id'] == 16) { //РќРѕРІР°СЏ РїРѕС‡С‚Р°
                 if (!$info['city_np'])
-                    $errors[] = $this->trans->get('Город');
+                    $errors[] = $this->trans->get('Р“РѕСЂРѕРґ');
                 if (!$info['sklad'])
-                    $errors[] = $this->trans->get('Склад НП');
+                    $errors[] = $this->trans->get('РЎРєР»Р°Рґ РќРџ');
 					if (!$info['sklad_np'])
-                    $errors[] = 'Проблема с ид склада';
+                    $errors[] = 'РџСЂРѕР±Р»РµРјР° СЃ РёРґ СЃРєР»Р°РґР°';
             }
             if (!$info['email'] || !isValidEmail($info['email']))
                 $errors[] = 'email';
@@ -212,7 +232,7 @@ public function basketcontactsAction() {
 foreach($or_c as $r){
 $ord.=$r->id.', ';
 }
-					$err_m[] = 'По состоянию на '.date('d.m.Y').', в пункте выдачи интернет-магазина, находятся Ваши неоплаченые заказы № '.$ord.'. В связи с этим, Вам ограничено оформление заказов в пункты самовывоза с оплатой наличными при получении, до оплаты доставленых заказов. Дополнительную информацию Вы можете получить в нашем Call-центре по номеру (044)224-40-00 Пн-Пн с 09:00-18:00.';
+					$err_m[] = 'РџРѕ СЃРѕСЃС‚РѕСЏРЅРёСЋ РЅР° '.date('d.m.Y').', РІ РїСѓРЅРєС‚Рµ РІС‹РґР°С‡Рё РёРЅС‚РµСЂРЅРµС‚-РјР°РіР°Р·РёРЅР°, РЅР°С…РѕРґСЏС‚СЃСЏ Р’Р°С€Рё РЅРµРѕРїР»Р°С‡РµРЅС‹Рµ Р·Р°РєР°Р·С‹ в„– '.$ord.'. Р’ СЃРІСЏР·Рё СЃ СЌС‚РёРј, Р’Р°Рј РѕРіСЂР°РЅРёС‡РµРЅРѕ РѕС„РѕСЂРјР»РµРЅРёРµ Р·Р°РєР°Р·РѕРІ РІ РїСѓРЅРєС‚С‹ СЃР°РјРѕРІС‹РІРѕР·Р° СЃ РѕРїР»Р°С‚РѕР№ РЅР°Р»РёС‡РЅС‹РјРё РїСЂРё РїРѕР»СѓС‡РµРЅРёРё, РґРѕ РѕРїР»Р°С‚С‹ РґРѕСЃС‚Р°РІР»РµРЅС‹С… Р·Р°РєР°Р·РѕРІ. Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅСѓСЋ РёРЅС„РѕСЂРјР°С†РёСЋ Р’С‹ РјРѕР¶РµС‚Рµ РїРѕР»СѓС‡РёС‚СЊ РІ РЅР°С€РµРј Call-С†РµРЅС‚СЂРµ РїРѕ РЅРѕРјРµСЂСѓ (044)224-40-00 РџРЅ-РџРЅ СЃ 09:00-18:00.';
 					}
 					}
 				
@@ -295,7 +315,7 @@ $ord.=$r->id.', ';
 				foreach ($this->basket_articles as $key => $article) {
 					$itemcs = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $article['id'], 'id_size' => $article['size'], 'id_color' => $article['color']));
 					if ($itemcs->getCount() == 0) {
-						$check_c[$key] = $article; //массив товаров которые в этот момент успели купить другие
+						$check_c[$key] = $article; //РјР°СЃСЃРёРІ С‚РѕРІР°СЂРѕРІ РєРѕС‚РѕСЂС‹Рµ РІ СЌС‚РѕС‚ РјРѕРјРµРЅС‚ СѓСЃРїРµР»Рё РєСѓРїРёС‚СЊ РґСЂСѓРіРёРµ
 					}
 				}
 
@@ -303,7 +323,7 @@ $ord.=$r->id.', ';
 					$this->_redir('shop-checkout-step4');
 				if (!count($_SESSION['basket_articles']))
 					$this->_redir('shop-checkout-step3');
-				//проверка товаров которых нет в наличии
+				//РїСЂРѕРІРµСЂРєР° С‚РѕРІР°СЂРѕРІ РєРѕС‚РѕСЂС‹С… РЅРµС‚ РІ РЅР°Р»РёС‡РёРё
 				if (count($check_c) > 0) {
 					foreach ($check_c as $key => $val) {
 						$basket = $_SESSION['basket'];
@@ -333,18 +353,18 @@ $ord.=$r->id.', ';
 					if (isset($info['rayon']) and strlen($info['rayon']) > 0) {
 						$mas_adres[] = $info['rayon'];
 					}
-					if (@$info['delivery_type_id'] == 8 or @$info['delivery_type_id'] == 16) { //Новая почта
+					if (@$info['delivery_type_id'] == 8 or @$info['delivery_type_id'] == 16) { //РќРѕРІР°СЏ РїРѕС‡С‚Р°
 						if (isset($info['city_np']) and strlen($info['city_np']) > 0) {
-							$mas_adres[] = 'г. ' . $info['city_np'];
+							$mas_adres[] = 'Рі. ' . $info['city_np'];
 							$city = $info['city_np'];
 						}
 					}else if(@$info['delivery_type_id'] == 9){  //kurer
-							$mas_adres[] = 'г. Киев';
-							$city ='Киев';
+							$mas_adres[] = 'Рі. РљРёРµРІ';
+							$city ='РљРёРµРІ';
 
 					}elseif(isset($info['city']) and strlen($info['city']) > 0) {
 					
-						$mas_adres[] = 'г. ' . $info['city'];
+						$mas_adres[] = 'Рі. ' . $info['city'];
 						$city = $info['city'];
 						
 					}
@@ -354,17 +374,17 @@ $ord.=$r->id.', ';
 						}
 					
 					}else if (isset($info['street']) and strlen($info['street']) > 0) {
-						$mas_adres[] = 'ул.' . $info['street'];
+						$mas_adres[] = 'СѓР».' . $info['street'];
 					}
 					if (isset($info['house']) and strlen($info['house']) > 0) {
-						$mas_adres[] = 'д.' . $info['house'];
+						$mas_adres[] = 'Рґ.' . $info['house'];
 					}
 					if (isset($info['flat']) and strlen($info['flat']) > 0) {
-						$mas_adres[] = 'кв.' . $info['flat'];
+						$mas_adres[] = 'РєРІ.' . $info['flat'];
 					}
-					if (@$info['delivery_type_id'] == 8 or @$info['delivery_type_id'] == 16) { //Новая почта
+					if (@$info['delivery_type_id'] == 8 or @$info['delivery_type_id'] == 16) { //РќРѕРІР°СЏ РїРѕС‡С‚Р°
 						if (isset($info['sklad']) and strlen($info['sklad']) > 0) {
-							$mas_adres[] = 'НП: ' . $info['sklad'];
+							$mas_adres[] = 'РќРџ: ' . $info['sklad'];
 							$sklad = $info['sklad'];
 						}
 					}
@@ -444,8 +464,8 @@ $ord.=$r->id.', ';
 					$customer->setDeposit($customer->getDeposit() - $dep);
 					$customer->save();
 					$c_dep = $customer->getDeposit();
-				OrderHistory::newHistory($customer->getId(), $order->getId(), ' Клиент использовал депозит ('.$order->getDeposit().') грн. ',
-                'Осталось на депозите "' . $c_dep . '"');
+				OrderHistory::newHistory($customer->getId(), $order->getId(), ' РљР»РёРµРЅС‚ РёСЃРїРѕР»СЊР·РѕРІР°Р» РґРµРїРѕР·РёС‚ ('.$order->getDeposit().') РіСЂРЅ. ',
+                'РћСЃС‚Р°Р»РѕСЃСЊ РЅР° РґРµРїРѕР·РёС‚Рµ "' . $c_dep . '"');
 				$no = '-';
 				DepositHistory::newDepositHistory($customer->getId(), $customer->getId(), $no, $order->getDeposit(), $order->getId());
 
@@ -458,7 +478,7 @@ $ord.=$r->id.', ';
 				$customer = new Customer($this->ws->getCustomer()->getId());
 				$customer->setBonus(0);
 				$customer->save();
-				OrderHistory::newHistory($this->ws->getCustomer()->getId(), $order->getId(), ' Клиент использовал бонус ('.$order->getBonus().') грн. ',
+				OrderHistory::newHistory($this->ws->getCustomer()->getId(), $order->getId(), ' РљР»РёРµРЅС‚ РёСЃРїРѕР»СЊР·РѕРІР°Р» Р±РѕРЅСѓСЃ ('.$order->getBonus().') РіСЂРЅ. ',
                 ' ');
 				$bonus = true;
 				}
@@ -538,7 +558,7 @@ $ord.=$r->id.', ';
 							$a->save();
 						}else {
 							$article['count'] = 0;
-							$article['title'] = $article['title'] . ' (нет на складе)';
+							$article['title'] = $article['title'] . ' (РЅРµС‚ РЅР° СЃРєР»Р°РґРµ)';
 							$a = new Shoporderarticles();
 							$a->setOrderId($order->getId());
 							$data = $article;
@@ -617,14 +637,14 @@ $info['s_service'],
 						
 						
 					if($this->ws->getCustomer()->getIsLoggedIn() and $this->ws->getCustomer()->getTelegram() != NULL){
-	$message = 'Ваш заказ № '.$order->getId().' оформлен. Сумма к оплате '.$order->calculateOrderPrice2(true, true, true, $bonus).' грн. Телефон (044) 224-40-00';
+	$message = 'Р’Р°С€ Р·Р°РєР°Р· в„– '.$order->getId().' РѕС„РѕСЂРјР»РµРЅ. РЎСѓРјРјР° Рє РѕРїР»Р°С‚Рµ '.$order->calculateOrderPrice2(true, true, true, $bonus).' РіСЂРЅ. РўРµР»РµС„РѕРЅ (044) 224-40-00';
 	$this->sendMessageTelegram($this->ws->getCustomer()->getTelegram(), $message);
 	}else{
 				$phone = Number::clearPhone($order->getTelephone());
 						include_once('smsclub.class.php');
 						$sms = new SMSClub(Config::findByCode('sms_login')->getValue(), Config::findByCode('sms_pass')->getValue());
 						//$sender = ;
-						$user = $sms->sendSMS(Config::findByCode('sms_alphaname')->getValue(), $phone, $this->trans->get('Vash zakaz').' № ' . $order->getId() . ' '.$this->trans->get('Summa').' ' . $order->calculateOrderPrice2(true, true, true,  $bonus) . ' grn. tel. (044) 224-40-00');
+						$user = $sms->sendSMS(Config::findByCode('sms_alphaname')->getValue(), $phone, $this->trans->get('Vash zakaz').' в„– ' . $order->getId() . ' '.$this->trans->get('Summa').' ' . $order->calculateOrderPrice2(true, true, true,  $bonus) . ' grn. tel. (044) 224-40-00');
 						wsLog::add('SMS to user: ' . $sms->receiveSMS($user), 'SMS_' . $sms->receiveSMS($user));
 						}
 //}
@@ -640,8 +660,8 @@ $info['s_service'],
 
 					if($order->getKuponPrice() > 0 and $order->getKupon() != null){
 						$customer = new Customer($this->ws->getCustomer()->getId());
-				OrderHistory::newHistory($customer->getId(), $order->getId(), 'Использовано скидку (по коду) - ('.$order->getKuponPrice().') %. ',
-                'Код скидки "' . $order->getKupon() . '"'); 
+				OrderHistory::newHistory($customer->getId(), $order->getId(), 'РСЃРїРѕР»СЊР·РѕРІР°РЅРѕ СЃРєРёРґРєСѓ (РїРѕ РєРѕРґСѓ) - ('.$order->getKuponPrice().') %. ',
+                'РљРѕРґ СЃРєРёРґРєРё "' . $order->getKupon() . '"'); 
 						}
 //////
 						
@@ -680,7 +700,7 @@ $info['s_service'],
 						$pay_data['LMI_MERCHANT_ID'] = 2285;
 						$pay_data['LMI_PAYMENT_AMOUNT'] = $order_amount;//str_replace(" ","",$order_amount);
 						$pay_data['LMI_PAYMENT_NO'] = $order_id;
-						$pay_data['LMI_PAYMENT_DESC'] = 'Оплата за заказ № '.$order_id;
+						$pay_data['LMI_PAYMENT_DESC'] = 'РћРїР»Р°С‚Р° Р·Р° Р·Р°РєР°Р· в„– '.$order_id;
 		/*				
 		1 = Webmoney
 		6 = MoneXy
@@ -688,11 +708,11 @@ $info['s_service'],
 		15 = NSMEP
 		17 = Webmoney Terminal
 		21 = PaymasterCard
-		49 = Приват 24
+		49 = РџСЂРёРІР°С‚ 24
 		19 = LiqPay
-		23 = Київстар
-		2 = x20 WebMoney моб. платежи
-		22 - Терминалы через кнопку пеймастера
+		23 = РљРёС—РІСЃС‚Р°СЂ
+		2 = x20 WebMoney РјРѕР±. РїР»Р°С‚РµР¶Рё
+		22 - РўРµСЂРјРёРЅР°Р»С‹ С‡РµСЂРµР· РєРЅРѕРїРєСѓ РїРµР№РјР°СЃС‚РµСЂР°
 
 		18 = test
 		*/

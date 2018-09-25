@@ -65,7 +65,7 @@ color: #aaa !important;
 .s_l  :before{
 content: "\e090";
 }
-.menu_login{position:absolute; right:10px; padding: 0px 1rem; ./*background: black;top: 0px;*/}
+.menu_login{position:absolute; right:10px; padding: 0px 1rem;}
 .menu_login div {display: inline-block;}
 .menu_login img {width:30px;opacity: 0.9;}
 .menu_login a{padding: 0.25rem 0.8rem;}
@@ -336,7 +336,7 @@ footer  form .form-submit{border:0;
  div.ca-box a.ca-button{display:block; width:25px; height:25px; position:absolute; top:175px}
  div.ca-box a.ca-button-left{left:0; background:url(../img/ca-button-left.png) no-repeat 0 0}
  div.ca-box a.ca-button-right{right:0; background:url(../img/ca-button-right.png) no-repeat 0 0}
- div.ca-box div.ca-ul-box{width:650px; height:365px; overflow:hidden; position:relative; /}
+ div.ca-box div.ca-ul-box{width:650px; height:365px; overflow:hidden; position:relative; }
  div.ca-box ul.ca-ul{margin:0; padding:0; list-style:none; width:1965px; height:365px}
  div.ca-box ul.ca-ul li.ca-li{width:650px; height:365px; float:left; margin-right:5px}
  .ca-item-box{background:url(../img/ca-item-bg.png) no-repeat right top; position:relative}
@@ -519,14 +519,26 @@ tr.article td{border-bottom:1px solid #fe0000; font-size:85%; padding-right:10px
 .view td{padding-bottom:5px; border-bottom:1px solid #fe0000; width:150px; padding-top:5px}
 
 .zak{border-radius:5px; -moz-border-radius:5px; -webkit-border-top-left-radius:5px; -webkit-border-bottom-right-radius:5px}
-.article_label{position:absolute;left: -2px;    top: -3px;}
-.article_label img{    width: 40px;}
-.article_label_container{position:absolute;z-index: 2;}
+
+.article_label_container_left{position:absolute;  z-index: 2;}
+.article_label_container_left .article_label{position:relative; top: -3px;}
+.article_label_container_left .article_label img{    width: 40px;}
+
+.article_label_container_right{position:absolute; right: 0; z-index: 2;}
+.photos .article_label_container_right{ right: 15px;}
+.article_label_container_right .article_label{position:relative; top: -3px;}
+.article_label_container_right .article_label img{    width: 110px; position: relative; top: 2px;}
+.article_label_container_right .article_label span{ position: absolute; right: 3px; top: 3px;}
+
 .slideshow{overflow:hidden; position:relative}
+
 .article_label_container_3{position:absolute; z-index:10010}
 .article_label_3{position:absolute; margin:325px 0 0 300px}
+
 .article_label_container_2{position:absolute; z-index:2}
 .article_label_2{position:absolute}
+
+
 .slideshow .slideshowitem{}
 .slide_show_nav{text-align:center}
  .slide_show_cap h1{background:url("../img/menu-left-h1-bg.png") no-repeat scroll 0 0 transparent; color:#fe0000; font-size:14px; font-weight:normal; height:27px; line-height:27px; margin:17px 0 10px 20px; overflow:hidden; padding:0 5px 0 13px; text-transform:uppercase}
@@ -653,7 +665,7 @@ div.column-1.basket-login a{margin-top:10px}
 #brand_discription_none{padding:2px 5px; background-color:#FFF; z-index:101; width:45%; float:right; margin:10px}
 #buttonAll{border:1px solid #000; border-radius:2px; float:left; font-weight:800; padding:3px 20px 3px 20px; margin:5px; cursor:pointer}
 #buttonAll:hover{color:#0054EB; border-color:#5AA1EE; background-color:#C1E0EB}
-#items .article-item{padding:10px 7px; !important}
+#items .article-item{padding:10px 7px;}
 #slideContainer{width:1000px; border-top:1px solid #E7E7E7}
 #slideName{width:1000px; text-align:center; font-size:16px; color:#B0B0B0}
 #mycarousel{position:relative; overflow:hidden; width:918px; height:180px; margin:auto}

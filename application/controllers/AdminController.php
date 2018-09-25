@@ -3,95 +3,65 @@
 class AdminController extends controllerAbstract
 {
 
-    private $_files_folder = 'admin_files';
+    private $_files_folder = 'backend';
     private $_controller = 'admin';
 
     //maybe put to controller abstract??
     public function init()
     {
-	if(@$_SESSION['lang']){
-	$lang = $_SESSION['lang'];
-	}else{
-	$lang = 'ru';
-	}
+        $lang = 'ru';
+        if($_SESSION['lang']) { $lang = $_SESSION['lang']; }
         Registry::set('lang_id', wsLanguage::findByCode($lang)->getId());
         Registry::set('lang', $lang);
-
         mb_internal_encoding("UTF-8");
         define('TEMP', $_SERVER['DOCUMENT_ROOT'] . '/tmp/');
         $this->view->setRenderPath(INPATH . $this->_files_folder);
-
         $this->view->path = SITE_URL . '/' . $this->_controller . '/';
         $this->view->files = '/' . $this->_files_folder . '/';
-
         $this->user = $this->website->getCustomer();
         $this->view->user = $this->user;
-
         $this->view->trans = $this->trans = new Translator();
-
-
-        define('MAX_COUNT_PER_ARTICLE', 100);
-
+        //define('MAX_COUNT_PER_ARTICLE', 100);
         //get user from sesion or cookies
         if (!$this->user->getIsLoggedIn() || !$this->user->isAdmin()) {
             $this->loginAction();
             die();
         }
-
+        $a_rights = [];
         foreach (AdminRights::getAdminRights($this->user->getId()) as $rights) {
             $a_rights[$rights->getPageId()]['right'] = $rights->getRight();
             $a_rights[$rights->getPageId()]['view'] = $rights->getView();
         }
         $this->view->admin_rights = $a_rights;
         if (!$this->user->isSuperAdmin()) {
-            if (!@$a_rights[$this->cur_menu->getId()]['right']) {
-                die('Нету прав просматривать эту страницу. Обратитесь к Супер-Администратору.
-                <br /> <a href="/admin/">На главную</a>');
+            if (!$a_rights[$this->cur_menu->getId()]['right']) {
+                die('Нету прав просматривать эту страницу. Обратитесь к Супер-Администратору.<br /> <a href="/admin/">На главную</a>');
             }
-        }
-				
-		//vsplivauche soobschenye
-			$this->view->message = $this->view->render('np/message.tpl.php');
-		
+        }		
+	//vsplivauche soobschenye
+	$this->view->message = $this->view->render('np/message.tpl.php');	
 $this->view->days = array('Mon'=>'Понедельник', 'Tue'=>'Вторник', 'Wed'=>'Среда', 'Thu'=>'Четверг', 'Fri'=>'Пятница', 'Sat'=>'Суббота','Sun'=>'Воскресенье');
-		
-		
-        /* if (!$this->user->isSuperAdmin()) {
-            if ($this->cur_menu->getAdminRights()) {
-                $rights = explode(',', $this->cur_menu->getAdminRights());
-                if ($this->user->getAdminRights() != 999) {
-                    if (!in_array($this->user->getAdminRights(), $rights)) $this->_redir('index');
-                }
-            }
-        }*/
-		
-
-    }
-	
+}
 	
     public function migrateAction() {
-		die('Миграция выполненна');
-		$q = "ALTER TABLE  `red_events` ADD  `disposable` INT( 1 ) NOT NULL DEFAULT  '0';";
-       	wsActiveRecord::query($q);
-		$q = "ALTER TABLE  `red_event_customers` ADD  `st` INT( 11 ) NOT NULL DEFAULT  '1', ADD  `session_id` VARCHAR( 100 ) NOT NULL;";
-       	wsActiveRecord::query($q);
-		die('Миграция выполненна');
+       	wsActiveRecord::query("ALTER TABLE  `red_events` ADD  `disposable` INT( 1 ) NOT NULL DEFAULT  '0';");
+       	wsActiveRecord::query("ALTER TABLE  `red_event_customers` ADD  `st` INT( 11 ) NOT NULL DEFAULT  '1', ADD  `session_id` VARCHAR( 100 ) NOT NULL;");
+	die('Миграция выполненна');
 	}
 
     public function testAction()
     {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		$q = "ALTER TABLE  `red_events` ADD  `disposable` INT( 1 ) NOT NULL DEFAULT  '0';";
-       	wsActiveRecord::query($q);
-		$q = "ALTER TABLE  `red_event_customers` ADD  `st` INT( 11 ) NOT NULL DEFAULT  '1', ADD  `session_id` VARCHAR( 100 ) NOT NULL;";
-       	wsActiveRecord::query($q);
+       	wsActiveRecord::query("ALTER TABLE  `red_events` ADD  `disposable` INT( 1 ) NOT NULL DEFAULT  '0';");
+        
+       	wsActiveRecord::query("ALTER TABLE  `red_event_customers` ADD  `st` INT( 11 ) NOT NULL DEFAULT  '1', ADD  `session_id` VARCHAR( 100 ) NOT NULL;");
 		die('Миграция выполненна');
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ini_set('memory_limit', '1024M');
-        set_time_limit(2800);
+       // ini_set('memory_limit', '1024M');
+      //  set_time_limit(2800);
         //$order = new Shoporders(41873);
 //        $order->save();
-        die('ok');
+      //  die('ok');
     }
 	
 	
@@ -134,10 +104,10 @@ $this->view->days = array('Mon'=>'Понедельник', 'Tue'=>'Вторни�
 
     public function loginAction()
     {
-        if ($this->user->getIsLoggedIn() and $this->user->isAdmin())
-            $this->_redir('index');
+        if ($this->user->getIsLoggedIn() and $this->user->isAdmin()){
+        $this->_redir('index'); }
 
-        if (!count($_POST)) {
+        if (!count($this->post)) {
             //render login page
             echo $this->render('', 'login.tpl.php');
         } else {
@@ -147,10 +117,9 @@ $this->view->days = array('Mon'=>'Понедельник', 'Tue'=>'Вторни�
                 Registry::unRegister('site_id');
             }
 
-            $res = $this->user->loginByEmail(@$_POST['login'], @$_POST['password']);
+            $res = $this->user->loginByEmail($_POST['login'], $_POST['password']);
 
-            if (isset($old_site))
-                Registry::set('site_id', $old_site);
+            if (isset($old_site)){  Registry::set('site_id', $old_site);              }
 
             if ($res) {
                 $this->website->updateHashes();
@@ -227,21 +196,19 @@ $i++;
 }
 die(json_encode($mas));
 	}
-	if($this->post->method == "shop" and @$this->post->type){
+	if($this->post->method == "shop" and $this->post->type){
 	$type = $this->post->type;
 	switch ($type) {
 	case 'h_a' :
 $ok = wsActiveRecord::useStatic('Shoporderarticles')->findByQuery("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) AS dat, sum(IF(`ws_order_articles`.`count`>0,`ws_order_articles`.`count`,1)) as suma FROM  `ws_order_articles`
 inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
 WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m%d' ) = DATE_FORMAT( NOW( ) ,  '%Y%m%d' ) 
-AND `ws_orders`.`delivery_type_id` in(3,5)
-AND `ws_orders`.`status`  in(0,1,9,15,16)
+AND `ws_orders`.`status`  in(100,1,9,15,16)
 GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d %H' ) 
 ORDER BY  `dat` ASC ");
 $pay = wsActiveRecord::useStatic('Shoporderarticles')->findByQuery("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) AS dat, sum(`ws_order_articles`.`count`) as suma FROM  `ws_order_articles`
 inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
 WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m%d' ) = DATE_FORMAT( NOW( ) ,  '%Y%m%d' ) 
-AND `ws_orders`.`delivery_type_id` in(3,5)
 AND `ws_orders`.`status` = 8
 GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d %H' ) 
 ORDER BY  `dat` ASC ");
@@ -249,7 +216,6 @@ ORDER BY  `dat` ASC ");
 $ret = wsActiveRecord::useStatic('Shoporderarticles')->findByQuery("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) AS dat, count(`ws_order_articles`.`id`) as suma FROM  `ws_order_articles`
 inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
 WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m%d' ) = DATE_FORMAT( NOW( ) ,  '%Y%m%d' ) 
-AND `ws_orders`.`delivery_type_id` in(3,5)
 AND `ws_orders`.`status`  in(2,7)
 GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d %H' ) 
 ORDER BY  `dat` ASC ");
@@ -1578,61 +1544,50 @@ die(json_encode(array('send'=>$j,'result' => $this->view->render('mailing/email_
                 exit;
             }
 
-            $errors = array();
-
-			if(@$_POST['extra_url'])
-                $this->view->extra_url = '?' . $_POST['extra_url'];
-				
-
-            if (!@$_POST['subject'])
-                $errors[] = $this->trans->get('Пожалуйста, вваедите тему письма!');
-            // if (!@$_POST['intro'])
-            // $errors[] = $this->trans->get('Please fill in intro');
-            //if(!count(@$_POST['anons']))
-            //$errors[] = $this->trans->get('Please select announcements');
-
-            if (@$_POST['test_email'] && @$_POST['send_test'] && !$this->isValidEmail($_POST['test_email']))
-                $errors[] = $this->trans->get('Please fill in valid test email');
+	$errors = array();
+			if(@$_POST['extra_url']) $this->view->extra_url = '?' . $_POST['extra_url'];
+            if (!@$_POST['subject']) $errors[] = $this->trans->get('Пожалуйста, вваедите тему письма!');
+            if (@$_POST['test_email'] && @$_POST['send_test'] && !$this->isValidEmail($_POST['test_email'])) $errors[] = $this->trans->get('Please fill in valid test email');
 
             if (!count($errors)) {
-                $cnt = 0;
+				$cnt = 0;
 				$er = 0;
-				
 				$subject_start = '';
-					if(@$_POST['subject_start']) $subject_start = $_POST['subject_start'];
+					if (@$_POST['subject_start']) $subject_start = $_POST['subject_start'];
 			   $subject ='';
 					if(@$_POST['subject']) $subject = $_POST['subject'];
 
-                if(@$_POST['save']==2){
-				$s = new Emailpost();
-				$s->setCtime(date('Y-m-d H:i:s'));
-				//$s->setGo(NULL);
-				$s->setIdCustomerNew($this->user->getId());
-				$s->setAll(1);
-				$s->setSubjectStart($_POST['subject_start']);
-				$s->setSubject($_POST['subject']);
-				if(@$_POST['intro']) $s->setIntro($this->post->intro);
-				if(@$_POST['ending']) $s->setEnding($this->post->ending);
-				if(@$this->post->article_id){
-					$text='';				
-				foreach($this->post->article_id as $item ){ $text.= $item.',';}
-				$s->setArticleId($text);
-				}
-				$s->save();
+					if (@$_POST['save']==2){
+						$s = new Emailpost();
+						$s->setCtime(date('Y-m-d H:i:s'));
+						$s->setIdCustomerNew($this->user->getId());
+						$s->setAll(1);
+						$s->setSubjectStart($_POST['subject_start']);
+						$s->setSubject($_POST['subject']);
+							if(@$_POST['intro']) $s->setIntro($this->post->intro);
+							if(@$_POST['ending']) $s->setEnding($this->post->ending);
+								if(@$this->post->article_id){
+									$text='';				
+									foreach($this->post->article_id as $item ){
+										$text.= $item.',';
+									}
+									$s->setArticleId($text);
+								}
+						$s->save();
 				 die(json_encode(array('status' => 'send', 'ok'=>'ok')));
-				 exit;
-				}elseif (@$_POST['test']==1) {
-				if(isset($_POST['s_start']) and $_POST['s_start'] == 1){ $subject = $subject_start.', TEST, '.$subject; }
-				
-				if(isset($_POST['copy']) and isset($_POST['copy_email'])){
-				if($_POST['copy'] == 1) $copy = 1;
-				if($_POST['copy'] == 2) $copy = 2;
-				}else{
-				$copy = 2;
-				}
-                    $this->view->name = 'Testing';
+			exit;
+				} elseif (@$_POST['test']==1) {
+					if (isset($_POST['s_start']) and $_POST['s_start'] == 1) $subject = $subject_start.', TEST, '.$subject; 
+					if (isset($_POST['copy']) and isset($_POST['copy_email'])){
+						if ($_POST['copy'] == 1) $copy = 1;
+						if ($_POST['copy'] == 2) $copy = 2;
+					} else {
+						$copy = 2;
+					}
+                 $this->view->name = 'Testing';
                     $this->view->email = $_POST['test_email'];
-                    $msg = $this->view->render('mailing/general-email.tpl.php');
+                    
+				$msg = $this->view->render('mailing/general-email.tpl.php');
 
 		SendMail::getInstance()->sendSubEmail($_POST['test_email'], 'Testing', $subject, $msg, '','','', '', $copy, 'management@red.ua', 'Ирина');
 		
@@ -1640,12 +1595,10 @@ die(json_encode(array('status' => 'send', 'from' => $_POST['test_email'])));
 			unset($_POST['test']);
 			exit;
                 } elseif (isset($_POST['preview'])) {
-				
                     echo $this->view->render('mailing/general-email.tpl.php');
-					//print_r($_POST);
                     exit; 
-                }elseif(@$this->post->go == 0) {
-				if($this->post->from_mail == 0){
+                } elseif (@$this->post->go == 0) {
+				if ($this->post->from_mail == 0){
 				if(@$this->post->id_post){
 				$s = new Emailpost($this->post->id_post);
 				$s->setGo(date('Y-m-d H:i:s'));
@@ -1662,11 +1615,7 @@ die(json_encode(array('status' => 'send', 'from' => $_POST['test_email'])));
 				$s->setSubject($subject);
 				if(@$_POST['intro']) $s->setIntro($this->post->intro);
 				if(@$_POST['ending']) $s->setEnding($this->post->ending);
-				//if(@$this->post->article_id){
-				//	$text='';				
-				//foreach($this->post->article_id as $item ){ $text.= $item.',';}
-				//$s->setArticleId($text);
-				//}
+
 				$s->save();
 				}
 				}
@@ -1764,11 +1713,9 @@ die(json_encode(array('status' => 'send', 'from' => $_POST['test_email'])));
 				
 				$subject = $_POST['subject'];
 
-                
-				if(@$_POST['save']==2){
+			if (@$_POST['save']==2){
 				$s = new Emailpost();
 				$s->setCtime(date('Y-m-d H:i:s'));
-				//$s->setUtime(NULL);
 				$s->setIdCustomerNew($this->user->getId());
 				$s->setMen(1);
 				$s->setSubjectStart($_POST['subject_start']);
@@ -1783,7 +1730,7 @@ die(json_encode(array('status' => 'send', 'from' => $_POST['test_email'])));
 				$s->save();
 				 die(json_encode(array('status' => 'send', 'ok'=>'ok')));
 				 exit;
-				}elseif(@$_POST['test'] == 1) {
+			} elseif (@$_POST['test'] == 1) {
 					if(isset($_POST['s_start']) and $_POST['s_start'] == 1){
 				$subject = $subject_start.', TEST, '.$subject;
 				}
@@ -1798,7 +1745,6 @@ die(json_encode(array('status' => 'send', 'from' => $_POST['test_email'])));
                     $msg = $this->view->render('mailing/general-email.tpl.php');
 
 			SendMail::getInstance()->sendSubEmail($_POST['test_email'], 'Testing', $subject, $msg, '','','', '', $copy, 'management@red.ua', 'Ирина');
-           // MailerNew::getInstance()->sendToEmailSub($_POST['test_email'], $admin_name, $subject, $msg);
 
 			die(json_encode(array('status' => 'send', 'from' => $_POST['test_email'])));
 			unset($_POST['test']);
@@ -1836,32 +1782,30 @@ die(json_encode(array('status' => 'send', 'from' => $_POST['test_email'])));
 				}
                     $count = $this->post->count;
 					$emails = '';	
-				foreach (wsActiveRecord::useStatic('Subscriber')->findAll(array('active' => 1, 'confirmed is not null','men'=>1), array(), array($this->post->from_mail, $count)) as $sub){  
+	foreach (wsActiveRecord::useStatic('Subscriber')->findAll(array('active' => 1, 'confirmed is not null','men'=>1), array(), array($this->post->from_mail, $count)) as $sub)
+	{  
 				if (isValidEmailNew($sub->getEmail()) and isValidEmailRu($sub->getEmail())){
 				
 				$subject_new = '';
 				
 				if(isset($_POST['s_start']) and $_POST['s_start'] == 1){
-				$subject_new = $subject_start.', '.$sub->getName().', '.$subject;
+					$subject_new = $subject_start.', '.$sub->getName().', '.$subject;
 				}
-				if($subject_new == '') $subject_new = $subject;
-				
-                       // wsLog::add('Sending email to ' . $sub->getEmail(), 'EMAIL');
-                        $this->view->name = $sub->getName();
-                        $this->view->email = $sub->getEmail();
+					if($subject_new == '') $subject_new = $subject;
+					
+					$this->view->name = $sub->getName();
+                      $this->view->email = $sub->getEmail();
 						
 						
 						$this->view->openimg = 'https://www.google-analytics.com/collect?v=1&tid=UA-29951245-1&cid='.$sub->getId().'&t=event&ec=men_subscriber_open_'.date('d.m.Y').'&ea=open&el='.$sub->getId().'&cs=men_subscriber_open_'.date('d.m.Y').'&cm=email&cn=Men_Subscriber';
                         $msg = $this->view->render('mailing/general-email.tpl.php');
 
-                       // MailerNew::getInstance()->sendToEmailSub($sub->getEmail(), $sub->getName(), $subject_new, $msg, $new = 1);
 						$res = SendMail::getInstance()->sendSubEmail($sub->getEmail(), $sub->getName(), $subject_new, $msg);
 						$emails .= $sub->getEmail() . ', ';
                         $cnt++;
-						}else{
-						//$emails .= $sub->getEmail() . ', ';
-						$er++;
-						wsLog::add('E-mail error: ' . $sub->getEmail(), 'EMAIL');
+				} else {
+							$er++;
+							wsLog::add('E-mail error: ' . $sub->getEmail(), 'EMAIL');
 						}
 						
 						
@@ -2423,11 +2367,10 @@ die(json_encode(array('status' => 'send', 'from' => $_POST['test_email'])));
                    //echo $this->view->render('mailing/general-email.tpl.php');
 				   echo $this->view->render('email/template_new.tpl.php');
                     exit;
-                } 
-				elseif (@$_POST['go'] == 0) {
+                }elseif ($_POST['go'] == 0) {
                     $count = $this->post->count;
 					$emails = '';	
-				foreach (wsActiveRecord::useStatic('Customer')->findAll(array('time_zone_id' => 7), array(), array($this->post->from_mail, $count)) as $sub){
+				foreach (wsActiveRecord::useStatic('Customer')->findAll(array('bonus> 0'), array(), array($this->post->from_mail, $count)) as $sub){
 					if (isValidEmailNew($sub->getEmail()) and isValidEmailRu($sub->getEmail())){
 
                      //   wsLog::add('Sending email to ' . $sub->getEmail(), 'EMAIL');
@@ -2568,7 +2511,7 @@ return $newstr;//Вертаем строку
             }
             die();
         }*/
-        if ($_GET) {
+        if ($this->get) {
 		
             $dt = $this->get;
 			if($dt->ban == 3) {
@@ -2595,7 +2538,7 @@ return $newstr;//Вертаем строку
 			$count = 100;
               $data[] = 'c.customer_status_id =2 ';
             }
-			if (@$dt->id != '') {
+			if ($dt->id != '') {
               $data[] = 'c.id = ' . $dt->id;
             }
             if (strlen($dt->cart) > 0) {
@@ -3197,9 +3140,30 @@ $command = "mysqldump -u {$db_config['config']['username']} --password={$db_conf
     // Action for Hi Kitty
     public function shopcategoriesAction()
     {
-
+            
+       /* if($this->post->method == "new_category"){
+            $cat = new Shopcategories();
+            $cat->setParentId($this->post->parent_id);
+            $cat->setName($this->post->category_name);
+            $cat->setActive(0);
+             $tmp = wsActiveRecord::useStatic('Shopcategories')->findLastSequenceRecord();
+                if ($tmp){
+                $cat->setSequence($tmp->getSequence() + 10);
+                
+                }else{
+                    $cat->setSequence(10);
+                }
+                
+            $cat->save();
+            
+            $this->view->category_edit = $cat;//wsActiveRecord::useStatic('Shopcategories')->findById($this->get->getId());
+             echo $this->render('categories/new-category.php');
+             $this->_redir('/shop-categories/edit/id/'.$cat->id);
+            die();
+        }*/
+        
         $redir = false;
-        if ($_POST) {
+        if ($_POST and false) {
             foreach ($_POST as &$value)
                 $value = stripslashes($value);
             if (isset($_POST['category_name']) && $_POST['category_name']) {
@@ -3222,6 +3186,8 @@ $command = "mysqldump -u {$db_config['config']['username']} --password={$db_conf
                 $c->save();
                 $redir = true;
             }
+            
+            
             if (isset($_POST['category_edit_name']) && $_POST['category_edit_name'] && $this->get->getId()) {
                 $c = new Shopcategories($this->get->getId());
                 if ($c && $c->getId()) {
@@ -3244,7 +3210,46 @@ $command = "mysqldump -u {$db_config['config']['username']} --password={$db_conf
         }
 
         if ('edit' == $this->cur_menu->getParameter() && $this->get->getId()) {
+            
+           if($this->post and isset($this->post->new_cat)){
+            $cat = new Shopcategories();
+            $cat->setParentId($this->post->parent_id);
+            $cat->setName($this->post->category_name);
+            $cat->setActive(0);
+             $tmp = wsActiveRecord::useStatic('Shopcategories')->findLastSequenceRecord();
+                if ($tmp){
+                $cat->setSequence($tmp->getSequence() + 10);
+                
+                }else{
+                    $cat->setSequence(10);
+                }
+                
+            $cat->save();
+            
+            $this->view->category_edit = $cat;//wsActiveRecord::useStatic('Shopcategories')->findById($this->get->getId());
+             //echo $this->render('categories/new-category.php');
+            $this->_redir('/shop-categories/edit/id/'.$cat->id);
+            exit;
+        }else if($this->post and isset($this->post->button_save)){
+                $c = new Shopcategories($this->get->getId());
+                if ($c && $c->getId()) {
+                    
+                    $c->import($this->post);
+                    
+                    if ($this->post->active == 'on') {
+                        $c->setActive(1);
+                    } else {
+                        $c->setActive(0);
+                    }
+                    $c->save();
+                } 
+            }
+            
+            
             $this->view->category_edit = wsActiveRecord::useStatic('Shopcategories')->findById($this->get->getId());
+           // $this->view->categories = wsActiveRecord::useStatic('Shopcategories')->findAll();
+             echo $this->render('categories/categories-edit.tpl.php');
+            exit;
         } elseif ('delete' == $this->cur_menu->getParameter() && $this->get->getId()) {
             $c = new Shopcategories($this->get->getId());
             $children = wsActiveRecord::useStatic('Shopcategories')->count(array('parent_id' => $c->getId()));
@@ -3270,12 +3275,11 @@ $command = "mysqldump -u {$db_config['config']['username']} --password={$db_conf
             }
         }
 
-        if ($redir)
-            $this->_redir('shop-categories');
+        if ($redir) $this->_redir('shop-categories');
 
         $this->view->categories = wsActiveRecord::useStatic('Shopcategories')->findAll();
 
-        echo $this->render('shop/categories.tpl.php');
+        echo $this->render('categories/categories.tpl.php');
     }
 
     public function shoparticlesAction()
@@ -3407,9 +3411,6 @@ HAVING sum(ws_articles_sizes.count) <>stock ');
                         }
                     }
 					if ($_FILES['image_file_2']) {
-                      //  include_once 'Asido/class.asido.php';
-                      //  include_once 'Asido/class.driver.php';
-                       // include_once 'Asido/class.driver.gd.php';
 
                         $mdfname = md5(uniqid(rand(), true));
 
@@ -3533,8 +3534,8 @@ HAVING sum(ws_articles_sizes.count) <>stock ');
                                 if ($s->getCount() != $old_count) {
                                     $log_text = 'Изменено количество';
                                     $log = new Shoparticlelog();
-                                    $log->setCustomerId($this->website->getCustomer()->getId());
-                                    $log->setUsername($this->website->getCustomer()->getUsername());
+                                    $log->setCustomerId($this->user->getId());
+                                    $log->setUsername($this->user->getUsername());
                                     $log->setArticleId($article->getId());
                                     
 									if ($s->size and $s->color) {
@@ -4179,15 +4180,34 @@ return;
         } else {
             $category_id = (int)$this->post->category_id;
             if ($category_id) {
-                $ids_for_updates = array();
-                foreach ($_POST as $k => $v) {
-                    if (substr($k, 0, 28) == 'articel_for_change_category_') {
-                        $ids_for_updates[] = (int)substr($k, 28, strlen($k));
+               // $ids_for_updates = array();
 
+                 $user_id = $this->user->getId();
+                 $user_name = $this->user->getUsername();
+                 $cat = new Shopcategories($category_id);
+                foreach ($_POST as $k => $v) {
+                    if (substr($k, 0, 28) == 'articel_for_change_category_'){
+                        //$ids_for_updates[] = (int)substr($k, 28, strlen($k));
+                        $id = substr($k, 28, strlen($k));
+                       
+                        $art = new Shoparticles((int)$id);
+
+                      if($art){
+                    $log = new Shoparticlelog();
+                    $log->setCustomerId($user_id);
+                    $log->setUsername($user_name);
+                    $log->setArticleId($art->id);
+                    $log->setComents('Замена категории');
+                    $log->setInfo('С '.$art->category->getRoutez().' на '.$cat->getRoutez());
+                    $log->save();
+                    
+                        $art->setCategoryId($cat->id);
+                        $art->save();
+                    }
                     }
                 }
-                $update_query = 'UPDATE ws_articles SET category_id = ' . $category_id . ' WHERE id IN (' . implode(',', $ids_for_updates) . ')';
-                wsActiveRecord::query($update_query);
+               // $update_query = 'UPDATE ws_articles SET category_id = ' . $category_id . ' WHERE id IN (' . implode(',', $ids_for_updates) . ')';
+               // wsActiveRecord::query($update_query);
             }
 			$this->_redirect($_SERVER['HTTP_REFERER']);
            // $this->_redirect('/admin/shop-articles/');
@@ -4606,12 +4626,32 @@ return;
                     }
 
                 }
+			//	$opt = explode('option_id-', $kay);
+				//if($o){
+			//	d($opt);
+				
+				
+				
+			//	}
+				
 				//break;
             }
            // $order = new Shoporders($this->get->getId());
             /*$order->updateDeposit($this->user->getId());*/
             $this->_redir('shop-orders/edit/id/' . $this->get->getId());
         }
+		if(@$this->post->addskidka == 'add_sk' and $this->post->id){
+		
+		 $order_art = new Shoporderarticles((int)$this->post->id);
+		 $order_art->setOptionId((int)$this->post->option_id);
+		 $summ = $order_art->getPrice()*Shoparticlesoption::getProcSkidka((int)$this->post->option_id);
+		 $order_art->setOptionPrice($summ);
+		 $order_art->save();
+		 
+		// $this->_redir('shop-orders/edit/id/' . $this->get->getId());
+		die($summ);
+		}
+		
         if ($_POST and isset($_POST['Toevoegen']) and isset($_POST['article_id']) and isset($_POST['size_id']) and isset($_POST['color_id'])) {
 
             $article_id = (int)$_POST['article_id'];
@@ -4676,13 +4716,13 @@ return;
                     $order->setOldPrice($ar->getOldPrice());
                     $article->save();
                     $order->save();
-                    OrderHistory::newHistory($this->user->getId(), $order->getOrderId(), 'Новый товар',
-                        OrderHistory::getNewOrderArticle($order->getId()), $order->getArticleId());
+                    OrderHistory::newHistory($this->user->getId(), $order->getOrderId(), 'Новый товар', OrderHistory::getNewOrderArticle($order->getId()), $order->getArticleId());
                 }
             }
 
             $this->_redir('shop-orders/edit/id/' . $this->get->getId());
         }
+		/*
         if ($_POST && isset($_POST['getarticles'])) {
             if (isset($_POST['id']) && ($category = wsActiveRecord::useStatic('Shopcategories')->findById((int)$_POST['id'])) && $category->getId()) {
                 $data = array();
@@ -4735,6 +4775,7 @@ return;
             echo json_encode($res);
             die();
         }
+		*/
 
         // END OF JSON
 		$dat = array();
@@ -5840,7 +5881,7 @@ public function generatePassword($length = 10){
         $this->view->order = $order;
         $customer_id = $order->getCustomerId();
         /*
-                        0 - Новый
+                        100 - Новый
                         1 - В процесе
                         2 - Отменён
                         3 - Доставлен в магазин
@@ -5918,9 +5959,9 @@ public function generatePassword($length = 10){
 
     public function masgeneratechekAction()
     {
-        $month_orig = array('01' => 'січень', '02' => 'лютий', '03' => 'березень', '04' => 'квітень', '05' => 'травень', '06' => 'червень',
+       /* $month_orig = array('01' => 'січень', '02' => 'лютий', '03' => 'березень', '04' => 'квітень', '05' => 'травень', '06' => 'червень',
             '07' => 'липень', '08' => 'серпень', '09' => 'вересень', '10' => 'жовтень', '11' => 'листопад', '12' => 'грудень'
-        );
+        );*/
         $month = array('01' => 'января', '02' => 'Февраля', '03' => 'марта', '04' => 'апреля', '05' => 'мая', '06' => 'июня',
             '07' => 'июля', '08' => 'августа', '09' => 'сентября', '10' => 'октября', '11' => 'ноября', '12' => 'декабря'
         );
@@ -5930,38 +5971,14 @@ public function generatePassword($length = 10){
         $ids = explode(',', $this->get->ids);
         sort($ids);
 
+		//$this->view->orders = $ids;
+		 $dttd = explode('-', date("Y-m-d"));
+		 $this->view->date_today = $dttd[2] . ' ' . $month[$dttd[1]] . ' ' . $dttd[0];
         foreach ($ids as $id) {
             $order = new Shoporders($id);
-            $dt = explode('-', substr($order->getDateCreate(), 0, 10));
-            $dttd = explode('-', date("Y-m-d"));
-            $this->view->date = @$dt[2] . ' ' . @$month[@$dt[1]] . ' ' . @$dt[0];
-            $this->view->date_today = $dttd[2] . ' ' . $month[@$dttd[1]] . ' ' . $dttd[0];
-            $this->view->exploded_date = $dt;
+
             $this->view->order = $order;
-            $customer_id = $order->getCustomerId();
-            $all_orders = wsActiveRecord::useStatic('Customer')->findByQuery('
-				SELECT
-					IF(SUM(price*count) IS NULL,0,SUM(price*count)) AS amount
-				FROM
-					ws_order_articles
-					JOIN ws_orders
-					ON ws_order_articles.order_id = ws_orders.id
-				WHERE
-					ws_orders.customer_id = ' . $customer_id . '
-					AND ws_orders.status IN (1,3,4,6,8,9,10,11,13,14,15,16) ')->at(0);
-            $all_orders_2 = wsActiveRecord::useStatic('Customer')->findByQuery('
-				SELECT
-					IF(SUM(price*count) IS NULL,0,SUM(price*count)) AS amount
-				FROM
-					ws_order_articles
-					JOIN ws_orders
-					ON ws_order_articles.order_id = ws_orders.id
-				WHERE
-					ws_orders.customer_id = ' . $customer_id . '
-					AND ws_orders.status IN (1,3,4,6,8,9,10,11,13,15,16)
-					AND ws_orders.id <=' . $id)->at(0);
-            $this->view->all_orders_amount = $all_orders->getAmount();
-            $this->view->all_orders_amount_total = $all_orders_2->getAmount();
+
             echo $this->render('', 'order/chek.tpl.php');
         }
     }
@@ -6035,7 +6052,7 @@ public function generatePassword($length = 10){
 
             $order = new Shoporders($id);
             $dt = explode('-', substr($order->getDateCreate(), 0, 10));
-            $this->view->date = @$dt[2] . ' ' . @$month[@$dt[1]] . ' ' . @$dt[0];
+            $this->view->date = $dt[2] . ' ' . $month[@$dt[1]] . ' ' . $dt[0];
             $this->view->exploded_date = $dt;
             $this->view->order = $order;
             $customer_id = $order->getCustomerId();
@@ -6108,7 +6125,7 @@ public function generatePassword($length = 10){
 
             $order = new Shoporders($id);
             $dt = explode('-', substr($order->getDateCreate(), 0, 10));
-            $this->view->date = @$dt[2] . ' ' . @$month[@$dt[1]] . ' ' . @$dt[0];
+            $this->view->date = $dt[2] . ' ' . $month[$dt[1]] . ' ' . $dt[0];
             $this->view->exploded_date = $dt;
             $this->view->order = $order;
             $customer_id = $order->getCustomerId();
@@ -7608,7 +7625,7 @@ if(isValidEmailNew($this->view->email) and isValidEmailRu($this->view->email)){
                 $objWriter = new PHPExcel_Writer_Excel5($pExcel);
 				
 				if($this->get->flag){
-				$path1file = INPATH . "admin_files/views/trekko/". $filename;
+				$path1file = INPATH . "backend/views/trekko/". $filename;
 				if (file_exists($path1file)){
 						if (unlink($path1file)) $objWriter->save($path1file);
 						}else{
@@ -9103,7 +9120,7 @@ ORDER BY  `ws_articles`.`category_id`, `ws_articles`.`brand_id` ASC";
 	 
      $filename = $name.'.xls';
 	 
-	 $path1file = INPATH . "admin_files/views/chart/". $filename;
+	 $path1file = INPATH . "backend/views/chart/". $filename;
 	  $boldFont = array('font' => array('bold' => true));
 			if($start == 0){
 				
@@ -9242,10 +9259,10 @@ $end = $this->post->end - $i;
 
 //if($end <= $this->post->start){	
 //$objWriter->save($path1file);
-//die(json_encode(array('exit'=>"Отчёт сформирован!", 'src'=>'https://www.red.ua/admin_files/views/chart/'.$filename)));
+//die(json_encode(array('exit'=>"Отчёт сформирован!", 'src'=>'https://www.red.ua/backend/views/chart/'.$filename)));
 //}else{
 $objWriter->save($path1file);
-die(json_encode(array('start'=>(int)$i, 'end'=>(int)$this->post->end, 'proc'=>(int)$proc, 'exit'=>"Отчёт сформирован!", 'src'=>'https://www.red.ua/admin_files/views/chart/'.$filename)));	
+die(json_encode(array('start'=>(int)$i, 'end'=>(int)$this->post->end, 'proc'=>(int)$proc, 'exit'=>"Отчёт сформирован!", 'src'=>'https://www.red.ua/backend/views/chart/'.$filename)));	
 //}		
 
                     
@@ -10534,7 +10551,7 @@ LIMIT ".$start." , 10 ";
 			  require_once("PHPExel/PHPExcel/Writer/Excel5.php");
      $name = 'otchet_articles_' .date('d-m-Y');
      $filename = $name . '.xls';
-	 $path1file = INPATH . "admin_files/views/chart/". $filename;
+	 $path1file = INPATH . "backend/views/chart/". $filename;
 				
                 
 				if($start == 0){
@@ -10645,7 +10662,7 @@ $end = $this->post->end - 10;
 
 		if($end <= $this->post->start){	
 $objWriter->save($path1file);
-die(json_encode(array('exit'=>"Отчёт сформирован!", 'src'=>'https://www.red.ua/admin_files/views/chart/'.$filename)));
+die(json_encode(array('exit'=>"Отчёт сформирован!", 'src'=>'https://www.red.ua/backend/views/chart/'.$filename)));
 }else{
 $objWriter->save($path1file);
 die(json_encode(array('start'=>(int)$this->post->start+=10, 'end'=>(int)$this->post->end)));	
@@ -10788,7 +10805,7 @@ LIMIT ".$start." , 50";
 			  require_once("PHPExel/PHPExcel/Writer/Excel5.php");
      $name = 'otchet_articles_cat_'.$this->post->cat.'_'.date('d-m-Y');
      $filename = $name . '.xls';
-	 $path1file = INPATH . "admin_files/views/chart/". $filename;
+	 $path1file = INPATH . "backend/views/chart/". $filename;
 				
                 
 				if($start == 0){
@@ -10949,7 +10966,7 @@ $end = $this->post->end - 50;
 
 		if($end <= $this->post->start){	
 $objWriter->save($path1file);
-die(json_encode(array('exit'=>"Отчёт сформирован!", 'src'=>'https://www.red.ua/admin_files/views/chart/'.$filename)));
+die(json_encode(array('exit'=>"Отчёт сформирован!", 'src'=>'https://www.red.ua/backend/views/chart/'.$filename)));
 }else{
 $objWriter->save($path1file);
 die(json_encode(array('start'=>(int)$this->post->start+=50, 'end'=>(int)$this->post->end, 'cat'=>(int)$this->post->cat)));	
@@ -11119,7 +11136,7 @@ $customers = wsActiveRecord::useStatic('Customer')->findByQuery($sql);
 			  require_once("PHPExel/PHPExcel/Writer/Excel5.php");
      $name = 'otchet_customers_'.date('d-m-Y');
      $filename = $name . '.xls';
-	 $path1file = INPATH . "admin_files/views/chart/". $filename;
+	 $path1file = INPATH . "backend/views/chart/". $filename;
 				
                 
 				if($start == 0){
@@ -11213,7 +11230,7 @@ $end = $this->post->end - 100;
 
 		if($end <= $this->post->start){	
 $objWriter->save($path1file);
-die(json_encode(array('exit'=>"Отчёт сформирован!", 'src'=>'https://www.red.ua/admin_files/views/chart/'.$filename)));
+die(json_encode(array('exit'=>"Отчёт сформирован!", 'src'=>'https://www.red.ua/backend/views/chart/'.$filename)));
 }else{
 $objWriter->save($path1file);
 die(json_encode(array('start'=>(int)$this->post->start+=100, 'end'=>(int)$this->post->end, 'cat'=>(int)$this->post->cat)));	
@@ -11489,8 +11506,11 @@ $mas=array('model'=>$aSheet[1][3], 'price' =>$aSheet[1][32], 'min_price'=>$aShee
                         $article->save();
                     }
                 }
+				// echo $this->render('event/orderedit.tpl.php');
+				//$this->_redir('shop-orders/editskidkabyorder/id/' . $this->get->getId());
             }
             $this->view->order = $order;
+			
             echo $this->render('event/orderedit.tpl.php');
 
         } else {
@@ -11990,7 +12010,7 @@ $article = wsActiveRecord::useStatic('Shoporderarticles')->findFirst(array("orde
 	if(count($mas)> 0){
 	foreach($mas as $k=>$r){
 	$order = wsActiveRecord::useStatic('Shoporders')->findFirst(array('id'=>(int)$r, 'status in(4,6,8,13,12)'));
-	$c_or = wsActiveRecord::useStatic('ShopordersVozrat')->count(array("order_id"=>(int)$r, "date_create > '".date('Y-m-d 00:00:00')."' "));
+	$c_or = wsActiveRecord::useStatic('ShopordersVozrat')->count(array("order_id"=>(int)$r, "date_create >= '".date('Y-m-d 00:00:00')."' "));
 	if($order and !$c_or){
 	$v = new ShopordersVozrat();
 	$v->setOrderId($order->id);
@@ -12001,24 +12021,32 @@ $article = wsActiveRecord::useStatic('Shoporderarticles')->findFirst(array("orde
 	$result['ok'][] = $r;
 	}else{
 	$result['error'][] = $r;
+	
+		if ($c_or) { $result['message'] = ' уже принят на возврат!!!';}
+		if (!$order) { $result['message'] = ' в статусе с которого нельзя принимать на возврат!!!';}
 	}
 	}
 	
 	}
 	die(json_encode($result));
-	}
-	if($this->get->method == 'forma103'){
+	} elseif ($this->get->method == 'forma103'){
 	$ids = explode(',', $this->get->ids);
-	$orders = wsActiveRecord::useStatic('ShopordersVozrat')->findAll(array('id in('.$this->get->ids.')'));
+	$this->view->order = wsActiveRecord::useStatic('ShopordersVozrat')->findAll(array('id in('.$this->get->ids.')'));
+	echo $this->render('', 'return_articles/forma103.ukr.post.php');
+	exit();
+	} elseif ($this->post->method == 'go_mail_forma103'){
+	//$ids = explode(',', $this->post->ids);
+	$orders = wsActiveRecord::useStatic('ShopordersVozrat')->findAll(array('id in('.$this->post->ids.')'));
+	$message = '<div>';
+	
 	foreach($orders as $vozrat){
-	$ord = new Shoporders($vozrat->order_id);
+	if($vozrat->getStatus() != 3){
+	$ord = new Shoporders((int)$vozrat->order_id);
 	$vozrat->setStatus(3);
 	$vozrat->setDateObrabotan(date('Y-m-d H:i:s'));
-	$vozrat->setAdminObrabotan($this->user->id);
-									
-	//if(isset($_POST['comments']) and $_POST['comments'] !='')$vozrat->setComments($_POST['comments']);
-									
+	$vozrat->setAdminObrabotan($this->user->id);					
 	$vozrat->save();
+	
 	$remark = new Shoporderremarks();
                         $data = array(
                             'order_id' => $vozrat->order_id,
@@ -12030,23 +12058,30 @@ $article = wsActiveRecord::useStatic('Shoporderarticles')->findFirst(array("orde
                         $remark->save();
 						
 	$text = 'Доброго дня!<br>';
-	$text.=$order->middle_name.' '.$order->name.', Вам відправлено поштовий переказ '.($vozrat->amount+$vozrat->dop_suma).' грн. за повернення замовлення №'.$ord->id.'<br>Місце отримання, поштове відділення Укр.Пошти: '.$ord->index;
+	$text.=$ord->middle_name.' '.$ord->name.', Вам відправлено поштовий переказ '.($vozrat->amount+$vozrat->dop_suma).' грн. за повернення замовлення №'.$ord->id.'<br>Місце отримання, поштове відділення Укр.Пошти: '.$ord->getIndex();
 
-	SendMail::getInstance()->sendEmail($ord->email, $ord->middle_name.' '.$ord->name, 'Поштовий переказ за замовлення №'.$order->id, $text, '', '', 'return@red.ua', 'RED.UA', 2, 'return@red.ua', $this->user->getMiddleName());
+	SendMail::getInstance()->sendEmail($ord->email, $ord->middle_name.' '.$ord->name, 'Поштовий переказ за замовлення №'.$ord->id, $text, '', '', 'return@red.ua', 'RED.UA', 2, 'return@red.ua', $this->user->getMiddleName());
 	
+	$message.='<p>Відправлено поштовий переказ '.($vozrat->amount+$vozrat->dop_suma).'грн. за замовлення №'.$ord->id.'</p><br/>';
+	}else{
+	$message.='<p>Нельза отправить сообщение по заказу №'.$ord->id.' он в статусе "Обработан", отправлять можно только когда заказ в статусе "В процессе"</p><br/>';
+	}
 	}
 	
-	$this->view->order = $orders;
+	//$message.='<p>Мы тут.</p>';
+	$message .= '</div>';
 	
-	//echo print_r($order);
-	echo $this->render('', 'return_articles/forma103.ukr.post.php');
-	die();
+	 die(json_encode(array('send'=>'ok', 'message'=>$message, 'ids'=>$ids)));
+	
 	}
         $this->view->order_status = array(1 => 'Принят', 2 => 'В процессе', 3 => 'Обработан', 4=>'Возврат', 5=> 'Отменён');
 		
         if(isset($_GET['search'])){
+		$order_by = array('date_create' => 'DESC');
 		$data = array();
-		if(@$this->get->status) $data['status'] = (int)$this->get->status;
+		if(@$this->get->status){ $data['status'] = (int)$this->get->status; 
+		if($this->get->status == 3) $order_by = array('date_obrabotan' => 'DESC');
+		}
 		if(@$this->get->customer_id) $data['customer_id'] = (int)$this->get->customer_id;
 		if(@$this->get->order) $data['order_id'] = (int)$this->get->order;
 		if(@$this->get->create_from) $data[] = " date_create >='".date('Y-m-d 00:00:00', strtotime($this->get->create_from))."' ";
@@ -12054,7 +12089,7 @@ $article = wsActiveRecord::useStatic('Shoporderarticles')->findFirst(array("orde
 		if(@$this->get->sposob) $data['sposob'] = (int)$this->get->sposob;
 		//echo print_r($data);
 		//die();
-		$orders = wsActiveRecord::useStatic('ShopordersVozrat')->findAll($data);
+		$orders = wsActiveRecord::useStatic('ShopordersVozrat')->findAll($data, $order_by);
 		if($orders){
 		$this->view->orders = $orders;
 		
@@ -13112,7 +13147,7 @@ if($articles) $this->_redirect('/product/id/'.$articles['0']->getId().'/');
     public function chatAction()
     {
 
-       // setcookie("chatName", str_replace(' ', '_', $this->translit(mb_substr($this->website->getCustomer()->getFirstName() . '_' . $this->website->getCustomer()->getMiddleName(), 0, 18))), 0, '/admin_files/views/slugebnoe/chat');
+       // setcookie("chatName", str_replace(' ', '_', $this->translit(mb_substr($this->website->getCustomer()->getFirstName() . '_' . $this->website->getCustomer()->getMiddleName(), 0, 18))), 0, '/backend/views/slugebnoe/chat');
         echo $this->render('slugebnoe/chat.tpl.php');
         return;
     }
@@ -14113,7 +14148,7 @@ IN ( 0, 1, 8, 9, 15, 16 ) ORDER BY  `ws_order_meestexpres`.`ctime` DESC ';	*/
 	
 	 $from = strtotime($this->post->from);
 	 $to = strtotime($this->post->to);
-	 if($from >$to) break;
+         if( $from < $to ){
 	
 	$from = date('Y-m-d 00:00:00', $from);
 	$to = date('Y-m-d 23:00:00', $to);
@@ -14166,10 +14201,11 @@ $i++;
 	$result = array('send'=>$date, 'year'=>$year, 'send2'=>$date2);
 	  //print json_encode($result);
             die(json_encode($result));
+        }
 	}else if($this->post->metod == 'goodelivery'){
 	 	$from = strtotime($this->post->fromd);
 		$to = strtotime($this->post->tod);
-			 if($from >$to) break;
+			 if($from < $to){ 
 			$from = date('Y-m-d 00:00:00', $from);	
 			$to = date('Y-m-d 23:00:00', $to);
 
@@ -14248,6 +14284,7 @@ $i++;
 $result = array('send_m'=>$date_m, 'send_np'=>$date_np, 'send_k'=>$date_k, 'send_up'=>$date_up, 'send_retupn'=>$date_return, 'year'=>$year);
 	 // print json_encode($result);
             die(json_encode($result));
+        }
 
 	}
 if($this->post->method == 'othot' and $this->post->from and $this->post->to){
@@ -14263,7 +14300,7 @@ $to = date('Y-m-d', strtotime($this->post->to));
 	require_once('PHPExel/PHPExcel/IOFactory.php');
 	require_once("PHPExel/PHPExcel/Writer/Excel5.php");
 	 $filename = 'ostatki_'.date('Y-m-d').'.xls';
-	 $path1file = INPATH . "admin_files/views/chart/". $filename;
+	 $path1file = INPATH . "backend/views/chart/". $filename;
 	 // Создаем объект класса PHPExcel
 	 if($start == 2){
 	 $xls = new PHPExcel();
@@ -14517,7 +14554,7 @@ $ob = 0;
 		$objWriter = new PHPExcel_Writer_Excel5($xls);
 			//$objWriter->save('php://output');
 			
-			//$path1file = INPATH . "admin_files/views/trekko/". $filename;
+			//$path1file = INPATH . "backend/views/trekko/". $filename;
 			//	if (file_exists($path1file)){
 					//	if (unlink($path1file)) $objWriter->save($path1file);
 					//	}else{
@@ -14550,7 +14587,7 @@ $i++;
 	//	header ( "Content-Disposition: attachment; filename=".$filename);
 //$objWriter->save('php://output');
 $objWriter->save($path1file);
-die(json_encode(array('exit'=>"Отчёт сформирован!", 'src'=>'https://www.red.ua/admin_files/views/chart/'.$filename)));
+die(json_encode(array('exit'=>"Отчёт сформирован!", 'src'=>'https://www.red.ua/backend/views/chart/'.$filename)));
 
 }else{
 
@@ -15590,23 +15627,25 @@ echo $this->render('amazon/amazon.tpl.php');
 	// die(print_r($mass));
 	  return $i;
     }
-	public function amazonordersAction(){
+	public function amazonordersAction()
+	{
 	if($this->post->method == 'dell'){
-	$or_art = new Amazonorderarticles($this->post->id);
-	$order = new Amazonorders($or_art->getOrderId());
-	$or_art->destroy();
-	$order->ReCalculate();
+		
+		$or_art = new Amazonorderarticles($this->post->id);
+			$order = new Amazonorders($or_art->getOrderId());
+		$or_art->destroy();
+			$order->ReCalculate();
+			
 	die($this->post->id);
-	}
-		if($this->post->method == 'edit'){
+	
+	}elseif($this->post->method == 'edit'){
 	$or_art = new Amazonorderarticles($this->post->id);
 	$or_art->setCount($this->post->count);
 	$or_art->save();
 	$order = new Amazonorders($or_art->getOrderId());
 	$order->ReCalculate();
 	die(json_encode(array('cnt'=>$or_art->getCount(), 'sum'=>$or_art->getCount()*$or_art->getPrice())));
-	}
-	if($this->post->method == 'ok'){
+	} elseif ($this->post->method == 'ok'){
 	$order = new Amazonorders($this->post->id);
 	$order->setFlag(1);//odbrit
 	$order->save();
@@ -15687,7 +15726,7 @@ echo $this->render('amazon/amazon.tpl.php');
 				$aSheet->mergeCells('B1:F1');
 				//
 				$aSheet->getRowDimension(1)->setRowHeight(65);
-				$imagePath = INPATH . 'admin_files/views/amazon/logo-red-amazon.png';
+				$imagePath = INPATH . 'backend/views/amazon/logo-red-amazon.png';
 				if (file_exists($imagePath)) {
 					$logo = new PHPExcel_Worksheet_Drawing();
 					$logo->setPath($imagePath);
@@ -15820,7 +15859,7 @@ $j=1;
 	
 	require_once("PHPExel/PHPExcel/Writer/Excel5.php");
 		$objWriter = new PHPExcel_Writer_Excel5($pExcel);
-				$path1file = INPATH . "admin_files/views/amazon/". $filename;
+				$path1file = INPATH . "backend/views/amazon/". $filename;
 				if (file_exists($path1file)){
 						if (unlink($path1file)) $objWriter->save($path1file);
 						}else{
@@ -16173,7 +16212,7 @@ if(isset($this->post->long_text) and $this->post->long_text != ''){
 									//echo print_r($ifos);
 									//echo '</pre>';
 									//die();
-                                    if (@$ifos) {
+                                    if ($ifos) {
 									if(!count($ifos['error'])){
 									unset($ifos['error']);
 									foreach($ifos as $a){
@@ -16189,12 +16228,12 @@ if(isset($this->post->long_text) and $this->post->long_text != ''){
 										$art->setBrand($a['brand']);
 									}
 								$tmp = wsActiveRecord::useStatic('Shoparticles')->findLastSequenceRecord();
-                                $art->setSequence($tmp->getSequence() + 10);
+                                                            $art->setSequence($tmp->getSequence() + 10);
 									
 									$art->setColorId($a['color_id']); 
 									$art->setModelUk($a['model']);
 									$art->setModel($this->trans->translateuk(mb_strtolower($a['model']), 'uk', 'ru'));
-                                    $art->setPrice($a['price']); 
+                                                                        $art->setPrice($a['price']); 
 									$art->setStock((int)$a['stock']);
 									$art->setSezon($a['id_season']);
 									$art->setSizeType($a['id_sex']);
@@ -16227,7 +16266,10 @@ if(isset($this->post->long_text) and $this->post->long_text != ''){
 											$log->save();
 									
 									}
+                                                                        
+                                                                        sleep(1);
 									}
+                                                                       // die();
 									$this->_redirect('/admin/articles-add/listarticles/search/code/'.$nakladnaya);
 
 									}else{
@@ -16367,6 +16409,11 @@ public function parseexcelfile($file)
 		}
 		}
 		$mas['error'] = $errors;
+               // echo '<pre>';
+               // echo print_r($mas);
+               // // echo '</pre>';
+               // var_damp($mas);
+              //  die();
         return $mas;
     }
    public function parseexcelfiletemp($load_file){//старые накладные
@@ -16499,7 +16546,7 @@ public function parseexcelfile($file)
                 require_once("PHPExel/PHPExcel/Writer/Excel5.php");
                 $objWriter = new PHPExcel_Writer_Excel5($pExcel);
 
-				$pathfile = INPATH . "admin_files/excel/". $filename;
+				$pathfile = INPATH . "backend/excel/". $filename;
 				
 				if (file_exists($pathfile)){
 						if (unlink($pathfile)) $objWriter->save($pathfile);
@@ -16547,10 +16594,10 @@ public function parseexcelfile($file)
 	$name = 'Ярослав';
     $admin_name = 'Ярослав';
 	$subject = 'Снятие товара';
-		if(@$this->post->subject) $subject = $this->post->subject;
+		if($this->post->subject) $subject = $this->post->subject;
 		
 	$msg = 'Файл на снятие во вложении';
-		if(@$this->post->message) $msg = $this->post->message;
+		if($this->post->message) $msg = $this->post->message;
 	
 	$uploadfile = '';
 	$filename = '';
@@ -16560,10 +16607,6 @@ public function parseexcelfile($file)
 				$filename = $_FILES['file']['name'];				
 							}
 							}
-	
-     //  MailerNew::getInstance()->sendToEmail($email, $admin_name, $subject, $msg, 0, '', $admin_name, $smtp = 1, $usubscribe_text = 0, $subsciber = 0, $uploadfile, $filename);
-
-	
 	SendMail::getInstance()->sendEmail($email, $name, $subject, $msg, $uploadfile, $filename, '', '', 0, 'yaroslav_148@icloud.com', 'Ярослав');
 	}//else{
 	//$res = SendMail::getInstance()->getMailList();
@@ -16573,7 +16616,161 @@ public function parseexcelfile($file)
 	echo $this->render('template/views/page/email_page.tpl.php', 'index.php');
 	
 	}
+	
+	/**
+         * акции с использованием option_id
+         */
+	public function discountsAction()
+	{
+            //die('dfgsdf');
+            if($this->get->method == 'histoory'){
+                //die('tutu');
+                $result = "";
+                $query = Shoporderarticles::findByQueryFirstArray("
+                    SELECT SUM( IF(  `count` =0, 1,  `count` ) ) AS  `all` , SUM( IF(  `count` =0,  `option_price` , (
+ `option_price` *  `count`
+) ) ) AS  `summa_all` , SUM(  `count` ) AS  `fact` , SUM(  `option_price` *  `count` ) AS  `summa_fact`
+                        FROM  `ws_order_articles` 
+                            WHERE  `option_id` =".$this->get->id);
+               // echo print_r($query);
+                //die();
+                
+                
+                
+                $this->view->message = $query;
+                $rezult = $this->view->render('discounts/history.php');
+               // $msg = $this->view->render('mailing/general-email.tpl.php');
+                die($rezult);
+            }
+            
+	if($this->get->edit){
+            $errors = [];
+            if($this->post->dell){
+                $op = new Shoparticlesoptions($this->post->id);
+                $op->destroy();  
+            }elseif($this->post->save){
+              
+                
+                if (!empty($this->post->article_id) and empty($this->post->category_id) and empty($this->post->brand_id)) {
+                    foreach (Shoparticlesoptions::find('Shoparticlesoptions', ['option_id'=>$this->post->option_id]) as $v) {
+                        if($v->category_id){
+                           $errors[] = 'В этой акции участвует категория, добавление товара не возможно!';  
+                        }elseif($v->brand_id){  
+                            $errors[] = 'В этой акции участвует бренд, добавление товара не возможно!';  
+                        }
+                    }
+                           if(count($errors) == 0){
+                               $art = explode(',', $this->post->article_id);
+                               foreach ($art as $d => $v){
+                                    $o = new Shoparticlesoptions();
+                                    $o->setOptionId($this->post->option_id);
+                                    $o->setArticleId($v);
+                                    $o->save(); 
+                               }
+                                
+                           
+                           }
+                } elseif(empty($this->post->article_id) and !empty($this->post->category_id) and empty($this->post->brand_id)){
+                    foreach (Shoparticlesoptions::find('Shoparticlesoptions', ['option_id'=>$this->post->option_id]) as $v) {
+                        if($v->article_id){
+                           $errors[] = 'В этой акции участвует товар, добавление категории не возможно!';  
+                        }elseif($v->brand_id){  
+                            $errors[] = 'В этой акции участвует товар, добавление категории не возможно!';  
+                        }
+                    }
+                    if(count($errors) == 0){
+                        $cat = new Shopcategories($this->post->category_id);
+                        if($cat and count($cat->getKidsIds()) > 1){
+                            foreach ($cat->getKidsIds() as $key => $value) {
+                                $o = new Shoparticlesoptions();
+                                $o->setOptionId($this->post->option_id);
+                                $o->setCategoryId($value);
+                                $o->save(); 
+                            }
+                        }else{
+                          $o = new Shoparticlesoptions();
+                                $o->setOptionId($this->post->option_id);
+                                $o->setCategoryId($this->post->category_id);
+                                $o->save(); 
+                            
+                        }
+                           
+                                
+                           
+                    }
+                    
+                }elseif(empty($this->post->article_id) and empty($this->post->category_id) and !empty($this->post->brand_id)){
+                     foreach (Shoparticlesoptions::find('Shoparticlesoptions', ['option_id'=>$this->post->option_id]) as $v) {
+                        if($v->article_id){
+                           $errors[] = 'В этой акции участвует товар, добавление бренда не возможно!';  
+                        }elseif($v->category_id){  
+                            $errors[] = 'В этой акции участвует категория, добавление бренда не возможно!';  
+                        }
+                    }
+                    if(count($errors) == 0){
+                           
+                                $o = new Shoparticlesoptions();
+                                $o->setOptionId($this->post->option_id);
+                                $o->setBrandId($this->post->brand_id);
+                                $o->save();
+                           
+                    }
+                }else{
+                    $errors[] = 'В акцию можно добавлять по одному критерию: товар, категорию или бренд!';
+                    
+                }
+                //$o->import($this->post);
+                
+               // echo print_r($this->post);
+               // die();
+                
+            }elseif(isset($this->post->save_cat)){
+               
+                 $a = new Shoparticlesoption($this->post->id);
+                 if($a){
+                $a->import($this->post);
+                if(!isset($this->post->status)){ $a->setStatus(0);}
+                $a->save();
+                 } 
+                
+            }
+            if(count($errors) > 0){$this->view->errors = $errors;}
+	//var_dump($this->get);
+	$discounts = wsActiveRecord::useStatic('Shoparticlesoption')->findById((int)$this->get->edit);
+	//var_dump($discounts);
+	$this->view->discounts = $discounts;
+	
+	$options = wsActiveRecord::useStatic('Shoparticlesoptions')->findByOptionId($discounts->id);
+	//var_dump($options);
+	$this->view->options = $options;
+	
+	echo $this->render('discounts/discounts-edit.tpl.php');
+	}else{
+            if($this->post and isset($this->post->add)){
+                
+               // echo print_r($this->post);
+              //  die();
+                $a = new Shoparticlesoption();
+                $a->import($this->post);
+                if(!isset($this->post->status)){ $a->setStatus(0);}
+                $a->save();
+                
+            }
 
+	$this->view->discounts = wsActiveRecord::useStatic('Shoparticlesoption')->findAll();
+	
+	echo $this->render('discounts/discounts.tpl.php');
+	}
+	}
+        
+  /**
+   * Загрузка файлов на сервер(фотки, документы и другое)
+   */      
+public function dialogAction()
+	{
+		
+		echo $this->render('', 'dialog/dialog.tpl.php');
+	}
 
 
 

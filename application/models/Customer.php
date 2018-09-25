@@ -1,8 +1,17 @@
 <?php
+/**
+ * Customer Class
+ */
 class Customer extends wsCustomer
 {
 
-
+/**
+ * скидка клиента
+ * @param int $current_order_id
+ * @param float $plus
+ * @param Boolean $no_a_discint
+ * @return int
+ */
 	public function getDiscont($current_order_id = false, $plus = 0, $no_a_discint = false) {
 		//показывать вообще по всем ордерам или без учета какого-то
       /*  if ($current_order_id) {
@@ -51,13 +60,25 @@ class Customer extends wsCustomer
 			}
         }
 	}
+        
+       /**
+        * следующая скидка
+        * @param float $plus
+        * @return int
+        */
     public function getNextDiscont($plus=0){
         $now = $this->getDiscont(false,$plus,true);
-        if($now == '0') return 5;
-        if($now == '5') return 10;
-        if($now == '10') return 15;
-        if($now == '15') return 0;
+        if($now == '0') {return 5;}
+        if($now == '5') {return 10;}
+        if($now == '10') {return 15;}
+        if($now == '15') {return 0;}
     }
+    
+    /**
+     * следующая сумма для скидки
+     * @param float $plus
+     * @return float
+     */
      public function getNextDiscontSum($plus=0){
 
 		$a = wsActiveRecord::useStatic('Customer')->findByQuery('
@@ -66,14 +87,19 @@ class Customer extends wsCustomer
 			        JOIN ws_orders ON ws_order_articles.order_id = ws_orders.id
 		WHERE ws_orders.customer_id = ' . $this->getId() . ' AND ws_orders.status IN (1,3,4,6,8,9,10,11,13,14,15,16) ')->at(0);
 		$amount = $a ? $a->getAmount() : 0;
-		$amount = $amount +$plus;
+		$amount += $plus;
 		$next = $this->getNextDiscont($plus);
-		if($next==5) return 700 - $amount;
-		if($next==10) return 5000 - $amount;
-		if($next==15) return 12000 - $amount;
+		if($next==5) {return 700 - $amount;}
+		if($next==10) {return 5000 - $amount;}
+		if($next==15) {return 12000 - $amount;}
 		
     }
 
+    /**
+     * цена по скидке
+     * @param float $price
+     * @return double
+     */
 	public function getDiscontPrice($price = 0){
 		$discont = $this->getDiscont();
 		$new_price = 0;
@@ -85,62 +111,75 @@ class Customer extends wsCustomer
 
 		return number_format((double)$new_price, 2, ',', '');
 	}
+        
+       /**
+        * соглашение
+        * @return boolean
+        */ 
     public function isUserTerms(){
         $order = wsActiveRecord::useStatic('Shoporders')->findFirst(array('customer_id'=>$this->getId(),'oznak'=>1,'soglas'=>1), array('id'=>'ASC'));
-        if($order) return $order->getDateCreate();
+        if($order) {return $order->getDateCreate();}
         return false;
     }
-	//проверка на бан пользователя
+	/**
+         * проверка на бан пользователя
+         * 2 - true end false
+         * @return boolean 
+         *          */
     public function isBan(){
-        if($this->getCustomerStatusId() == 2) return true;
+        if($this->getCustomerStatusId() == 2) {return true;}
         return false;
     }
-		//проверка на блок емейла
+    
+    /**
+     * проверка на блок емейла  
+     */
+		
     public function isBlockEmail(){
-        if($this->getBlockEmail() == 1) return true;
+        if($this->getBlockEmail() == 1) {return true;}
         return false;
     }
 			//проверка на закрытия пуш уведомлений
     public function isClosePuch(){
-        if($this->getClosePuch() == 1) return true;
+        if($this->getClosePuch() == 1) {return true;}
         return false;
     }
 	//проверка пользователя на бан заказывать наложкой нп
     public function isBlockNpN(){
-        if($this->getBloсkNpN() == 1) return true;
+        if($this->getBloсkNpN() == 1) {return true;}
         return false;
     }
 	// временна зона 1 - год не заходили, 2 - б 3 - 
 	public function isTimeZone(){
-	 if($this->getTimeZoneId() == 1) return true;
+	 if($this->getTimeZoneId() == 1) {return true;}
         return false;
 	}
 	public function isNoActive(){
       
-        if($this->getCurrencyId() == 1) return true;
+        if($this->getCurrencyId() == 1) {return true;}
         return false;
     } 
     public function isNoPayOrder(){
         if($this->getIsLoggedIn()){
         $order = wsActiveRecord::useStatic('Shoporders')->findFirst(array('customer_id'=>$this->getId(),'status'=>11,'delivery_type_id'=>8));
-        if($order) return false;
+        if($order) {return false;}
         }
         return false;
 
     }
 	//проверка на блок пользователя на заказ курьером
    public function isBlockCur(){ 
-        if($this->getBlockCur() == 1) return true;
+        if($this->getBlockCur() == 1) {return true;}
         return false;
     }
 	//проверка на блок пользователя на заказ с магазина
     public function isBlockM(){
-        if($this->getBlockM() == 1) return true;
+        if($this->getBlockM() == 1) { return true;}
         return false;
     }
 	//проверка на блок пользователя на быструю заявку
     public function isBlockQuick(){
-        if($this->getBlockQuick() == 1) return true;
+        if($this->getBlockQuick() == 1){ return true; }
         return false;
     }
 
@@ -160,6 +199,10 @@ WHERE  `ws_orders`.`customer_id` ='.$this->getId());
 		 $co = wsActiveRecord::findByQueryFirstArray('SELECT COUNT(id) as c FROM `ws_orders` WHERE customer_id='.$this->getId().' and status not in(17,7,2)');
 		return $co['c'];
     }
+    /**
+     * 
+     * @return type
+     */
 	public function getCountFactArticlesOrder(){
 		 $co = wsActiveRecord::findByQueryFirstArray('SELECT SUM(`ws_order_articles`.`count`) AS suma
 FROM  `ws_order_articles` 
@@ -167,15 +210,24 @@ JOIN  `ws_orders` ON  `ws_order_articles`.`order_id` =  `ws_orders`.`id`
 WHERE  `ws_orders`.`customer_id` ='.$this->getId());
 		return $co['suma'];
     }
+    
+    /**
+     * @getSumOrder() - сумма всех заказов с учетом депозита
+     */
 	public function getSumOrder(){
 		 $co = wsActiveRecord::findByQueryFirstArray('SELECT SUM(`ws_orders`.`amount`+`ws_orders`.`deposit`) AS suma FROM  `ws_orders` 
 WHERE  `ws_orders`.`customer_id` ='.$this->getId());
 		return $co['suma'];
     }
+    
+    /**
+     * @getDateOrderP - дата последнего заказа
+     * @return string 
+    */
 	public function getDateOrderP(){
 		 $co = wsActiveRecord::useStatic('Shoporders')->findFirst(array('customer_id'=>$this->getId()),array('id' => 'DESC'))->date_create;
 		return $co;
     }
+    
 	
 }
-?>
