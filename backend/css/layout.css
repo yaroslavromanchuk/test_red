@@ -1,0 +1,1228 @@
+/* 
+
+Cubique Webcraetions
+www.cubique.nl
+info@cubique.nl
+
+*/
+
+/* -------------------------------------------------------------- layout kenmerken ------ */
+
+html{
+
+	height:100%;
+	min-width: 1024px;
+}
+/*Keyframes*/
+@keyframes snow {
+0% {background-position: 0px 0px, 0px 0px, 0px 0px;}
+ 100% {background-position: 500px 1000px, 400px 400px, 300px 300px;}
+}
+
+@-moz-keyframes snow {
+0% {background-position: 0px 0px, 0px 0px, 0px 0px;}
+100% {background-position: 500px 1000px, 400px 400px, 300px 300px;}
+}
+
+@-o-keyframes snow {
+0% {background-position: 0px 0px, 0px 0px, 0px 0px;}
+100% {background-position: 500px 1000px, 400px 400px, 300px 300px;}
+}
+
+@-webkit-keyframes snow {
+0% {background-position: 0px 0px, 0px 0px, 0px 0px;}
+ 100% {background-position: 500px 1000px, 400px 400px, 300px 300px;}
+}
+
+@-ms-keyframes snow {
+0% {background-position: 0px 0px, 0px 0px, 0px 0px;}
+ 100% {background-position: 500px 1000px, 400px 400px, 300px 300px;}
+}
+body {
+
+    min-height: 100%;
+	padding:0;
+	margin: 0 auto;
+	font-family: sans-serif;
+	    background-attachment: fixed;
+    background-position: 50% 0%;
+    background-repeat: no-repeat;
+	background-size: cover;
+	background-image: url(/img/fon/admin/autumn.jpg);
+	z-index: 1;
+} 
+#container :hover{
+/*cursor: url(/img/pauk.cur);*/
+}
+/*сделал ярик снег*/
+.knopka{
+  background: #eee;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 4px;
+    border-radius: 5px;
+}
+
+div#wrapper {
+    /*min-height: 100%;*/
+	/*background-image: url('/img/snowflake.png'), url('/img/snowflake3.png'), url('/img/snowflake2.png');*/
+	/*height:100%;*/
+	/* -webkit-animation: snow 20s linear infinite;
+	-moz-animation: snow 20s linear infinite;
+	-ms-animation: snow 20s linear infinite;
+	-o-animation: snow 20s linear infinite;*/
+	/*animation: snow 20s linear infinite;*/
+}
+/* ------ */
+
+
+[class^=icon-], [class*=' icon-'] {
+display: inline-block;
+width: 14px;
+height: 14px;
+margin: 3px 0 0 3px;
+line-height: 14px;
+vertical-align: text-top;
+background-image: url(/images/glyphicons-halflings.png);
+background-position: 14px 14px;
+background-repeat: no-repeat;
+}
+
+#container {
+padding: 0px;
+    margin-top: 50px;
+    background: rgba(255, 255, 255, 0.8);
+}
+.dropdown-menu > li > a{
+            padding: 7px 20px; 
+        }
+.dropdown:hover > .dropdown-menu { 
+display: block;
+margin: 0;
+}
+
+#header {
+	position:absolute;
+	top:0;
+	left:0;
+	height:170px;
+	background: url('img/main/header.gif');
+}
+#clearheader {
+	height:170px;
+}
+
+#content {
+margin: auto;
+    padding: 10px;
+}
+td {
+	vertical-align: center;
+}
+img {
+	border: 0 none;
+}
+/* -------------------------------------------------------------- menu kenmerken ------ */
+
+#menu {
+position: fixed;
+    top: 0px;
+    width: 1024px;
+	height: 40px;
+	background: linear-gradient(to top, rgb(186, 186, 188), rgb(255, 255, 255));
+	border-radius: 5px 5px 0 0;
+	z-index:1000;
+}
+#menu ul {
+	list-style-type:none;
+	margin: 2px 0 0 15px;
+	padding:0;
+}
+#menu li {
+	float: left;
+	width: 42px;
+	height: 42px;
+	text-align: center;
+}
+#menu li a {
+	border: 1px solid #d4d4d4;
+	height: 60px;
+	/* width: 42px; */
+	height: 42px;
+	display: block;
+}
+#menu li a:hover {
+	border: 1px solid #1d2869;
+
+}
+#menu .secondblock {
+	margin-left: 60px;
+}
+#menu img {
+	border: 0 none;
+	vertical-align: middle;
+}
+#descriptions {
+	padding: 0;
+	margin: 5px 0 0 20px;
+	border: 1px solid #fff;
+	font-size: 84%;
+	font-weight: bold;
+	color: #464547;
+}
+
+/* -------------------------------------------------------------- content kenmerken ------ */
+
+#content p, #content li, #content td {
+	font-size: 80%;
+	color: #3e4655;
+}
+#content h1, #errormessage-small h1 {
+	font-size: 150%;
+	color: #1d2869;
+	margin: 0;
+	padding: 5px 0 10px 40px;
+}
+#content h2 {
+	font-size: 91%;
+	color: #1d2869;
+	padding: 0;
+	margin: 5px 0 0 0;
+}
+
+#content a {
+	color: #333;
+	text-decoration: none;
+}
+#content a:hover {
+	text-decoration: underline;
+}
+#content .page-img, #errormessage-small .page-img {
+	float: left;
+	width:30px;
+}
+/* -------------------------------------------------------------- login kenmerken ------ */
+
+.contentlogin {
+	position: absolute;
+	top: 30%;
+	left: 40%;
+	max-width: 250px;
+	padding: 15px;
+	background-color: #fff;
+	border: 1px solid #777;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+	-webkit-box-shadow: 0 3px 7px rgba(0,0,0,0.3);
+	-moz-box-shadow: 0 3px 7px rgba(0,0,0,0.3);
+	box-shadow: 0 3px 7px rgba(0,0,0,0.3);
+	-webkit-background-clip: padding-box;
+	-moz-background-clip: padding-box;
+	background-clip: padding-box;
+	outline: none;
+}
+
+/* -------------------------------------------------------------- change password kenmerken ------ */
+
+#changepw {
+	font-size: 100%;
+	border: 1px dotted #112F54;
+	background: #dededd;
+}
+#changepw .kolom1 {
+	vertical-align: top;
+	width: 200px;
+	font-weight: bold;
+}
+#changepw input {
+	width: 130px;
+	color: #3e4655;
+	font-family: tahoma, verdana;
+	font-size: 100%;
+}
+
+/* -------------------------------------------------------------- error message kenmerken ------ */
+
+#errormessage {
+margin-left: 50px;
+	width: 400px;
+	background: #dededd;
+	border: 1px dotted #112F54;
+	padding: 6px;
+}
+#errormessage h1, #errormessage-small h1 {
+	color: #bb271e;
+}
+#errormessage-small {
+	width: 264px;
+	background: #dededd;
+	margin: 12px 5px;
+	border: 1px dotted #112F54;
+	padding: 10px 0 0;
+}
+
+/* -------------------------------------------------------------- pages list kenmerken ------ */
+
+#pageslist .kolomicon {
+	width: 28px;
+	text-align: center;
+}
+#pageslist .kolomtitle {
+	width: 400px;
+	padding-left: 15px;
+}
+#pageslist th {
+	text-align: left;
+	background: #112F54;
+	color: #fff;
+	border-bottom: 4px solid #fff;
+	padding-left: 5px;
+}
+#pageslist td, #categories td {
+	border-bottom: 1px solid #9c9e9f;
+	vertical-align: middle;	
+}
+#pageslist th, #pageslist td, #errormessage-small li {
+	font-size: 84%;
+}
+#pageslist .row1, #imagesgallerylist .row1 {
+	background: #ededee;
+}
+#pageslist .row2, #imagesgallerylist .row2 {
+	background: #dbdcdd
+}
+th {
+background-color: #656565;
+    font-weight: normal;
+    font-size: 15px;
+    padding: 0 10px;
+    color: #fff;
+    text-shadow: #414141 0 1px 0px;
+    line-height: 40px;
+}
+.row{
+    margin-left: 0px;
+    margin-right: 0px;
+}
+.row1 {
+	background: #ededee;
+}
+.row2 {
+	background: #dbdcdd
+}
+.input{
+    color: #000;
+    max-width: 200px;
+	display: inline-block;
+	/*
+display: inline;
+max-width: 350px;
+    min-height: 25px;
+    padding: 2px;
+    font-size: 14px;
+    color: black;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+*/
+}
+.w50{max-width: 50px;}
+.w100{max-width: 100px;}
+.w150{max-width: 150px;}
+.w200{max-width: 200px;}
+.w300{max-width: 300px;}
+.w400{max-width: 400px;}
+.w500{max-width: 500px;}
+.w600{max-width: 600px;}
+.comm_ins {background: #4fff87; padding: 5px; max-width:213px;    border: 1px solid red;}
+.comm_cli {background: #ffff33;  padding: 5px; margin-top: 2px; max-width:213px;    border: 1px solid red;}
+
+.button_sersh{
+    font-size: 16px;
+	box-shadow: inset 1px 6px 10px 0 rgba(196, 187, 187, 0.74);
+    padding: 5px 50px;
+    cursor: pointer;
+    margin: 5px 0 5px 0;
+    border-radius: 5px;
+}
+.button_sersh:hover{
+box-shadow: inset 5px 5px 10px 0 rgba(95, 90, 90, 0.58);
+}
+/* -------------------------------------------------------------- page edit list kenmerken ------ */
+
+#editpage {
+	width: 980px;
+	border: 1px dotted #112F54;
+	clear: both;
+	margin-top: 10px;
+	font-size: 100%;
+	background: #dededd;
+}
+#editpage .kolom1 {
+	width: 150px;
+	font-weight: bold;
+}
+#editpage .kolom2 {
+	width: 100px;
+	font-weight: bold;
+}
+#editpage .formfields {
+	width: 300px;
+	color: #3e4655;
+	font-family: tahoma, verdana;
+	font-size: 100%;
+}
+#editpage .pagetext {
+	width: 600px;
+	color: #3e4655;
+	font-family: tahoma, verdana;
+	font-size: 100%;
+}
+#editpage .pagetext {
+	height: 300px;
+}
+#pagesaved {
+	width: 400px;
+	background: #dededd;
+	border: 1px dotted #112F54;
+	padding: 6px;
+	font-size: 84%;
+}
+
+/* -------------------------------------------------------------- config kenmerken ------ */
+
+.column-data {
+	    padding-right: 10px;
+    text-align: right;
+    font-weight: bold;
+}
+.size_article{
+    padding: 5px;
+    border: 1px dotted;
+}
+#configstable input, #dictonarytable input {
+	width:  300px;
+}
+#configstable, #contactformtable, #dictonarytable {
+	background: #ededee;
+	border: 1px solid #9c9e9f;
+}
+#contactformtable th, #dictonarytable th {
+	text-align: left;
+	font-size: 84%;
+}
+.inline-block{
+display: inline-block;
+}
+.none{
+display: none;
+}
+div.active{
+display: inline-block;
+}
+/* -------------------------------------------------------------- broodje van de maand kenmerken ------ */
+
+.broodjetext {
+	height: 70px;
+}
+
+/* -------------------------------------------------------------- image gallery kenmerken ------ */
+
+#imagesgallerylist {
+	width: 400px;
+	border: 1px dotted #112F54;
+	clear: both;
+	margin-top: 10px;
+	background: #dededd;
+}
+
+
+
+
+
+
+
+#categories {
+	margin-top: 25px;
+	width: 400px;
+}
+#products {
+	margin-top: 25px;
+	width: 500px;
+}
+#order-details, #order-client, #order-articles, #order-remarks {
+	/*width: 600px;
+	border: 1px solid #9c9e9f;
+	background: #ededee;*/
+	/*margin-left: 50px;*/
+}
+
+#product-edit .formfields2 {
+	width: 200px;
+	color: #3e4655;
+	font-family: tahoma, verdana;
+	font-size: 100%;
+	margin-top:  3px;
+}
+#product-edit .formfields-price {
+	width: 100px;
+	color: #3e4655;
+	font-family: tahoma, verdana;
+	font-size: 100%;
+	margin-top:  3px;
+}
+#order-details {
+	margin-top: 20px;
+}
+#orders {
+	/*width: 980px;*/
+}
+.hrwidth {
+	width: 600px;
+	text-align: left;
+}
+
+/* -------------------------------------------------------------- edit orders kenmerken ------ */
+
+#order-articles .column-article {
+	width: 250px
+}
+#order-articles .column-euro {
+	width: 15px
+}
+#order-articles .column-price {
+	width: 80px
+}
+#order-articles .tussenrij {
+	height: 0px;
+	border-bottom: 1px solid #9c9e9f;
+}
+#order-articles .formfields {
+	width: 200px;
+	margin-bottom:  2px;
+}
+#order-remarks .text {
+	width: 400px;
+	height: 60px;
+	font-family: arial, verdana;
+	margin-bottom: 5px;
+}
+.order-article-change {
+	width: 400px;
+	height: 200px;
+	background: url('img/maina/background-order.png');
+	position: absolute;
+	padding: 10px;
+	text-align: left;
+}
+.hidden {
+	visibility:  hidden;
+}
+.show {
+	visibility: visible;
+}
+.order-article-change h3 {
+	margin: 0;
+	padding: 10px 0 0 10px;
+	font-size: 100%
+}
+.order-article-change table {
+	font-size: 110%;
+	width: 400px;
+	margin-left: 3px;
+}
+.order-article-change .column1 {
+	font-weight: bold;
+	width: 58px;
+}
+.order-article-change .close {
+	float: right;
+	margin: -15px 15px 0 0;
+}
+.autocomplete {
+    background-color: #fff;
+       -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, .15);
+    border-radius: 4px;
+    -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+    color: #333;
+    font-weight: normal;
+    cursor: pointer;
+    text-align: left;
+    max-height: 350px;
+    overflow: auto;
+    padding: 5px 10px;
+    width: 155px;
+}
+.autocomplete .selected { background:#F0F0F0; }
+.autocomplete div {
+    padding:5px;
+    white-space:nowrap;
+    overflow:hidden;
+}
+.autocomplete strong { font-weight:normal; color:#3399FF; }
+#aih_box{
+   margin-top: -165px;
+    position: absolute;
+    right: 0;
+}
+.new_menu{
+	display: none;
+    float: left !important;
+    /*border: 1px solid #bbb !important;*/
+    margin: 0px 0px 0px 0 !important;
+	position: absolute;
+	background: #fff;
+	z-index: 1;
+	box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.5);
+	border-radius: 0 0 5px 5px;
+	padding-bottom: 5px !important;
+}
+.new_menu li{
+    display: block !important;
+    float: none !important;
+    height: auto !important;
+    width: auto !important;
+     color: #464547;
+    font-size: 14px;
+    font-weight: bold;
+}
+.new_menu a{
+    border: none !important;
+    height: auto !important;
+    /* width: 162px !important; */
+    text-align: left;
+    text-decoration: none;
+    font-size: 13px;
+    color: #000;
+    font-weight: normal;
+	    padding: 7px 10px;
+}
+.new_menu li:hover {
+	background: #DDD;
+	background: linear-gradient(to top, #CCC, #DDD);
+}
+.top_name{
+padding: 10px 15px;
+margin: 0;
+text-align: center;
+cursor: pointer;	
+}
+.top_name .glyphicon{
+top: 3px;
+    left: 5px;
+}
+.wrapper_menu {
+float: left;
+}
+.wrapper_menu:hover .top_name{
+background: linear-gradient(to top, #AAA, #777);
+padding: 10px 19px;
+color: #fff;
+text-shadow: 0px 1px 8px #333;
+}
+.wrapper_menu:hover .new_menu{
+display: block;
+}
+.wrapper_menu:hover .icon-chevron-down{
+background-image: url(/images/glyphicons-halflings-white.png);
+}
+/*
+.wrapper_menu:nth-last-child(2) .top_name{
+margin: 0;
+}
+
+.wrapper_menu:last-child {
+background: #000;
+}
+*/
+select[name="order_status"] {
+width: 213px;
+}
+.red{color:red;}
+.red_error{color:red;border: 1.5px solid red;}
+
+.admin_cms{
+    margin: 5px;
+    float: left;
+    font-weight: bold;
+    cursor: default;
+}
+.icon-chevron-down {
+background-position: -313px -119px;
+}
+
+#table_size td{
+    text-align: center;
+    width: 100px;
+}
+#table_size  input{
+width: 100px;
+}
+.z{
+display:none;
+}
+.button{
+    color: #333;
+    background-color: #eee;
+    border-color: #ccc;
+    display: inline-block;
+    padding: 2px 10px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+       border: 1px solid #bbb;
+    border-radius: 4px;
+
+}
+.button:hover{
+background-color: #dededd;
+}
+.b_p{
+padding: 7px 15px;
+}
+.ss{
+padding:5px;
+}
+.td_ss{
+border: 1px groove;
+    padding: 5px;
+}
+#back-top {
+    position: fixed;
+    bottom: 15px;
+    left: 15px;
+}
+
+#back-top span {
+    width: 50px;
+    height: 50px;
+    display: block;
+    opacity: 0.6;
+    background: rgb(255, 255, 255) url(/img/icons/to_top.png);
+    background-size: 100%;
+    -webkit-border-radius: 35px;
+    -moz-border-radius: 35px;
+    border-radius: 35px;
+    -webkit-transition: 0.5s;
+    -moz-transition: 0.5s;
+    transition: 0.5s;
+}
+#ball{
+z-index:999;
+position: absolute;
+left: 0;
+top: 0;
+width: 30px;
+height: 30px;
+transition: all 0.2s;
+transition-duration: 0.2s;
+}
+
+.poll_box{    
+	max-width: 300px;
+    text-align: center;
+	top: 40px;
+    z-index: 100;
+    min-width: 150px;
+    position: fixed;
+    background: #ffffffe8;
+    border-radius: 5px;
+    right: 0.5%;
+    padding: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+	}
+.poll_box span{
+	}
+.poll_title {
+margin-bottom: 10px;
+        border-radius: 5px;
+    background: #625b59;
+    padding: 7px;
+    color: #ffffff;
+    font-size: 14px;
+    text-align: center;
+    font-weight: bold;
+    font-family: monospace;
+}
+.poll_button{
+text-align:center;}
+.simple_overlay{
+display:none;
+}
+#feature-bullets{
+text-align:left;
+}
+.amazon_img{
+float: left;
+display: inline-block;
+max-width: 500px;
+}
+.amazon_img .img_a{
+max-width: 300px;
+}
+.description_amazon{
+text-align:left;
+display: inline-block;
+    max-width: 360px;
+}
+.description_amazon div span{font-weight: bold;}
+
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td{
+    padding: 2px;
+}
+.form-group {
+    margin-bottom: 3px;
+}
+.form-style{
+padding:5px;
+    border: 1px #999 dashed;
+}
+.form-horizontal{padding: 5px;}
+.form-horizontal .form-group{
+    vertical-align: center;
+margin-right: 0px;
+    margin-left: 0px;
+}
+.ct-110{
+padding: 2px;
+    width: 110px;
+	float:left;
+}
+.ct-150{
+padding: 2px;
+    width: 150px;
+	float:left;
+}
+.ct-200{
+padding: 2px;
+    width: 200px;
+	float:left;
+}
+.r-s{
+    cursor: pointer;
+    background-image: url(/backend/img/icons/niz.png);
+    background-size: contain;
+    position: relative;
+    width: 30px;
+    height: 30px;
+    right: 20px;
+    float: right;
+}
+
+/*
+#content form{
+border:1px dashed #aaa; padding: 10px;
+}*/
+td img{
+z-index:10;}
+
+.tooltip.bottom {
+    position: absolute;
+    z-index: 999;
+}
+.tooltip.in {
+    opacity: 0.8;
+    filter: alpha(opacity=80);
+}
+.img_return{
+    margin: 5px;
+    width: 24px;
+    cursor: pointer;
+}
+.aih_box{
+position: fixed;
+    left: 50px;
+    top: 30%;
+	z-index:1
+}
+.ckbox {
+    margin: 2px;
+    font-weight: normal;
+    position: relative;
+    display: block;
+    line-height: 18px;
+	cursor:pointer;
+}
+
+label {
+    display: inline-block;
+    margin-bottom: .5rem;
+}
+.ckbox input[type='checkbox'] {
+    opacity: 0;
+    margin: 0 5px 0 0;
+}
+.ckbox span:before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    background-color: #fff;
+    border: 1px solid #adb5bd;
+    top: 1px;
+    left: 0;
+}
+
+.ckbox span:before, .ckbox span:after {
+    line-height: 18px;
+    position: absolute;
+}
+.ckbox input[type='checkbox']:checked + span:after {
+    display: block;
+}
+.ckbox span:after {
+    top: 1px;
+    left: 0;
+    width: 16px;
+    height: 16px;
+    content: '\2714';
+    font-family: 'FontAwesome';
+    font-size: 9px;
+    text-align: center;
+    color: #fff;
+    background-color: #0c8aed;
+    line-height: 17px;
+    display: none;
+}
+.form-control, .dataTables_filter input{
+border-radius: 0;
+}
+.btn{
+border-radius: 0;
+}
+.input-group-addon{
+border-radius: 0;
+}
+.icon {
+cursor:pointer;
+       opacity: 0.8;
+    position: relative;
+    transition: all 0.2s ease-in-out;
+}
+.icon.bleak{
+color: steelblue;
+}
+.icon.red{
+color: red;
+}
+.icon.green{
+color: green;
+}
+
+
+.icon:hover{
+    opacity: 1;
+}
+.pd-5 {
+    padding: 5px;
+}
+.tx-30 {
+    font-size: 30px;
+}
+.tx-25 {
+    font-size: 25px;
+}
+.tx-20 {
+    font-size: 20px;
+}
+.tx-15 {
+    font-size: 15px;
+}
+.tx-10 {
+    font-size: 10px;
+}
+.mr-5{
+margin-right: 5px;
+}
+.tx-14 {
+    font-size: 14px;
+}
+.tx-uppercase {
+    text-transform: uppercase;
+}
+.tx-inverse {
+    color: #343a40;
+}
+
+.tx-bold {
+    font-weight: 700;
+}
+.mg-b-0 {
+    margin-bottom: 0px;
+}
+.mg-b-5 {
+    margin-bottom: 5px;
+}
+.thumb{
+width: 75px;
+}
+.pometka{
+width: 55px;
+    height: 15px;
+	margin: 2px; 
+}
+/***** DATEPICKER *****/
+.ui-datepicker {
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  font-family: inherit;
+  font-size: inherit;
+  padding: 10px;
+  margin: 1px 0 0;
+  border-radius: 0;
+  display: none;
+  width: auto !important;
+  z-index: 5 !important;
+}
+.ui-datepicker .ui-datepicker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #868ba1;
+  padding: 0 0 5px;
+  letter-spacing: 1px;
+  border: 0;
+  background-color: transparent;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+.ui-datepicker .ui-datepicker-header .ui-datepicker-next,
+.ui-datepicker .ui-datepicker-header .ui-datepicker-prev {
+  text-indent: -99999px;
+  color: #868e96;
+  top: 1px;
+}
+.ui-datepicker .ui-datepicker-header .ui-datepicker-next::before,
+.ui-datepicker .ui-datepicker-header .ui-datepicker-prev::before {
+  font-size: 16px;
+  font-family: 'FontAwesome';
+  position: absolute;
+  top: -4px;
+  text-indent: 0;
+}
+.ui-datepicker .ui-datepicker-header .ui-datepicker-next:hover::before, .ui-datepicker .ui-datepicker-header .ui-datepicker-next:focus::before,
+.ui-datepicker .ui-datepicker-header .ui-datepicker-prev:hover::before,
+.ui-datepicker .ui-datepicker-header .ui-datepicker-prev:focus::before {
+  color: #343a40;
+}
+.ui-datepicker .ui-datepicker-header .ui-datepicker-next {
+  order: 3;
+}
+.ui-datepicker .ui-datepicker-header .ui-datepicker-next:before {
+  right: 5px;
+  content: '\f105';
+}
+.ui-datepicker .ui-datepicker-header .ui-datepicker-prev:before {
+  left: 5px;
+  content: '\f104';
+}
+.ui-datepicker .ui-datepicker-header .ui-datepicker-next-hover,
+.ui-datepicker .ui-datepicker-header .ui-datepicker-prev-hover {
+  color: #495057;
+  cursor: pointer;
+  top: 1px;
+  border: 0;
+  background-color: transparent;
+}
+.ui-datepicker .ui-datepicker-title {
+  color: #5B93D3;
+}
+.ui-datepicker .ui-datepicker-calendar {
+  margin: 0;
+  background-color: transparent;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.ui-datepicker .ui-datepicker-calendar th {
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  padding: 0px 10px;
+  color: #a3a7b7;
+}
+@media (max-width: 320px) {
+  .ui-datepicker .ui-datepicker-calendar th {
+    padding: 4px 0;
+    letter-spacing: normal;
+  }
+}
+.ui-datepicker .ui-datepicker-calendar td {
+  border: 1px solid #fff;
+  padding: 0;
+  background-color: #fff;
+  text-align: right;
+}
+.ui-datepicker .ui-datepicker-calendar td:last-child {
+  border-right: 0;
+}
+.ui-datepicker .ui-datepicker-calendar td.ui-datepicker-other-month .ui-state-default {
+  color: #ccc;
+}
+.ui-datepicker .ui-datepicker-calendar td span,
+.ui-datepicker .ui-datepicker-calendar td a {
+  transition: all 0.2s ease-in-out;
+  padding: 5px;
+  background-color: #f8f9fa;
+  color: #868ba1;
+  padding: 6px 10px;
+  display: block;
+  font-weight: 400;
+  font-size: 12px;
+  border: 0;
+}
+.ui-datepicker .ui-datepicker-calendar td a:hover {
+  background-color: #D8DCE3;
+  color: #868ba1;
+}
+.ui-datepicker .ui-datepicker-calendar .ui-datepicker-today a {
+  background-color: #D8DCE3;
+  color: #868ba1;
+}
+
+.ui-datepicker-multi .ui-datepicker-group {
+  padding-right: 15px;
+  width: auto;
+  float: left;
+}
+.ui-datepicker-multi .ui-datepicker-group .ui-datepicker-title {
+  margin: auto;
+}
+.ui-datepicker-multi .ui-datepicker-group .ui-datepicker-prev::before {
+  left: 10px;
+}
+.ui-datepicker-multi .ui-datepicker-group .ui-datepicker-next::before {
+  right: 10px;
+}
+.ui-datepicker-multi .ui-datepicker-group table {
+  margin: 0;
+}
+.ui-datepicker-multi .ui-datepicker-group-last {
+  padding-right: 0;
+}
+
+.ui-datepicker-inline {
+  max-width: 270px;
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+/* #################### DATEPICKER SKINS #################### */
+.fc-datepicker.bd-0 .ui-datepicker {
+  border: 0;
+}
+
+.fc-datepicker-color .ui-datepicker {
+  border: 0;
+}
+.fc-datepicker-color .ui-datepicker-title {
+  color: #fff;
+}
+.fc-datepicker-color .ui-datepicker-header .ui-datepicker-next,
+.fc-datepicker-color .ui-datepicker-header .ui-datepicker-prev {
+  color: rgba(255, 255, 255, 0.5);
+}
+.fc-datepicker-color .ui-datepicker-header .ui-datepicker-next.ui-state-hover::before,
+.fc-datepicker-color .ui-datepicker-header .ui-datepicker-prev.ui-state-hover::before {
+  color: #fff;
+}
+.fc-datepicker-color .ui-datepicker-calendar th {
+  color: rgba(255, 255, 255, 0.5);
+  font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
+}
+.fc-datepicker-color .ui-datepicker-calendar td {
+  background-color: transparent;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.fc-datepicker-color .ui-datepicker-calendar td:last-child {
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+.fc-datepicker-color .ui-datepicker-calendar td.ui-datepicker-other-month .ui-state-default {
+  color: rgba(255, 255, 255, 0.5);
+}
+.fc-datepicker-color .ui-datepicker-calendar td span,
+.fc-datepicker-color .ui-datepicker-calendar td a {
+  background-color: transparent;
+  color: #fff;
+}
+.fc-datepicker-color .ui-datepicker-calendar td a:hover,
+.fc-datepicker-color .ui-datepicker-calendar td a:focus {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: #fff;
+}
+.fc-datepicker-color .ui-datepicker-calendar .ui-datepicker-today a {
+  background-color: rgba(0, 0, 0, 0.15);
+  color: #fff;
+}
+
+.fc-datepicker-primary .ui-datepicker {
+  background-color: #0866C6;
+}
+
+.fc-datepicker-success .ui-datepicker {
+  background-color: #23bf08;
+}
+
+.fc-datepicker-warning .ui-datepicker {
+  background-color: #f49917;
+}
+
+.fc-datepicker-danger .ui-datepicker {
+  background-color: #DC3545;
+}
+
+.fc-datepicker-info .ui-datepicker {
+  background-color: #5B93D3;
+}
+
+.fc-datepicker-indigo .ui-datepicker {
+  background-color: #6610f2;
+}
+
+.fc-datepicker-purple .ui-datepicker {
+  background-color: #6f42c1;
+}
+
+.fc-datepicker-pink .ui-datepicker {
+  background-color: #e83e8c;
+}
+
+.fc-datepicker-teal .ui-datepicker {
+  background-color: #1CAF9A;
+}
+
+.fc-datepicker-orange .ui-datepicker {
+  background-color: #f27510;
+}
+
+.fc-datepicker-dark .ui-datepicker {
+  background-color: #343a40;
+}
+.s-b{
+display:none;
+}
