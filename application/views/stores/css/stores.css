@@ -1,0 +1,15 @@
+
+body{
+    font-family: Verdana;
+}
+section{
+    padding-top: 56.2px;
+}
+.text-block{
+    position: absolute;
+    bottom: 50px;
+    left: 50px;
+}
+.btn{
+    border-radius: 0px;
+}
