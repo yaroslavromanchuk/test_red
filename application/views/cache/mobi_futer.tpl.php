@@ -125,49 +125,5 @@
 	</div>	
 	<!-- End Comment modal -->	
 	</footer>
-	
-<script>
-    /* <![CDATA[ */
-    var google_conversion_id = 1005381332;
-    var google_conversion_label = "1vqdCJyg5gMQ1M2z3wM";
-    var google_custom_params = window.google_tag_params;
-    var google_remarketing_only = true;
-    /* ]]> */
-</script>
-<script   src="//www.googleadservices.com/pagead/conversion.js"></script>
-<noscript><div style="display:inline;">
-<img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/1005381332/?value=0&amp;label=1vqdCJyg5gMQ1M2z3wM&amp;guid=ON&amp;script=0"/>
-</div></noscript>
 
-<script async src='//uaadcodedsp.rontar.com/rontar_aud_async.js'></script>
-<script>
-/*widget*/
-(function() {
-var widgetId = 'a977b0023f4594ba63190bf5ca00d6ba';
-var s = document.createElement('script');
-s.type = 'text/javascript';
-s.charset = 'utf-8';
-s.async = true;
-s.src = '//callme.voip.com.ua/script/widget/'+widgetId;
-var ss = document.getElementsByTagName('script')[0];
-ss.parentNode.insertBefore(s, ss);}
-)();
-
-function setUk(l) {
-var s = '<?=$_SESSION['lang']?>';
-if(l.name != s){
-      $.ajax({
-         type: "POST",
-         url: "/ajax/setlang/",
-         data: "&lang="+l.name,
-         success: function(res){location.reload();}
-          });
-		  }
-          return false;
-}
-function setCooki(e) {
-document.cookie = "mobil =" + e;
-location.reload();
-          return false;
-}
-</script>
+<script  src="//uaadcodedsp.rontar.com/rontar_aud_async.js"></script>

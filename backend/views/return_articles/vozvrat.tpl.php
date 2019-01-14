@@ -1,8 +1,10 @@
-
-<div class="row">
-<div class="panel panel-info">
-<div class="panel-heading"><h3 class="panel-title">Информация о покупателе</h3></div>
-<div class="panel-body">
+<div class="sl-page-title">
+          <h5><?=$this->getCurMenu()->getTitle()?></h5>
+          <p>...</p>
+        </div>
+<div class="card pd-20 pd-sm-40">
+ <h6 class="card-body-title">Информация о покупателе</h6>
+<div class="card-body">
 <ul class="list-group">
   <li class="list-group-item"><label for="date_create" class="ct-110">Имя:</label><?=$this->getOrder()->getName()?$this->getOrder()->getName():"&nbsp;"?></li>
   <li class="list-group-item"><label for="date_create" class="ct-110 control-label">Адресс:</label><?=$this->getOrder()->getAddress() ? $this->getOrder()->getAddress() : "&nbsp;"?></li>
@@ -14,9 +16,30 @@
   </div>
   </div>
 
-</div>
-<script >
-function Calculat(e){
+<script>
+    $("body").keypress(function(e) {
+         switch(e.originalEvent.code){
+             case 'NumpadMultiply': if($('.chekAll').is(":checked")){ $('.chekAll').prop('checked', false); }else{$('.chekAll').prop('checked', true);} chekAll(); break;
+             case 'NumpadAdd': pr('p_all'); break;
+         }
+         console.log(e.originalEvent.code);
+         // if (e.which == 13) {
+            //  return false;
+          //}
+     });
+    function chekAll() {
+		if($('.chekAll').is(":checked")){
+		$('.cheker').prop('checked', true);
+               
+		}else{
+                    
+		$('.cheker').prop('checked', false);
+		}
+                 Calculat();
+            return false;
+        } 
+     
+         function Calculat(e){
 var sum = 0.00;
 //console.log(e);
 if ($('.order-item:checked').val() && $('#order_status').val() == 1) {
@@ -28,9 +51,12 @@ sum += Number($('#s_'+$(this).attr('name').substr(5,5)).val());
 					$('#sum_voz').html(sum);
 $('#sum_voz_all').val(sum);
 return true;
-					}
+					}else{
+                                            $('#sum_voz').html(sum);
+                                            $('#sum_voz_all').val(sum);
+                                        }
 
-return false;
+return true;
 }
 function del_tovar(){
 var list = '';
@@ -58,20 +84,25 @@ return false;
 	</ul>
 </div>
 <?php } ?>
+
 <form action="" method="post" class="form-horizontal" style="border: 0;padding: 0;">
-<div class="row">
-<div class="panel panel-primary">
-<div class="panel-heading"><h3 class="panel-title">Возврат по заказу <?=$this->getOrder()->getId()?></h3></div>
-<div class="panel-body">
+
+<div class="card pd-20 pd-sm-40 mt-2">
+    <h6 class="card-body-title">Возврат по заказу <?=$this->getOrder()->getId()?></h6>
+
+<div class="card-body">
+    <div class="row">
   <div class="col-lg-6">
-		<div class="panel panel-default">
-		<div class="panel-heading"><h4 class="panel-title">Заказ</h4></div>
-			<div class="panel-body">
-			<ul class="list-group">
+		<div class="card m-2 bd  rounded-bottom">
+                    <div class="card-header card-header-default">Заказ</div>
+
+			<div class="card-body ">
+			<ul class="list-group list-group-flush">
 			<li class="list-group-item"><b>Товары</b></li>
+                        <li class="list-group-item d-none"><label class="ckbox" data-tooltip="tooltip" title="Выделить все товары"><input onchange="chekAll();" class="chekAll" type="checkbox"/><span></span></label></li>
 			<?php
 			$articles = array();
-			if(@$this->vozrat->tovar){
+			if($this->vozrat->tovar){
 			$articles = explode(",", $this->vozrat->tovar);
 			}
 			
@@ -120,30 +151,30 @@ echo '  <span style="text-decoration:line-through">'.$price_real.'</span></br>';
 			<input type="text"  hidden id="sum_voz_all" name="sum_voz_all" value=""></li>
 			</ul>
 			</div>
-			<div class="panel-footer">
+			<div class="card-footer">
 			<?php if($this->vozrat->sposob){
-if($this->vozrat->dop_suma > 0) echo 'Дополнительно зачислено '.$this->vozrat->dop_suma.' грн.<br>';?>
+if($this->vozrat->dop_suma > 0){ echo 'Дополнительно зачислено '.$this->vozrat->dop_suma.' грн.<br>';}?>
 			Сумма возмещения <?=$this->vozrat->amount?> грн.<br>
 			<!--<button class="btn btn-small btn-default"  type="button" onClick="return del_tovar();">
 			<i class="glyphicon glyphicon-copy" aria-hidden="true"></i> 
 			Вернуть в продажу</button>-->
 			<?php }else{ ?>
-			<div class="form-group">
-    <label for="dop_suma" class="ct-150 control-label">Коментарий:</label>
-    <div class="col-xs-6">
-	<input type="text" class="form-control input" value="" name="comments" placeholder="можете оствить комент">
+<div class="form-group row">
+    <label for="comments" class="col-sm-3 col-form-label">Коментарий:</label>
+    <div class="col-sm-9">
+	<input type="text" class="form-control input" id="comments" value="" name="comments" placeholder="можете оствить комент">
     </div>
   </div>
-	<div class="form-group">
-    <label for="dop_suma" class="ct-150 control-label">Доп.сумма:</label>
-    <div class="col-xs-6">
+	<div class="form-group row">
+    <label for="dop_suma" class="col-sm-3 col-form-label">Доп.сумма:</label>
+    <div class="col-sm-9">
 	<input type="text" class="form-control input" value="" name="dop_suma" id="dop_suma" placeholder="введите сумму">
     </div>
   </div>
-						<div class="form-group">
-    <label for="sposob" class="ct-150 control-label">Способ возврата:</label>
-    <div class="col-xs-6">
-	 <select name="sposob" class="form-control input" id="sposob">
+	<div class="form-group row">
+    <label for="sposob" class="col-sm-3 col-form-label">Способ возврата:</label>
+    <div class="col-sm-9">
+	 <select name="sposob" class="form-control select2" id="sposob">
 	 <option  value="0">Выберите способ возврата</option>
 	 <option value="1" <?=$this->vozrat->sposob==1?"selected":''; ?>>На депозит</option>
 	 <option value="2" <?=$this->vozrat->sposob==2?"selected":''; ?>>Почтовый перевод</option>
@@ -156,38 +187,40 @@ if($this->vozrat->dop_suma > 0) echo 'Дополнительно зачисле�
 		</div>
   </div>
 <div class="col-lg-6">
-<div class="panel panel-default">
-		<div class="panel-heading"><h4 class="panel-title">Детали</h4></div>
-			<div class="panel-body">
-<div class="form-group">
-    <label for="date_create" class="ct-150 control-label">Получен:</label>
-    <div class="col-xs-6">
-	<span style="display: inline-flex;margin-top: 7px;"><?=$this->vozrat->date_create?></span>
+<div class="card m-2 bd  rounded-bottom">
+    <div class="card-header card-header-default">
+    Детали
+  </div>
+			<div class="card-body">
+<div class="form-group row">
+    <label for="date_create" class="col-sm-3 col-form-label">Получен:</label>
+    <div class="col-sm-9">
+        <input type="text" readonly class="form-control-plaintext" id="date_create" value="<?=$this->vozrat->date_create?>">
     </div>
   </div>
-<div class="form-group">
-    <label for="status" class="ct-150 control-label">Статус:</label>
-    <div class="col-xs-6">
-	 <select name="order_status" id="order_status" class="form-control input" onChange="this.form.submit(); return false;">
+<div class="form-group row">
+    <label for="order_status" class="col-sm-3 col-form-label">Статус:</label>
+    <div class="col-sm-9">
+	 <select name="order_status" id="order_status" class="form-control select2" onChange="this.form.submit(); return false;">
                     <?php foreach ($this->order_status as $key => $item) { ?>
                     <option value="<?=$key?>" <?=$key==$this->vozrat->status?"selected":''; ?>><?=$item?></option>
                     <?php } ?>
                 </select>
     </div>
   </div>
-  <div class="form-group">
-    <label for="sposob" class="ct-150 control-label">Способ возврата:</label>
-    <div class="col-xs-6">
+  <div class="form-group row">
+    <label for="sposob" class="col-sm-3 col-form-label">Способ возврата:</label>
+    <div class="col-sm-9">
 	<span style="display: inline-flex;margin-top: 7px;">
 	<?php $sp = array(1=>'На депозит', 2=>'Почтовый перевод'); ?>
 	<?=$sp[$this->vozrat->sposob]?></span>
     </div>
   </div>
 
-  <div class="form-group">
-    <label for="nakladna" class="ct-150 control-label">Накладная:</label>
-    <div class="col-xs-6">
-	<input type="text" class="form-control input" value="<?=@$this->vozrat->nakladna?>" name="nakladna" id="nakladna" placeholder="Номар накладной">
+  <div class="form-group row">
+    <label for="nakladna" class="col-sm-3 col-form-label">Накладная:</label>
+    <div class="col-sm-9">
+	<input type="text" class="form-control input" value="<?=$this->vozrat->nakladna?>" name="nakladna" id="nakladna" placeholder="Номар накладной">
     </div>
   </div>
   </div>
@@ -231,5 +264,7 @@ return false;
      });
 	 
 	 });
+
+
 </script>
 

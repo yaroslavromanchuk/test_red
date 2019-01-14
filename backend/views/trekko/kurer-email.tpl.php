@@ -3,7 +3,7 @@
 	<head>
 		<title><?php echo Config::findByCode('website_name')->getValue();?></title>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<base href="http://<?php echo $dname?>/" target="_blank" />
+		<base href="https://<?=$dname?>/" target="_blank" />
 	</head>
 	<body style="background-color:#c4c5c7;font-family: Verdana, Tahoma, Arial;font-size: 14px;margin: 0;padding: 8px;">
 	<p>

@@ -30,4 +30,3 @@ class City extends wsActiveRecord
 	}
 
 }
-?>

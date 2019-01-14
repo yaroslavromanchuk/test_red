@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 class BrandsController extends controllerAbstract
 {
@@ -11,6 +11,7 @@ class BrandsController extends controllerAbstract
 
     public function  indexAction()
     {
+       // var_dump($this->get);
 
         if ((int)$this->get->id) {
             $brand = new Brand((int)$this->get->id);
@@ -131,6 +132,14 @@ class BrandsController extends controllerAbstract
 		}
 		
         $this->view->brands = $brandsFilter;
+       // $this->cur_menu->url = '';
+        //$this->cur_menu->setName($this->trans->get('breands'));
+        
+        //$this->cur_menu->setPageTitle($this->trans->get('breands').' '.Config::findByCode('website_name')->getValue());
+        
+        //$this->cur_menu->setMetatagDescription($category->getDescription());
+        
+        //$this->cur_menu->setPageFooter($category->getFooter());
 
         echo $this->render('brands/list.tpl.php');
 
@@ -138,7 +147,10 @@ class BrandsController extends controllerAbstract
 
     public function showOne($brand)
     {
-
+        
+        $this->cur_menu->setPageTitle($brand->name.' - '.$this->cur_menu->getName().' '.$this->trans->get('в интернет магазине RED'));
+        $this->cur_menu->setName($brand->name);
+        $this->cur_menu->setMetatagDescription($this->trans->get('info_brand').' '.$brand->name.' ✓ '.$this->trans->get('товары бренда').' '.$brand->name.' '.$this->trans->get('exit_brand'));
         $this->view->brand = $brand;
         $this->view->articles = $brand->findActiveArticles();
         $this->view->articlesHtml = $this->render('brands/helper.tpl.php');

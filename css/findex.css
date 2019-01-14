@@ -3,11 +3,11 @@
 .sort{margin: 5px 0;padding: 5px;height: auto;width: 93%;}
 .list_list{
 text-align:left;
-    max-height: 205px;
+    max-height: 250px;
     /*overflow-y: scroll;*/
 	overflow-x: hidden;
     text-transform: uppercase;
-    font-size: 9px;
+    font-size: 10px;
 }
 .ckbox span span{
 color: #aaaaaa;

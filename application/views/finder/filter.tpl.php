@@ -1,208 +1,152 @@
-<!--<link type="text/css" href="/js/bs_slider/css/bootstrap-slider.min.css" rel="stylesheet"/>
-<script src="/js/bs_slider/bootstrap-slider.min.js"></script>-->
-<?php $text = explode(',', $this->trans->get('Очистить фильтры,Применить фильтры,Категория,Размеры,Цвета,Цена,История просмотров'));
-$text_result_trans = explode(',', $this->trans->get('Вы искали,Всего найдено,Сортировать по,цена по возрастанию,цена по убыванию,популярность по возрастанию,популярность по спаданию,дате поступления по возрастанию,дате поступления по спаданию'));
- ?>  
-  <!-- Категория --> 
- <?php if ($this->search_word) { echo $text_result_trans[0].':'.$this->search_word.'<br>';} ?>			
-<div  class="form-group" id="sersh_r">
-<?=$text_result_trans[1];?>: <span id="total_founded"><?=$this->result_count?></span><span class="res_loader" style="display: none;"><img alt="Loading" src="/img/loader.gif"/></span>
-</div>
-<div class="form-group">
-<select name="order_by" id="order_by" onchange="changeSortOrder()" class="form-control select2" data-placeholder="<?=$text_result_trans[2];?>:">
-							<option value="" selected><?=$text_result_trans[2];?>:</option>
-                            <option value="1"><?=$text_result_trans[3];?></option>
-                            <option value="2"><?=$text_result_trans[4];?></option>
-                            <option value="3"><?=$text_result_trans[5];?></option>
-                            <option value="4"><?=$text_result_trans[6];?></option>
-                            <option value="5"><?=$text_result_trans[7];?></option>
-                            <option value="6"><?=$text_result_trans[8];?></option>
-                        </select>
-</div>
-			 <a href="#" class="clean_filter" onclick="return clearsearchfilters()"><?=$text[0]?></a>
-            <input type="hidden" id="selected_root_category" name="selected_root_category" value="<?=$this->finder_category ?>">
-<?php  if(count($this->filters['categories'])> 1){ ?>
-            <div class="list_wrapper sub-title-click">
-                <p class="sub-title"><span><?=$text[2]?></span></p>
-                <div style="clear: both;"></div>
-				<!--<form action="<?=$_SERVER['REQUEST_URI'].'categories/'?>" method="get">-->
-                <div class="list_list drop_list" >
-                    <?php
-					$asc = array();
-					$asc = explode(',' , $this->get->categories);
-                        foreach ($this->filters['categories'] as $cat) {
-						
+<?php 
+  $text = explode(',', $this->trans->get('Очистить фильтры,Применить фильтры,Категория,Размеры,Цвета,Цена,История просмотров'));
+  $text_result_trans = explode(',', $this->trans->get('Вы искали,Всего найдено,Сортировать по,цена по возрастанию,цена по убыванию,популярность по возрастанию,популярность по спаданию,дате поступления по возрастанию,дате поступления по спаданию'));
 ?>
-                         
-                                <div>
-                                    <label for="c_category_<?=$cat['id'];?>"  class="ckbox" >
-									<input type="checkbox" class="c_category" name="categories"
-                                           id="c_category_<?=$cat['id']; ?>" value="<?=$cat['id']; ?>"  <?php if(in_array($cat['id'], $asc, true)){ ?>checked="checked" <?php } ?> />
-                                         <span><?=@$cat['parent']?$cat['parent'].':'.$cat['name']:$cat['name']?><span class="co"><?=$cat['count']?></span></span>
-                                    </label>
-                                </div>
-                            <?php
-                            
-                        }
-                   ?>
-				           
-                </div>
-					<!--<input type="submit" class="openFilter drop_list" value="<?=$text[1]?>" >
-			</form> -->
-		 <a href="#"  onclick="return gatheringSelected('categories', 0, 4);" class="openFilter drop_list"><?=$text[1]?></a>
-            </div>
-			<?php }?>
+<?php if($this->filters){ ?>
+ <form class="form-filter w-100" action="#" >
+     <div class="card">
+     <div class="row m-0 content ">
+        <?php  if($this->search_word){ ?>
+<div class=" ">
+   <span class="search_result" ><?=$this->search_word?$text_result_trans[0].' : <span class="rez_s">'.$this->search_word.'</span><br>':''?></span>
+    <input type="hidden" id="search_word" value="<?=$this->search_word?>" >
+</div>
+<?php } ?> 
+<div class="col-sm-12 col-md-6 col-lg-2 col-xl-2 p-1 text-center">
+    <div class="form-group mb-0">
+       <select name="order_by" id="order_by" onchange="return getOrdreBy(this,0)" class="form-control select2" data-placeholder="<?=$text_result_trans[2]?>:">
+                            <option value=""><?=$text_result_trans[2]?>:</option>
+                            <option value="cena_vozrastaniyu" <?php if($this->get->order_by and $this->get->order_by == 'cena_vozrastaniyu') echo 'selected'; ?> ><?=$text_result_trans[3];?></option>
+                            <option value="cena_ubyvaniyu" <?php if($this->get->order_by and $this->get->order_by  == 'cena_ubyvaniyu') echo 'selected'; ?> ><?=$text_result_trans[4];?></option>
+                            <option value="populyarnost_vozrastaniyu" <?php if($this->get->order_by and $this->get->order_by  == 'populyarnost_vozrastaniyu') echo 'selected'; ?> ><?=$text_result_trans[5];?></option>
+                            <option value="populyarnost_spadaniyu" <?php if($this->get->order_by and $this->get->order_by  == 'populyarnost_spadaniyu') echo 'selected'; ?> ><?=$text_result_trans[6];?></option>
+                            <option value="date_vozrastaniye" <?php if($this->get->order_by and $this->get->order_by == 'date_vozrastaniye') echo 'selected'; ?> ><?=$text_result_trans[7];?></option>
+                            <option value="date_spadaniye" <?php if($this->get->order_by and $this->get->order_by == 'date_spadaniye') echo 'selected'; ?> ><?=$text_result_trans[8];?></option>
+                        </select> 
+        <!--<button type="button"  class="btn btn-secondary btn-sm goFilter drop_list" ><?=$text[1]?></button>-->
+    </div>
+
+</div>
+		<!--	 <a href="" class="clean_filter" onclick="return getClearAllFilters();"><?=$text[0]?></a>-->
+                     		 
+<input type="hidden" id="selected_root_category" name="selected_root_category" value="<?=$this->finder_category?>">
             <!-- Бренды -->
             <?php if (count($this->filters['brands'])) { ?>
-                <div class="list_wrapper sub-title-click">
-                    <p class="sub-title"><span>Brands</span></p>
-                    <div style="clear: both;"></div>
-                    <div class="list_list drop_list" >
-                        <?php
-						$asc = array();
-					$asc = explode(',' , $this->get->brands);
-						ksort($this->filters['brands']);
+            <div class="col-sm-12 col-md-6 col-lg-2 col-xl-2 text-center align-middle p-1">
+                <div class="form-group has-danger mb-0">
+                <select class="form-control select2" data-placeholder="Brands" multiple name="brands" id="brands">
+                    <?php
+				$asc = explode(',' , $this->get->brands);
+                                ksort($this->filters['brands']);
                         foreach ($this->filters['brands'] as $cat) { ?>
-                            <div>
-                                <label for="c_brand<?=$cat['id']; ?>" class="ckbox">
-								<input type="checkbox" class="c_brand" id="c_brand<?=$cat['id']; ?>"
-<?php if ($this->get->brand == $cat['id']){ ?>checked="checked" <?php }else if(in_array($cat['id'], $asc, true)){ ?>checked="checked" <?php } ?>  value="<?=$cat['id']; ?>"/>
-                                    <span><?=$cat['name'].' <span class="co">  '.$cat['count'].'</span>'; ?></span>
-                                </label>
-                            </div>
+                    <option <?php if ($this->get->brands == $cat['name']){ ?> selected <?php }else if(in_array($cat['name'], $asc)){ ?> selected <?php } ?>  value="<?=$cat['name']?>"><?=$cat['title']?></option>
                         <?php } ?>
-						
-                    </div>
-					<a href="#"  onclick="return gatheringSelected('brands', 0, 4)" class="openFilter drop_list"><?=$text[1]?></a>
-                </div>
+                </select>
+            </div>
+                 </div>
             <?php } ?>
-			<!-- Сезон -->
-			<?php if (count($this->filters['sezons'])) { ?>
-			  <div class="list_wrapper">
-                    <p class="sub-title"><span>Сезон</span></p>
-                    <div style="clear: both;"></div>
-                    <div class="list_list drop_list" style="display:none;">
-                        <?php foreach ($this->filters['sezons'] as $cat) { ?>
-                            <div>
-                                <label for="c_sezon<?=$cat['id'];?>" class="ckbox">
-								<input type="checkbox" class="c_sezon" id="c_sezon<?=$cat['id']; ?>" value="<?=$cat['id']; ?>"/>
-                                 <span><?=$cat['name'].' <span class="co">  '.$cat['count'].'</span>'; ?></span>
-                                </label>
-                            </div>
-                        <?php } ?>
-                    </div>
-					<a href="#" style="display:none;" onclick="return gatheringSelected('sezons', 0, 4)" class="openFilter drop_list"><?=$text[1]?></a>
-                </div>
+<!-- Сезон -->
+	<?php if (count($this->filters['sezons'])) { ?>
+	<div class="col-sm-12 col-md-6 col-lg-1 col-xl-1 text-center align-middle p-1">
+            <div class="form-group has-danger mb-0">
+                                <select class="form-control select2" data-placeholder="Сезон" multiple name="sezons" id="sezons">
+                                    <?php
+					//$asc = [];
+					$asc = explode(',' , $this->get->sezons);
+						foreach ($this->filters['sezons'] as $cat) { ?>
+                                     <option <?php if ($this->get->sezons == $cat['translate']){ ?> selected <?php }else if(in_array($cat['translate'], $asc)){ ?> selected <?php } ?>  value="<?=$cat['translate']?>"><?=$cat['name']?></option>
+                                                <?php } ?>
+                                </select>
+            </div>			
+        </div>
 			<?php }	?>
             <!-- Размеры -->
-            <?php if (count($this->filters['sizes'])) { ?>
-                <div class="list_wrapper">
-                    <p class="sub-title"><span><?=$text[3]?></span></p>
-                    <div style="clear: both;"></div>
-                    <div class="list_list drop_list" style="display:none;">
-                        <?php foreach ($this->filters['sizes'] as $cat) { ?>
-                              <div>
-                                    <label for="s_size<?=$cat['id']; ?>" class="ckbox">
-									 <input type="checkbox" class="s_size"  id="s_size<?=$cat['id']; ?>" value="<?=$cat['id']; ?>"/>
-                                       <span><?=$cat['name'].' <span class="co">  '.$cat['count'].'</span>'; ?></span>
-                                    </label>
-                                </div>
-                        <?php } ?>
-                    </div>
-					<a href="#" style="display:none;" onclick="return gatheringSelected('sizes', 0, 4)" class="openFilter drop_list"><?=$text[1]?></a>
-                </div>
+<?php if (count($this->filters['sizes'])) { ?>
+        <div class="col-sm-12 col-md-6 col-lg-1 col-xl-1 text-center align-middle p-1">
+                    <div class="form-group has-danger mb-0">
+                        <select class="form-control select2" data-placeholder="<?=$text[3]?>" multiple name="sizes" id="sizes">
+                          <?php 
+			$asc = explode(',' , $this->get->sizes);
+			foreach ($this->filters['sizes'] as $cat) { ?>
+  <option <?php if ($this->get->sizes == $cat['id']){ ?> selected <?php }else if(in_array($cat['id'], $asc)){ ?> selected <?php } ?>  value="<?=$cat['id']?>"><?=$cat['name']?></option>                           
+                        <?php } ?>  
+                        </select>				
+        </div>				
+        </div>
             <?php } ?>
             <!-- Цвета -->
             <?php if (count($this->filters['colors'])) { ?>
-                <div class="list_wrapper" >
-                    <p class="sub-title"><span><?=$text[4]?></span></p>
-                    <div style="clear: both;"></div>
-                    <div class="list_list drop_list" style="display:none;">
+                <div class="col-sm-12 col-md-6 col-lg-1 col-xl-1 text-center align-middle p-1" >
+                     <div class="form-group has-danger mb-0">
+                       <select class="form-control select2" data-placeholder="<?=$text[4]?>" multiple name="colors" id="colors">   
                         <?php
-$asc = array();
-					$asc = explode(',' , $this->get->colors);
-						foreach ($this->filters['colors'] as $cat) { ?>
-                            <div>
-                                <label for="c_color<?=$cat['id']; ?>" class="ckbox">
-								 <input type="checkbox" class="c_color"  id="c_color<?=$cat['id']; ?>" value="<?=$cat['id']; ?>" <?php if(in_array($cat['id'], $asc, true)){ ?>checked="checked" <?php } ?>>
-                                    <span> <?=$cat['name'].' <span class="co">  '.$cat['count'].'</span>'; ?></span>
-                                </label>
-                            </div>
+			$asc = explode(',' , $this->get->colors);
+			foreach ($this->filters['colors'] as $cat) { ?>
+<option <?php if ($this->get->colors == $cat['id']){ ?> selected <?php }else if(in_array($cat['id'], $asc)){ ?> selected <?php } ?>  value="<?=$cat['id']?>"><?=$cat['name']?></option>                                                    
                         <?php } ?>
+			</select>			 
                     </div>
-					<a href="#" style="display:none;" onclick="return gatheringSelected('colors', 0, 4)" class="openFilter drop_list"><?=$text[1]?></a>
                 </div>
             <?php } ?>
-            <!-- ЦЕНА -->
-			<?php if(/*@$this->price_min and @$this->price_max*/false){ ?>
-           <div class="list_wrapper d-none"  >
-                <p class="sub-title"><span><?=$text[5]?></span></p>
-                <div style="clear: both;"></div>
-				<div class="price_list drop_list" style="display:none;">
-				<input id="ex2" type="text" class="span2" value="" data-slider-min="<?=$this->price_min?>" data-slider-max="<?=$this->price_max?>" data-slider-step="5" data-slider-value="[<?=$this->price_min?>,<?=$this->price_max?>]"/>
-				</div>
-               <!-- <div class="price_list drop_list" style="display:none;" id="slider">-->
-                    <div class="real_price_min"   style="display:none;"><?=$this->price_min ?></div>
-                    <div class="real_price_max"  style="display:none;" ><?=$this->price_max ?></div>
-                   <div class="formCost" >
-					<input type="hidden"  value="<?=$this->price_min.';'.$this->price_max ?>"/>
-                        <input type="hidden" id="minCost" value="<?=$this->price_min ?>"/>
-                        <input type="hidden" id="maxCost" value="<?=$this->price_max ?>"/>
-                   </div>
-               <!-- </div>-->
-				<a href="#" style="display:none;" onclick="return gatheringSelected('price', 0, 4)" class="openFilter drop_list"><?=$text[1]?></a>
-				</div>
-				<?php } ?>
             <!-- LABELS -->
             <?php if (count($this->filters['labels'])) { ?>
-                <div class="list_wrapper">
-                    <p class="sub-title"><span>Labels</span></p>
-                    <div style="clear: both;"></div>
-                    <div class="list_list drop_list">
-					
+                <div class="col-sm-12 col-md-6 col-lg-1 col-xl-1 text-center align-middle p-1">
+                    <div class="form-group has-danger mb-0" >
+                         <select class="form-control select2" data-placeholder="Labels" multiple name="labels" id="labels">   
                         <?php
-$asc = array();
-					$asc = explode(',' , $this->get->labels);
-						foreach ($this->filters['labels'] as $cat) { ?>
-                            <div>
-                                <label for="c_label<?=$cat['id']; ?>" class="ckbox">
-								<input type="checkbox" class="c_label" id="c_label<?=$cat['id']; ?>" value="<?=$cat['id']; ?>" <?php if(in_array($cat['id'], $asc, true)){ ?>checked="checked" <?php } ?>/>
-                                    <span><?=$cat['name'].' <span>  '.$cat['count'].'</span>'; ?></span>
-                                </label>
-                            </div>
+			$asc = explode(',' , $this->get->labels);
+			foreach ($this->filters['labels'] as $cat) { ?>
+<option <?php if ($this->get->labels == $cat['id']){ ?> selected <?php }else if(in_array($cat['id'], $asc)){ ?> selected <?php } ?>  value="<?=$cat['id']?>"><?=$cat['name']?></option>
                         <?php } ?>
+			</select>			
                     </div>
-					<a href="#" style="display:none;" onclick="return gatheringSelected('labels', 0, 4)" class="openFilter drop_list"><?=$text[1]?></a>
                 </div>
             <?php } ?>
 			<!-- skidka -->
             <?php if (count($this->filters['skidka'])) { ?>
-                <div class="list_wrapper">
-                    <p class="sub-title"><span>Скидки</span></p>
-                    <div style="clear: both;"></div>
-                    <div class="list_list drop_list">
+                <div class="col-sm-12 col-md-6 col-lg-1 col-xl-1 text-center align-middle p-1">
+                    <div class="form-group has-danger mb-0" >
+                         <select class="form-control select2" data-placeholder="Скидки" multiple name="skidka" id="skidka">   
                         <?php
-						$asc = array();
-					$asc = explode(',' , $this->get->skidka);
+			$asc = explode(',' , $this->get->skidka);
                         foreach ($this->filters['skidka'] as $cat) { ?>
-                            <div>
-                                <label for="c_skidka<?=$cat['id']; ?>" class="ckbox">
-								<input type="checkbox" class="c_skidka" id="c_skidka<?=$cat['id']; ?>" value="<?=$cat['id']; ?>" <?php if(in_array($cat['id'], $asc, true)){ ?>checked="checked" <?php } ?> />
-                                    <span><?=$cat['name'].' <span>  '.$cat['count'].'</span>'; ?></span>
-                                </label>
-                            </div>
+<option <?php if ($this->get->skidka == $cat['id']){ ?> selected <?php }else if(in_array($cat['id'], $asc)){ ?> selected <?php } ?>  value="<?=$cat['id']?>"><?=$cat['name']?></option>                        
                         <?php } ?>
+</select>
                     </div>
-					<a href="#" style="display:none;" onclick="return gatheringSelected('skidka', 0, 4)" class="openFilter drop_list"><?=$text[1]?></a>
                 </div>
             <?php } ?>
-            <input type="hidden" id="search_word" value="<?=$this->search_word ?>">
+    <?php if($this->filters['price_min'] || $this->filters['price_max']){ ?>
+			<div class="col-sm-12 col-md-6 col-lg-2 col-xl-2  text-center align-middle p-1">
+                    <div class="form-group mb-0" >
+<div class="input-group">
+  <span class="input-group-addon tx-size-sm lh-2"><?=$text[5]?></span>
+  <input type="number" class="form-control price min"  name="price_min" min="<?=$this->filters['price_min']?>" max="<?=$this->filters['price_max']-1?>"  placeholder="от"  value="<?=$this->get->price_min?$this->get->price_min:''?>" >
+  <input type="number" class="form-control price max"   placeholder="до" min="<?=$this->filters['price_min']+1?>" max="<?=$this->filters['price_max']?>"  name="price_max" value="<?=$this->get->price_max?$this->get->price_max:''?>" >
+</div>
+  </div>
+  </div>
+                        <?php  } ?>
+                        <div class="col-sm-12 col-md-6 col-lg-1 col-xl-1 p-1">
+                            <i class="icon ion-ios-checkmark-circle-outline goFilter mr-2" data-tooltip="tooltip" data-original-title="<?=$text[1]?>" title="<?=$text[1]?>" style="font-size: xx-large; cursor: pointer"></i>
+<i class="icon ion-ios-close-circle-outline" style="font-size: xx-large; cursor: pointer" data-tooltip="tooltip"  onclick="return getClearAllFilters();" data-original-title="<?=$text[0]?>" title="<?=$text[0]?>" ></i>                            
+<!--<button type="button"  class="btn btn-secondary btn-sm goFilter" ><?=$text[1]?></button>-->
+                        </div>
+                            
+                   
+                        
+                        
+</div>
+     </div>
+ </form>  
+<?php     }
+                        ?>
 			<div>
 			<?php				
 			
 								$flag = 0;
 								$mass = array();			
-								if ((isset($_SESSION['hist']) or $this->history)) {
+								if ((isset($_SESSION['hist']) or $this->history) and false) {
 								if($this->history){
 								$flag = 1;
 								}else if(count($_SESSION['hist']) > 0){
@@ -211,21 +155,21 @@ $asc = array();
 								krsort($mass);
 								}
                         if ($flag == 2) { ?>
-					<div class="list_wrapper">
+					<div class="col list_wrapper">
                     <p class="sub-title">
-					<span><?=$text[6];?></span>
+					<span><?=$text[6]?></span>
 					</p>
 					<div style="clear: both;"></div>
                     <div class="list_list drop_list" style="max-height:100%;display:none;" >
                         <?php $i = 0; foreach ($mass as $v) {
 $history_products = wsActiverecord::useStatic('Shoparticles')->findFirst(array('id'=>$v, 'stock > 0')); ?>
 	<div class="top_articles_item " >
-         <a name="<?=$history_products->getId(); ?>" href="<?=$history_products->getPath();?>" style="    text-align: center;">
-        <img  src="<?=$history_products->getImagePath('detail'); ?>" alt="<?=$history_products->getBrand();?>" style="max-width:100%;"  >  
+         <a name="<?=$history_products->getId()?>" href="<?=$history_products->getPath()?>" style="text-align: center;">
+        <img  src="<?=$history_products->getImagePath('detail')?>" alt="<?=$history_products->getBrand()?>" style="max-width:100%;"  >  
 		</a>
-				<div class="post-name" >
-				<h3><a href="<?=$history_products->getPath();?>"><?=$history_products->getModel();?></a></h3>
-				<h4 style="text-align:left;"><a href="<?=$history_products->getPath();?>"><?=$history_products->getBrand();?></a></h4>
+				<div class="post-name">
+				<h3><a href="<?=$history_products->getPath()?>"><?=$history_products->getModel()?></a></h3>
+				<h4 style="text-align:left;"><a href="<?=$history_products->getPath()?>"><?=$history_products->getBrand()?></a></h4>
 				</div>
 				<p style="font-size: 14px;"><?=$history_products->getPrice()?> грн</p>
 				<hr>
@@ -237,18 +181,18 @@ if($i == 5) break;
                     </div>
                 </div>
                         <?php }else if($flag == 1){ ?>
-				<div class="list_wrapper">
-                    <p class="sub-title"><span><?=$text[6];?></span></p>
+				<div class="col list_wrapper">
+                    <p class="sub-title"><span><?=$text[6]?></span></p>
 					<div style="clear: both;"></div>
                     <div class="list_list drop_list" style="max-height:100%;display:none;" >
                         <?php foreach ($this->history as $v) { ?>
-	<div class="top_articles_item " >
-         <a name="<?=$v->getId(); ?>" href="<?=$v->getPath();?>" style="    text-align: center;">
-        <img  src="<?=$v->getImagePath('detail'); ?>" alt="<?=$v->getBrand();?>" style="max-width:100%;"  >  
+	<div class="top_articles_item">
+         <a name="<?=$v->getId(); ?>" href="<?=$v->getPath()?>" style="text-align: center;">
+        <img  src="<?=$v->getImagePath('detail')?>" alt="<?=$v->getBrand()?>" style="max-width:100%;"  >  
 		</a>
 				<div class="post-name" >
-				<h3><a href="<?=$v->getPath();?>"><?=$v->getModel();?></a></h3>
-				<h4 style="text-align:left;"><a href="<?=$v->getPath();?>"><?=$v->getBrand();?></a></h4>
+				<h3><a href="<?=$v->getPath()?>"><?=$v->getModel()?></a></h3>
+				<h4 style="text-align:left;"><a href="<?=$v->getPath()?>"><?=$v->getBrand()?></a></h4>
 				</div>
 				<p style="font-size: 14px;"><?=$v->getPrice()?> грн</p>
 				<hr>
@@ -261,6 +205,33 @@ if($i == 5) break;
 						
 						<?php } ?>
 			    </div>
-				<script>
-				//$("#ex2").slider();
+                        
+<script>
+      $(function(){
+
+        'use strict';
+
+        $('.select2').select2({
+          minimumResultsForSearch: Infinity
+        });
+    });
+
+				$('.goFilter').click(function() {
+                                   // var input = $("form.form-filter").serialize();
+                                   // console.log(input);
+                                    
+                                //  var input2 = $("form.form-filter").serializeArray();
+                                  //  console.log(input2);
+				if (true) {
+                               // $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+				return gatFilters($("form.form-filter").serializeArray());
+
+  }else{
+              $(this).detach('#list_f');
+  $('#list_f').html('Выберите параметр фильтрации');
+				
+				}
+				
+				
+				});
 				</script>

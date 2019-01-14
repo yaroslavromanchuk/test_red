@@ -8,16 +8,19 @@
         protected function _defineRelations()
         {
 
-            $this->_relations = array(    'articles' => array(
-												'type'            => 'hasMany', 
-												'class'            => 'Shoparticlessize',
-												'field_foreign'    => 'id_size',
-												'orderby'        => array('id' => 'ASC'),
-												'onDelete'        => 'delete'), 
-										'category' => array(
-												'type'=>'hasOne',
-												'class'=>'SizeCategory',
-												'field'=>'category_id'),            
+            $this->_relations = array(
+                'articles' => array(
+				'type'            => 'hasMany', 
+				'class'            => 'Shoparticlessize',
+				'field_foreign'    => 'id_size',
+				'orderby'        => array('id' => 'ASC'),
+				'onDelete'        => 'delete'
+                    ), 
+		'category' => array(
+				'type'=>'hasOne',
+				'class'=>'SizeCategory',
+				'field'=>'category_id'
+                    ),            
             );
 
         }
@@ -27,4 +30,3 @@
             return wsActiveRecord::useStatic('Shoparticlessize')->count(array('id_size'=>$this->getId()));
         }
     }
-?>

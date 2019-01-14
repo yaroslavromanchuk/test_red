@@ -6,14 +6,17 @@ class wsCustomerAddress extends wsActiveRecord
     
 	protected function _defineRelations()
 	{
-		$this->_relations = array('customer' => array('type'=>'hasOne', //belongs to
-													'class'=>self::$_customer_class,
-													'field'=>'customer_id'),
-								'country' => array('type'=>'hasOne', //belongs to
-													'class'=>self::$_country_class,
-													'field'=>'country_id',
-													'autoload'=>true),
-								);	
+		$this->_relations = array(
+                    'customer' => array(
+                        'type'=>'hasOne', //belongs to
+			'class'=>self::$_customer_class,
+			'field'=>'customer_id'),
+                    'country' => array(
+                        'type'=>'hasOne', //belongs to
+                        'class'=>self::$_country_class,
+			'field'=>'country_id',
+			'autoload'=>true),
+					);	
 	}
 
 	public function isCustomerAddress($customer_id)
@@ -25,4 +28,3 @@ class wsCustomerAddress extends wsActiveRecord
 	}
 
 }
-?>

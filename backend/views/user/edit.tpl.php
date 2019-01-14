@@ -3,7 +3,6 @@
 <?=$this->getCurMenu()->getPageBody(); ?>
 
 <?php
-$order_status = explode(',', $this->trans->get('new,processing,canceled,ready_shop,ready_post'));
 if ($this->errors) {
     ?>
 <div id="errormessage"><img src="<?=SITE_URL?>/img/icons/error.png" alt="" class="page-img"/>
@@ -153,7 +152,11 @@ if ($this->saved) { ?>
             <td class="kolom1">Депозит</td>
             <td><input name="deposit" style="width:100px;" class="form-control input" value="<?php echo $this->sub->getDeposit();?>"/><input type="checkbox" id="deposit_email" name="deposit_email" value="1"><label>Не уведомлять пользователя</label></td>
         </tr>
-		<?php if(@$this->sub->getBonus()){ ?>
+        <tr>
+            <td class="kolom1">Колл. заказов на пункт выдачи: </td>
+            <td><input name="count_order_magaz" style="width:100px;" type="text" class="form-control input" value="<?=$this->sub->count_order_magaz?>"/></td>
+        </tr>
+		<?php if($this->sub->getBonus()){ ?>
 		<tr>
             <td class="kolom1">Бонус</td>
             <td><?php echo $this->sub->getBonus();?> грн.</td>
@@ -253,7 +256,7 @@ if ($orders->count() > 0) {
     На депозит: <span class="to_deposit_sum">0</span> грн.<br/>
 </p>
 <p>Заказы:</p>
-<script type="text/javascript">
+<script>
     $(document).ready(function () {
 
         $('.user_orders').click(function () {
@@ -339,8 +342,7 @@ if ($orders->count() > 0) {
                                                                                      alt="Редактировать"
                                                                                      src="/img/icons/edit-small.png"></a>
         </td>
-        <td><?php echo isset($order_status[$order->getStatus()]) ? $order_status[$order->getStatus()]
-            : ""; ?>
+        <td><?=$order->getStat()->getName()?>
             <?php if ($order->getAdminPayId()) { ?>
                 <br/><span style="color: #6666ff">Проведен</span>
                 <?php } ?>

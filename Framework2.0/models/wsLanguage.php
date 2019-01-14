@@ -19,10 +19,9 @@ class wsLanguage extends wsActiveRecord
 	public static function findByCode($code)
 	{
 		$l = wsActiveRecord::useStatic(self::$_language_class)->findFirst(array('code'=>$code, 'active'=>1));
-		if(!$l)
-			$l = wsLanguage::getDefaultLang();
+		if(!$l){$l = wsLanguage::getDefaultLang();}
 		return $l;
 	}
 
 }
-?>
+

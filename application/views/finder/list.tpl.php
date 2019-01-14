@@ -1,3 +1,4 @@
+<?php if($this->result_count > 0){ ?>
 <div class="modal fade comment-form"  tabindex="-1" role="dialog" id="comment-modal_article" aria-labelledby="id_comment_modal_article">
 <div  class="modal-dialog modal-lg">
 	<div  class="modal-content">
@@ -9,30 +10,29 @@
 	</div>
 </div>
 </div>
-<ul class="row articles-row">
+<ul class="row articles-row p-0 m-0 w-100">
 <?php foreach($this->articles as $article){
     $article->getSpecNakl();
     echo $article->getSmallBlockCachedHtml();
 } ?>
 </ul>
-<div class="row">
-<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center" style="padding-top: 10px;">
+
+<div class="row m-0">
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center pt-3" >
 <input type="hidden" class="items_on_page" name="items_on_page" value="<?=$_COOKIE['items_on_page']?$_COOKIE['items_on_page']:32?>" />
 <div class="btn-group mb-3"  data-toggle="buttons-checkbox">
-                    <button onclick="return but_val_new($(this))" type="button" class="btn btn-secondary <?php if(@$_COOKIE['items_on_page']==32 or !@$_COOKIE['items_on_page'])  echo 'active' ?>" <?php if(@$_COOKIE['items_on_page']==32 or !@$_COOKIE['items_on_page'])  echo 'disabled' ?> value="32">30</button>
-                    <button onclick="return but_val_new($(this))" type="button" class="btn btn-secondary <?php if(@$_COOKIE['items_on_page']==60 or !@$_COOKIE['items_on_page'])  echo 'active' ?>" <?php if(@$_COOKIE['items_on_page']==60)  echo 'disabled' ?> value="60">60</button>
-                    <button onclick="return but_val_new($(this))" type="button" class="btn btn-secondary <?php if(@$_COOKIE['items_on_page']==90 or !@$_COOKIE['items_on_page'])  echo 'active' ?>" <?php if(@$_COOKIE['items_on_page']==90)  echo 'disabled' ?> value="90">90</button>
-                    <button onclick="return but_val_new($(this))" type="button" class="btn btn-secondary <?php if(@$_COOKIE['items_on_page']==120 or !@$_COOKIE['items_on_page'])  echo 'active' ?>" <?php if(@$_COOKIE['items_on_page']==120) echo 'disabled' ?> value="120">120</button>
+                    <button onclick="return but_val_new($(this))" type="button" class="btn btn-secondary <?php if($_COOKIE['items_on_page']==32 or !$_COOKIE['items_on_page'])  echo 'active' ?>" <?php if($_COOKIE['items_on_page']==32 or !$_COOKIE['items_on_page'])  echo 'disabled' ?> value="32">30</button>
+                    <button onclick="return but_val_new($(this))" type="button" class="btn btn-secondary <?php if($_COOKIE['items_on_page']==60)  echo 'active' ?>" <?php if($_COOKIE['items_on_page']==60)  echo 'disabled' ?> value="60">60</button>
+                    <button onclick="return but_val_new($(this))" type="button" class="btn btn-secondary <?php if($_COOKIE['items_on_page']==90)  echo 'active' ?>" <?php if($_COOKIE['items_on_page']==90)  echo 'disabled' ?> value="90">90</button>
+                    <button onclick="return but_val_new($(this))" type="button" class="btn btn-secondary <?php if($_COOKIE['items_on_page']==120)  echo 'active' ?>" <?php if($_COOKIE['items_on_page']==120) echo 'disabled' ?> value="120">120</button>
 </div>
  <?php 
-//echo $this->cur_page;
-//echo '<br>'.$this->total_pages;
 if($this->total_pages){
 $limit = 4;
 	$text = '';
 	$page = ($this->cur_page+1);
 $text.='<nav aria-label="Page navigation example">
-	<ul class="pagination pagination-dark mb-0" style="display: inline-flex;">';
+	<ul class="pagination pagination-dark mb-0 pagination-sm  justify-content-center" >';
 	if ($page > 1) {
         $text .= '<li class="page-item"><a class="page-link" href=""  onclick="return ToPage(1)" aria-label="Previous"><span aria-hidden="true"><<</span></a></li>';
 		$text.='<li class="page-item"><a class="page-link"  href=""  onclick="return ToPage('.($page - 1).')"><span aria-hidden="true"><</span></a></li>';
@@ -71,3 +71,14 @@ echo $text;
 ?>
 </div>
 </div>
+<?php }else{
+    ?>
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center p-3">
+    <div class="alert alert-danger" role="alert">
+        
+  <?=$this->trans->get('message_no_articles');?>
+</div>
+        </div>
+</div>
+ <?php   } ?>

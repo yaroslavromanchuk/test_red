@@ -283,10 +283,10 @@ $( document ).ready(function() {
 		var ending = tinymce.get('page_ending').getContent().replace(/&/g,"#");
 var new_data = data + '&intro='+intro+'&ending='+ending+ '&save='+ save;
 
-			surl = url+"&"+new_data;
+			//surl = url+"&"+new_data;
 //		console.log(surl);
             $.ajax({
-                url: surl,
+                url: url,
                 type: 'POST',
                 dataType: 'json',
                 data: new_data,
@@ -306,10 +306,10 @@ var new_data = data + '&from_mail=' + send_mail + '&count=' + count +'&intro='+i
 
 //			console.log(new_data);
 //			url=url+"&"+new_data;
-			surl = url+"&"+new_data;
+			//var surl = url+"&"+new_data;
 //			console.log(surl);
             $.ajax({
-                url: surl,
+                url: url,
                 type: 'POST',
                 dataType: 'json',
                 data: new_data,
@@ -350,10 +350,10 @@ var new_data = data + '&from_mail=' + send_mail + '&count=' + count +'&intro='+i
 		var ending = tinymce.get('page_ending').getContent().replace(/&/g,"#");
 var new_data = data + '&from_mail=' + send_mail + '&count=' + count +'&intro='+encodeURIComponent(intro)+'&ending='+encodeURIComponent(ending)+ '&test='+ test;
 
-			surl = url+"&"+new_data;
-			console.log(surl);
+			//surl = url+"&"+new_data;
+			//console.log(surl);
             $.ajax({
-                url: surl,
+                url: url,
                 type: 'POST',
                 dataType: 'json',
                 data: new_data,

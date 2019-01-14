@@ -392,7 +392,7 @@ document.getElementById('img2').addEventListener('change', handleFileSelect, fal
 
         foreach ($this->article->sizes as $sizes) {
             echo "<p class='size_article'>";
-            echo '<label>Цвет:</label><select name="color' . $sizes->getId() . '"  class="selectpicker show-tick form-control input w150" data-live-search="true">';
+            echo '<label>Цвет:</label><select name="color' . $sizes->getId() . '"  class="select2-show-search form-control input w150" data-live-search="true">';
             ?>
             <option value="" selected>Выберите цвет...</option>
 
@@ -403,7 +403,7 @@ document.getElementById('img2').addEventListener('change', handleFileSelect, fal
 
         }
             echo '</select><br>';
-            echo '<label>Размер:</label><select name="size' . $sizes->getId() . '" class="selectpicker show-tick form-control input w150" data-live-search="true">';
+            echo '<label>Размер:</label><select name="size' . $sizes->getId() . '" class="select2-show-search form-control input w150" data-live-search="true">';
             ?>
             <option value="" selected>Выберите размер...</option>
 
@@ -468,7 +468,7 @@ document.getElementById('img2').addEventListener('change', handleFileSelect, fal
                                             }
                                             echo '<option value="' . $siz->getId() . '">' . $siz->getSize() . '</option>';
                                         } ?>';
-                                var content = '<p class="size_article"><select name="color' + data.id + '" class="form-control input"><option value="" selected>Выберите цвет...</option>' + color + '</select><select name="size' + data.id + '" class="form-control input"><option value="" selected>Выберите размер...</option>' + size +
+                                var content = '<p class="size_article"><select name="color' + data.id + '" class="form-control input select2-show-search"><option value="" selected>Выберите цвет...</option>' + color + '</select><select name="size' + data.id + '" class="form-control input"><option value="" selected>Выберите размер...</option>' + size +
                                     '</optgroup></select><br/> Артикул: <input type="text" class="form-control input" value="" name="sarticle' + data.id + '"><br/>На складе: <input type="text" class="form-control input" name="count' + data.id + '" value="0"><input type="submit" name="delete' + data.id + '" value="Удалить"></p>';
                                 $('#addsize').before(content);
                                 console.log(data);
@@ -892,8 +892,8 @@ console.log(temp);
 		   $('.a').show();
 }
 </script>
-<script type="text/javascript" src="/admin_files/scripts/jquery.autocomplete.js"></script>
-<script type="text/javascript">
+<script  src="<?=$this->files?>/scripts/jquery.autocomplete.js"></script>
+<script >
 /*$('#button111').on('click', function(){
 	if(validForm() != false) {
 	$(".form1").submit();

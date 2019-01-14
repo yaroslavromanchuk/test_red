@@ -84,30 +84,63 @@ sendMessageTelegram(404070580, $mes);//Yarik
 		
 		
 if($days[date('N')] == 'Вторник'){ //уценка
+$interval = 14;
 $sum = 0;
 $all_sum = 0;
 $all_count = 0;
 $mes="Уценка ".$today."\r\n";
 
-///20
+///10
 $sql = "SELECT * FROM `red_site`.`ws_articles` WHERE  `stock` NOT LIKE  '0' AND  `active` =  'y'
-	AND DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) < DATE_SUB( CURRENT_DATE, INTERVAL 34 DAY )
-	AND DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) > DATE_SUB( CURRENT_DATE, INTERVAL 59 DAY )
+	AND DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) < DATE_SUB( CURRENT_DATE, INTERVAL 21 DAY )
+	AND DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) > DATE_SUB( CURRENT_DATE, INTERVAL 35 DAY )
 	AND `old_price` = 0 AND `ucenka` = 0 and skidka_block != 1";
 $i=0;
 $j = 0;	
 foreach(wsActiveRecord::useStatic('Shoparticles')->findByQuery($sql) as $a){
-if( 20 <= (int)$a->max_skidka or (int)$a->max_skidka <= 1){
+if( 10 <= (int)$a->max_skidka or (int)$a->max_skidka <= 1){
 $koll = $a->getCountArticles();
-$a->setUcenka(20);
+$a->setUcenka(10);
 $a->setDataUcenki($today);
 $a->setOldPrice($a->getPrice());
-$a->setPrice($a->getPrice() * 0.8);
+$a->setPrice($a->getPrice() * 0.9);
 $cat = new Shopcategories($a->getCategoryId());
 $a->setDopCatId($cat->getUsencaCategory());
 $a->save();
 $sum+= ($a->getOldPrice()-$a->getPrice())*$koll;
-UcenkaHistory::newUcenka(8005, $a->getId(), $a->getOldPrice(), $a->getPrice(), $koll, 20);
+UcenkaHistory::newUcenka(8005, $a->getId(), $a->getOldPrice(), $a->getPrice(), $koll, 10);
+$i++;
+$j+=$koll;
+}else{
+$a->setLabelid(10);
+$a->save();
+}
+}
+$all_count+=$j;
+$all_sum+=$sum;
+$mes.="10 - ".$j." - ".$sum." грн.\r\n";
+///end 20
+
+/// 20
+$sql = "SELECT * FROM `red_site`.`ws_articles` WHERE  `stock` NOT LIKE  '0' 
+	AND  `active` =  'y'
+	AND DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) < DATE_SUB( CURRENT_DATE, INTERVAL 35 DAY )
+	AND DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) > DATE_SUB( CURRENT_DATE, INTERVAL 49 DAY )
+	AND `old_price` > 0
+	AND `ucenka` < 20 and skidka_block != 1";
+	$i=0;
+	$j=0;
+	$sum = 0;
+foreach(wsActiveRecord::useStatic('Shoparticles')->findByQuery($sql) as $a){
+if(20 <= (int)$a->max_skidka or (int)$a->max_skidka <= 1){
+$s_p = $a->getPrice();
+$koll = $a->getCountArticles();
+$a->setUcenka(20);
+$a->setDataUcenki($today);
+$a->setPrice($a->getOldPrice() * 0.8);
+$a->save();
+$sum += ($s_p-$a->getPrice())*$koll;
+UcenkaHistory::newUcenka(8005, $a->getId(), $s_p, $a->getPrice(), $koll, 20);
 $i++;
 $j+=$koll;
 }else{
@@ -118,12 +151,12 @@ $a->save();
 $all_count+=$j;
 $all_sum+=$sum;
 $mes.="20 - ".$j." - ".$sum." грн.\r\n";
-///end 20
+/// end 20
 /// 30
 $sql = "SELECT * FROM `red_site`.`ws_articles` WHERE  `stock` NOT LIKE  '0' 
 	AND  `active` =  'y'
-	AND DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) < DATE_SUB( CURRENT_DATE, INTERVAL 59 DAY )
-	AND DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) > DATE_SUB( CURRENT_DATE, INTERVAL 84 DAY )
+	AND DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) < DATE_SUB( CURRENT_DATE, INTERVAL 49 DAY )
+	AND DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) > DATE_SUB( CURRENT_DATE, INTERVAL 63 DAY )
 	AND `old_price` > 0
 	AND `ucenka` < 30 and skidka_block != 1";
 	$i=0;
@@ -153,8 +186,8 @@ $mes.="30 - ".$j." - ".$sum." грн.\r\n";
 /// 40
 $sql = "SELECT * FROM `red_site`.`ws_articles` WHERE  `stock` NOT LIKE  '0' 
 	AND  `active` =  'y'
-	AND DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) < DATE_SUB( CURRENT_DATE, INTERVAL 84 DAY )
-	AND DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) > DATE_SUB( CURRENT_DATE, INTERVAL 109 DAY )
+	AND DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) < DATE_SUB( CURRENT_DATE, INTERVAL 63 DAY )
+	AND DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) > DATE_SUB( CURRENT_DATE, INTERVAL 77 DAY )
 	AND `old_price` > 0
 	AND `ucenka` < 40 and skidka_block != 1";
 	$i=0;
@@ -184,8 +217,8 @@ $mes.="40 - ".$j." - ".$sum." грн.\r\n";
 /// 50
 $sql = "SELECT * FROM `red_site`.`ws_articles` WHERE  `stock` NOT LIKE  '0' 
 	AND  `active` =  'y'
-	AND DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) < DATE_SUB( CURRENT_DATE, INTERVAL 109 DAY )
-	AND DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) > DATE_SUB( CURRENT_DATE, INTERVAL 134 DAY )
+	AND DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) < DATE_SUB( CURRENT_DATE, INTERVAL 77 DAY )
+	AND DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) > DATE_SUB( CURRENT_DATE, INTERVAL 91 DAY )
 	AND `old_price` > 0 
 	AND `ucenka` < 50 and skidka_block != 1";
 	$i=0;
@@ -215,7 +248,7 @@ $mes.="50 - ".$j." - ".$sum." грн.\r\n";
 /// 60
 $sql = "SELECT * FROM `red_site`.`ws_articles` WHERE  `stock` NOT LIKE  '0' 
 	AND  `active` =  'y'
-	AND DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) < DATE_SUB( CURRENT_DATE, INTERVAL 134 DAY )
+	AND DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) < DATE_SUB( CURRENT_DATE, INTERVAL 91 DAY )
 	AND `old_price` > 0
 	AND `ucenka` < 60 and skidka_block != 1";
 	$i=0;

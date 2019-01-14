@@ -5,29 +5,34 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-if($this->message){
-    //echo print_r($this->message);
-    ?>
-<table class="table table-hover">
-    <thead>
+if($this->message){ ?>
+<table class="table table-hover table-bordered form_history"  >
+    <thead class="text-center">
         <tr>
-            <th>Заказано</th>
-            <th>Сумма</th>
-            <th>Куплено</th>
-            <th>Сумма</th>
+            <th>Заказано<br>товаров</th>
+            <th>Сумма<br>без акции</th>
+            <th>Сумма<br>по акции</th>
+            <th>Разница</th>
+            <th>Куплено<br>товаров</th>
+            <th>Сумма<br>без акции</th>
+            <th>Сумма<br>по акции</th>
+            <th>Разница</th>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td><?=$this->message['all']?></td>
-            <td><?=$this->message['summa_all']?></td>
-            <td><?=$this->message['fact']?></td>
-            <td><?=$this->message['summa_fact']?></td>
+            <td id="all"><?=$this->message['all']?></td>
+            <td id="summa_all_no_akciya"><?=$this->message['summa_all_no_akciya']?> грн.</td>
+            <td id="summa_all"><?=$this->message['summa_all']?> грн.</td>
+            <td id="summa_all_no_akciya_akciya"><?=$this->message['summa_all_no_akciya']-$this->message['summa_all']?></td>
+            <td id="fact"><?=$this->message['fact']?></td>
+            <td id="summa_fact_no_akciya"><?=$this->message['summa_fact_no_akciya']?> грн.</td>
+            <td id="summa_fact"><?=$this->message['summa_fact']?> грн.</td>
+            <td id="summa_fact_no_akciya_akciya"><?=$this->message['summa_fact_no_akciya']-$this->message['summa_fact']?> грн.</td>
         </tr>
     </tbody>
 </table>
-
-    
+<input type="text" hidden value="<?=$this->id?>" class="id_akciya">
  <?php   
 }
 

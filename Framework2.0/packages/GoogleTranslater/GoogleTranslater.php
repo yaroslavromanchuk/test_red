@@ -9,7 +9,7 @@ class GoogleTranslater
      * @var string Some errors
      */
     private $_errors = "";
-	protected $key = 'AIzaSyC5MeHPcuEKqiWH7Oqlxvp8GhY7TTYwUf8';
+    protected $key = 'AIzaSyC5MeHPcuEKqiWH7Oqlxvp8GhY7TTYwUf8';
   
     /**
      * Constructor
@@ -36,14 +36,16 @@ class GoogleTranslater
             {
                 $subText = substr($text, $i, 1000);
 
-                $response = $this->_curlToGoogle("https://translation.googleapis.com/language/translate/v2?client=x&text=".urlencode($subText)."&hl=$toLanguage&sl=$fromLanguage&tl=i$toLanguage&multires=1&otf=1&ssel=0&tsel=0&uptl=ru&sc=1");
+                $response = $this->_curlToGoogle("https://translation.googleapis.com/language/translate/v2?key=$this->key&q=".urlencode($subText)."&source=$toLanguage&target=$fromLanguage");
 				$result.= $response;
                 $result .= $this->_parceGoogleResponse($response, $translit);
                sleep(1); 
             }
             return $result;
-        } else
+        } else{
             return false;
+            
+        }
     } 
 
     /**
@@ -122,16 +124,23 @@ class GoogleTranslater
 
     private function _parceGoogleResponse($response, $translit = false)
     {
-        if (empty($this->_errors)) {
-            $result = "";            
-            $json = json_decode($response);           
+         $result = ""; 
+        $json = json_decode($response);      
+        if (empty($this->_errors) and !$json->error) {
+                      
+                 
             foreach ($json->sentences as $sentence) {
                 $result .= $translit ? $sentence->translit : $sentence->trans;  
             }
-            return $result;
+            
         }  else {
-            return false;
+            foreach ($json->error as $sentence) {
+                $result .= $sentence->message; 
+            }
+            
+            
         }
+        return $result;
     }
 }
-?>
+

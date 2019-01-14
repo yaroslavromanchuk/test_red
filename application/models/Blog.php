@@ -15,10 +15,11 @@ class Blog extends wsActiveRecord
         @unlink($_SERVER['DOCUMENT_ROOT'].$this->getImage());
         return true;
     }
-	    public function getPath()
+	public function getPath()
     	{
     		return "/blog/id/" . $this->getId() .'/'.$this->_generateUrl($this->getPostName());
     	    	}
+                
 	public function LikeActive($id_customer, $id_post){
       $sql = "SELECT * FROM ws_blog_like WHERE id_customer = ".$id_customer." AND id_post = ".$id_post;
 		$result=mysql_query($sql);
@@ -27,4 +28,3 @@ class Blog extends wsActiveRecord
     }
 
 }
-?>

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 class BlogController extends controllerAbstract
 {
@@ -6,7 +6,7 @@ class BlogController extends controllerAbstract
 
     public function indexAction()
     {
-	$data = array();
+	$data = [];
 
 	$this->view->blog_cat = wsActiveRecord::useStatic('Blog')->findByQuery('SELECT * FROM `ws_blog_catgories`');
 
@@ -26,12 +26,14 @@ class BlogController extends controllerAbstract
                 $this->_redirect('/blog/');
             }
 		}else{
+                    $this->cur_menu->url = '';
 		$onPage = 10;
 		$page = 1;
             if ((int)$this->get->page > 0) {
+                $this->cur_menu->nofollow = 1;
                 $page = (int)$this->get->page;
             }
-			 $this->view->onpage = $onPage;
+	$this->view->onpage = $onPage;
             $this->view->page = $page;
 		
 		$d = date("Y-m-d H:i:s"); 
@@ -47,13 +49,21 @@ class BlogController extends controllerAbstract
     }
 	public function showOnePost($blog_post) 
     {
-	$data = array();
+            
+           
+	//$data = [];
 	
-	$this->view->blog_cat = wsActiveRecord::useStatic('Blog')->findByQuery('
-            SELECT * FROM `ws_blog_catgories`');
-			$d = date("Y-m-d H:i:s");
-		$data[] = " public = 1 and ctime < '$d' and id=".$blog_pos;
-	$this->view->onepostblog = wsActiveRecord::useStatic('Blog')->findAll(array('public'=>1, "id"=>$blog_post));
+	//$this->view->blog_cat = wsActiveRecord::useStatic('Blog')->findByQuery('SELECT * FROM `ws_blog_catgories`');
+			//$d = date("Y-m-d H:i:s");
+		//$data[] = " public = 1 and ctime < '$d' and id=".$blog_post;
+	$this->view->onepostblog = $post = wsActiveRecord::useStatic('Blog')->findById((int)$blog_post);
+        
+         $this->cur_menu->setPageTitle($post->getPostName().' - '.$this->cur_menu->getName().' '.$this->trans->get('в интернет магазине RED'));
+         
+        $this->cur_menu->setName($post->getPostName());
+        
+        $this->cur_menu->setMetatagDescription($post->getPostName().' - '.$this->trans->get('Блог магазина RED ✓Тренды ✓Луки ✓ Советы по стилю'));//<Н1> 🡒 Блог магазина RED ✓Тренды ✓Луки ✓ Советы по стилю
+        
     echo $this->render('blog/post.tpl.php');
 
     }
@@ -68,10 +78,10 @@ class BlogController extends controllerAbstract
     echo $this->render('blog/blog.tpl.php');
 
     }
-	// ��� ������ �� ������
-	public function getlikeokAction(){
-	$id_customer = @intval($_GET['id_c']);
-	$id_post = @intval($_GET['id_p']);
+	// для лайков на статью
+	/*public function getlikeokAction(){
+	$id_customer = intval($_GET['id_c']);
+	$id_post = intval($_GET['id_p']);
 	
       $sql = "SELECT * FROM ws_blog_like WHERE id_customer = ".$id_customer." AND id_post = ".$id_post;
 		$result=mysql_query($sql);
@@ -90,7 +100,7 @@ class BlogController extends controllerAbstract
 		print json_encode($result);
         exit;
         
-    }
+    }*/
 	
 
 	

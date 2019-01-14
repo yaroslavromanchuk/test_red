@@ -25,4 +25,4 @@ class wsCustomerMachine extends wsActiveRecord
     }
     
 }
-?>
+

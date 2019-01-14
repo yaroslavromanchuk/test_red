@@ -1,4 +1,4 @@
-<!--
+
 
 /* ID */
 function byId(id) {
@@ -273,5 +273,3 @@ function pingStop(newTitle)
 		byId('activeButton').src = 'img/pause.gif';
 	}
 }
-
--->

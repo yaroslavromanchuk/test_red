@@ -514,8 +514,9 @@ class Orm_ActiveRecord extends Orm_Array
 		if(!$this->_lang) {
 			$this->setLang(Registry::get('lang'));
 		}		
-		if($this->_lang == Registry::get('default_language'))
-			return '';
+		if($this->_lang == Registry::get('default_language')){
+                    return ''; 
+                        }
 		return '_' . $this->_lang;
 	}
 	
@@ -595,10 +596,11 @@ class Orm_ActiveRecord extends Orm_Array
 	
 	protected function _translatedName($name) {
 		$lang = $this->getLang();
-		if(isset($this->{$name . $lang}))
-			return $name . $lang;
-		else
-			return $name;
+		if(isset($this->{$name . $lang})){
+                    return $name . $lang;
+                }else{
+                    return $name; 
+                }
 	}	
 	
 	

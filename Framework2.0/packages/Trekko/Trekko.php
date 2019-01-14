@@ -1,4 +1,4 @@
-<?php
+п»ї<?php
 class Trekko{ 
 
 	protected $key = 'ogjlOLSGljlgojkfsd24dfsodflwGOTolnLejroi35lkjl2352ll8lj90KL';
@@ -74,7 +74,7 @@ function __construct($key, $client, $obj) {
 	return  $this->_requestJSON(json_encode($request));
 	}
 	public function getLoadingTrekko($type = 1){
-	$request = array('client' => $this->client, 'object' => $this->obj, 'method' => 'loading','parameters' => array('date' => date('d.m.Y'), 'type' => '2', 'active' => $type, 'comment' => 'Забор до 18:00'));
+	$request = array('client' => $this->client, 'object' => $this->obj, 'method' => 'loading','parameters' => array('date' => date('d.m.Y'), 'type' => '2', 'active' => $type, 'comment' => 'Р—Р°Р±РѕСЂ РґРѕ 18:00'));
 	return $this->_requestJSON(json_encode($request));
 	}
 	
@@ -86,7 +86,7 @@ function __construct($key, $client, $obj) {
 	'request' => $json,
 	'sign' => md5($json.$this->key)
 );
-$ch = curl_init('http://portal.trekko.com.ua/api.php');
+$ch = curl_init('https://portal.trekko.com.ua/api.php');
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 curl_setopt($ch, CURLOPT_HEADER, 0);
 curl_setopt($ch, CURLOPT_POST, 1);

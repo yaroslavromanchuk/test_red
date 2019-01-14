@@ -10,11 +10,13 @@ class Website
     	// set customer for current visit
     	$this->getCustomer();
     }
-
+    /**
+     * 
+     * @return type
+     */
     public function getCustomer()
     {		
-        if ($this->_customer)
-            return $this->_customer;
+        if ($this->_customer){ return $this->_customer;}
 
         $customer = null;
         // fetch session hash, or default to null
@@ -25,30 +27,22 @@ class Website
         $hashUser = (isset($_COOKIE['u']) ? $_COOKIE['u'] : null);
 		//$Visit = (isset($_COOKIE['d']) ? $_COOKIE['d'] : null);
 		//if($_COOKIE['visit'] == false) $_COOKIE['visit'] = date();
+                //
         // define extra info array
-		$arrExtraInfo = array(
-            'url' => ( 
-				isset($_SERVER['HTTP_HOST']) //  not be set
-			? 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] /* !!!!! GET PORT & HTTP(S) !!!!!*/
-			: '')
-            ,'referrer' => (
-                isset($_SERVER['HTTP_REFERER']) // referrer might not be set
-                    ? $_SERVER['HTTP_REFERER']
-                    : '' // if not, default to an empty string
-                )
-            ,'ip' => $_SERVER['REMOTE_ADDR']
-            );
-			/*
-        $arrExtraInfo = array(
-            'url' => 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] /* !!!!! GET PORT & HTTP(S) !!!!!
-            ,'referrer' => (
-                isset($_SERVER['HTTP_REFERER']) // referrer might not be set
-                    ? $_SERVER['HTTP_REFERER']
-                    : '' // if not, default to an empty string
-                )
-            ,'ip' => $_SERVER['REMOTE_ADDR']
-            );
-*/
+	$arrExtraInfo = [
+                    'url' => ( 
+                                isset($_SERVER['HTTP_HOST']) //  not be set
+                                ? 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] /* !!!!! GET PORT & HTTP(S) !!!!!*/
+                                : ''
+                    ),
+                    'referrer' => ( 
+                            isset($_SERVER['HTTP_REFERER']) // referrer might not be set
+                            ? $_SERVER['HTTP_REFERER']
+                            : '' // if not, default to an empty string
+                            ),
+                    'ip' => $_SERVER['REMOTE_ADDR']
+                        ];
+
         $languageId = $this->getLanguageId();
         // check for osadcampaign
         if(isset($_GET['osadcampaign']))
@@ -67,17 +61,26 @@ class Website
         }
         else
         {
-            $debugLevel = wsConfig::findByCode('debug_level')->getValue();
+            $debugLevel = false;//wsConfig::findByCode('debug_level')->getValue();
         }
 
         if (!$hashVisit)
+        {
             $hashVisit = self::generateHash('V');
+            
+        }
 
         if (!$hashMachine)
+        {
             $hashMachine = self::generateHash('M');
+            
+        }
 
         if (!$customerVisit = CustomerVisit::findByHash($hashVisit))
+        {
             $customerVisit = new CustomerVisit();
+            
+        }
 
         if (!$customerMachine = CustomerMachine::findByHash($hashMachine))
         {
@@ -98,10 +101,11 @@ class Website
         {
             $hashUser = null;
             $customer = new Customer();
-			$customer->setCustomerTypeId(wsCustomerType::getDefault()->getId());
-        }
-        else
+            $customer->setCustomerTypeId(wsCustomerType::getDefault()->getId());
+        }else{
             $customer->setIsLoggedIn(true);
+            
+        }
         
         // set hashes to current user
         $customer->setHashUser($hashUser);
@@ -119,14 +123,13 @@ class Website
         //$customerVisit->setLangId($languageId);
         $customerVisit->setHashId($hashVisit);
         //$customerVisit->setTimeLastPage(date("Y-m-d H:i:s"));
-        $customerVisit->setTotalNumberOfPages($customerVisit->getTotalNumberOfPages() + 1);
-        $customerVisit->setCampaignname($customer->getCampaignname());
+        $customerVisit->setTotalNumberOfPages($customerVisit->getTotalNumberOfPages() + 1);//ĞºĞ¾Ğ»Ğ¸Ñ‡ĞµÑÑ‚Ğ²Ğ¾ Ğ¿Ñ€Ğ¾ÑĞ¼Ğ¾Ñ‚Ñ€ĞµĞ½Ñ‹Ñ… ÑÑ‚Ñ€Ğ°Ğ½Ğ¸Ñ† Ğ² Ñ‚ĞµĞºÑƒÑ‰ĞµĞ¹ ÑĞµÑĞ¸Ğ¸
+        //$customerVisit->setCampaignname($customer->getCampaignname());
         //$customerVisit->setOrderAmount(0);
         //$customerVisit->setOrderCurrencyId(0);
         $customerVisit->setDurationInMinutes(round((time() - ($customerVisit->getCtime() ? $customerVisit->getCtime() : time())) / 60, 0));
         $customerVisit->setEndUrl($arrExtraInfo['url']);
-        if ($debugLevel && $debugLevel != $customerVisit->getLoglevel())
-            $customerVisit->setLoglevel($debugLevel);
+        if ($debugLevel && $debugLevel != $customerVisit->getLoglevel()){ $customerVisit->setLoglevel($debugLevel); }
         //$customerVisit->save();
 
         if ($customerMachine->isNew())
@@ -139,6 +142,7 @@ class Website
             $customerMachine->setHostnameCreated($arrExtraInfo['url']);
             $customerMachine->setTotalNumberOfVisits(1);
         }
+        
         $customerMachine->setTotalNumberOfVisits(
             ($customerMachine->getVisitLastId() && $customerMachine->getVisitLastId() != $customerVisit->getId()) ?
             $customerMachine->getTotalNumberOfVisits() + 1 : $customerMachine->getTotalNumberOfVisits()
@@ -155,12 +159,10 @@ class Website
         //$customer->setTimeLastVisit(date("Y-m-d H:i:s"));
 	    $customer->setMachineLastVisit($customerMachine);
 	    $customer->setVisitLast($customerVisit);
-	    if ($customer->getVisitLastId() != $customerVisit->getId())
-	        $customer->setTotalNumberOfVisits($customer->getTotalNumberOfVisits() + 1);
-	    if (!$customer->getMachineCreatedId())
-	        $customer->setMachineCreated($customerMachine);
-	    if (!$customer->getVisitCreatedId())
-	        $customer->setVisitCreated($customerVisit);
+            
+	    if ($customer->getVisitLastId() != $customerVisit->getId()){ $customer->setTotalNumberOfVisits($customer->getTotalNumberOfVisits() + 1); }
+	    if (!$customer->getMachineCreatedId()){$customer->setMachineCreated($customerMachine);}
+	    if (!$customer->getVisitCreatedId()){$customer->setVisitCreated($customerVisit);}
 
         if (!$customer->isNew())
         {
@@ -169,6 +171,7 @@ class Website
         }
 
         $customerVisit->setMachine($customerMachine);
+        
         $customerVisit->save();
 		
 
@@ -179,7 +182,9 @@ class Website
         return $this->_customer;
     }
 
-
+    /**
+     * 
+     */
     public function updateHashes()
     {
         $customer = $this->_customer;
@@ -189,8 +194,8 @@ class Website
         // expiry time (+1 year from now)
         $expiryTimes['u'] = strtotime('+1 year');
         $expiryTimes['m'] = strtotime('+1 year');
-		$expiryTimes['d'] = strtotime('+1 year');
-		$expiryTimes['s'] = strtotime('+1 day');
+	$expiryTimes['d'] = strtotime('+1 year');
+	$expiryTimes['s'] = strtotime('+1 day');
         
         // set the cookie values to false if they should be deleted
         if (!$customer->getHashUser())
@@ -205,31 +210,32 @@ class Website
         }
         
         // set user cookie
-        setcookie('u',$customer->getHashUser(),
-            $expiryTimes['u'],'/');
+        setcookie('u',$customer->getHashUser(), $expiryTimes['u'],'/');
 
         // set machine cookie
-        setcookie('m',$customer->getHashMachine(),
-            $expiryTimes['m'],'/');
+        setcookie('m',$customer->getHashMachine(), $expiryTimes['m'],'/');
 	// set date visit cookie
-	if(!isset($_COOKIE['d'])) setcookie('d',  $this->generateDate(date("Y-m-d")), $expiryTimes['d'],'/');
+	if(!isset($_COOKIE['d'])) { setcookie('d',  $this->generateDate(date("Y-m-d")), $expiryTimes['d'],'/'); }
 	// proverca poslednego visita and set new date visit
 	if(isset($_COOKIE['d']) and $_COOKIE['d'] !=  $this->generateDate(date("Y-m-d"))) {
 	setcookie('s', $_COOKIE['d'], $expiryTimes['s'],'/');
 	setcookie('d',  $this->generateDate(date("Y-m-d")), $expiryTimes['d'],'/');
 	}
-		
-
-
     }
 	
 	static public function getSite()
 	{
 		if(!self::$_site)
-			self::$_site = Site::getThisSite(@$_SERVER['HTTP_HOST']);
+                {
+                    self::$_site = Site::getThisSite($_SERVER['HTTP_HOST']);
+                    
+                }
 
 		if(!self::$_site)
-			self::$_site = Site::getDefault();
+                {
+                    self::$_site = Site::getDefault();
+                    
+                }
 
 		return self::$_site;
 	}
@@ -237,7 +243,10 @@ class Website
 	public function getLanguageId()
 	{
 		if (!self::$_language)
-			self::$_language = wsLanguage::getDefaultLang()->getId();
+                {
+                    self::$_language = 1;//wsLanguage::getDefaultLang()->getId();
+                    
+                }
 	
 		return self::$_language;
 	}	
@@ -251,18 +260,19 @@ class Website
     {
         return md5(uniqid(mt_rand(),true));
     }
+    
 	public function generateDate($dat)
     {
 	$newstr = '';
 	$key = 'coderedua';
-	$string=base64_encode($dat);//Ïåğåâîäèì â base64
+	$string=base64_encode($dat);// base64
 $arr=array();
 $x=0;
 while ($x++< strlen($string)) {
-$arr[$x-1] = md5(md5($key.$string[$x-1]).$key);//Ïî÷òè ÷èñòûé md5
-$newstr = $newstr.$arr[$x-1][3].$arr[$x-1][6].$arr[$x-1][1].$arr[$x-1][2];//Ñêëåèâàåì ñèìâîëû
+$arr[$x-1] = md5(md5($key.$string[$x-1]).$key);//
+$newstr = $newstr.$arr[$x-1][3].$arr[$x-1][6].$arr[$x-1][1].$arr[$x-1][2];//
 }
 	return $newstr;
     }
 }
-?>
+

@@ -1,5 +1,5 @@
 <?php
-if(Registry::get('device') == 'computer' or (@$_COOKIE['mobil'] and $_COOKIE['mobil'] == 10)){ 
+if(Registry::get('device') == 'computer' or ($_COOKIE['mobil'] and $_COOKIE['mobil'] == 10)){ 
 $desctop = true;
 }else{
 $desctop = false;
@@ -33,7 +33,7 @@ $(".zxz_post p a.im").lightBox({
 <div class="col-lg-2 col-xl-2 d-none d-lg-block d-xl-block bg-white">
 <?php 
 		$d = date("Y-m-d H:i:s");
-		$post = wsActiveRecord::useStatic('Blog')->findAll(array("public"=>1, "ctime < '$d'"), array(), array(10));
+		$post = Blog::find('Blog',["public"=>1, "ctime < '$d'"], [], [10]);
 		?>
 				<p style="font-weight: bold;text-align: center;margin-top: 5px;"><?=$text_trans_blog[0]?></p>
 				<ul class="list-unstyled">
@@ -50,24 +50,25 @@ $(".zxz_post p a.im").lightBox({
 				</ul>
 			</div>
 <div class="col-md-12 col-lg-8 col-xl-8 ">
-	<div class="col-xs-12 col-md-12 col-xl-12 text-center m">
+	<div class="col-xs-12 col-md-12 col-xl-12 text-center m bg-white py-1">
 		<div class="btn-group" role="group" aria-label="Basic example">
 		<?php foreach ($this->blog_cat as $value) { ?>
 			<a href="/blog/?category=<?=$value->getId();?>" class="btn btn-secondary"><?=$value->getName();?></a>
 		<?php } ?>
 		</div>
 	</div>
-	<div class="col-md-12 p-2 m-1 bg-white">
-		<?php foreach ($this->onepostblog as $value) { ?>
+	<div class="col-md-12 p-3 bg-white ".>
+		
 			<div class="col-md-12 m-2">
-				<span style="color: darkgrey;font-size: 12px;margin-left: 1%;margin-right: 1%;"><?=$value->getUtime();?></span>|
-				<span style="color: darkgrey;font-size: 12px;margin-left: 1%;margin-right: 1%;"><?=$value->getAutor();?></span>
+				<span style="color: darkgrey;font-size: 12px;margin-left: 1%;margin-right: 1%;"><?=$this->onepostblog->getUtime();?></span>|
+				<span style="color: darkgrey;font-size: 12px;margin-left: 1%;margin-right: 1%;"><?=$this->onepostblog->getAutor();?></span>
 			</div> 
 			<div class="col-md-12 m-2 zxz_post">
-				<?=$value->getContentPost()?>
+				<?=$this->onepostblog->getContentPost()?>
 			</div>
-<?php if(@$this->onepostblog){?></br><div class="fb-like" data-href="https://<?=$_SERVER['HTTP_HOST'].'/blog/id/' .$value->getId();?>" data-layout="button" data-action="like" data-show-faces="true" data-share="true"></div><?php } ?>
-			<?php } ?>
+            <br>
+            <div class="fb-like" data-href="https://www.red.ua'/blog/id/' .$this->onepostblog->getId();?>" data-layout="button" data-action="like" data-show-faces="true" data-share="true"></div>
+			
 	</div>
 </div>			
 <div class="col-lg-2 col-xl-2 d-none d-lg-block d-xl-block bg-white">
@@ -82,11 +83,11 @@ $(".zxz_post p a.im").lightBox({
 </div>
 <script>
 (function(d, s, id) {
-console.log(d);
-console.log(s);
-console.log(id);
+//console.log(d);
+//console.log(s);
+///console.log(id);
                 var js, fjs = d.getElementsByTagName(s)[0];
-				console.log(fjs);
+				//console.log(fjs);
                 if (d.getElementById(id)) return;
                 js = d.createElement(s);
                 js.id = id;

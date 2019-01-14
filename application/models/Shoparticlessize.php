@@ -7,23 +7,11 @@
 
         protected function _defineRelations()
         {
-                    $this->_relations = array(
-					'size' => array(
-                                    'type'=>'hasOne',
-                                    'class'=>'Size',
-                                    'field'=>'id_size'), 
-                    'color' => array(
-                                     'type'=>'hasOne',
-                                     'class'=>'Shoparticlescolor',
-                                     'field'=>'id_color'),
-					'article_rod' => array(
-                                     'type'=>'hasOne',
-                                     'class'=>self::$_shop_articles_class,
-                                     'field'=>'id_article'),									 
-                                        
-                                        );
-   
+            $this->_relations = [
+                                    'size' => ['type'=>'hasOne', 'class'=>'Size', 'field'=>'id_size'], 
+                                    'color' => ['type'=>'hasOne', 'class'=>'Shoparticlescolor', 'field'=>'id_color'],
+                                    'article_rod' => ['type'=>'hasOne', 'class'=>self::$_shop_articles_class, 'field'=>'id_article']									       
+                                ];
 
         }
     }
-?>

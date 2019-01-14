@@ -49,7 +49,7 @@ if ($this->saved) {
 <p id="show_emails" style="display: none;font-size: 16px;font-weight: bold;">Список всех E-mail на которые уже разослано:</p>
 <div id="send_emails" style="display: none; width: 960px; max-height: 120px; overflow-y: scroll;border: 1px dashed #C00000;padding: 5px 10px;"></div>
 
-<script type="text/javascript">
+<script>
 	function loadArticles(category_id, i) {
 		var data_to_post = new Object();
 		data_to_post.id = category_id;
@@ -279,10 +279,10 @@ $( document ).ready(function() {
 		var ending = tinymce.get('page_ending').getContent().replace(/&/g,"#");
 var new_data = data + '&intro='+intro+'&ending='+ending+ '&save='+ save;
 
-			surl = url+"&"+new_data;
+			//surl = url+"&"+new_data;
 //		console.log(surl);
             $.ajax({
-                url: surl,
+                url: url,
                 type: 'POST',
                 dataType: 'json',
                 data: new_data,
@@ -304,10 +304,10 @@ var new_data = data + '&from_mail=' + send_mail + '&count=' + count +'&intro='+i
 
 //			console.log(new_data);
 //			url=url+"&"+new_data;
-			surl = url+"&"+new_data;
+			//var surl = url+"&"+new_data;
 //			console.log(surl);
             $.ajax({
-                url: surl,
+                url: url,
                 type: 'POST',
                 dataType: 'json',
                 data: new_data,
@@ -337,10 +337,10 @@ var new_data = data + '&from_mail=' + send_mail + '&count=' + count +'&intro='+i
 		var ending = tinymce.get('page_ending').getContent().replace(/&/g,"#");
 var new_data = data + '&from_mail=' + send_mail + '&count=' + count +'&intro='+intro+'&ending='+ending+ '&test='+ test;
 
-			surl = url+"&"+new_data;
+			//surl = url+"&"+new_data;
 //			console.log(surl);
             $.ajax({
-                url: surl,
+                url: url,
                 type: 'POST',
                 dataType: 'json',
                 data: new_data,

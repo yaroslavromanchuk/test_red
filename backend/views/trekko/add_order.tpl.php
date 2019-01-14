@@ -1,5 +1,4 @@
-<img src="<?php echo SITE_URL;?><?php echo $this->getCurMenu()->getImage();?>" alt="" width="32" class="page-img"
-     height="32"/>
+<img src="<?=SITE_URL.$this->getCurMenu()->getImage()?>" alt="" width="32" class="page-img" height="32"/>
 <h1><?php echo $this->getCurMenu()->getTitle();?></h1>
   <!--  <p><a href="/admin/shop-orders/edit/id/<?php //echo $this->getId();?>">К заказу</a></p>-->
 	<?php //$ttn = $this->order_trekko_edit; ?>
@@ -22,7 +21,7 @@
 <td><input style="width: 55px;" type="text" name="order" id="order" value="<?=$this->order_trekko_edit->id;?>"></td>
 <td><input style="" type="text" name="name" id="name" value="<?=$this->order_trekko_edit->middle_name.' '.$this->order_trekko_edit->name;?>"></td>
 <td><input style="width: 110px;" type="text" name="phone" id="phone" value="<?=$this->order_trekko_edit->telephone;?>"></td>
-<td><input style="" type="text" name="address" id="address" value="<?php echo 'г.'.$this->order_trekko_edit->getCity().', ул.'.$this->order_trekko_edit->getStreet().', д.'.$this->order_trekko_edit->getHouse().', кв.'.$this->order_trekko_edit->getFlat();?>"></td>
+<td><input style="" type="text" name="address" id="address" value="<?php echo 'г.'.$this->order_trekko_edit->getCity().', '.$this->order_trekko_edit->getStreet().', д.'.$this->order_trekko_edit->getHouse().', кв.'.$this->order_trekko_edit->getFlat();?>"></td>
 <td><input style="width: 75px;" type="text" name="delivery_date" id="delivery_date" value="<?=$this->order_trekko_edit->delivery_date;?>"></td>
 <td><input style="width: 100px;" type="text" name="delivery_interval" id="delivery_interval" value="<?=$this->order_trekko_edit->delivery_interval;?>"></td>
 <td><input style="width: 55px;" type="text" name="amount" id="amount" value="<?=$this->order_trekko_edit->amount;?>"></td>

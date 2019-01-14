@@ -23,16 +23,19 @@ class Customer extends wsCustomer
        // if($no_a_discint) {
             $a_discont = 0;
        // }
-
+              $sk = 0;
+              $sk1 = 0;
+              $sk2 = 0;
         if ($this->getSkidka()!=0) {
-            return $this->getSkidka()+$a_discont;
-        }else {
-			if ($current_order_id && $this->getId()){
+            $sk1 =  $this->getSkidka();
+        }
+	
+        if ($current_order_id && $this->getId()){
 				$amount = wsActiveRecord::useStatic('Customer')->findByQuery('
 				SELECT IF(SUM(price*count) IS NULL,0,SUM(price*count)) AS amount
 						FROM ws_order_articles
 						JOIN ws_orders ON ws_order_articles.order_id = ws_orders.id
-						WHERE ws_orders.customer_id = ' . $this->getId() . ' AND ws_orders.status IN (0,1,3,4,6,8,9,10,11,13,14,15,16) AND ws_orders.id <=' . $current_order_id)->at(0)->getAmount();
+						WHERE ws_orders.customer_id = ' . $this->getId() . ' AND ws_orders.status IN (100,1,3,4,6,8,9,10,11,13,14,15,16) AND ws_orders.id <=' . $current_order_id)->at(0)->getAmount();
 
 
 
@@ -42,7 +45,7 @@ class Customer extends wsCustomer
 				SELECT IF(SUM(price*count) IS NULL,0,SUM(price*count)) AS amount
 						FROM ws_order_articles
 						JOIN ws_orders ON ws_order_articles.order_id = ws_orders.id
-				WHERE ws_orders.customer_id = ' . $this->getId() . ' AND ws_orders.status IN (0,1,3,4,6,8,9,10,11,13,14,15,16) ')->at(0)->getAmount();
+				WHERE ws_orders.customer_id = ' . $this->getId() . ' AND ws_orders.status IN (100,1,3,4,6,8,9,10,11,13,14,15,16) ')->at(0)->getAmount();
 
 			}else{
 				$amount = 0;
@@ -50,15 +53,21 @@ class Customer extends wsCustomer
 				$amount += $plus;
 
 			if ($amount <= 700){
-				return 0+$a_discont;
+				$sk2 =  0+$a_discont;
 			}elseif($amount > 700 && $amount <= 5000 ){//5%
-				return 5+$a_discont;
+				$sk2 =  5+$a_discont;
 			}elseif($amount > 5000 && $amount <= 12000){//10%
-				return 10+$a_discont;
+				$sk2 =  10+$a_discont;
 			}elseif($amount > 12000){//15%
-				return 15+$a_discont;
+				$sk2 =  15+$a_discont;
 			}
+        
+        if($sk2 > $sk1){
+            $sk = $sk2;
+        }else{
+             $sk = $sk1;
         }
+        return $sk;
 	}
         
        /**
@@ -184,49 +193,72 @@ class Customer extends wsCustomer
     }
 
 	
-    public function getCountAllOrder(){
+    public function getCountAllOrder()
+            {
 		 $co = wsActiveRecord::findByQueryFirstArray('SELECT COUNT(id) as c FROM `ws_orders` WHERE customer_id='.$this->getId().' and status !=17 ');
 		return $co['c'];
-    }
-	public function getCountAllArticlesOrder(){
-		 $co = wsActiveRecord::findByQueryFirstArray('SELECT SUM( IF(  `ws_order_articles`.`count` >0,  `ws_order_articles`.`count` , 1 ) ) AS suma
-FROM  `ws_order_articles` 
-JOIN  `ws_orders` ON  `ws_order_articles`.`order_id` =  `ws_orders`.`id` 
-WHERE  `ws_orders`.`customer_id` ='.$this->getId());
+            }
+    public function getCountAllArticlesOrder()
+            {
+		$co = wsActiveRecord::findByQueryFirstArray('
+                    SELECT SUM( IF(  `ws_order_articles`.`count` >0,  `ws_order_articles`.`count` , 1 ) ) AS suma
+                    FROM  `ws_order_articles` 
+                    JOIN  `ws_orders` ON  `ws_order_articles`.`order_id` =  `ws_orders`.`id` 
+                    WHERE  `ws_orders`.`customer_id` ='.$this->getId());
+                
 		return $co['suma'];
-    }
-	public function getCountFactOrder(){
+            }
+    /**
+     * 
+     * @return int - количество фактических заказов текущего клиента
+     */
+    public function getCountFactOrder(){
 		 $co = wsActiveRecord::findByQueryFirstArray('SELECT COUNT(id) as c FROM `ws_orders` WHERE customer_id='.$this->getId().' and status not in(17,7,2)');
 		return $co['c'];
     }
     /**
      * 
-     * @return type
+     * @return int  - количество фактических товаров в заказаз тепкущего клиента
      */
-	public function getCountFactArticlesOrder(){
-		 $co = wsActiveRecord::findByQueryFirstArray('SELECT SUM(`ws_order_articles`.`count`) AS suma
-FROM  `ws_order_articles` 
-JOIN  `ws_orders` ON  `ws_order_articles`.`order_id` =  `ws_orders`.`id` 
-WHERE  `ws_orders`.`customer_id` ='.$this->getId());
+	public function getCountFactArticlesOrder()
+                {
+		 $co = wsActiveRecord::findByQueryFirstArray('
+                    SELECT SUM(`ws_order_articles`.`count`) AS suma
+                    FROM  `ws_order_articles` 
+                    JOIN  `ws_orders` ON  `ws_order_articles`.`order_id` =  `ws_orders`.`id` 
+                    WHERE  `ws_orders`.`customer_id` ='.$this->getId());
+                 
 		return $co['suma'];
-    }
+                }
     
     /**
      * @getSumOrder() - сумма всех заказов с учетом депозита
+     * @return float - сумма заказов текущего пользователя (с учетом депозита)
      */
 	public function getSumOrder(){
-		 $co = wsActiveRecord::findByQueryFirstArray('SELECT SUM(`ws_orders`.`amount`+`ws_orders`.`deposit`) AS suma FROM  `ws_orders` 
-WHERE  `ws_orders`.`customer_id` ='.$this->getId());
+		 $co = wsActiveRecord::findByQueryFirstArray('
+                    SELECT SUM(`ws_orders`.`amount`+`ws_orders`.`deposit`) AS suma 
+                    FROM  `ws_orders` 
+                    WHERE  `ws_orders`.`customer_id` ='.$this->getId());
+                 
 		return $co['suma'];
     }
     
     /**
      * @getDateOrderP - дата последнего заказа
-     * @return string 
+     * @return string  - (2018-09-28 13:19:44)
     */
 	public function getDateOrderP(){
-		 $co = wsActiveRecord::useStatic('Shoporders')->findFirst(array('customer_id'=>$this->getId()),array('id' => 'DESC'))->date_create;
-		return $co;
+
+           $co =  Shoporders::findByQueryFirstArray('
+                    SELECT date_create 
+                    FROM `ws_orders`
+                    WHERE  `ws_orders`.`customer_id` ='.$this->getId().' 
+                    ORDER BY  `id` DESC 
+                    LIMIT 1');
+		 //$co = wsActiveRecord::useStatic('Shoporders')->findFirst(['customer_id'=>$this->getId()],['id' => 'DESC'])->date_create;
+                 
+		return $co['date_create'];
     }
     
 	

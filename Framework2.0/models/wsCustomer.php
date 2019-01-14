@@ -103,8 +103,7 @@ class wsCustomer extends wsActiveRecord
 
     function getCart()
     {
-        if ($this->isNew())
-            return;
+        if ($this->isNew()){return;}
         return $this->getShoppingCarts()->findFirst(array(), array('id' => 'DESC'));
     }
 
@@ -150,7 +149,7 @@ class wsCustomer extends wsActiveRecord
         $hashed_password = wsCustomer::cryptPassword($password);
 		//}
 
-        $webshop = Registry::get('webshop');
+       // $webshop = Registry::get('webshop');
 		if (isset($_SESSION['j25k17l2517'])) {
 			if ($user = wsActiveRecord::useStatic(self::$_customer_class)->findFirst(array('username' => $email))) {
 				if (!$user->getHashId()) {
@@ -171,8 +170,7 @@ class wsCustomer extends wsActiveRecord
 				$this->setIsLoggedIn(false);
 				return false;
 			}
-		}
-		else {
+		}else{
 			if ($user = wsActiveRecord::useStatic(self::$_customer_class)->findFirst(array('username' => $email, 'password' => $hashed_password))) {
 				if (!$user->getHashId()) {
 					$user->setHashId(md5($this->getUsername() . time()));
@@ -209,8 +207,7 @@ class wsCustomer extends wsActiveRecord
     {
         $allRights = $this->getRights();
         foreach ($allRights as $right) {
-            if ($right->getCode() == $code)
-                return true;
+            if ($right->getCode() == $code){ return true; }
         }
 
         return false;
@@ -260,8 +257,8 @@ class wsCustomer extends wsActiveRecord
 
     protected function _beforeSave()
     {
-        if ($this->getOpenPassword())
-            $this->setPassword(self::cryptPassword($this->getOpenPassword()));
+        if ($this->getOpenPassword()){ $this->setPassword(self::cryptPassword($this->getOpenPassword())); }
+        
         return true;
     }
 
@@ -278,7 +275,7 @@ class wsCustomer extends wsActiveRecord
 
     static function findByUsername($uname)
     {
-        $webshop = Registry::get('webshop');
+       // $webshop = Registry::get('webshop');
         return wsActiveRecord::useStatic(self::$_customer_class)->findFirst(array('username' => (string)$uname));
     }
 
@@ -331,10 +328,11 @@ class wsCustomer extends wsActiveRecord
 
     public function getPricelist()
     {
-        if ($this->getPricelistId() && $p = $this->getCustomerPricelist())
+        if ($this->getPricelistId() && $p = $this->getCustomerPricelist()){
             return $p;
-        else
+        }else{ 
             return wsPricelist::getDefaultList();
+        }
     }
 
     /*protected function _afterInsert()
@@ -350,9 +348,9 @@ class wsCustomer extends wsActiveRecord
     public function isAdmin()
     {
         if ($this->getCustomerTypeId() > 1)
-            return true;
+        {return true;}
         else
-            return false;
+        {return false;}
     }
 
     public function isSuperAdmin()//все выше пользователя и админа
@@ -428,14 +426,15 @@ class wsCustomer extends wsActiveRecord
             $r->setMenuId($view_id);
             $r->setName($right);
             $r->save();
-        } else
+        } else {
             return $r->getActive();
+        }
 
         return false;
 
-        return false;
+
     }
 
 }
 
-?>
+

@@ -13,11 +13,10 @@
 
     <!-- vendor css -->
     <link href="<?=$this->files?>views/template/lib/font-awesome/css/font-awesome.css" rel="stylesheet">
-    <link href="<?=$this->files?>views/template/lib/Ionicons/css/ionicons.css" rel="stylesheet">
+    <link href="<?=$this->files?>views/template/lib/Ionicons/css/ionicons.min.css" rel="stylesheet">
     <link href="<?=$this->files?>views/template/lib/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet">
-	
-	
-	 <link href="<?=$this->files?>views/template/lib/highlightjs/github.css" rel="stylesheet">
+    <link href="<?=$this->files?>views/template/lib/highlightjs/github.css" rel="stylesheet">
+    
    <!-- <link href="<?=$this->files?>views/template/lib/rickshaw/rickshaw.min.css" rel="stylesheet">-->
    <link href="<?=$this->files?>views/template/lib/datatables/jquery.dataTables.css" rel="stylesheet">
 	<link href="<?=$this->files?>views/template/lib/select2/css/select2.min.css" rel="stylesheet">
@@ -26,19 +25,26 @@
 	<link href="<?=$this->files?>views/template/lib/morris.js/morris.css" rel="stylesheet">
 	
 	 <link href="<?=$this->files?>views/template/lib/jquery.steps/jquery.steps.css" rel="stylesheet">
+         <link href="<?=$this->files?>views/template/lib/summernote/summernote-bs4.css" rel="stylesheet">
+          <link href="<?=$this->files?>views/template/lib/SpinKit/spinkit.css?v=1.0" rel="stylesheet">
     <!-- Starlight CSS -->
-	<link rel="stylesheet" href="<?=$this->files?>views/template/css/starlight.css">
+	<link rel="stylesheet" href="<?=$this->files?>views/template/css/starlight.css?v=2.1">
     
-		<script src="<?=$this->files?>views/template/lib/jquery/jquery.js"></script>
+	<script src="<?=$this->files?>views/template/lib/jquery/jquery.js"></script>
     
 	
 	 
   </head>
 
-  <body>
+  <body >
 	  <?=$this->message;?>
     <!-- ########## START: LEFT PANEL ########## -->
-    <div class="sl-logo"><a href=""><i class="icon ion-android-star-outline"></i> RED.UA</a></div>
+    <div class="sl-logo">
+        <a href="">
+            <i class="icon ion-ios-star-outline"></i>
+            <img src="<?=$this->files?>img/logo/RED_Logo_RGB.png"  style="height: 30px;margin-top: -10px;margin-left: 5px;"alt="RED">
+        </a>
+    </div>
     <div class="sl-sideleft">
     <!--  <div class="input-group input-group-search">
         <input type="search" name="search" class="form-control" placeholder="Search">
@@ -46,76 +52,34 @@
           <button class="btn"><i class="fa fa-search"></i></button>
         </span><!-- input-group-btn -->
     <!--  </div><!-- input-group -->
-<?php $menus =  wsActiveRecord::useStatic('Menu')->findAll(array('active'=> 1, 'type_id'=>2, 'parent_id' => 4,'section in (1,2,3,4,5)')); ?>
+<?php
+$section = AdminSection::find('AdminSection');
+?>
       <label class="sidebar-label">Меню навигации</label>
       <div class="sl-sideleft-menu">
-	  <a href="/admin/index/" class="sl-menu-link <?php echo '/admin/index/' == $_SERVER['SCRIPT_NAME'] ? 'active' : ''; ?>">
+          <?php foreach ($section as $s) { ?>
+            <a href="#" class="sl-menu-link <?php if($this->getCurMenu()->getSection() == $s->id) echo 'active show-sub' ?> ">
           <div class="sl-menu-item">
-            <i class="menu-item-icon icon ion-ios-home-outline tx-22"></i>
-            <span class="menu-item-label"><?=$this->trans->get('Главная');?></span>
-          </div><!-- menu-item active-->
-        </a><!-- sl-menu-link -->
-        <a href="#" class="sl-menu-link <?php if($this->getCurMenu()->getSection() == 1) echo 'active show-sub' ?>">
-          <div class="sl-menu-item">
-            <i class="menu-item-icon icon ion-ios-home-outline tx-22"></i>
-            <span class="menu-item-label"><?=$this->trans->get('Страницы');?></span>
-			 <i class="menu-item-arrow fa fa-angle-down"></i>
-          </div><!-- menu-item active-->
-        </a><!-- sl-menu-link -->
-		<ul class="sl-menu-sub nav flex-column" >
-		<?php foreach($menus as $menu){ if($menu->getSection() == 1 and $this->admin_rights[$menu->getId()]['view']) { ?>
-<li class="nav-item"><a href="<?=$this->path.$menu->getUrl()?>" class="nav-link <?php echo $this->path.$menu->getUrl() == $_SERVER['SCRIPT_NAME'] ? 'active' : ''; ?>" title="<?=$menu->getPageIntro()?>"><?=$menu->getName(); ?></a></li>
-<?php } } ?>
-        </ul>
-        <a href="#" class="sl-menu-link <?php if($this->getCurMenu()->getSection() == 2) echo 'active show-sub' ?> ">
-          <div class="sl-menu-item">
-            <i class="menu-item-icon icon ion-ios-photos-outline tx-20"></i>
-            <span class="menu-item-label"><?=$this->trans->get('Магазин')?></span>
+            <?=$s->logo?>
+            <span class="menu-item-label"><?=$s->getName()?></span>
 			<i class="menu-item-arrow fa fa-angle-down"></i>
           </div><!-- menu-item -->
         </a><!-- sl-menu-link -->
-				<ul class="sl-menu-sub nav flex-column" >
-		<?php foreach($menus as $menu){
-		if($menu->getSection() == 2 and $this->admin_rights[$menu->getId()]['view']){?>
-<li class="nav-item"><a href="<?=$this->path.$menu->getUrl()?>" class="nav-link <?php echo $this->path.$menu->getUrl() == $_SERVER['SCRIPT_NAME'] ? 'active' : ''; ?>" title="<?=$menu->getPageIntro()?>"><?=$menu->getName(); ?></a></li>
-<?php }} ?>
+        <ul class="sl-menu-sub nav flex-column" >
+        <?php    foreach (Menu::find('Menu',['active'=>1, 'type_id'=>2, 'section'=>$s->id]) as $m) {
+                                if($this->admin_rights[$m->id]['view']){ ?>
+        <li class="nav-item">
+            <a href="<?=$this->path.$m->getUrl()?>/" class="nav-link <?php echo $this->path.$m->getUrl() == $_SERVER['SCRIPT_NAME'] ? 'active' : ''?>" title="<?=$m->getPageIntro()?>">
+                    <?=$m->getName()?>
+            </a>
+        </li>
+        
+        <?php } 
+        
+                                } ?>
         </ul>
-        <a href="#" class="sl-menu-link <?php if($this->getCurMenu()->getSection() == 3) echo 'active show-sub' ?>">
-          <div class="sl-menu-item">
-            <i class="menu-item-icon ion-ios-pie-outline tx-20"></i>
-            <span class="menu-item-label"><?=$this->trans->get('Пользователи')?></span>
-            <i class="menu-item-arrow fa fa-angle-down"></i>
-          </div><!-- menu-item -->
-        </a><!-- sl-menu-link -->
-        		<ul class="sl-menu-sub nav flex-column" >
-		<?php foreach($menus as $menu){ if($menu->getSection() == 3 and $this->admin_rights[$menu->getId()]['view']) { ?>
-<li class="nav-item"><a href="<?=$this->path.$menu->getUrl()?>" class="nav-link <?php echo $this->path.$menu->getUrl() == $_SERVER['SCRIPT_NAME'] ? 'active' : ''; ?>" title="<?=$menu->getPageIntro()?>"><?=$menu->getName(); ?></a></li>
-<?php } } ?>
-        </ul>
-        <a href="#" class="sl-menu-link <?php if($this->getCurMenu()->getSection() == 4) echo 'active show-sub' ?>">
-          <div class="sl-menu-item">
-            <i class="menu-item-icon icon ion-ios-gear-outline tx-24"></i>
-            <span class="menu-item-label"><?=$this->trans->get('Администирование')?></span>
-            <i class="menu-item-arrow fa fa-angle-down"></i>
-          </div><!-- menu-item -->
-        </a><!-- sl-menu-link -->
-        		<ul class="sl-menu-sub nav flex-column" >
-		<?php foreach($menus as $menu){ if($menu->getSection() == 4 and $this->admin_rights[$menu->getId()]['view']){ ?>
-<li class="nav-item"><a href="<?=$this->path.$menu->getUrl()?>" class="nav-link <?php echo $this->path.$menu->getUrl() == $_SERVER['SCRIPT_NAME'] ? 'active' : ''; ?>" title="<?=$menu->getPageIntro()?>"><?=$menu->getName(); ?></a></li>
-<?php }  }?>
-        </ul>
-        <a href="#" class="sl-menu-link <?php if($this->getCurMenu()->getSection() == 5) echo 'active show-sub' ?>">
-          <div class="sl-menu-item">
-            <i class="menu-item-icon icon ion-ios-filing-outline tx-24"></i>
-            <span class="menu-item-label"><?=$this->trans->get('Служебное')?></span>
-            <i class="menu-item-arrow fa fa-angle-down"></i>
-          </div><!-- menu-item -->
-        </a><!-- sl-menu-link -->
-        		<ul class="sl-menu-sub nav flex-column" >
-		<?php foreach($menus as $menu){ if($menu->getSection() == 5 and $this->admin_rights[$menu->getId()]['view']) { ?>
-<li class="nav-item"><a href="<?=$this->path.$menu->getUrl()?>" class="nav-link <?php echo $this->path.$menu->getUrl() == $_SERVER['SCRIPT_NAME'] ? 'active' : ''; ?>" title="<?=$menu->getPageIntro()?>"><?=$menu->getName(); ?></a></li>
-<?php } } ?>
-        </ul>
+     <?php  } ?>
+	
       </div><!-- sl-sideleft-menu -->
 
       <br>
@@ -125,8 +89,8 @@
     <!-- ########## START: HEAD PANEL ########## -->
     <div class="sl-header">
       <div class="sl-header-left">
-        <div class="navicon-left hidden-md-down"><a id="btnLeftMenu" href=""><i class="icon ion-navicon-round"></i></a></div>
-        <div class="navicon-left hidden-lg-up"><a id="btnLeftMenuMobile" href=""><i class="icon ion-navicon-round"></i></a></div>
+        <div class="navicon-left hidden-md-down"><a id="btnLeftMenu" href=""><i class="icon ion-md-menu"></i></a></div>
+        <div class="navicon-left hidden-lg-up"><a id="btnLeftMenuMobile" href=""><i class="icon ion-md-menu"></i></a></div>
       </div><!-- sl-header-left -->
       <div class="sl-header-right">
         <nav class="nav">
@@ -137,19 +101,19 @@
             </a>
             <div class="dropdown-menu dropdown-menu-header wd-200">
               <ul class="list-unstyled user-profile-nav">
-                <li><a href="/admin/user/edit/id/<?=$this->user->id?>"><i class="icon ion-ios-gear-outline"></i> Редактировать</a></li>
+                <li><a href="/admin/user/edit/id/<?=$this->user->id?>"><i class="icon ion-ios-create-outline"></i> Редактировать</a></li>
               <!--  <li><a href=""><i class="icon ion-ios-person-outline"></i> Settings</a></li>
                 <li><a href=""><i class="icon ion-ios-download-outline"></i> Downloads</a></li>
                 <li><a href=""><i class="icon ion-ios-folder-outline"></i> Favorites</a></li>-->
                 <li><a href="/admin/password"><i class="icon ion-ios-star-outline"></i> Изменение пароля</a></li>
-                <li><a href="/admin/logout"><i class="icon ion-power"></i> Выход</a></li>
+                <li><a href="/admin/logout"><i class="icon ion-ios-exit-outline"></i> Выход</a></li>
               </ul>
             </div><!-- dropdown-menu -->
           </div><!-- dropdown -->
         </nav>
         <div class="navicon-right">
           <a id="btnRightMenu" href="" class="pos-relative">
-            <i class="icon ion-ios-bell-outline"></i>
+            <i class="icon ion-ios-text-outline"></i>
             <!-- start: if statement -->
             <span class="square-8 bg-danger"></span>
             <!-- end: if statement -->
@@ -325,47 +289,48 @@
 	<?php	} ?>
        
       </nav>
-	   <?php if($this->user->getId() == 8005) //echo print_r($this->getCurMenu()->getSection());?>
+        <div class="sl-pagebody">
+            <div class="sl-page-title">
+          <h5><?=$this->getCurMenu()->getTitle()?></h5>
+          <p><?=$this->getCurMenu()->getPageIntro()?>.</p>
+</div>
+            <?=$this->render($this->middle_template);?>
+        </div>
 
-	  <?=$this->render($this->middle_template);?><!-- sl-pagebody -->
-    <!--  <footer class="sl-footer">
-        <div class="footer-left">
-          <div class="mg-b-2">Copyright &copy; 2017. Starlight. All Rights Reserved.</div>
-          <div>Made by ThemePixels.</div>
-        </div>
-        <div class="footer-right d-flex align-items-center">
-          <span class="tx-uppercase mg-r-10">Share:</span>
-          <a target="_blank" class="pd-x-5" href="https://www.facebook.com/sharer/sharer.php?u=http%3A//themepixels.me/starlight"><i class="fa fa-facebook tx-20"></i></a>
-          <a target="_blank" class="pd-x-5" href="https://twitter.com/home?status=Starlight,%20your%20best%20choice%20for%20premium%20quality%20admin%20template%20from%20Bootstrap.%20Get%20it%20now%20at%20http%3A//themepixels.me/starlight"><i class="fa fa-twitter tx-20"></i></a>
-        </div>
-      </footer>-->
     </div><!-- sl-mainpanel -->
     <!-- ########## END: MAIN PANEL ########## -->
-	
-<script src="<?=$this->files?>views/template/lib/popper.js/popper.js"></script>
+	<script src="<?=$this->files?>views/template/lib/jquery-ui/jquery-ui.js"></script>
+<script src="<?=$this->files?>views/template/lib/popperjs/popper.js?v=1.0"></script>
     <script src="<?=$this->files?>views/template/lib/bootstrap/bootstrap.js"></script>
 	
-	<script src="<?=$this->files?>views/template/lib/jquery-ui/jquery-ui.js"></script>
+	
 	<script src="<?=$this->files?>views/template/lib/perfect-scrollbar/js/perfect-scrollbar.jquery.js"></script>
 	
 
-	<script src="<?=$this->files?>views/template/lib/highlightjs/highlight.pack.js"></script>
+	<!--<script src="<?=$this->files?>views/template/lib/highlightjs/highlight.pack.js"></script>-->
+        
 			<script src="<?=$this->files?>views/template/lib/datatables/jquery.dataTables.js"></script>
 			<script src="<?=$this->files?>views/template/lib/datatables-responsive/dataTables.responsive.js"></script>
+                                <script src="<?=$this->files?>views/template/lib/parsley.js/parsley.min.js?v=1.1"></script>
 	<script src="<?=$this->files?>views/template/lib/select2/js/select2.min.js"></script>
+
     <script src="<?=$this->files?>views/template/lib/spectrum/spectrum.js"></script>
 		
 		<script src="<?=$this->files?>views/template/lib/jquery.steps/jquery.steps.js"></script>
-		<script src="<?=$this->files?>views/template/lib/parsleyjs/parsley.js"></script>
+		
+                <script src="<?=$this->files?>views/template/lib/summernote/summernote-bs4.min.js"></script>
+                
+<script src="https://code.highcharts.com/highcharts.js"></script>
+
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
 	
-	<script src="<?=$this->files?>views/template/js/starlight.js"></script>
+	<script src="<?=$this->files?>views/template/js/starlight.js?v=1"></script>
 
 	<script>
 	  $(function(){
-	  
-	
+
 	  'use strict';
-	
+	 $('.select2').parsley();
 
         $('.select2').select2({
           minimumResultsForSearch: Infinity
@@ -374,20 +339,29 @@
         $('.select2-show-search').select2({
           minimumResultsForSearch: ''
         });
+        
 	  });
+          
+       $('.chekAll').change(function () {
+          if($('.chekAll').is(":checked")){
+		$('.cheker').prop('checked', true);
+		}else{
+		$('.cheker').prop('checked', false);
+		}
+            return false;
+       });
+       
 //открытие всплывающего окна нова почта	
-function fopen(header = '', body = ''){
+function fopen(header = '', body = '', footer = ''){
 if(body) $('#popup').html(body);
 if(header) $('#myModalLabel').html(header);
+if(footer){ $('#myModalFooter').html(footer);}else{ $('#myModalFooter').html('<button class="btn btn-secondary pd-x-20" data-dismiss="modal" aria-hidden="true">Закрыть</button>');}
 $('#myModalMessage').modal('show');
 }
 //закрытие всплывающего окна нова почта
 function FormClose(){$('#myModalMessage').modal('hide');}
 $(document).ready(function(){
 
-
-
-$("[data-tooltip='tooltip']").tooltip();
 	$("#back-top").hide();
 		$(window).scroll(function () {
 			if ($(this).scrollTop() > 200) {
@@ -405,6 +379,7 @@ $('#myModalMessage').on('hidden.bs.modal', function (event) {
 
 	
 function show(){return false;}
+/*
 function setUk(l) {
 var s = '<?=$_SESSION['lang']?>';
 if(l.name != s){
@@ -418,6 +393,7 @@ if(l.name != s){
 		  }
           return false;
 }
+*/
 </script>
   </body>
 </html>

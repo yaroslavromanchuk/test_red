@@ -1,106 +1,134 @@
 ﻿
-$(function () {
+//$(function () {
+    //console.log('&'.charCodeAt(0));
 //if (window.location.hash){ parseHash(); }
-//console.log(window.location.pathname);
-console.log(window.location.search.indexOf("s"));
+console.log(window.location);
+//console.log(window.location.search.indexOf("s"));
 
 //br = window.location.pathname.indexOf("brandss");
 //br.find('brands');
 //console.log(br);
-});
-function parseHash() {
-	var hash = window.location.hash;
-	var page = /page=(\d+)/.exec(hash);
-	var order_by = /order_by=(\d+)/.exec(hash);
-	if (page == null) {
-		page = 0;
-	} else {
-		page = page[1];
-	}
-	$('#current_page').val(page - 2);
-	if (order_by == null) {
-		$('#order_by').val('');
-	} else {
-		$('#order_by').val(order_by[1]);
-	}
-	
-	goSearch();
-}
-
-
+//console.log(location);
+//return false;
+//});
 
 //новые фильтры
 function ToPage(page) {//пагинация по страницам
 	//$('#current_page').val(p - 2);
 	//change_page_hash = true;
 	//console.log(page);
+        console.log(window.location);
 	$('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
-	gatfilterSelected((page-1));
+var get_page = '';
+if($('#search_word').val()){
+    get_page += 's='+$('#search_word').val()+'&';
+}
+    if($('#order_by option:selected').val()){
+       get_page += 'order_by='+$('#order_by option:selected').val();  
+       if(page > 1){
+           get_page +='&page='+(page-1);
+       }
+        }else if(page > 1){
+            get_page +='page='+(page-1);
+            
+        }
+
+        //console.log(get_page);
+        if(get_page != ''){
+    location.search = get_page;
+        }else{
+           location.href = location.pathname;
+        }
+    //gatfilterSelected((page-1));
 	return false;
 }
 
-function sorter(page) {//сортировать товар на сайте
-	gatfilterSelected(page);
+function sorter(e, p) {//сортировать товар на сайте
+   // console.log(e.value);
+    var  order_by = '';
+   if($('#search_word').val()){
+    order_by += 's='+$('#search_word').val()+'&';
+}
+    order_by += 'order_by='+e.value;
+    if(p > 0){
+       order_by += '&page='+p;
+    }
+    
+     if(order_by != ''){
+    location.search = order_by;
+        }else{
+           location.href = location.pathname;
+        }
+   // location.search = order_by;
+	//gatfilterSelected(page);
 }
 function gatfilterSelected(page) {//вызов фильтра товаров
-if(!page){
-current_page = $('#current_page').val();
-	if (current_page == 0) 
-		{ 
-			page = current_page;
-		}
-	else
-		{
-			page =current_page-1;
-		}
- //page = parseInt($('#current_page').val()-1);
- }
- //console.log(page);
- //return false;
 var gettext = [];
-if($('#search_word').val()) gettext.push('s='+$('#search_word').val());
-
 c = []; 
 		$('.c_category:checked').each(function () {c.push($(this).val());});
-		if(c.length > 0) gettext.push('categories='+c.join(','));
+		if(c.length > 0) gettext.push('categories-'+c.join(','));
 c = [];
 		$('.c_brand:checked').each(function () {c.push($(this).val());});
-		if(c.length > 0 && window.location.pathname.indexOf("brands") < 0) gettext.push('brands='+c.join(','));
+		if(c.length > 0 ) gettext.push('brands-'+c.join(','));
 c = [];
 		$('.c_sezon:checked').each(function () { c.push($(this).val());});
-		if(c.length > 0) gettext.push('sezons='+c.join(','));
+		if(c.length > 0) gettext.push('sezons-'+c.join(','));
 c = [];
 		$('.s_size:checked').each(function () { c.push($(this).val());});
-		if(c.length > 0) gettext.push('sizes='+c.join(','));
+		if(c.length > 0) gettext.push('sizes-'+c.join(','));
 c = [];
 		$('.c_color:checked').each(function () { c.push($(this).val());});
-		if(c.length > 0) gettext.push('colors='+c.join(','));
+		if(c.length > 0) gettext.push('colors-'+c.join(','));
 c = [];
 		$('.c_label:checked').each(function () { c.push($(this).val());});
-		if(c.length > 0) gettext.push('labels='+c.join(','));
+		if(c.length > 0) gettext.push('labels-'+c.join(','));
 c = [];
 		$('.c_skidka:checked').each(function () {c.push($(this).val());});
-		if(c.length > 0) gettext.push('skidka='+c.join(','));
+		if(c.length > 0) gettext.push('skidka-'+c.join(','));
+
+		if($('#minCost').val()) gettext.push('price_min-'+$('#minCost').val());
+		if($('#maxCost').val()) gettext.push('price_max-'+$('#maxCost').val());
 		
-		if($('#minCost').val()) gettext.push('price_min='+$('#minCost').val());
-		if($('#maxCost').val()) gettext.push('price_max='+$('#maxCost').val());
+                var search = '';
+		if($('#search_word').val()){
+                    search = '?s='+$('#search_word').val();
+                   // gettext.push('?s='+$('#search_word').val());
+                }	
 		
-			
+//if($('#order_by option:selected').val()) {
+    //gettext.push('order_by/'+$('#order_by option:selected').val()+'/');
+    //sear.push('order_by='+$('#order_by option:selected').val());
+//}
 		
-		if($('#order_by option:selected').val()) gettext.push('order_by='+$('#order_by option:selected').val());
-		
-		gettext.push('page='+page);
-		if(gettext.length == 0){ $('#foo').detach(); return false; }
-		gettext = gettext.join('&');
-		$('#current_page').val(page);
+		//if(page > 0) {
+                    //gettext.push('page/'+page);
+                  //  sear.push('page='+page);
+               // }
+                
+		//if(gettext.length === 0 && sear.length === 0){
+                //    $('#foo').detach(); 
+                //    return false; 
+               // }
+		//gettext = 
+                
+              //  if(sear.length > 0){
+               //sear = sear.join('&');
+             // gettext += '?'+sear.join('&');
+          // / console.log(sear);
+           // }
+                
+		//$('#current_page').val(page);
 		//console.log(gettext);
 		$('.caregory_footer').hide();
-			return window.location.search = '?'+gettext;
-		$('#foo').detach();
-return false;
+               // var g_url = '';
+                //if($('#g_url').val()){ g_url = $('#g_url').val();}
+		location.href = "https://www.red.ua"+$('#g_url').val()+gettext.join('-')+search;
+		//location.search = search;
+		//window.location;
+		//$('#foo').detach();
 }
 function clearallfilters(){// уочистка фильтров
-window.location.search = '';
+window.location.pathname = $('#g_url').val();
 return false;
 }
 //выход с новых фильтров
@@ -334,6 +362,6 @@ function but_val_new(obj) {
 
 //sessionStorage['items_on_page'] = obj.val();
 	//prepareSearchToPage(1, 0);
-	gatfilterSelected(0);
+	gatfilterSelected();
 	return false;
 }

@@ -27,7 +27,7 @@ if (isset($_COOKIE["SAuid"]) && isset($_COOKIE["utm_source"]) && $_COOKIE["utm_s
 ?>
 <div style="text-align:center;">
 <p><span style="font-size: 13px;"><?=$this->trans->get('Ваш заказ успешно оформлен. В течение нескольких минут Вы получите sms и e-mail со сведениями о заказе')?>.</span></p>
-<?php if(@$_SESSION['pay']){ ?>
+<?php if($_SESSION['pay']){ ?>
 <form action="https://lmi.paysoft.solutions" method="POST" name="payment_form" id="payment_form">
 <div class="row">
 <div class="col-xs-10 col-xs-offset-1">
@@ -64,7 +64,7 @@ if (isset($_COOKIE["SAuid"]) && isset($_COOKIE["utm_source"]) && $_COOKIE["utm_s
 	</div>
 </form>
 <?php  unset($_SESSION['pay']);?>
-<script type="text/javascript">
+<script>
 	document.forms.payment_form.submit();
 </script>
 <?php }else{ ?>

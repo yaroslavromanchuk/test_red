@@ -1,5 +1,4 @@
-<img src="<?php echo SITE_URL;?><?php echo $this->getCurMenu()->getImage();?>" alt="" width="32" class="page-img"
-     height="32"/>
+<img src="<?=$this->getCurMenu()->getImage()?>" alt="" width="32" class="page-img"height="32"/>
 <h1><?php echo $this->getCurMenu()->getTitle();?> </h1>
 <?php echo $this->getCurMenu()->getPageBody(); ?>
 
@@ -17,29 +16,20 @@
         ?>
         <li><?php echo $error;?></li>
         <?php
-
     }
         ?>
     </ul>
 </div>
         <?php
-
 }
-
-if ($this->saved) {
-    ?>
+if ($this->saved){ ?>
 <div id="pagesaved">
-    <img src="<?php echo SITE_URL;?>/img/icons/accept.png" alt="" width="32" height="32" class="page-img"/>
-
+    <img src="<?=SITE_URL?>/img/icons/accept.png" alt="" width="32" height="32" class="page-img"/>
     <h1>Данные успешно сохранены</h1>
 </div>
-<?php
+<?php } ?>
 
-}
-?>
-
-<form method="post" action="<?php echo $this->path;?>homeblock/edit/<?php echo $this->block->getId();?>/"
-      enctype="multipart/form-data">
+<form method="post" action="<?=$this->path?>homeblock/edit/<?=$this->block->getId()?$this->block->getId().'/':''?>" enctype="multipart/form-data">
     <table id="editpage" cellpadding="5" cellspacing="0">
 
         <tr>
@@ -117,6 +107,6 @@ if ($this->saved) {
 
 
     <p>
-        <input type="submit" class="buttonps" name="savepage" id="savepage" value="Сохранить блок"/>
+        <input type="submit" class="btn" name="savepage" id="savepage" value="Сохранить блок"/>
     </p>
 </form>

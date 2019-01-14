@@ -1,5 +1,7 @@
 <style>.thumb{height:200px;}</style>
-<div class="sl-pagebody ">
+<div class="card pd-30">
+<h6 class="card-body-title">Форма редактирования товара</h6>
+<p class="mg-b-20 mg-sm-b-30">Здесь Вы можете добавить недостающею информацию о товаре и отправить его на размещение.</p>
 <?php if($this->errors){ ?>
 <div class="alert alert-danger <?php if($this->errors) echo 'show';?>"  role="alert">
   <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
@@ -16,14 +18,12 @@
 </div>
 <?php } ?>
 <?php if($this->article){ ?>
-<div class="card pd-30">
-<h6 class="card-body-title">Форма редактирования товара</h6>
-<p class="mg-b-20 mg-sm-b-30">Здесь Вы можете добавить недостающею информацию о товаре и отправить его на размещение.</p>
+
 <form action="<?=$this->path?>articles-add/edit/<?=$this->article->id?>" method="POST" id="editform" enctype="multipart/form-data">
 
 <div id="wizard">
             <h3>Категория & Пол & Сезон</h3>
-            <section>
+            <section >
               <p>Укажите параметры товара!</p>
 			  <div class="row mg-b-25">
               <div class="form-group  col-sm-12 col-md-6 col-lg-6 col-xl-6">
@@ -44,8 +44,6 @@
                 </div><!-- form-group -->
 					<script>
 	$( "#category" ).change(function() {
-	
-
 $.ajax({
             url: '/admin/articles-add/',
             dataType: 'json',
@@ -63,7 +61,7 @@ $.ajax({
         });
 });
 </script>
-				<div class="form-group  col-sm-12 col-md-6 col-lg-3 col-xl-3">
+		<div class="form-group  col-sm-12 col-md-6 col-lg-2 col-xl-2">
                   <label class="form-control-label">Пол: <span class="tx-danger">*</span></label>
                   <select class="form-control select2" name="size_type" id="size_type" data-placeholder="Выберите пол"  required>
                     <option label="Выберите пол"></option>
@@ -72,11 +70,21 @@ $.ajax({
 					<?php } ?>
                   </select>
                 </div>
-				<div class="form-group  col-sm-12 col-md-6 col-lg-3 col-xl-3">
+		<div class="form-group  col-sm-12 col-md-6 col-lg-2 col-xl-2">
                   <label class="form-control-label">Сезон: <span class="tx-danger">*</span></label>
                   <select class="form-control select2" name="sezon" id="sezon" data-placeholder="Выберите сезон"  required>
                     <option label="Выберите сезон"></option>
 					<?php foreach($this->sezon as $s){ ?><option value="<?=$s->getId()?>" <?php if(@$this->article->getSezon() and $s->getId() == $this->article->getSezon()){ echo 'selected'; }?> ><?=$s->getName()?></option><?php } ?>
+                  </select>
+                </div>
+<div class="form-group  col-sm-12 col-md-6 col-lg-2 col-xl-2">
+                  <label class="form-control-label">Модель:</label>
+                  <select class="form-control select2" name="model_id" id="model_id" data-placeholder="Выберите модель">
+                    <option label="Выберите модель"></option>
+                     <option>Без модели</option>
+					<?php foreach(Shoparticlesmodel::find('Shoparticlesmodel') as $s){ ?>
+					<option value="<?=$s->getId()?>" <?php if($this->article->model_id and $s->getId() == $this->article->model_id){ echo 'selected'; }?> ><?=$s->name?></option>
+					<?php } ?>
                   </select>
                 </div>
 				
@@ -85,7 +93,7 @@ $.ajax({
             <h3>Рисунки</h3>
             <section>
               <p>Выберите минимум один рисунок.</p>
-			  <div class="form-layout">
+	<div class="form-layout">
             <div class="row mg-b-15">
 			<div class="form-group  col-sm-12 col-md-12 col-lg-6 col-xl-6">
 			 <label class="form-control-label">Рисунок-1: <span class="tx-danger">*</span></label>
@@ -113,7 +121,7 @@ $.ajax({
 			 <label class="form-control-label">Состав: <span class="tx-danger">*</span></label>
       <div class="text_sostav row">
             <?php
-			if(@$this->sostav){
+			if($this->sostav){
 			foreach($this->sostav as $s){ ?>
 			<div class="input-group col-sm-12 col-md-6 col-lg-4 col-xl-4 mg-b-5" >
 			<span class="input-group-addon bg-transparent">
@@ -238,7 +246,7 @@ arr_op.push(span.innerHTML+': '+val);
 <!--<input type="submit" name="save" value="Сохранить" style="display:none;">	-->	  
   </form>
 
-</div>
+
 <?php } ?>
 </div>
     <script>
@@ -258,23 +266,25 @@ arr_op.push(span.innerHTML+': '+val);
                 var category = $('#category').parsley();
 				var size_type = $('#size_type').parsley();
 				var sezon = $('#sezon').parsley();
+                              //  var model = $('#model_id').parsley();
                 if(category.isValid()  && size_type.isValid() && sezon.isValid()) {
 				return true;
                } else {
                  category.validate();
 				 size_type.validate();
 				 sezon.validate();
+                                
                }
               }
               // Step 2 form validation
               if(currentIndex === 1) {
                 var img = $('#image_file').parsley();
-				//var img2 = $('#image_file_2').parsley();
+		
                 if(img.isValid()) { 
 				return true;
                 } else {
 				img.validate();
-				//img2.validate();
+				
 				}
               }
 			   // Step 2 form validation

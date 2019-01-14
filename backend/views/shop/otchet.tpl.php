@@ -1,11 +1,11 @@
-<img src="<?=SITE_URL.$this->getCurMenu()->getImage()?>" alt=""  class="page-img"/>
-<h1><?=$this->getCurMenu()->getTitle();?></h1><br/>
+<img src="<?=$this->getCurMenu()->getImage()?>" alt=""  class="page-img"/>
+<h1><?=$this->getCurMenu()->getTitle()?></h1><br/>
   <div class="row">
 <div class="panel panel-primary">
 <div class="panel-heading"><h3 class="panel-title">Товары по категориям</h3></div>
 <div class="panel-body">
 <form action="/admin/otchets/type/1/" method="post">
-    <p>Дата: <input type="date" class="form-control input" value="<?=date('Y-m-d');?>" name="day"/>  <input type="submit" class="btn btn-small btn-default" value="Скачать"/></p>
+    <p>Дата: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="day"/>  <input type="submit" class="btn btn-small btn-default" value="Скачать"/></p>
     <p>
         <input type="radio" checked="checked" value="1" name="type"/> За день <br/>
         <input type="radio" value="7" name="type"/> За неделю <br/>
@@ -16,16 +16,18 @@
 </div>
 </div>
 <?php
+/*
 $sql = "SELECT COUNT(  `ws_articles_sizes`.`id` ) AS ctn
 FROM  `ws_articles_sizes` 
 INNER JOIN  `ws_articles` ON  `ws_articles_sizes`.`id_article` =  `ws_articles`.`id` 
 WHERE  `ws_articles_sizes`.`count` >0
 AND  `ws_articles`.`active` =  'y'";
+*/
 
  //$ost = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery($sql)->at(0)->getCtn(); ?>
 <!--<div class="row">
 <div class="col-lg-4">
-Количество товара ( <?=$ost?> ) на <?=date('d.m.Y'); ?>
+Количество товара ( <?=$ost?> ) на <?=date('d.m.Y')?>
 </div>
     <div class="col-lg-2">
 	<button  class="btn btn-small btn-default" onclick="Otchet(<?=$ost?>);" >Скачать отчёт <i class="glyphicon glyphicon-flash" aria-hidden="true"></i></button>
@@ -47,8 +49,8 @@ AND  `ws_articles`.`active` =  'y'";
 <div class="panel-body">
 <form action="/admin/otchets/type/2/" method="post">
     <p class="checkbox" >
-        Дата с: <input type="date" class="form-control input" value="<?=date('Y-m-d'); ?>" name="order_from"/>
-        по: <input type="date" class="form-control input" value="<?=date('Y-m-d'); ?>" name="order_to"/>   <input type="submit" class="btn btn-small btn-default" value="Скачать"/>
+        Дата с: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="order_from"/>
+        по: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="order_to"/>   <input type="submit" class="btn btn-small btn-default" value="Скачать"/>
 	 <br>
 	 <label class="ckbox">
 			 <input type="checkbox" class="order-item cheker" name="no_new" id="no_new"  value="1" >
@@ -68,12 +70,12 @@ AND  `ws_articles`.`active` =  'y'";
 <select name="ucenka_data" class="form-control input">
 <option value="">Выберите дату уценки</option>
 <?php 
-$sql="SELECT DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) AS dat, COUNT(  `id` ) AS ctn
+$sql2 = "SELECT DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) AS dat, COUNT(  `id` ) AS ctn
 FROM  `ucenka_history` 
 WHERE  `admin_id` =8005
 GROUP BY DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) 
 ORDER BY  `dat` DESC";
-$ucenka = wsActiveRecord::useStatic('UcenkaHistory')->findByQueryArray($sql);
+$ucenka = wsActiveRecord::useStatic('UcenkaHistory')->findByQueryArray($sql2);
 foreach ($ucenka as $c => $uc){
 echo $c.'->'.$uc->dat.'<br>';
  ?>
@@ -99,10 +101,11 @@ echo $c.'->'.$uc->dat.'<br>';
 				$pos = strripos($k, 'SALE');
 				if ($pos === false){
 			?>
-			<option value="<?=$c['id']?>" <?php if ($this->cur_category and $c['id'] == @$this->cur_category->getId()) echo "selected";?> ><?=$k?></option>
+			<option value="<?=$c['id']?>" <?php if ($this->cur_category and $c['id'] == $this->cur_category->getId()) echo "selected";?> ><?=$k?></option>
 
 		
-	<?php 	}	} ?>
+	<?php 	}
+        } ?>
     </select>
     <input type="submit" class="btn btn-small btn-default" value="Скачать"/>
 </form>
@@ -124,7 +127,7 @@ AND  `ws_articles`.`active` =  'y'";
 <select  class="form-control input" id="cat_select" onChange="return Count_aricle(this);" >
 <option value="">Выберите категорию</option>
 <?php foreach (wsActiveRecord::useStatic('Shopcategories')->findAll(array('active' => 1, 'parent_id = 0', 'id not in(106,85,267)'), array('name' => 'ASC')) as $c){ ?>
-			<option value="<?=$c->id?>" <?php if ($this->cur_category and $c->id == @$this->cur_category->getId()) echo "selected";?> ><?=$c->getRoutez()?></option>
+			<option value="<?=$c->id?>" <?php if ($this->cur_category and $c->id == $this->cur_category->getId()) echo "selected";?> ><?=$c->getRoutez()?></option>
 	<?php } ?>
 </select> Для скачивания выберите категорию
 </div>
@@ -251,14 +254,14 @@ foreach($ucenka as $c){ ?>
 <h2>Отчет по бренду за период</h2>
     Бренд <select name="brend" class="form-control input">
         <?php foreach (wsActiveRecord::useStatic('Brand')->findAll() as $brand) { ?>
-            <option value="<?php echo $brand->getId() ?>"><?php echo $brand->getName()?></option>
+            <option value="<?=$brand->getId()?>"><?=$brand->getName()?></option>
         <?php } ?>
     </select><br>
-	 Дата добавления товаров с: <input type="date" class="form-control input" value="<?php echo date('Y-m-d'); ?>" name="add_from"/>
-    по: <input type="date" class="form-control input" value="<?php echo date('Y-m-d'); ?>" name="add_to"/> <br/>
+	 Дата добавления товаров с: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="add_from"/>
+    по: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="add_to"/> <br/>
 	
-    Дата создания заказов с: <input type="date" class="form-control input" value="<?php echo date('Y-m-d'); ?>" name="order_from"/>
-    по: <input type="date" class="form-control input" value="<?php echo date('Y-m-d'); ?>" name="order_to"/> <br/>
+    Дата создания заказов с: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="order_from"/>
+    по: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="order_to"/> <br/>
 
     <input type="submit" class="btn btn-small btn-default" value="Скачать"/>
 </form>
@@ -268,8 +271,8 @@ foreach($ucenka as $c){ ?>
 <form action="/admin/otchets/type/6/" method="post">
 <h2>Товары с блоками скидок</h2>
     <p>
-        Дата с: <input type="date" class="form-control input" value="<?php echo date('Y-m-d'); ?>" name="order_from"/>
-        по: <input type="date" class="form-control input" value="<?php echo date('Y-m-d'); ?>" name="order_to"/> <br/>
+        Дата с: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="order_from"/>
+        по: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="order_to"/> <br/>
         <input type="checkbox" name="no_new" value="1"> только статусы (В процессе, Доставлен в магазин, Отправлен
         укрпочтой, Отправлен Новая почта, Оплачен, Собран, Ждёт оплаты, В процессе доставки)
     </p>
@@ -279,8 +282,8 @@ foreach($ucenka as $c){ ?>
 <form action="/admin/otchets/type/7/" method="post">
 <h2>Уценка</h2>
     <p>
-        Дата с: <input type="date" class="form-control input" value="<?php echo date('Y-m-d'); ?>" name="order_from"/>
-        по: <input type="date" class="form-control input" value="<?php echo date('Y-m-d'); ?>" name="order_to"/> <br/>
+        Дата с: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="order_from"/>
+        по: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="order_to"/> <br/>
         <input type="checkbox" name="to_day" value="1"> по дням
     </p>
     <input type="submit" class="btn btn-small btn-default" value="Скачать"/>
@@ -289,8 +292,8 @@ foreach($ucenka as $c){ ?>
 <form action="/admin/otchets/type/14/" method="post">
 <h2>Уценка по каждому товару</h2>
     <p>
-        Дата с: <input type="date" class="form-control input" value="<?php echo date('Y-m-d'); ?>" name="order_from"/>
-        по: <input type="date" class="form-control input" value="<?php echo date('Y-m-d'); ?>" name="order_to"/> <br/>
+        Дата с: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="order_from"/>
+        по: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="order_to"/> <br/>
     </p>
     <input type="submit" class="btn btn-small btn-default" value="Скачать"/>
 </form>
@@ -309,8 +312,8 @@ foreach($ucenka as $c){ ?>
 <form action="/admin/otchets/type/11/" method="post">
 <h2>Заказы по Городам</h2>
     <p>
-        Дата с: <input type="date" class="form-control input" value="<?php echo date('Y-m-d'); ?>" name="order_from"/>
-        по: <input type="date" class="form-control input" value="<?php echo date('Y-m-d'); ?>" name="order_to"/> <br/>
+        Дата с: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="order_from"/>
+        по: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="order_to"/> <br/>
 
     </p>
     <input type="submit" class="btn btn-small btn-default" value="Скачать"/>
@@ -341,7 +344,7 @@ FROM  `ws_desires`
 GROUP BY  `a`.`brand_id`";
 $mas = wsActiveRecord::findByQueryArray($sql);
 		foreach ($mas as $brand) { ?>
-            <option value="<?php echo $brand->brand_id?>"><?php echo $brand->brand?></option>
+            <option value="<?=$brand->brand_id?>"><?=$brand->brand?></option>
         <?php } ?>
     </select>
 	</td>
@@ -369,7 +372,7 @@ FROM  `ws_desires`
 GROUP BY  `a`.`model`";
 $mas = wsActiveRecord::findByQueryArray($sql);
 		foreach ($mas as $model) { ?>
-            <option value="<?php echo $model->model?>"><?php echo $model->model?></option>
+            <option value="<?=$model->model?>"><?=$model->model?></option>
         <?php } ?>
     </select>
 	</td>
@@ -387,7 +390,7 @@ $mas = wsActiveRecord::findByQueryArray($sql);
 	</tr>
 	</table>
 </form>
-<script type="text/javascript">
+<script>
  function brends(x){
 document.getElementById('md').disabled = true;
  $.get('/admin/otchets/id/' + x + '/type/getbrends/',
@@ -428,14 +431,13 @@ document.getElementById('md').disabled = true;
 <div class="panel-body">
 <form action="/admin/otchets/type/13/" method="post">
 
-    Дата поступления товаров с: <input type="date" class="form-control input" value="<?php echo date('Y-m-d'); ?>" name="order_from"/>
-    по: <input type="date" class="form-control input" value="<?php echo date('Y-m-d'); ?>" name="order_to"/>  <input type="submit" class="btn btn-small btn-default" value="Скачать"/>
+    Дата поступления товаров с: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="order_from"/>
+    по: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="order_to"/>  <input type="submit" class="btn btn-small btn-default" value="Скачать"/>
 </form>
 </div>
 </div>
 </div>
 <script>
-
  function Otchet_19(e, cat){
  //var cat = $('#cat_list').val();
 
@@ -446,7 +448,7 @@ console.log('start-'+day.getHours()+':'+day.getMinutes()+':'+day.getSeconds());
 var end = e;  
  //var end = 50; 
 //console.log(end);
- $('.return_19').html('<img src="/admin_files/views/chart/load.gif" style="height: 250px;padding: 10px;" >');
+ $('.return_19').html('<img src="/backend/views/chart/load.gif" style="height: 250px;padding: 10px;" >');
  $('.mailing_start_19').show();
  
  send19(start, end, cat);
@@ -464,7 +466,7 @@ console.log('start-'+day.getHours()+':'+day.getMinutes()+':'+day.getSeconds());
 var end = e;  
  //var end = 50; 
 //console.log(end);
- $('.return_21').html('<img src="/admin_files/views/chart/load.gif" style="height: 250px;padding: 10px;" >');
+ $('.return_21').html('<img src="/backend/views/chart/load.gif" style="height: 250px;padding: 10px;" >');
  $('.mailing_start_21').show();
  
  send21(start, end);
@@ -527,7 +529,7 @@ console.log('start-'+day.getHours()+':'+day.getMinutes()+':'+day.getSeconds());
 var end = e;  
  //var end = 50; 
 //console.log(end);
- $('.return_ucenka').html('<img src="/admin_files/views/chart/load.gif" style="height: 250px;padding: 10px;" >');
+ $('.return_ucenka').html('<img src="/backend/views/chart/load.gif" style="height: 250px;padding: 10px;" >');
  //$('.mailing_start_19').show();
  
  
@@ -559,7 +561,7 @@ var end = e;
 			if(mm<10) { mm = '0'+mm } 
 			
 				 var name = 'otchet_ucenka_'+proc+'_'+dd+'-'+mm+'-'+d.getFullYear()+'.xls';
-				$('.return_ucenka').html('<p style="font-size:16px;padding:15px;color:red;">Отчёт сформирован!</p><p style="padding: 10px;"><a href="https://www.red.ua/admin_files/views/chart/'+name+'" style="font-size:14px;"> > СКАЧАТЬ ФАЙЛ < </a></p>Отчет создан');
+				$('.return_ucenka').html('<p style="font-size:16px;padding:15px;color:red;">Отчёт сформирован!</p><p style="padding: 10px;"><a href="https://www.red.ua/backend/views/chart/'+name+'" style="font-size:14px;"> > СКАЧАТЬ ФАЙЛ < </a></p>Отчет создан');
 				
 				console.log('exit-'+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds());
                 },
@@ -579,10 +581,10 @@ var end = e;
 		console.log(new_data);
 	  response = $.ajax({
                 url: url,
-				async: false,
+		async: false,
                 type: 'POST',
                 dataType: 'json',
-                data: new_data,
+                data: new_data
             });
 			ret = $.parseJSON(response.responseText);
 			ret = ret.start;
@@ -643,7 +645,7 @@ console.log(day.getHours()+':'+day.getMinutes()+':'+day.getSeconds());
 //var end = e;  
  var end = 50; 
 console.log(end);
- $('#return').html('<img src="/admin_files/views/chart/load.gif" style="height: 250px;padding: 10px;" >');
+ $('#return').html('<img src="/backend/views/chart/load.gif" style="height: 250px;padding: 10px;" >');
  $('.mailing_start').show();
  
  send(start, end);

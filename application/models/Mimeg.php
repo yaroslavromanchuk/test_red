@@ -13,13 +13,13 @@ class Mimeg
 //		}
         $filename_dest = '';
 
-        $default = array('path', 'type', 'filename', 'id', 'width', 'height', 'crop', 'crop_coords', 'fill', 'fill_color', 'original');
+        $default = ['path', 'type', 'filename', 'id', 'width', 'height', 'crop', 'crop_coords', 'fill', 'fill_color', 'original'];
         
-        $get = array();
+        $get = [];
         
         $temp_info = explode('/', $file_name);
         
-        $path_info = array();
+        $path_info = [];
         
         for ($i = 0, $c = count($temp_info); $i < $c; $i = $i+2){
             $path_info[strtolower($temp_info[$i])] = $temp_info[$i+1];

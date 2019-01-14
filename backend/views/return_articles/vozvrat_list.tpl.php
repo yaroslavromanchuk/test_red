@@ -1,141 +1,4 @@
-<img src="<?=SITE_URL.$this->getCurMenu()->getImage();?>" alt=""  class="page-img" />
-<h1><?=$this->getCurMenu()->getTitle();?></h1><br/>
-<form action="" method="get" id="myform">
-	<table  class="table">
-	<tr>
-	<th>Статус</th>
-	<th>Заказ</th>
-	<th>Id</th>
-	<th>Создан от</th>
-	<th>Создан до</th>
-	<th>Способ возврата</th>
-	</tr>
-	<tr>
-	<td>
-	<select name="status" class="form-control input">
-    <option value="" >Все</option>
-	<?php if(@$this->order_status){
-	foreach($this->order_status as $k=>$s){ ?>
-	 <option value="<?=$k?>" <?php if (isset($_GET['status']) and $_GET['status'] == $k) { echo 'selected="selected"';}?> ><?=$s?></option>
-	<?php }
-	} ?>
-</select>
-</td>
-	<td ><input type="text"  value="<?=@$_GET['order']?>" class="form-control " name="order" id="order"/></td>
-		<td><input type="text"  value="<?=@$_GET['customer_id']?>" class="form-control " name="customer_id" id="customer_id"/></td>
-	<td><input type="date"  value="<?php if(@$_GET['create_from']) echo date('Y-m-d', strtotime($_GET['create_from']));?>"  class="form-control" name="create_from"/></td>
-
-	<td><input type="date"  value="<?php if(@$_GET['create_to']) echo date('Y-m-d', strtotime($_GET['create_to']));?>" class="form-control" name="create_to"/></td>
-	<td>
-	<select name="sposob" class="form-control ">
-    <option value="">Все</option>
-    <option value="1" <?php if (isset($_GET['sposob']) and $_GET['sposob'] == '1') echo 'selected="selected"';?>>На депозит</option>
-    <option value="2" <?php if (isset($_GET['sposob']) and $_GET['sposob'] == '2') echo 'selected="selected"';?>>Почтовы перевод</option>
-</select>
-</td>
-	</tr>
-	</table>
-	<!--
-<div style="float: right;">
-<label for="nakladna">Номер накладной:</label>
-<input type="text" id="nakladna" name="nakladna" value="<?php if (isset($_GET['nakladna'])) echo$_GET['nakladna']; ?>" class="form-control input w100">
-<button onclick="$('#nakladna').val('');return false;" class="btn btn-primary pd-x-20">Завершить</button>
-</div>-->
-	<button type="submit" name="search"  class="btn btn-default"><span style="font-weight: bold;font-size: 16px;"><i class="glyphicon glyphicon-search" aria-hidden="true"></i> Найти</span></button>
-
-</form>
-<?php 
-if (@$this->getOrders()) {
-$deli = array(12 => 'Мишуга', 3 => 'Победа', 5 => 'Строителей', 4=>'УкрПочта', 9=>'Курьер', 8=>'НП', 16=>'НП:НП');
-?> 
-<script type="text/javascript">
-        function chekAll() {
-		if($('.chekAll').is(":checked")){
-		$('.cheker').prop('checked', true);
-		}else{
-		$('.cheker').prop('checked', false);
-		}
-            return false;
-        }
-</script>
-<?php if($this->user->getId()== 8005){ ?>
-<i class="icon ion-checkmark text-success tx-30 pd-5 mg-5" id="p_all" name="p_all"  onclick="return pr('p_all');" data-tooltip="tooltip" data-original-title="Принять отмеченый товар"></i>
-
-<i class="icon ion-close text-danger tx-30 pd-5"  id="dell_all" name="dell_all" onclick="return dell('dell_all');" data-tooltip="tooltip" data-original-title="Удалить без возврата на сайт"></i>
-
-<?php }?>
-<i class="icon ion-clipboard text-primary tx-30 pd-5"  id="print" name="print" onclick="return print103();" data-tooltip="tooltip" data-original-title="Печать формы 103"></i>
-<i class="icon ion-email text-success tx-30 pd-5 mg-5" id="p_all1" name="p_all1"  onclick="return go_mail_forma103('p_all');" data-tooltip="tooltip" data-original-title="Отправить уведомление на почту"></i>
-<?php if($_GET['status'] == 2) { ?><span id="sum_perekaz"></span> <?php } ?>
-<table cellspacing="0" cellpadding="4" id="orders" class="table table-hover" >
-    <tr>
-		<th><label class="ckbox" data-tooltip="tooltip" title="Выделить все товары"><input onchange="chekAll();" class="chekAll" type="checkbox"/><span></span></label></th>
-        <th>Статус</th>
-        <th>№<br>Заказа</th>
-		<th>Id<br>клиента</th>
-		<th>Принят</th>
-		<th>Принял</th>
-		<th>Обработан</th>
-		<th>Сумма взврата</th>
-		<th>Доп.<br>Cумма</th>
-		<th>Способ доставки</th>
-		<th>Способ взврата</th>
-		<th>Коментарий</th>
-		<th>Админ<br>комент</th>
-    </tr>
-    <?php $row = 'row2';
-		$spos = array(1=>'На депозин', 2=>'Почтовый перевод');
-	foreach ($this->getOrders() as $order) {
-	$r = new Shoporders($order->order_id);
-	$adm = new Customer($order->admin_create);
-	$item_time = strtotime($order->date_create);
-        $day = (time() - $item_time) / (24 * 60 * 60);
-		 $day = (int)$day;
-		// echo $day;
-		 if($day >12){
-		 $color = 'red';
-		 }elseif($day >= 10){
-		  $color = '#FF9800';
-		 }elseif($day >= 5){
-		 $color = '#FFEB3B';
-		 }else{
-		 $color = '';
-		 }
-    $row = ($row == 'row2') ? 'row1' : 'row2'; ?>
-    <tr class="<?=$row;?>" <?php if($order->status == 1 or $order->status == 2) echo 'style="background: '.$color.';"'; ?> id="<?=$order->getOrderId();?>">
-        <td>
- <label class="ckbox"><input type="checkbox" class="order-item cheker" onChange="return Calculat(this);" name="item_<?=$order->getId()?>"/><span></span></label>
-        </td>
-        <td><?=$this->order_status[$order->status];?></td>
-		<!--<td><?=$order->order_id;?></td>-->
-		<td><a href="<?=$this->path;?>vozrat/id/<?=$order->id;?>/"><?=$order->order_id;?></a></td>
-		<td><?=$order->customer_id?></td></td>
-		<td><?=$order->date_create?></td>
-		<td><?=$adm->middle_name?></td>
-		<td><?=$order->date_obrabotan?></td>
-        <td id="s_<?=$order->id?>"><?=@$order->amount?></td>
-		<td id="d_<?=$order->id?>"><?=@$order->dop_suma?></td>
-		<td><?=$r->getDeliveryTypeId() ? $r->getDeliveryType()->getName(): ''?></td>
-		<td><?=@$order->sposob?$spos[$order->sposob]:''?></td>
-        <td><?=@$order->comments?></td>
-		<td><?php 
-		
-
-		if ($r->getRemarks()->count()) { ?>
-		
-		
-<?php
-$text = '';
- foreach ($r->getRemarks() as $remark) { $text.=$remark->getRemark()."-".$remark->getName(); } ?>
-<i class="icon ion-ios-chatboxes green tx-20 " data-placement="right"  data-tooltip="tooltip" title="" data-original-title="<?=$text?>"></i>
-						<?php }	?>
-							</td>
-    </tr>
-    <?php } ?>
-</table>
-<?php } else echo 'Нет записей'; ?>
 <script>
-
 function Calculat(e){
 var sum = 0.00;
 console.log(e);
@@ -151,6 +14,187 @@ return true;
 				//}
 
 return false;
+}
+</script>
+<div class="card pd-20">
+    <div class="card-header">
+        <h5><?=$this->getCurMenu()->getTitle()?></h5>
+        <form action="" method="get" id="myform">
+	<table  class="table">
+	<tr>
+	<td>Статус</td>
+	<td>Заказ</td>
+	<td>Id</td>
+	<td>Создан от</td>
+	<td>Создан до</td>
+	<td>Способ возврата</td>
+	</tr>
+	<tr>
+	<td>
+	<select name="status" class="form-control select2">
+    <option value="" >Все</option>
+	<?php if($this->order_status){
+	foreach($this->order_status as $k=>$s){ ?>
+	 <option value="<?=$k?>" <?php if (isset($_GET['status']) and $_GET['status'] == $k) { echo 'selected="selected"';}?> ><?=$s?></option>
+	<?php }
+	} ?>
+</select>
+</td>
+	<td ><input type="text"  value="<?=$_GET['order']?>" class="form-control " name="order" id="order"/></td>
+	<td><input type="text"  value="<?=$_GET['customer_id']?>" class="form-control " name="customer_id" id="customer_id"/></td>
+	<td><input type="date"  value="<?php if($_GET['create_from']) echo date('Y-m-d', strtotime($_GET['create_from']));?>"  class="form-control" name="create_from"/></td>
+
+	<td><input type="date"  value="<?php if($_GET['create_to']) echo date('Y-m-d', strtotime($_GET['create_to']));?>" class="form-control" name="create_to"/></td>
+	<td>
+            <select name="sposob" class="form-control select2">
+                <option value="">Все</option>
+                <option value="1" <?php if (isset($_GET['sposob']) and $_GET['sposob'] == '1') echo 'selected="selected"';?>>На депозит</option>
+                <option value="2" <?php if (isset($_GET['sposob']) and $_GET['sposob'] == '2') echo 'selected="selected"';?>>Почтовы перевод</option>
+            </select>
+        </td>
+	</tr>
+	</table>
+	<!--
+<div style="float: right;">
+<label for="nakladna">Номер накладной:</label>
+<input type="text" id="nakladna" name="nakladna" value="<?php if (isset($_GET['nakladna'])) echo$_GET['nakladna']; ?>" class="form-control input w100">
+<button onclick="$('#nakladna').val('');return false;" class="btn btn-primary pd-x-20">Завершить</button>
+</div>-->
+	<button type="submit" name="search"  class="btn btn-secondary btn-lg">Искать</button>
+
+</form>
+    </div>
+    <div class="card-body">
+        <?php 
+if ($this->getOrders()) {
+$deli = array(12 => 'Мишуга', 3 => 'Победа', 5 => 'Строителей', 4=>'УкрПочта', 9=>'Курьер', 8=>'НП', 16=>'НП:НП');
+?> 
+<script>
+     $("body").keypress(function(e) {
+         switch(e.originalEvent.code){
+             case 'NumpadMultiply': if($('.chekAll').is(":checked")){ $('.chekAll').prop('checked', false); }else{$('.chekAll').prop('checked', true);}  chekAll(); break;
+             case 'NumpadAdd': pr('p_all'); break;
+         }
+                 // console.log(e.originalEvent.code);
+         // if (e.which == 13) {
+            //  return false;
+          //}
+     });
+        function chekAll() {
+		if($('.chekAll').is(":checked")){
+		$('.cheker').prop('checked', true);
+                
+		}else{
+		$('.cheker').prop('checked', false);
+		}
+            return false;
+        }
+</script>
+<?php if($this->user->getId()== 8005){ ?>
+<i class="icon ion-md-done-all text-success tx-30 pd-5 mg-5" id="p_all" name="p_all"  onclick="return pr('p_all');"  data-tooltip="tooltip"  data-original-title="Принять отмеченый товар" ></i>
+
+<i class="icon ion-md-close text-danger tx-30 pd-5"  id="dell_all" name="dell_all" onclick="return dell('dell_all');" data-tooltip="tooltip" data-original-title="Удалить без возврата на сайт"></i>
+
+<?php }?>
+<i class="icon ion-md-clipboard text-primary tx-30 pd-5"  id="print" name="print" onclick="return print103();" data-tooltip="tooltip" data-original-title="Печать формы 103"></i>
+<i class="icon ion-md-mail  text-success tx-30 pd-5 mg-5" id="p_all1" name="p_all1"  onclick="return go_mail_forma103('p_all');" data-tooltip="tooltip" data-original-title="Отправить уведомление на почту"></i>
+<?php if($_GET['status'] == 2) { ?><span id="sum_perekaz"></span> <?php } ?>
+<table id="orders" class="table table-bordered table-hover responsive " >
+    <thead>
+    <tr>
+		<td><label class="ckbox" data-tooltip="tooltip" title="Выделить все товары"><input onchange="chekAll();" class="chekAll" type="checkbox"/><span></span></label></td>
+                <td>Статус</td>
+                <td>№<br>Заказа</td>
+		<td>Id<br>клиента</td>
+		<td>Принят</td>
+		<td>Принял</td>
+		<td>Обработан</td>
+		<td>Сумма взврата</td>
+		<td>Доп.<br>Cумма</td>
+		<td>Способ доставки</td>
+                <td>Оплата</td>
+		<td>Способ взврата</td>
+		<td>Коментарий</td>
+		<td>Админ<br>комент</td>
+    </tr>
+    </thead>
+     <tbody>
+    <?php
+    $user = [];
+	$spos = array(1=>'На депозин', 2=>'Почтовый перевод');
+        
+	foreach ($this->getOrders() as $order) {
+	$r = new Shoporders($order->order_id);
+	$adm = new Customer($order->admin_create);
+        $user[] = $r->customer_id;
+	$item_time = strtotime($order->date_create);
+        $day = (time() - $item_time) / (24 * 60 * 60);
+		 $day = (int)$day;
+		// echo $day;
+		 if($day >12){
+		 $color = 'red';
+		 }elseif($day >= 10){
+		  $color = '#FF9800';
+		 }elseif($day >= 5){
+		 $color = '#FFEB3B';
+		 }else{
+		 $color = '';
+		 }
+  ?>
+   
+    <tr <?php if($order->status == 1 or $order->status == 2){ echo 'style="background: '.$color.';"';} ?> id="<?=$order->getOrderId();?>">
+        <td>
+ <label class="ckbox"><input type="checkbox" class="order-item cheker" onChange="return Calculat(this);" name="item_<?=$order->getId()?>"/><span></span></label>
+        </td>
+        <td><?=$this->order_status[$order->status];?></td>
+		<td><a href="<?=$this->path;?>vozrat/id/<?=$order->id;?>/"><?=$order->order_id;?></a></td>
+                <td class="<?=$order->customer_id?>"  ><?=$order->customer_id?></td>
+		<td><?=$order->date_create?></td>
+		<td><?=$adm->middle_name?></td>
+		<td><?=$order->date_obrabotan?></td>
+                <td id="s_<?=$order->id?>"><?=$order->amount?></td>
+		<td id="d_<?=$order->id?>"><?=$order->dop_suma?></td>
+		<td><?=$r->getDeliveryTypeId() ? $r->getDeliveryType()->getName(): ''?></td>
+                <td><?=$r->getPaymentMethod() ? $r->getPaymentMethod()->getName(): ''?></td>
+		<td><?=$order->sposob?$spos[$order->sposob]:''?></td>
+                <td><?=$order->comments?></td>
+		<td><?php 
+		if ($r->getRemarks()->count()) {
+    $text = '';
+        foreach ($r->getRemarks() as $remark) { $text.=$remark->getRemark()."-".$remark->getName(); } ?>
+<i class="icon ion-ios-chatboxes green tx-20 " data-placement="right"  data-tooltip="tooltip" title="" data-original-title="<?=$text?>"></i>
+		<?php }	?>
+                </td>
+    </tr>
+    
+    <?php }
+   $json = json_encode(array_count_values($user));
+    ?>
+    </tbody>
+</table>
+<?php }else{
+    echo 'Нет записей';
+    
+} ?>
+    </div>
+    
+</div>
+<script>
+
+var arr = <?=$json?>;
+for(var key in arr){
+    if(arr[key] >1){
+        console.log(key);
+        $('.'+key).css({'background':getRandomColor()});
+    }
+}
+function getRandomColor() {
+  var letters = '0123456789ABCDEF';
+  var color = '#';
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
 }
 
 var $i = 0;
@@ -177,11 +221,11 @@ $('#order').keypress(function(e){
  $('#p_all').show();
 var ch = $('input:radio:checked').prop("checked");
 //return confirm('Удалить товар без возврата на склад? (товар не вернется на склад)');
-function pr(th){
+function pr(td){
 var nakladna = $('#nakladna').val();
 if(nakladna.length == 0){ alert('Введите номер накладной!'); return false;}
 
- if ($('.order-item:checked').val() && th == 'p_all') {
+ if ($('.order-item:checked').val() && td == 'p_all') {
                    var id = '';
                     i = 0;
                     jQuery.each($('.order-item:checked'), function () {
@@ -192,7 +236,7 @@ if(nakladna.length == 0){ alert('Введите номер накладной!')
                         }
                         i++;
                     });
-                }else if(th != 'p_all'){ var id = th; }
+                }else if(td != 'p_all'){ var id = td; }
 var dat = '&id='+id+'&nakladna='+nakladna;
 if(id){
 $.ajax({
@@ -208,7 +252,7 @@ $.ajax({
 			t +=data.text[index]+'<br>';
 			}
 			//console.log(data);
-			$('#'+th).hide();
+			$('#'+td).hide();
 			//fopen('Возвраты', t);
 			//setTimeout(FormClose, 700);
 			}
@@ -238,8 +282,8 @@ fopen('Ощибка', 'Вы не выбрали товары который ну
 return false;
 }
 
-function ret_ord(th){
-var dat = '&id='+th;
+function ret_ord(td){
+var dat = '&id='+td;
 var value = prompt("Введите причину возврата товара в заказ: ", '');
 if(value === null) return false;
 if(value === '') return false;
@@ -254,7 +298,7 @@ $.ajax({
 			data: '&method=return_order'+dat,
 			success: function( data ) {
 			console.log(data);
-			if(data.send == 1){ $('#'+th).hide(); }
+			if(data.send == 1){ $('#'+td).hide(); }
 			fopen('Возвращение товара', data.text+' ( '+data.ss+' )');
 			},
 			error: function( e ) {
@@ -322,10 +366,10 @@ if ($('.order-item:checked').val()) {
 
 return false;
 }
-function dell(th){
+function dell(td){
 var nakladna = $('#nakladna').val();
 if(nakladna.length == 0){ alert('Введите номер накладной!'); return false; }
-if ($('.order-item:checked').val() && th == 'dell_all') {
+if ($('.order-item:checked').val() && td == 'dell_all') {
                    var id = '';
                     i = 0;
                     jQuery.each($('.order-item:checked'), function () {
@@ -336,7 +380,7 @@ if ($('.order-item:checked').val() && th == 'dell_all') {
                         }
                         i++;
                     });
-                }else if(th != 'dell_all'){ var id = th; }
+                }else if(td != 'dell_all'){ var id = td; }
 
 var dat = '&id='+id+'&nakladna='+nakladna;
 
@@ -355,7 +399,7 @@ $.ajax({
 			dataType: 'json',
 			data: '&method=deleteshop'+dat,
 			success: function( data ) {
-			if(data.send == 1){ $('#'+th).hide(); }
+			if(data.send == 1){ $('#'+td).hide(); }
 			fopen('Удаление товара',data.text+' ( '+data.ss+' )');
 			},
 			error: function( e ) {

@@ -7,8 +7,9 @@
 <title><?php echo ($this->getCurMenu()->getTitle()) ? $this->getCurMenu()->getTitle() : 'Система Управления Сайтом '.$this->website->getSite()->getName();?></title>
 
 	<link rel="stylesheet" type="text/css" href="<?=$this->files?>css/bs/css/bootstrap.css?v=1.4.7">
-	<!--<link rel="stylesheet" type="text/css" href="<?=$this->files?>css/bs/css/bootstrap-select.css?v=1.0">-->
-	<link rel="stylesheet" type="text/css" href="<?=$this->files?>css/layout.css?v=2.6">
+        
+        <link href="<?=$this->files?>views/template/lib/select2/css/select2.min.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="<?=$this->files?>css/layout.css?v=2.9.5">
 	<link rel="stylesheet" type="text/css" href="<?=$this->files?>css/Ionicons/css/ionicons.css">
 	
 	<link href="<?=$this->files?>css/font-awesome/css/font-awesome.css" rel="stylesheet">
@@ -16,11 +17,20 @@
 <script src="<?=$this->files?>scripts/jquery.js"></script> 
 </head>
 <body>
+   
 <?php
+
+if(/*$this->user->id == 8005*/false){ ?>
+     <div id="video-bg">
+    <video width="100%" height="auto" preload="auto" autoplay="autoplay"
+    loop="loop" >
+        <source src="/img/admin/video.mp4" type="video/mp4"></source>
+    </video>
+</div>
+    
+<?php }
 $days = array( 1 => 'Понедельник' , 'Вторник' , 'Среда' , 'Четверг' , 'Пятница' , 'Суббота' , 'Воскресенье' );
- if($this->user->getId() == 8005){
-     
- }
+
 //echo print_r($this->get);
 
 $d1 = date('d-m'); 
@@ -59,7 +69,7 @@ left:5px;
       </button>
       <!-- Бренд или название сайта (отображается в левой части меню) -->
       <a class="navbar-brand" href="/">
-          <img src="<?=$this->files?>img/logo/RED_Logo_RGB.png"  style="height: 36px;padding-bottom: 7px;"alt="RED">
+          <img src="<?=$this->files?>img/logo/RED_Logo_RGB.png"  style="height: 36px;padding-bottom: 7px;margin-top: -8px;"alt="RED">
       </a>
     </div>
     <!-- Основная часть меню (может содержать ссылки, формы и другие элементы) -->
@@ -73,9 +83,10 @@ left:5px;
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$s->name?> <span class="caret"></span></a>
           <ul class="dropdown-menu">
-              <?php    foreach (Menu::find('Menu',['active'=>1, 'type_id'=>2, 'section'=>$s->id]) as $m) {
+              <?php 
+              foreach (Menu::find('Menu',['active'=>1, 'type_id'=>2, 'section'=>$s->id], ['sequence'=>'ASC']) as $m) {
                                 if($this->admin_rights[$m->id]['view']){ ?>
-              <li><a href="<?=$this->path.$m->getUrl()?>" <?=$m->getTarget()?' target="'.$m->getTarget().'"':''?> title="<?=$m->getPageIntro()?>" ><img src="<?=$m->getImage()?>" alt="<?=$m->getMetaCustom()?>" style="width: 16px;" />
+              <li><a href="<?=$this->path.$m->getUrl().'/'?>" <?=$m->getTarget()?' target="'.$m->getTarget().'"':''?> title="<?=$m->getPageIntro()?>" ><img src="<?=$m->getImage()?>" alt="<?=$m->getMetaCustom()?>" style="width: 16px;" />
 			<?=$m->getName(); ?></a></li>
               
               <?php } 
@@ -88,7 +99,7 @@ left:5px;
         
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li style="padding-top: 15px;padding-right: 15px;"><?=$this->user->getMiddleName()?><span class="hidden-md-down"> <?=$this->user->getFirstName()?></span></li>
+        <li style="padding-top: 15px;padding-right: 15px;"><?=$this->user->getMiddleName()?></li>
         <li style="padding-top: 10px;"><img src="<?=$this->user->getLogo() ? $this->user->getLogo() : Config::findByCode('admin_logo_folder')->getValue().'error.png'?>" class="wd-32 rounded-circle" style="width: 36px; border-radius: 50%;" alt=""></li>
       </ul>
     </div>
@@ -97,6 +108,7 @@ left:5px;
 </nav>
    
 <div id="container" class="container">
+    
 <?=$this->message;?>
 <div id="content">
 <?=$this->render($this->middle_template)?>
@@ -108,10 +120,21 @@ left:5px;
 <p id="back-top"><a href="#top"><span></span></a></p>
 
 <script  src="<?=$this->files?>css/bs/js/bootstrap.min.js"></script>
+<script src="<?=$this->files?>views/template/lib/select2/js/select2.min.js"></script>
 <!--<script  src="<?=$this->files?>css/bs/js/bootstrap-select.js"></script>-->
 <!--<script   src="<?=$this->files?>css/bs/js/jquery-ui.js"></script>-->
 <script>
-$(document).ready(function(){
+     $(function(){
+
+        'use strict';
+
+        $('.select2').select2({
+          minimumResultsForSearch: Infinity
+        });
+        $('.select2-show-search').select2({
+          minimumResultsForSearch: ''
+        });
+   
 $("[data-tooltip='tooltip']").tooltip();
 	$("#back-top").hide();
 		$(window).scroll(function () {
@@ -126,7 +149,7 @@ $("[data-tooltip='tooltip']").tooltip();
 $('#myModalMessage').on('hidden.bs.modal', function (event) { 
 // функции 
 });	*/
-});
+ });
 //открытие всплывающего окна нова почта
 function fopen(header = '', body = '', footer = ''){
 if(body) $('#popup').html(body);
@@ -139,19 +162,6 @@ function FormClose(){$('#myModalMessage').modal('hide');}
 
 function show(){return false;}
 
-function setUk(l) {
-var s = '<?=$_SESSION['lang']?>';
-if(l.name !== s){
-      $.ajax({
-         type: "POST",
-         url: "/ajax/setlang/",
-         data: "&lang="+l.name,
-		// dataType: 'json',
-         success: function(res){document.location.href = "/admin/index/";}
-          });
-		  }
-          return false;
-}
 </script>
 </body>
 </html>

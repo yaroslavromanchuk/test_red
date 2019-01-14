@@ -20,7 +20,7 @@ $result = explode(',',$this->trans->get('Избранное,В избранно�
 	}
 ?>
 <div class="modal fade" id="myBasket" tabindex="-1" role="dialog"  aria-hidden="true">
-	<div class="modal-dialog modal-md">
+	<div class="modal-dialog modal-dialog-centered modal-md">
 		<div class="modal-content">
 		<div class="modal-header">
 		<h5 class="modal-title"><?=$this->trans->get('СОДЕРЖИМОЕ КОРЗИНЫ')?></h5>
@@ -33,14 +33,14 @@ $result = explode(',',$this->trans->get('Избранное,В избранно�
 		</div>
 		<div class="modal-footer">
 			<button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><?=$this->trans->get('Продолжить покупки')?></button>
-			<button class="btn btn-danger" data-dismiss="modal" onclick="location.href='/basket/'" aria-hidden="true"><?=$this->trans->get('Перейти в корзину')?></button>
+                        <a href="<?=($_SESSION['lang']== 'uk')?'/uk':''?>/basket/" class="btn btn-danger" ><?=$this->trans->get('Перейти в корзину')?></a>
 		</div>
 		</div>
 	</div>
 </div>
 
 <div class="modal fade" id="myModalLogin" tabindex="-1" role="dialog"  aria-hidden="true">
-	<div class="modal-dialog modal-md">
+	<div class="modal-dialog modal-dialog-centered modal-md">
 		<div class="modal-content">
 		<div class="modal-header">
 		<h5 class="modal-title"><?=$this->trans->get('Вход в личный кабинет')?></h5>
@@ -99,8 +99,10 @@ $result = explode(',',$this->trans->get('Избранное,В избранно�
 		<li class="nav-item">
 			<div class="nav-link" style="padding-top: 0.2rem;padding-bottom: 0.2rem;">
 				<div class="btn-group" role="group" aria-label="Basic example">
-					<button type="button" class="btn btn-secondary btn-sm" <?php echo @$_SESSION['lang'] == 'uk' ? disabled : '';?> name="uk" onclick="setUk(this);" >UA</button>
-					<button type="button" class="btn btn-secondary btn-sm" <?php echo @$_SESSION['lang'] == 'ru' ? disabled : '';?>  name="ru" onclick="setUk(this);" >RU</button>
+
+					<button type="button" class="btn btn-secondary btn-sm" <?=$_SESSION['lang'] == 'uk' ? disabled : ''?> name="uk" onclick="setUk('uk','<?=Registry::get('lang')?>','<?=$_SERVER['REQUEST_URI']?>');" >UA</button>
+					<button type="button" class="btn btn-secondary btn-sm" <?=$_SESSION['lang'] == 'ru' ? disabled : ''?> name="ru" onclick="setUk('ru','<?=Registry::get('lang')?>','<?=$_SERVER['REQUEST_URI']?>');" >RU</button>
+		
 				</div>
 			</div>
 		</li>
@@ -109,6 +111,11 @@ $result = explode(',',$this->trans->get('Избранное,В избранно�
 			<a class="nav-link" href="<?=$menu->getUrl()?>"><?=$menu->getTitle()?></a>
 		</li>
 	<?php } ?>
+              <!--  <li class="nav-item">
+                    <p class="nav-link my-0 text-white" style="position: relative;max-height: 35px;top: -3px;" ><?=$this->trans->get('Новый Год через')?>: <span id="new_year" ></span></p>
+                </li>
+            <script>initializeClockNewYear('new_year', "2018-12-31 23:59:59");</script>
+            -->
     </ul>
 </div>
 <div class="menu_login">
@@ -130,7 +137,7 @@ $result = explode(',',$this->trans->get('Избранное,В избранно�
                 <?php } ?>
 	<div >
 	<?php if($_SESSION['desires'] or $des > 0 ){ ?>
-					<a href="/desires/" class="new_login_ok nav-link" data-placement="left"  data-tooltip="tooltip"  title="<?=$result[0]?>">
+					<a href="<?=($_SESSION['lang']== 'uk')?'/uk':''?>/desires/" class="new_login_ok nav-link" data-placement="left"  data-tooltip="tooltip"  title="<?=$result[0]?>">
 					<img class="img_des" src="/img/top_menu/des_wite_all.png" alt="Избранное"/>
 					</a>
 					<?php
@@ -146,7 +153,7 @@ $result = explode(',',$this->trans->get('Избранное,В избранно�
 <div>
 	<a href="#" class="nav-link" data-placement="left" onclick="basket_view()" data-tooltip="tooltip" title="<?php if($articles_count > 0){echo $result[6].' '.$articles_count.' '.$word;}else{echo $result[7];}?>" >					
 					<img class="img_bag"      src="/img/top_menu/backet.png" alt="Корзина"/>
-					<span id="span_ok" class="rounded-circle <?php if($articles_count > 0) echo 'span_ok'; ?>"><?php if($articles_count > 0) echo $articles_count; ?></span>
+					<span id="span_ok" class="rounded-circle <?php if($articles_count > 0) {echo 'span_ok'; }?>"><?php if($articles_count > 0) {echo $articles_count;} ?></span>
 	</a>
 	</div>	
 	</div>
@@ -155,11 +162,11 @@ $result = explode(',',$this->trans->get('Избранное,В избранно�
 function basket_view(){
 $.ajax({
 			type: "POST",
-			url: '/shop/basket/',
-			data: '&metod=view_basket',
+			url: '/ajax/getviewbacket/',
+			//data: '&metod=view_basket',
 			dataType: 'json',
 			success: function (data) {
-			console.log(data);
+			//console.log(data);
 			$(".mess_backet").html(data);
 			$('#myBasket').modal('show');
 			}

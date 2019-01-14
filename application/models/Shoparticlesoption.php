@@ -25,76 +25,13 @@ class Shoparticlesoption extends wsActiveRecord
 	{
 	return 1-(wsActiveRecord::findByQueryArray("Select value from ws_articles_option where id =$id")[0]->value/100);
 	}
-    
-        /*
-        
-    public static function getActiveOptions($a)
-	{	
-	$dat = date('Y-m-d');
-	$sql ="SELECT  `ws_articles_option`. * 
-FROM  `ws_articles_option` 
-JOIN  `ws_articles_options` ON  `ws_articles_option`.`id` =  `ws_articles_options`.`option_id` 
-WHERE  `ws_articles_option`.`status` =1
-AND  `start` <=  '$dat'
-AND  `end` >=  '$dat'
-AND (
- `ws_articles_options`.`article_id` = $a->id
-OR  `ws_articles_options`.`category_id` = $a->category_id
-OR  `ws_articles_options`.`brand_id` = $a->brand_id
-)";
-	
-		$option = wsActiveRecord::findByQueryArray($sql);
-		if($option){
-                        return $option;
-		}
-
-		return false;
-	}
-         */
-        
-        
-        /**
-         * 
-         * @param type $a - указатель на товар
-         * 
-         * @return false - товар не участвует в акции
-         * или
-         * @return параметры акции в которой учавствует товар
-         */
-        /*
-	public static function getAllOptions($a)
-	{
-
-	$dat = date('Y-m-d');
-	$sql ="SELECT  `ws_articles_option`. * 
-FROM  `ws_articles_option` 
-JOIN  `ws_articles_options` ON  `ws_articles_option`.`id` =  `ws_articles_options`.`option_id` 
-WHERE  `ws_articles_option`.`status` = 1
-AND  `start` <=  '$dat'
-AND  `end` >=  '$dat'
-AND (
- `ws_articles_options`.`article_id` = $a->id
-OR  `ws_articles_options`.`category_id` = $a->category_id
-OR  `ws_articles_options`.`brand_id` = $a->brand_id
-)";
-	
-		$option = wsActiveRecord::findByQueryArray($sql);
-		if($option){
-		//d($option, false);
-                    return $option;
-		}
-
-		return false;
-	}
-        
-        */
         
         /**
          * Список активных акций
          * @param type $limit - количество возвращаемых записей, по умолчанию 5
          * @return array
          */
-	public static function findActiveOption($limit = 5)
+	public static function findActiveOption($limit = 10)
 	{
             $dat = date('Y-m-d');
 		return Shoparticlesoption::find('Shoparticlesoption', ["status"=>1, "`start` <= '$dat'", "`end` >= '$dat'"], ['id'=>'DESC'], $limit);
@@ -120,7 +57,7 @@ OR  `ws_articles_options`.`brand_id` = $a->brand_id
          */
 	public function getPath()
 	{
-		return "/news/name/" . $this->_generateUrl($this->option_text) . "/id/" . $this->getId() .'/';
+		return "/news/id/" . $this->getId() .'/name/' . $this->_generateUrl($this->option_text).'/';
 	}
         
         /**
@@ -130,7 +67,7 @@ OR  `ws_articles_options`.`brand_id` = $a->brand_id
           public function getPathFind()
                 {
  
-                    return "/articles/option/".$this->id."/".$this->_generateUrl($this->option_text);
+                    return "/articles/option/".$this->id."/".$this->_generateUrl($this->option_text).'/';
                 }	
 	
 }

@@ -26,7 +26,7 @@ class UkrPost{
 	
 	}
 	public function requestQuery($barcode) {
-        // ôîðìèðóåì ïîäïèñü
+        // Ñ„Ð¾Ñ€Ð¼Ð¸Ñ€ÑƒÐµÐ¼ Ð¿Ð¾Ð´Ð¿Ð¸ÑÑŒ
        // $sign = md5($this->_login.$this->_password.$function.$where.$order);
 
 
@@ -41,7 +41,7 @@ $xml = '<?xml version="1.0" encoding="utf-8"?>
   </soap:Body>
 </soap:Envelope>';
 
-        // îòïðàâëÿåì çàïðîñ
+        // Ð¾Ñ‚Ð¿Ñ€Ð°Ð²Ð»ÑÐµÐ¼ Ð·Ð°Ð¿Ñ€Ð¾Ñ
         return $this->_requestXML($xml, 'http://services.ukrposhta.com');
     }
 	private function _requestXML($xmlString, $url) {

@@ -115,4 +115,3 @@ WHERE `ws_categories`.`parent_id` = '.$id.' AND  `ws_categories`.`active` = 1 AN
 		?>
 </div>
 </div>
-</div>

@@ -60,13 +60,11 @@ i+30>n?$(this).css("margin-left",o):$(this).css("margin-left","")})
 <?php
 $t_f = date("Y-m-d"); 
 $cats = wsActiveRecord::useStatic('Shopcategories')->findAll(array('parent_id' => 0, 'active' => 1));
+
 	foreach ($cats as $category) {
-		$color='';
-			//if($this->get->id == $category->getId()) $color='style="color:#e40413;"';
+	$color = '';
 $sub_cats = wsActiveRecord::useStatic('Shopcategories')->findAll(array('parent_id' => $category->getId(), 'active' => 1), array('name'=>'ASC'));
-	if($category->getId() == 267 and false){ // vse tovary
-echo '<li class=" menu-item-has-children menu-item-has-mega-menu" ><a href="'.$category->getPath().'" '.$color.' class="menu-item-span"><span class="menu-item-span">'.$category->getName().'</span></a>';
-			}else if($category->getId() == 11){
+if($category->getId() == 12){
 			$color = 'style="color:red;"';
 			echo '<li class=" menu-item-has-children menu-item-has-mega-menu"><a href="'.$category->getPath().'" '.$color.' class="menu-item-span"><span class="menu-item-span">'.$category->getName().'</span></a>';
 			}else{
@@ -85,7 +83,7 @@ if ($sub_sub_category->getId() != 11 and $sub_sub_category->getId() != 12 and $s
 						$arr = $sub_sub_category->getKidsIds();
 						$arr[] = $sub_sub_category->getId();
 		$articles = wsActiveRecord::useStatic('Shoparticles')->count(array('category_id in('.implode(",", $arr).')',' stock > 0', 'data_new < "'.$t_f.'" '));
-						if ($articles == 0) continue;
+						if ($articles == 0) { continue; }
 					} ?>
 		 <li><a href="<?=$sub_sub_category->getPath()?>" ><?=$sub_sub_category->getName()?></a></li>
 					  
@@ -97,7 +95,7 @@ if ($sub_sub_category->getId() != 11 and $sub_sub_category->getId() != 12 and $s
 						$arr = $sub_category->getKidsIds();
 						$arr[] = $sub_category->getId();
 $articles = wsActiveRecord::useStatic('Shoparticles')->count(array('category_id in('.implode(",", $arr).')',' stock not like "0" ', 'data_new < "'.$t_f.'" '));
-						if ($articles == 0) continue;
+						if ($articles == 0){ continue; }
 					}
 					//$color='';
 					//if($this->get->id == $sub_category->getId()){ $color='style="color:#e40413;"';}
@@ -107,7 +105,7 @@ $articles = wsActiveRecord::useStatic('Shoparticles')->count(array('category_id 
 					<?php	} ?>
 		</ul>
 						
-	<?php		}else if ($category->getId() == '106') { //show articles from last 10 days
+	<?php		}else if ($category->getId() == 106) { //show articles from last 10 days
 	$sub_cats = wsActiveRecord::useStatic('Shopcategories')->findAll(array('id in(14,15,33,54,59)'));
 	$t_t = date("Y-m-d", strtotime("-10 day"));?>
 <div class="mega-menu cat_106">
@@ -115,7 +113,7 @@ $articles = wsActiveRecord::useStatic('Shoparticles')->count(array('category_id 
 			<?php foreach ($sub_cats as $sub_category) {
 $sql = 'SELECT * from ws_articles where category_id in('.implode(",", $sub_category->getKidsIds()).') and  stock not like "0" and active = "y"  GROUP BY  `model`  order by `ws_articles`.`id` DESC  LIMIT 0, 5';
 $t = wsActiveRecord::useStatic('Shoparticles')->findByQuery($sql);
-if($t->count() == 0) continue;?>
+if($t->count() == 0){ continue; }?>
 <li class="menu-item-has-children mega-menu-col">
 <a href="<?=$sub_category->getPath()?>"><?=$sub_category->getName()?></a>
 <ul class="sub-menu"><?php foreach($t as $ar){?><li><a href="<?=$ar->getPath()?>"><?=$ar->getTitle()?></a></li><?php } ?></ul>
@@ -135,10 +133,10 @@ if($t->count() == 0) continue;?>
 <?php
 					$j = 0;
 					foreach ($this->cached_brands as $brand) {
-						if ((int)$brand['brand_id'] and !in_array(@$brand['brand'], array('<>', '1', 'Italia', 'Made in Germany'))) {
+						if ((int)$brand['brand_id'] and !in_array($brand['brand'], array('<>', '1', 'Italia', 'Made in Germany'))) {
 							$j++;
 ?>
-<li><a href="/category/brands/<?=(int)$brand['brand_id']?>" <?php if ($j > 12){ echo 'class="brand_hide'; } ?> ><?=$brand['brand']?></a></li>
+<li><a href="/all/articles/brands-<?=$brand['brand']?>" <?php if ($j > 12){ echo 'class="brand_hide'; } ?> ><?=$brand['brand']?></a></li>
 <?php if ($j == 12) { ?><li><a href="/brands/" class="brand_show_all"><b><?=$this->trans->get('Показать все');?></b></a></li><?php break;} ?>
 <?php } } ?>
 </ul>

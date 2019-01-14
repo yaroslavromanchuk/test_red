@@ -16,7 +16,7 @@
 	<tr>
 		<td>Бренд:</td>
 		<td>
-		<select name="brand" class="selectpicker show-tick form-control input" data-live-search="true" style="max-width: 180px;">
+		<select name="brand" class="form-control select2-show-search"  aria-hidden="true" tabindex="-1" >
 			<option value="">Виберите бренд</option>
 			<?php foreach (wsActiveRecord::useStatic('Brand')->findAll() as $b) {
 				if ($b->getName() != '') { ?>
@@ -26,7 +26,7 @@
 		</td>
 		<td>Цвет</td>
 		<td>
-		<select name="color" class="selectpicker show-tick form-control input" data-live-search="true" style="max-width: 180px;">
+		<select name="color" class="form-control input select2-show-search" data-live-search="true" style="max-width: 180px;">
 		<option value="">Виберите цвет</option>
 		<?php foreach (wsActiveRecord::useStatic('Shoparticlescolor')->findAll() as $color) { ?>
 		<option value="<?=$color->getId()?>" <?php if ($_GET['color'] == $color->getId()) echo "selected"; ?>><?php echo $color->getName(); ?></option>
@@ -47,7 +47,7 @@
 		foreach ($this->categories as $cat) {$mas[$cat->getId()] = $cat->getRoutez();}
 			asort($mas);
 			?>
-	<select name="id" id="select" class="form-control input" style="max-width: 180px;">
+	<select name="id" id="select" class="form-control input select2-show-search" style="max-width: 180px;">
 			<option value="">Выберите категорию</option>
 			<?php
 			foreach ($mas as $kay => $value) {

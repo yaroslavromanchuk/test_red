@@ -17,11 +17,11 @@ require_once('functions.php'); //move to separate class
 require_once('Zend/Loader.php');
 require_once('Orm/ormLoader.php');
 require_once('MobileDetect/Mobile_Detect.php');
-Zend_Loader::registerAutoload();
+Zend_Loader::registerAutoload();// nujno
 //spl_autoload_register(array('Zend_Loader', 'autoload'));
 
-//$timer = new DebugTimer(4);
-//Registry::set('SQLLogger', SQLLogger::getInstance());
+$timer = new DebugTimer(4);
+Registry::set('SQLLogger', SQLLogger::getInstance());
 
 header('Content-type: text/html; charset=UTF-8');
 header('Cache-control: private');
@@ -33,9 +33,11 @@ session_start();
 //load Cache
 $cache = new Cache();
 $cache->setEnabled(true);
+
 Registry::set('cache', $cache);
 Registry::set('locale', $locale);
 Registry::loadConfig($config_values);
+
 $db_config = array(
     'adapter' => 'PDO_MYSQL',
     'config' => array(
@@ -51,37 +53,26 @@ $db->query("SET NAMES utf8");
 Registry::set('dbpdo', $db);
 if (!PDO) {
     $db = @mysql_connect($sql_host, $sql_user, $sql_passwd, true) or die('Error connecting to DB');
-    @mysql_select_db($sql_database, $db) or die('Error selecting DB');
-    @mysql_query("SET NAMES utf8", $db);
+    mysql_select_db($sql_database, $db) or die('Error selecting DB');
+    mysql_query("SET NAMES utf8", $db);
 }
 
 Registry::set('db', $db);
 
-Registry::set('site_id', Website::getSite()->getId());
+Registry::set('site_id', 1);//Website::getSite()->getId()
 Registry::loadDBConfig(); //loads automatically
 
 Registry::set('db_name', $sql_database);
 
 Registry::set('use_hs', false);
 
-$lng = Registry::get('default_language');
-if (isset($_SESSION['lang']) && $_SESSION['lang']){ $lng = $_SESSION['lang'];}else{$_SESSION['lang'] = $lng;}
-
-if (isset($_REQUEST['lang']) && $_REQUEST['lang']) {
-    $lng = $_REQUEST['lang'];
-    $_SESSION['lang'] = $lng;
-}
-if ($lng) {
-if($lng == 'uk'){ $l = 2;}else{$l = 1;}
-Registry::set('lang_id', $l ); //wsLanguage::findByCode(strtolower($lng))->getId()
-Registry::set('lang', strtolower($lng));
-}
 
 $detect = new Mobile_Detect;
 Registry::set('device', ($detect->isMobile() ? ($detect->isTablet() ? 'tablet' : 'phone') : 'computer'));
 //opredelenie device
 
-	function morph($n, $k) {
+	function morph($n, $k) 
+                {
 		$unit=array(
 			array('гривня'  ,'гривні'  ,'гривень'    ,0),
 			array('копійка' ,'копійки' ,'копійок',	 1),
@@ -95,7 +86,8 @@ Registry::set('device', ($detect->isMobile() ? ($detect->isTablet() ? 'tablet' :
 		return $unit[$k][2];
 	}
 
-	function num2strm($num) {
+	function num2strm($num) 
+        {
 		$nul='нуль';
         $ukr = array(
             array( //one_nine
@@ -168,12 +160,7 @@ Registry::set('device', ($detect->isMobile() ? ($detect->isTablet() ? 'tablet' :
 
         return implode(' ', $out);
     }
-
-
-
-//remove me;
-//$_COOKIE['cache_config'] = false;
-//unset($_COOKIE['cache_config']);
+    
 
 if (isset($_GET['clearcache'])) {
     $cache->setEnabled(true);
@@ -181,7 +168,7 @@ if (isset($_GET['clearcache'])) {
 }
 
 
-if (isset($_COOKIE['cache_config'])) $cache->setEnabled($_COOKIE['cache_config']);
+if (isset($_COOKIE['cache_config'])){ $cache->setEnabled($_COOKIE['cache_config']);}
 
 
 if (isset($_REQUEST['site_date']) || isset($_SESSION['site_date'])) {
@@ -194,9 +181,11 @@ if (isset($_REQUEST['site_date']) || isset($_SESSION['site_date'])) {
     {
         unset($_SESSION['site_date']);
     }
-}
-else
+}else{
     $curdate = new wsDate();
+    
+}
+
 Registry::set('curdate', $curdate);
 
 $website = new Website();
@@ -263,7 +252,8 @@ set_error_handler('error_handler');
 //Site lock
 //if (Config::findByCode('under_maintaince')->getValue() && !$website->getCustomer()->isSuperAdmin())
    // die('Under maintaince. Please come back shortly.');
-
+//var_dump($_GET);
+//
 // run!
 Router::route();
 echo Controller::process();
@@ -273,29 +263,31 @@ if($website->getCustomer()->getId() == 8005){
 	//echo get_include_path();
 	//echo FORME;
 	//echo '<pre>';
+        
+       //echo  print_r($_COOKIE);
 	//echo print_r(define);
 	//echo '</pre>';
 //echo $_SERVER[HTTP_COOKIE];
 //echo $_COOKIE["PHPSESSID"];
 	
     // Debug::dump(SQLLogger::getInstance()->reportShort());
-      //  Debug::dump(SQLLogger::getInstance()->reportBySql());
-      //  Debug::dump(SQLLogger::getInstance()->reportByTime());
-    // Debug::dump(SQLLogger::getInstance()->reportByClass());
+      // Debug::dump(SQLLogger::getInstance()->reportBySql());
+       // Debug::dump(SQLLogger::getInstance()->reportByTime());
+     //Debug::dump(SQLLogger::getInstance()->reportByClass());
      // Debug::dump($timer->getResults());
 
-       // $timer->stop();
-       // echo 'Time: ' . $timer->getResults('main') . 's<br>';
-        //echo 'Memory: ' . number_format(memory_get_usage(true)/1024/1024,3,'.',',') . 'Mb<br>';
-        //echo Registry::get('obj');
+      //  $timer->stop();
+     //  echo 'Time: ' . $timer->getResults('main') . ' s<br>';
+      // echo 'Memory: ' . number_format(memory_get_usage(true)/1024/1024,3,'.',',') . ' Mb<br>';
+      //  //echo Registry::get('obj');
 
 		//echo '<pre>';
-		//print_r($_SESSION);
+              //  print_r($this->cur_menu);
+               // print_r($_SESSION);
+	//print_r($_SERVER);
+		//print_r($_REQUEST);
 		//echo count($_SESSION['basket']);
 	//echo '</pre>';
-	
-
-
     }
 	
-	?> 	
+		

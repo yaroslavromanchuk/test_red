@@ -55,11 +55,11 @@
         </td>
     </tr>
    
-    <?php if ($this->user->getDeposit()) { ?>
+    <?php if (/*$this->user->getDeposit()*/true) { ?>
         <tr>
             <td><?=$text[8]?></td>
             <td >
-                <?php echo Shoparticles::showPrice($this->user->getDeposit());?> грн.
+                <?=Shoparticles::showPrice($this->user->getDeposit())?> грн.
             </td>
         </tr>
     <?php } ?>
@@ -90,7 +90,7 @@
 <input class="form-control" style="    max-width: 200px;font-size: 13px;text-align: center;display: inline;" name="trec" type="text" id="trec" value="" pattern="[0-9]{9,14}"  maxlength="14" placeholder="ТТН">   <button  type="button" class="btn btn-danger" onclick="tracking($('#trec').val());"><?=$text[11]?></button>
   </div>
 </div>
-<script type="text/javascript">
+<script>
 function tracking(x) {
 if(x.length == 13 || x.length == 14) {
 			$("#trek .modal-body").html('<img  id="loading" src="/img/loading_trac.gif">');

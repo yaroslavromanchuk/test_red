@@ -17,10 +17,11 @@
 <table border="0" cellpadding="2" cellspacing="0" width="700" style="font-family: Verdana" align="center" >
 <tr>
 <td width=700 style="vertical-align:top">
-<?php if($this->order['delivery_type_id'] == 3) { echo '<br><span style="font-size: 14px;color:#E8641B;">'.$this->trans->get('График работы пункта выдачи').' <b>Пн-Сб: 08:00-22:00, Вс: 10:00-22:00</b></span>'; }?>
-<?php if($this->order['delivery_type_id'] == 5) { echo '<br><span style="font-size: 14px;color:#E8641B;">'.$this->trans->get('График работы пункта выдачи').' <b>Пн-Вс: 09:00- 22:00</b></span>'; }?>
+
 <p><?=$this->trans->get('Дополнительную информацию можно получить по телефону');?>: (044) 224-40-00</p>
 <?php if(in_array(@$this->order['delivery_type_id'],array(3,5))){ ?>
+<?php if($this->order['delivery_type_id'] == 3) { echo '<br><span style="font-size: 14px;color:#E8641B;">'.$this->trans->get('График работы пункта выдачи').' <b>Пн-Вс: 10:00-22:00</b></span>'; }?>
+<?php if($this->order['delivery_type_id'] == 5) { echo '<br><span style="font-size: 14px;color:#E8641B;">'.$this->trans->get('График работы пункта выдачи').' <b>Пн-Вс: 10:00- 22:00</b></span>'; }?>
     <p style=" font-size: 14px;">
         <i><?=$this->trans->get('Условия оплаты и возврата заказа');?>:</i><br><br>
               - <?=$this->trans->get('дисконтная скидка розничных магазинов RED недействительна для интернет-заказов');?>;<br>
@@ -109,17 +110,13 @@
 	   <?php $t_count += $count; echo $count;?>
 	   </td>
 	   
-       <td>
-	    <?=Shoparticles::showPrice($price['price'])?> грн.
-	   </td>
+       <td><?=Shoparticles::showPrice($price['price'])?> грн.</td>
         </tr>
 <?php } ?>
 	</table>
 	<table width="700"  class="table cart-table">
 		<tr>
-				<td style="text-align:left;" colspan="3">
-					<?=$this->trans->get('Способ доставки')?>:
-				</td>
+				<td style="text-align:left;" colspan="3"><?=$this->trans->get('Способ доставки')?>:</td>
 				<td style="text-align:right;" colspan="2" ><?=$order->getDeliveryType()->getName()?></td>
 			</tr>
 						<?php if($order->delivery_type_id == 8 || $order->delivery_type_id == 16){ ?>
@@ -142,9 +139,7 @@
 			</tr>
 
 			<tr>
-				<td style="text-align:left;" colspan="3">
-					<?=$this->trans->get('Способ оплаты')?>:
-				</td>
+				<td style="text-align:left;" colspan="3"><?=$this->trans->get('Способ оплаты')?>:</td>
 				<td style="text-align:right;" colspan="2" ><?=$order->getPaymentMethod()->getName()?></td>
 			</tr>
 			
@@ -186,12 +181,7 @@
     <?php } ?>
 	<tr>
         <td style="text-align:left;" colspan="3"><strong><?=$this->trans->get('Всего к оплате')?>:</strong></td>
-        <td style="text-align:right;" colspan="2"><strong>
-			  <?php //$t_count
-	if($order->getBonus() > 0){ $bonus = true; }else{ $bonus = false; }
-      echo Number::formatFloat($order->calculateOrderPrice2(true, true, true, $bonus), 2);
-            ?> грн.
-		</strong></td>
+        <td style="text-align:right;" colspan="2"><strong><?=Number::formatFloat($order->getAmount(), 2)?> грн.</strong></td>
 	</tr>
 </table>
 <br/>

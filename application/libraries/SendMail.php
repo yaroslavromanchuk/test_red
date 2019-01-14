@@ -45,14 +45,15 @@
         }
 
 	public function sendEmail($to_email, $to_name = '', $subject, $msg ='', $uploadfile = false, $filename = false, $from_email = false, $from_name = false, $copy = false, $copy_email = false, $copy_name = false){
-	try{	
+	if(substr(trim($to_email), -2) != 'ru'){
+            try{	
 // инициализируем класс
 //$this->mailer = new PHPMailer(true);
 $this->mailer->IsHTML(true);
 //$mailer->AddReplyTo('notforall@red.ua', 'Департаменту оплаты');
 
 $subject = iconv('UTF-8', $this->email_charset, $subject);
-	if (!trim($subject)) return false;
+	if (!trim($subject)) {return false;}
 	
 $msg = iconv('UTF-8', $this->email_charset, trim($msg));
 // Устанавливаем тему письма
@@ -65,13 +66,13 @@ if($to_email and $this->isValidEmailNew($to_email)){
 $this->mailer->AddAddress($to_email, $to_name);
 
 if($copy and $copy_email and $this->isValidEmailNew($copy_email)){
-if($copy == 1) $this->mailer->AddCC($copy_email, $copy_name);//общая копия
-if($copy == 2) $this->mailer->AddBCC($copy_email, $copy_name);//скрытая копия
+if($copy == 1) {$this->mailer->AddCC($copy_email, $copy_name);}//общая копия
+if($copy == 2) {$this->mailer->AddBCC($copy_email, $copy_name);}//скрытая копия
 }
 } 
 
-if ($from_name) $this->mailer->FromName = $from_name;
-if ($from_email) $this->mailer->From = $from_email;
+if ($from_name) {$this->mailer->FromName = $from_name;}
+if ($from_email) {$this->mailer->From = $from_email;}
 				
 // Задаем тело письма
 $this->mailer->Body = $msg;
@@ -97,6 +98,9 @@ $this->mailer->IsHTML(false);
               wsLog::add($e->getMessage(), 'ERROR2'); //Boring error messages from anything else!
             }
 return true;
+        }
+        
+        return false;
 	}
 	
 public function sendSubEmail($to_email, $to_name = '', $subject, $msg ='', $uploadfile = '', $filename = '', $from_email = '', $from_name = '', $copy = false, $copy_email = '', $copy_name = ''){
@@ -109,14 +113,21 @@ $this->mailer->IsHTML(true);
 $this->mailer->Username = $this->subscribe_email;
 $this->mailer->Password = $this->subscribe_pass;
 
-if ($from_name) $this->mailer->FromName = $from_name;
-//if ($from_email)
-$this->mailer->From = $this->subscribe_email;
+if ($from_name) { $this->mailer->FromName = $from_name; }
+if ($from_email){ 
+    $this->mailer->From = $from_email;
+}else{
+    $this->mailer->From = $this->subscribe_email;
+}
+
 
 				
 if($to_email and $this->isValidEmailNew($to_email)){
 // Добавляем адрес в список получателей
-$this->mailer->AddAddress($to_email, $to_name);
+    if(false){
+        $this->mailer->AddReplyTo('replyto@email.com', 'Reply to name');
+    }
+$this->mailer->AddAddress(trim($to_email), $to_name);
 /*
 if($copy and $copy_email and $this->isValidEmailNew($copy_email)){
 if($copy == 1) $this->mailer->AddCC($copy_email, $copy_name);//общая копия
@@ -125,7 +136,7 @@ if($copy == 2) $this->mailer->AddBCC($copy_email, $copy_name);//скрытая �
 } 
 //$mailer->AddReplyTo('notforall@red.ua', 'Департаменту оплаты');
 $subject = iconv('UTF-8', $this->email_charset, $subject);
-	if (!trim($subject)) return false;
+	if (!trim($subject)) { return false; }
 	
 //$this->mailer->CharSet="UTF-8";
 
@@ -141,16 +152,16 @@ if($uploadfile and $filename){ $this->mailer->addAttachment($uploadfile, $filena
 
 if(!$this->mailer->Send()){
 $res = 'Не могу отослать письмо!'.$this->mailer->ErrorInfo;
-  //return 'Не могу отослать письмо!';
+$r = false;
 }else{
 $res = 'Письмо отослано!';
-  //return 'Письмо отослано!';
+$r = true;
 }
-
 $this->mailer->ClearAddresses();
 $this->mailer->ClearAttachments();
 $this->mailer->IsHTML(false);
   wsLog::add('Email subscribe notification "' . $res . '" sent to: ' . $to_email , 'Email');
+  return $r;
 
 }catch (phpmailerException $e) {
 	wsLog::add($e->errorMessage(), 'ERROR'); //Pretty error messages from PHPMailer
@@ -190,4 +201,3 @@ public function isValidEmailNew($email){
         }
 
 }
-?>

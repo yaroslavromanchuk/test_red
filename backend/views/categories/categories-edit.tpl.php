@@ -1,22 +1,21 @@
-<img src="<?=$this->getCurMenu()->getImage()?>"  class="page-img" />
-<h1><?=$this->getCurMenu()->getTitle()?></h1>
-<div class="panel panel-default">
-  <div class="panel-heading"><?=$this->category_edit->getRoutez()?></div>
+<div class="sl-pagebody">
+    <div class="card card pd-20 pd-sm-40">
+    <h6 class="card-body-title"><?=$this->category_edit->getRoutez()?></h6>
   <form action="" method="post">
-  <div class="panel-body">
+  <div class="card-body">
    <div class="row">
 <div class="col-md-12">
 <div class="form-group">
-<div class="col-xs-2">
+<div class="col-xs-4">
     <label >Активность:</label>
 	</div>
-    <div class="col-xs-2">
+    <div class="col-xs-4">
          <input name="active" type="checkbox" id="active" name="active" <?php if (strcasecmp($this->category_edit->active,'1') == 0){ echo 'checked="checked"';}?> />
     </div>
-	<div class="col-xs-3">
+	<div class="col-xs-4">
 	Товаров в категории: <?=$this->category_edit->getArticles()->count()?>
     </div>
-    <div class="col-xs-5">
+    <div class="col-xs-12">
 	Категория уценки: <select name="usenca_category" class="form-control" >
             <option value="" selected>Выберите категорию...</option>
 <?php
@@ -147,24 +146,24 @@
       <div class="row">
           <p>
         <label>
-          <input type="submit" name="button_save" id="button" value="Сохранить" />
+            <input type="submit" name="button_save" class="btn btn-primary btn-lg" id="button" value="Сохранить" />
           </label>
       </p>
           
       </div>
   </div>
   </form>
-  <div class="panel-footer">
+  <div class="card-footer">
       <form name="add_category" class="form-inline" id="add_category" action="" method="post">
 	<div class="row">
-	<div class="col-md-12">
+	<div class="col-md-12 text-left">
 	<input type="text" hidden id="parent_id" name="parent_id" value="<?=$this->category_edit->id?>">
 	<label for="name">Создание подкатегории:</label>
 <div class="input-group">
   <span class="input-group-addon"><?=$this->category_edit->getRoutez()?> :</span>
   <input type="text" class="form-control" id="category_name"  name="category_name" aria-describedby="name">
 <span class="input-group-btn">
-    <button class="btn btn-default"  type="submit"  name="new_cat">Создать</button>
+    <button class="btn btn-primary"  type="submit"  name="new_cat">Создать</button>
       </span>
 </div>  
   </div>
@@ -172,30 +171,9 @@
 	</form>
   </div>
 </div>
-	
+</div>	
 <script  src="<?=$this->files?>scripts/tinymce/tinymce.min.js"></script>
 <script>
-    
-  /*  $( "#add_category" ).on( "submit", function( event ) {
-  event.preventDefault();
-  //console.log( $( this ).serialize() );
-  
-  $.ajax({
-                url: '/admin/shop-categories/',
-                type: 'POST',
-                dataType: 'json',
-                data: '&method=new_category&'+ $( this ).serialize(),
-                success: function (res) {
-				console.log(res);
-                },
-                    error: function(e){
-                        console.log(e);
-                        
-                    }
-            });
-  return false;
-});*/
-    
 	tinymce.init({
 		selector: "textarea",
 		//width: 750,

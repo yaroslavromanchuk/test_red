@@ -47,3 +47,8 @@ $(function () {
 		}
 	});
 });
+function setCooki(e) {
+document.cookie = "mobil =" + e;
+location.reload();
+         // return false;
+}

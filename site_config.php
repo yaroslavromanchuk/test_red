@@ -24,7 +24,7 @@
 
     $config_values = array('default_language' => 'ru', 'is_live' => 1, 'site_id' => '1');
 	
-		$site = array(
+	$site = array(
 	'from_name' => 'RED.UA', // from (��) ���
 	'from_email' => 'market@red.ua', // from (��) email �����
 	'smtp_mode' => 'disabled', // enabled or disabled (������� ��� ��������)

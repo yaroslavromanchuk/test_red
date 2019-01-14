@@ -1,26 +1,15 @@
-<img src="<?=SITE_URL.$this->getCurMenu()->getImage()?>"  class="page-img" />
-<h1><?=$this->getCurMenu()->getTitle()?></h1>
+<div class="sl-pagebody">
+    <div class="card card pd-20 pd-sm-40">
+    <h6 class="card-body-title"><img src="<?=$this->getCurMenu()->getImage()?>"  class="page-img" /><?=$this->getCurMenu()->getTitle()?></h6>
 <?php
-//echo print_r($this->categories);
-foreach ($this->categories as $cat) {
-                    $mas[$cat->getRoutez()]['id'] = $cat->getId();
-                    //$mas[$cat->getRoutez()]['count'] = (int)$cat->getArticles()->count();
-                }
-
-                ksort($mas);
-$mascat = array();
-foreach ($this->categories as $cat) {
-                    $mascat[$cat->getRoutez()] = $cat;
-                }
-
-                ksort($mascat);
-      
+foreach ($this->categories as $cat) {$mas[$cat->getRoutez()]['id'] = $cat->getId();} ksort($mas);
+$mascat = [];
+foreach ($this->categories as $cat) { $mascat[$cat->getRoutez()] = $cat; }
+ksort($mascat);  
 ?>
 
-
-
-	<form method="post" action="#">
-    <table  cellpadding="4" cellspacing="0" class="table table-hover">
+<form method="post" action="#">
+    <table   class="table table-hover table-bordered">
 		
         <thead>
             <tr>
@@ -32,7 +21,6 @@ foreach ($this->categories as $cat) {
                 
 	<?php
 
-		$row = 'row1';
 		$cur = -1;
 		$count = $this->getCategories()->count();
 $i=0;
@@ -44,7 +32,7 @@ $i=0;
 			$is_first = (0 == $cur);
 			$is_last = ($count == $cur + 1);
 	?>
-		<tr class="<?=$row?>">
+		<tr>
 			<td class="kolomicon"><a href="<?=$this->path?>shop-categories/edit/id/<?=$category->getId()?>/"><img src="<?=SITE_URL?>/img/icons/edit-small.png" alt="Редактировать" width="24" height="24" /></a></td>
 		<?php
         	if (/*$category->getArticles()->count() or */$category->kids->count()>0)
@@ -152,7 +140,8 @@ $i=0;
           </label>
       </p>
     </form>
-
+</div>
+    </div>
 
 	
 <script  src="<?=$this->files?>scripts/tinymce/tinymce.min.js"></script>

@@ -1,8 +1,8 @@
-<script type="text/javascript" src="/js/call/jquery.mask.js?v=20131212"></script>
+<script  src="/js/call/jquery.mask.js?v=20131212"></script>
 <link rel="stylesheet" href="/js/meest/jquery-ui.css?v=20131212" type="text/css" media="screen">
-<script type="text/javascript" src="/js/meest/jquery-ui.js?v=20131212"></script>
+<script  src="/js/meest/jquery-ui.js?v=20131212"></script>
 <script>$( function(){ $("#telephone").mask("38(999)999-99-99");});</script>
-<h1 class="violet"><?=$this->getCurMenu()->getName();?></h1>
+
 
 <input hidden id="c_b" type="text" value="<?php if($_SESSION['count_basket'] > count($_SESSION['basket'])){ echo $_SESSION['count_basket']; }else{ echo count($_SESSION['basket']); }?>">
 
@@ -165,7 +165,7 @@
 	phone = phone.replace(/[^0123456789]/g,'');
 	if(phone.length!=12){
 					var x = 12-phone.length;
-					var t ='<?=$this->trans->get('В номере телефона не хватает')?> '+x+' <?=$this->trans->get('цыфр')?>.'; 
+					var t ='<?=$this->trans->get('В номере телефона не хватает')?> '+x+' <?=$this->trans->get('цифр')?>.'; 
 					$("#lb").text(t);
 					 $('#telephone').addClass("red");
 					 $('#telephone').removeAttr('style');
@@ -405,7 +405,7 @@ $('#ms').html("<?=$this->trans->get('На пункт выдачи заказов
 			<input type="hidden" id="s_street_id" name="s_street_id">
 		</div>
 <div class="col-xs-12 col-sm-12  col-md-6 col-md-6 col-lg-6 col-xl-6 form-group up" id="sity" style="<?php//np
-						if (!in_array(@$this->basket_contacts['delivery_type_id'], array(4,8)))
+						if (!in_array($this->basket_contacts['delivery_type_id'], array(4,8)))
 							echo 'display: none;';
 					?>" >
 <?php if (!$this->ws->getCustomer()->getIsLoggedIn() || !$this->ws->getCustomer()->getCity()) { ?>
@@ -439,7 +439,7 @@ $('#ms').html("<?=$this->trans->get('На пункт выдачи заказов
 <?php } ?>
 					</div>
 <div class="col-xs-12 col-sm-12 col-md-6 col-md-6 col-lg-6 col-xl-6 form-group up k" id="kvartira" style="<?php
-						if (!in_array(@$this->basket_contacts['delivery_type_id'], array(4,9)))
+						if (!in_array($this->basket_contacts['delivery_type_id'], array(4,9)))
 							echo 'display: none;'; ?>">
 <?php if (!$this->ws->getCustomer()->getIsLoggedIn() || !$this->ws->getCustomer()->getFlat()) { ?>
 							<input name="flat" id="flat" type="text" placeholder="<?=$this->trans->get('Квартира')?>" class="form-control<?php if (in_array('flat', $this -> errors, true)) echo " red";
@@ -449,7 +449,7 @@ $('#ms').html("<?=$this->trans->get('На пункт выдачи заказов
 <?php } ?>
 					</div>
 <div class="col-xs-12 col-sm-12 col-md-6 col-md-6 col-lg-6 col-xl-6 form-group np" style="<?php
-						if (!in_array(@$this->basket_contacts['delivery_type_id'], array(8, 16))) echo 'display: none;'; ?>">
+						if (!in_array($this->basket_contacts['delivery_type_id'], array(8, 16))) echo 'display: none;'; ?>">
 <?php
 if(true){
  ?>
@@ -465,15 +465,23 @@ if(true){
 				</div>
 			</div>
 		</div>
-<p  class="alert alert-danger m_type" ><span style="font-size:  18px;font-weight:  bold;">Обратите внимание!</span><br>C 01.06.2018 для получения заказа в пункте самовывоза, его нужно оплатить в полном размере(онлайн при оформлении или в самом пункте самовывоза). За дополнительной информацией обращайтесь в Колл.центр (044) 224-40-00</p>
-<div class="col-xl-12 sv only_sv" id="pobedy" style="<?php if ($this->basket_contacts['delivery_type_id'] != 3) echo 'display: none;'; ?> " >
+<p  class="alert alert-danger k_type w-100" >
+    <span style="font-size:  18px;font-weight:  bold;">Обратите внимание!</span>
+    <br>Изменения в режиме работы курьерской доставка. Заказы оформленные с 29.12.2018 по 10.01.2019, будут доставлены с 11.01.2019 года.<br> За дополнительной информацией обращайтесь в Колл.центр (044) 224-40-00
+</p>
+<p  class="alert alert-danger m_type" >
+    <span style="font-size:  18px;font-weight:  bold;">Обратите внимание!</span>
+    <br>C 01.06.2018 для получения заказа в пункте самовывоза, его нужно оплатить в полном размере(онлайн при оформлении или в самом пункте самовывоза). За дополнительной информацией обращайтесь в Колл.центр (044) 224-40-00
+</p>
+
+<div class="col-xl-12 sv only_sv" id="pobedy" style="<?php if ($this->basket_contacts['delivery_type_id'] != 3){ echo 'display: none;';} ?> " >
 			<div class="panel panel-default sv only_sv">
 				<div class="row panel-body" style="background: white;">
 					<div class="col-sm-12 col-md-3 col-lg-3 col-xl-3 form-group sv only_sv">
 						<?=$this->trans->get('<p>г. Киев</p>
 							<p>проспект Победы, 98/2</p>
 							<p>между метро "Нивки" и "Святошино"</p>
-							<p>пн-вс: 11:00-21:00</p>
+							<p>пн-вс: 10:00-22:00</p>
 							<p>(093) 854 23 53</p>
 							<p>(067) 406 90 80</p>')?>
 					</div>
@@ -482,15 +490,15 @@ if(true){
 					</div>
 				</div>
 			</div>
-		</div>
-<div class="col-xl-12 sv only_sv" id="stroitely" style="<?php if ($this->basket_contacts['delivery_type_id'] != 5) echo 'display: none;'; ?> " >
+</div>
+<div class="col-xl-12 sv only_sv" id="stroitely" style="<?php if ($this->basket_contacts['delivery_type_id'] != 5) {echo 'display: none;';} ?> " >
 			<div class="panel panel-default sv only_sv">
 				<div class="row panel-body" style="background: white;">
 					<div class="col-sm-12 col-md-3 col-lg-3 col-xl-3 form-group sv only_sv">
 						<?=$this->trans->get('<p>г. Киев</p>
 							<p>ул.Строителей, 40</p>
 							<p>ТЦ "DOMA", 2 этаж</p>
-							<p>пн-вс: 10:00-20:00</p>
+							<p>пн-вс: 10:00-22:00</p>
 							<p>(063) 010 34 53</p>
 							<p>(098) 634 26 82</p>')?>
 					</div>
@@ -527,19 +535,19 @@ if(true){
 <div class="btn-group payment_method_container"  data-toggle="buttons"  >
 <ul class="backet_ul" align="center">
 <li>
-<label id="l_nl" class="btn btn-default k_p s_m_p s_p_p label_payment <?php if($this->ws->getCustomer()->isBlockCur()) echo " hide_kur";
-if($this->ws->getCustomer()->isBlockM()) echo " hide_mag"; ?>" 
+<label id="l_nl" class="btn btn-default k_p s_m_p s_p_p label_payment <?php if($this->ws->getCustomer()->isBlockCur()) {echo " hide_kur";}
+if($this->ws->getCustomer()->isBlockM()){ echo " hide_mag";} ?>" 
 style="<?php if (!in_array($this->basket_contacts['delivery_type_id'], array(3,9,5))){ echo ' display: none;';} ?>">
 							<div class="media">
 							<input class="payment_method" hidden name="payment_method_id" id="payment_method_1" value="1" type="radio" autocomplete="on">
 							<img class="align-self-center mr-2" src="/img/delivery/uah.png"/>
-							<div class="media-body"><?=$this->trans->get('Наличными<br>при получении')?></div>
+							<div class="media-body"><?=$this->trans->get('При получении')?></div>
 							</div>
 						</label>
 </li>
 <li>
-<label id="l_np" class="btn btn-default np_p up_p label_payment <?php if ($this->ws->getCustomer()->isBlockNpN()) echo " hide_np"; ?>" style="<?php
-		if (!in_array($this->basket_contacts['delivery_type_id'], array(4,8)))echo ' display: none;';?>">
+<label id="l_np" class="btn btn-default np_p up_p label_payment <?php if ($this->ws->getCustomer()->isBlockNpN()){ echo " hide_np";} ?>" style="<?php
+		if (!in_array($this->basket_contacts['delivery_type_id'], array(4,8))){echo ' display: none;';}?>">
 		<div class="media">
 			<input class="payment_method" hidden name="payment_method_id" id="payment_method_3" value="3" type="radio" autocomplete="on">
 							<img class="align-self-center mr-2" src="/img/delivery/npuah.png">
@@ -554,7 +562,7 @@ if(false){
 <li>
 <label id="l_o" class="btn btn-default k_p s_m_p s_p_p np_p up_p label_payment"  style="<?php
 						if (!in_array($this->basket_contacts['delivery_type_id'], array(4, 8, 9, 5, 3)))
-							echo 'display: none;'; ?>">
+                                                {echo 'display: none;';} ?>">
 							<div class="media">
 							<input class="payment_method" hidden name="payment_method_id" id="payment_method_7" value="7" type="radio" autocomplete="on">
 							<img class="align-self-center mr-2" src="/img/delivery/vm.png"/>
@@ -570,21 +578,21 @@ if(true){
 <li>
 <label id="l_vs" class="btn btn-default k_p s_m_p s_p_p np_p up_p label_payment"  style="<?php
 						if (!in_array($this->basket_contacts['delivery_type_id'], array(4, 8, 9, 5, 3)))
-							echo 'display: none;'; ?>">
+                                                {echo 'display: none;';} ?>">
 							<div class="media">
 							<input class="payment_method" hidden name="payment_method_id" id="payment_method_4" value="4" type="radio" autocomplete="on">
 							<img class="align-self-center mr-2" src="/img/delivery/vm.png"/>
-							<div class="media-body" >Visa<br>MasterCard</div>
+							<div class="media-body" >Онлайн<br>Visa/MasterCard</div>
 							</div>
 						</label>
 </li>
 <li>
 <label id="l_privat" class="btn btn-default k_p s_m_p s_p_p np_p up_p label_payment" style="<?php
-						if (!in_array($this->basket_contacts['delivery_type_id'], array(4, 8, 9, 5, 3))) echo 'display: none;'; ?>">
+						if (!in_array($this->basket_contacts['delivery_type_id'], array(4, 8, 9, 5, 3))) {echo 'display: none;';} ?>">
 					<div class="media">
 					<input class="payment_method" hidden name="payment_method_id" id="payment_method_6" value="6" type="radio" autocomplete="on">
 					<img class="align-self-center mr-2"  src="/img/delivery/p24.png"/>
-							<div class="media-body" >Приват24</div>
+							<div class="media-body" >Онлайн<br>Приват24</div>
 							</div>
 						</label>
 </li>
@@ -616,7 +624,7 @@ if(true){
 <!-- соглашение + заказать-->
 	<div class="row" id="sog" style="display:none;" >
 	<div class="col-xs-12 col-md-12 col-lg-12 np_np" style="display: none; margin-bottom: 15px; 
-	<?php if (!in_array(@$this->basket_contacts['delivery_type_id'], array(8,16))) echo 'display: none;'; ?>">
+	<?php if (!in_array(@$this->basket_contacts['delivery_type_id'], array(8,16))){ echo 'display: none;'; }?>">
 	<?=$this->trans->get('<span style="color: red;">Посылку Вы оплачиваете в отделении Новой Почты. Для оформления возврата у Вас есть 14 дней. <a href="/returns/" target="_blank">Условия возврата.</a></span>')?>
 	</div>
 	<div class="col-xs-12 col-md-12 col-lg-12">
@@ -652,7 +660,7 @@ if(true){
 </form>
 </div>
 </div>
-<script  type="text/javascript" >
+<script   >
 function validate_form_uslug (){
 valid_uslug = true;
 	if(document.getElementById('oznak').checked == false){
@@ -664,7 +672,7 @@ valid_uslug = true;
 	$('#ms').html('<?=$this->trans->get('Вы не отметили что выражаете согласие на обработку Ваших персональных данных.')?>').fadeIn(100);
 	$('#soglas').focus();
 	}else if( $('.payment_method').is(":checked") && $('.payment_method:checked').val() > 0){
-	$('#ms').css({'background-color' : '#ededed' , 'border-color' : '#ededed'});
+	$('#ms').css({'background-color' : '#fff' , 'border-color' : '#ededed'});
 	$('#ms').html('<img style="width:100px;" src="/img/loading_trac.png">').fadeIn(100);
 	document.forms.basket_contacts.submit();
 	}else{
@@ -701,6 +709,7 @@ valid_uslug = true;
 					
 					$('.mish_type').hide();
 					$('.m_type').hide();
+                                        $('.k_type').hide();
 					$('.dop_fields').hide();
 					$('.s_m_p').hide();
 					$('.s_p_p').hide();
@@ -748,6 +757,7 @@ valid_uslug = true;
 						$('.text_mag').hide();		
 					}
 							if (delivery == 9) {
+                                                            $('.k_type').show();
 							$('.np_np').hide();
 								$('#pobedy').hide();
 								$('#stroitely').hide();
@@ -765,6 +775,7 @@ valid_uslug = true;
 							}
 					if(delivery == 5){
 					$('.m_type').show();
+                                        
 					$('.mish_type').show();
 					$('.np_np').hide();
 						$('#pobedy').hide();
@@ -842,15 +853,26 @@ var uidnp = $('#city_np').val();
 }); //exit ready
 			
 		function myNP (x) {
+                //console.log(x);
 	$('#sklad_np_leb').fadeIn(50);
 	$('#k_np_w').fadeIn(50);
-$.get('/shop/novapochta/warehouses/'+x+'/metod/getframe_np/',
-		function (data) {
-		$('#sklad').html(data);
-		$('#k_np_g').fadeOut(1);
-		$('#sklad_np_leb').fadeOut(1);
-		$('#sklad').fadeIn(10);
-		});
+        
+        $.ajax({
+                url: '/shop/novapochta/',
+                type: 'POST',
+                dataType: 'json',
+                data: 'warehouses='+x+'&metod=getframe_np',
+                success: function (data) {
+                    console.log(data);
+                    $('#sklad').html(data);
+                    $('#k_np_g').fadeOut(1);
+                    $('#sklad_np_leb').fadeOut(1);
+                    $('#sklad').fadeIn(10);
+                },
+                error: function (e){
+                    console.log(e);
+                }
+        });
 		return false;
 }			
 </script>

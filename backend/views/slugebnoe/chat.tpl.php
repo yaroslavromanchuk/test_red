@@ -8,5 +8,5 @@ $('#center-content').css({'background':'#505050', 'border':'1px solid #BBB'});
 	<span style="font-weight:normal"></span>
 </h1>
 <div align="center">
-<iframe src="/admin_files/views/slugebnoe/demo/index.php?name=<?php echo $this->user->getFirstName();?>&email=<?php echo $this->user->getEmail(); ?>" width="600" height="580" align="center" frameborder="0"></iframe>
+    <iframe src="/backend/views/slugebnoe/demo/index.php?name=<?=$this->user->getFirstName()?>&email=<?=$this->user->getEmail()?>" width="600" height="580" align="center" frameborder="0"></iframe>
 </div>

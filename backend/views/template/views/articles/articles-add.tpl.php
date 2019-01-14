@@ -1,19 +1,11 @@
- <link href="<?=$this->files?>views/template/lib/highlightjs/github.css" rel="stylesheet">
-    <link href="<?=$this->files?>views/template/lib/datatables/jquery.dataTables.css" rel="stylesheet">
-<div class="sl-pagebody">
-<!--
-<div class="sl-page-title">
-          <h5><?=$this->getCurMenu()->getTitle()?></h5>
-          <p><?=$this->getCurMenu()->getPageBody()?></p>
-</div>-->
 <?php if($this->save){ ?>
-<div class="alert alert-success <?php if($this->save) echo 'show';?>"  role="alert">
+<div class="alert alert-success <?php if($this->save){ echo 'show';}?>"  role="alert">
   <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
 <span class="sr-only1"><?=$this->save?></span>
 </div>
 <?php } ?>
 <?php if($this->errors){ ?>
-<div class="alert alert-danger <?php if($this->errors) echo 'show';?>"  role="alert">
+<div class="alert alert-danger <?php if($this->errors) {echo 'show';}?>"  role="alert">
   <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
 <span class="sr-only1">Возникли ошибки:</span>
     <ul>
@@ -21,7 +13,7 @@
 	</ul>
 </div>
 <?php } ?>
-<div class="card pd-10">
+<div class="card pd-20 pd-sm-40">
 <h6 class="card-body-title">Форма загрузки товара</h6>
 <p class="mg-b-20 mg-sm-b-30">Здесь Вы можете загрузить новый товар, посмотреть уже загруженый и добавить содержимое.</p>
 
@@ -42,7 +34,7 @@
               <div class="input-group">
                 <input type="text" name="code" class="form-control" placeholder="Накладная...">
                 <span class="input-group-btn">
-                  <button class="btn bd bg-white tx-gray-600" type="submit"><i class="fa fa-search"></i></button>
+                  <button class="btn bd bg-white tx-gray-600" type="submit"><i class="fa fa-search" data-tooltip="tooltip" title="Искать товары"></i></button>
                 </span>
               </div><!-- input-group -->
 			
@@ -59,63 +51,27 @@
             <div class="row mg-b-25">
 			 <div class="col-lg-3 mg-t-40 mg-lg-t-0">
               <label class="custom-file">
-                <input type="file" name="excel_file" class="custom-file-input">
-                <span class="custom-file-control custom-file-control-primary"></span>
+                <input type="file" name="excel_file" class="custom-file-input" data-tooltip="tooltip" title="Выберите Excel файл для загрузки товара">
+                <span class="custom-file-control custom-file-control-primary" ></span>
               </label>
             </div><!-- col -->
 			<div class="col-lg-3">
-              <label class="rdiobox">
+              <label class="rdiobox" >
                 <input name="version" type="radio" value="1">
-                <span>Старая версия</span>
+                <span data-tooltip="tooltip" title="Наклыдные - коректировки">Старая версия</span>
               </label>
-			   <label class="rdiobox">
+			   <label class="rdiobox" >
                 <input name="version" type="radio" value="2">
-                <span>Новая версия</span>
+                <span data-tooltip="tooltip" title="Наклыдные с расценки">Новая версия</span>
               </label>
             </div><!-- col-3 -->
             </div><!-- row -->
 
             <div class="form-layout-footer">
-              <button class="btn btn-info mg-r-5" type="submit">Загрузить</button>
-              <button class="btn btn-secondary">Очистить</button>
+              <button class="btn btn-info mg-r-5" type="submit" data-tooltip="tooltip" title="Загрузить содержимое Excel файла">Загрузить</button>
+              <button class="btn btn-secondary" data-tooltip="tooltip" title="Очистить данные формы">Очистить</button>
             </div><!-- form-layout-footer -->
           </div>
 		  </form>
 		 
         </div>
-</div>
-    <script src="<?=$this->files?>views/template/lib/datatables/jquery.dataTables.js"></script>
-    <script src="<?=$this->files?>views/template/lib/datatables-responsive/dataTables.responsive.js"></script>
-    <script>
-      $(function(){
-        'use strict';
-
-       /* $('#datatable1').DataTable({
-          responsive: true,
-          language: {
-            searchPlaceholder: 'Поиск в таблице...',
-            sSearch: '',
-            lengthMenu: '_MENU_ записей/страница',
-			processing: "Traitement en cours...",
-			info:       "Записи с _START_ по _END_ из _TOTAL_ ",
-			paginate: {
-            first:      "Premier",
-            previous:   "Придведущая",
-            next:       "Следующая",
-            last:       "Dernier"
-        },
-          }
-        });*/
-
-     /*   $('#datatable1').DataTable({
-          bLengthChange: false,
-          searching: false,
-          responsive: true
-        });
-		*/
-
-        // Select2
-       // $('.dataTables_length select').select2({ minimumResultsForSearch: Infinity });
-
-      });
-    </script>	

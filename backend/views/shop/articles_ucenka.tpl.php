@@ -80,19 +80,21 @@ if(strripos($value, 'SALE') === FALSE and strripos($value, 'NEW') === FALSE){
                 просмотрам
                 возростание
             </option>
-            <option value="viewsplus" <?php if (@$_GET['sort'] == 'viewsplus') echo 'selected="selected"';?>>По
+            <option value="viewsplus" <?php if ($_GET['sort'] == 'viewsplus') echo 'selected="selected"';?>>По
                 просмотрам
                 спадание
             </option>
-            <option value="category" <?php if (@$_GET['sort'] == 'category') echo 'selected="selected"';?>>По
+            <option value="category" <?php if ($_GET['sort'] == 'category') echo 'selected="selected"';?>>По
                 категории
             </option>
-            <option value="brandaz" <?php if (@$_GET['sort'] == 'brandaz') echo 'selected="selected"';?>>По
+            <option value="brandaz" <?php if ($_GET['sort'] == 'brandaz') echo 'selected="selected"';?>>По
                 бренду A-Z
             </option>
-            <option value="brandza" <?php if (@$_GET['sort'] == 'brandza') echo 'selected="selected"';?>>По
+            <option value="brandza" <?php if ($_GET['sort'] == 'brandza') echo 'selected="selected"';?>>По
                 бренду Z-A
             </option>
+            <option value="ucenkazr" <?php if ($_GET['sort'] == 'ucenkazr') echo 'selected="selected"';?>>Уценка возростание</option>
+            <option value="ucenkasp" <?php if ($_GET['sort'] == 'ucenkasp') echo 'selected="selected"';?>>Уценка спадание</option>
         </select>
     </p>
 	<p>

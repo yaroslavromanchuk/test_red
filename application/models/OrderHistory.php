@@ -34,8 +34,10 @@ class OrderHistory extends wsActiveRecord
     {
         $trans = new Translator();
         $status = explode(',', $trans->get('new,processing,canceled,ready_shop,ready_post'));
-        $text = 'C "' . @$status[$old] . '" ';
-        $text .= ' на "' . @$status[$new] . '"';
+        if($old == 100){ $old = 0; }
+        
+        $text = 'C "' . $status[$old] . '" ';
+        $text .= ' на "' . $status[$new] . '"';
 
         return $text;
     }
@@ -58,7 +60,7 @@ class OrderHistory extends wsActiveRecord
         $old_size = new Size($article->getSize());
         $old_color = new Shoparticlescolor($article->getColor());
 		$text = '';
-		if(strlen($mes) > 1) $text .='('.$mes.') ';
+		if(strlen($mes) > 1){ $text .='('.$mes.') ';}
          $text .= '' . $article->getTitle() . ' ' . $old_size->getSize() . ' ' . $old_color->getName() . '';
         return $text;
     }
@@ -131,4 +133,3 @@ class OrderHistory extends wsActiveRecord
     }
 }
 
-?>

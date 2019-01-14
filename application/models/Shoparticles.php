@@ -35,10 +35,6 @@ class Shoparticles extends wsActiveRecord
                 'class' => self::$_shop_articles_offer_class,
                 'field_foreign' => 'article_id',
                 'orderby' => array('id' => 'ASC')),
-        'icon' => array(
-                'type' => 'hasOne',
-                'class' => 'Shoparticlesicon',
-                'field' => 'icon_id'),
        'article_brand' => array(
                 'type' => 'hasOne',
                 'class' => 'Brand',
@@ -55,15 +51,26 @@ class Shoparticles extends wsActiveRecord
                 'type' => 'hasOne',
                 'class' => 'Shoparticlessezon',
                 'field' => 'sezon'),
-        'desires' => array(
+        'desires' => [
                 'type' => 'hasMany',
                 'class' => 'Desires',
                 'field_foreign' => 'id_articles',
                 'orderby' => array('id' => 'ASC'),
-                'onDelete' => 'delete'),
+                'onDelete' => 'delete'],
+        'models' =>[
+                'type' => 'hasOne',
+                'class' => 'Shoparticlesmodel',
+                'field' => 'model_id'
+            ]
         );
     }
 	
+    
+        public function getTop(){
+            $date = date("Y-m-d H:i:s");
+          return  wsActiveRecord::useStatic('Shoparticlestop')->findAll([" ctime <= '$date' ", " '$date' <= utime ", 'article_id'=>$this->getId()], ['id'=>'DESC'], ['limit'=>' 0, 1 ']);
+            
+        }
 	/**
          * @return false - товар не участвует в акции
          * или
@@ -71,13 +78,14 @@ class Shoparticles extends wsActiveRecord
          */
 	public function getOptions()
 	{
+           if (!$this->getSkidkaBlock()) { 
 	$dat = date('Y-m-d');
 	$sql ="SELECT  `ws_articles_option`. * 
 FROM  `ws_articles_option` 
 JOIN  `ws_articles_options` ON  `ws_articles_option`.`id` =  `ws_articles_options`.`option_id` 
 WHERE  `ws_articles_option`.`status` = 1
-AND  `start` <=  '$dat'
-AND  `end` >=  '$dat'
+AND  `ws_articles_option`.`start` <=  '$dat'
+AND  `ws_articles_option`.`end` >=  '$dat'
 AND (
  `ws_articles_options`.`article_id` = $this->id
 OR  `ws_articles_options`.`category_id` = $this->category_id
@@ -88,6 +96,7 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
 	if ($option){ 
             return $option;
         }
+           }
 	
 	return false;
 	}
@@ -97,7 +106,9 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
      */  
     public function getPath()
             {
-        return '/product/id/' . $this->getId() . '/' . $this->_generateUrl($this->getTitle()); 
+        $lang = '';
+        if(Registry::get('lang') == 'uk'){ $lang = '/uk';}
+        return $lang.'/product/id/' . $this->getId() . '/' . $this->_generateUrl($this->model.' '.$this->brand); //model -> getTitle()
         
             }
 
@@ -200,26 +211,38 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
 
     static public function getSearchPath($raw = array())
     {
-        $data = array();
+        $data = [];
 
         if ($raw['brand'])
-            $data[] = 'brand/' . urlencode(str_replace('&', '_', $raw['brand']));
-
+        {
+            $data[] = 'brand/' . urlencode(str_replace('&', '_', $raw['brand']));  
+        }
         if ($raw['price'])
-            $data[] = 'price/' . (int)$raw['price'];
-
+        {
+            $data[] = 'price/' . (int)$raw['price'];   
+        }
         if ($raw['color'])
-            $data[] = 'color/' . (int)$raw['color'];
-
+        {
+            $data[] = 'color/' . (int)$raw['color'];  
+        }
         if ($raw['size'])
+        {
             $data[] = 'size/' . (int)$raw['size'];
-        if ($raw['s']) $data[] = 's/' . $raw['s'];
-        if ($raw['sort']) $data[] = 'sort/' . $raw['sort'];
-
+        }
+        if ($raw['s'])
+        {
+            $data[] = 's/' . $raw['s'];  
+        }
+        if ($raw['sort'])
+        { 
+            $data[] = 'sort/' . $raw['sort'];
+        }
         if ($raw['category'])
+        {
             return '/category/id/' . $raw['category']->getId() . '/' . implode('/', $data) . '/';
-        else
+        }else{
             return '/search/' . implode('/', $data) . '/';
+        }
     }
 
     public function findLastSequenceRecord()
@@ -245,7 +268,9 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
     {
         $filename = INPATH . "files/pdf/" . $this->getPdf();
         if (is_file($filename))
+        {
             unlink($filename);
+        }
     }
 
     public function getTitle()
@@ -265,13 +290,13 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
 
     public function getPriceSkidka()//цена товара с доп скидкой
     {
-      $s = Skidki::getActiv($this->getId());
-		$z =false;// Skidki::getActivCat($this->getCategoryId());
+    /*  $s = Skidki::getActiv($this->getId());
+		$z = false;// Skidki::getActivCat($this->getCategoryId());
         if($z){
 		  return $this->getRealPrice() * ((100 - $z->getValue()) / 100);
 		}elseif($s){
             return $this->getRealPrice() * ((100 - $s->getValue()) / 100);
-        }
+        }*/
 		
 		return $this->getRealPrice();
     }
@@ -329,11 +354,11 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
     public function getSArticles(){
         $sa = new Orm_Collection();
         if ($this->sug_article_id_1 && ($a = wsActiveRecord::useStatic('Shoparticles')->findById($this->sug_article_id_1)) && $a->getId() && strcasecmp($a->getActive(), 'y') == 0)
-            $sa->add($a);
+        {$sa->add($a);}
         if ($this->sug_article_id_2 && ($a = wsActiveRecord::useStatic('Shoparticles')->findById($this->sug_article_id_2)) && $a->getId() && strcasecmp($a->getActive(), 'y') == 0)
-            $sa->add($a);
+        { $sa->add($a);}
         if ($this->sug_article_id_3 && ($a = wsActiveRecord::useStatic('Shoparticles')->findById($this->sug_article_id_3)) && $a->getId() && strcasecmp($a->getActive(), 'y') == 0)
-            $sa->add($a);
+        {$sa->add($a);}
         return $sa;
     }
 
@@ -351,17 +376,30 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
     public function addToBasket($count, $size, $color, $option_id = 0, $flag = 0, $art, $skidka_block = 0){
 
         if (!$count || strcasecmp($this->getActive(), 'y') != 0) {return false;}
-		
+        $price = $this->getPrice() * $count;
+        $option_price = 0;
+                    if($this->getOptions()){
+                    switch ($this->getOptions()->type){
+                        case 'final':
+                         $option_id = $this->getOptions()->id;
+                         $option_price = $price - ($price * ($this->getOptions()->value/100));  
+                           break;
+                        case 'dop':
+                            $option_id = $this->getOptions()->id;
+                            break;
+                    }
+                    
+                }
+      
+       
     $basket = & $_SESSION['basket'];
 
 	if($flag == 1) {$basket = array(); }
         $was_added = false;
         foreach ($basket as $key => $item){
             if (!$was_added && $item['article_id'] == $this->getId() && $item['size'] == $size && $item['color'] == $color && $item['artikul'] == $art) {
-             //   if ($item['option_id'] == $option_id) {
                     $basket[$key]['count'] += $count;
                     $was_added = true;
-               // }
             }
 			}
         if (!$was_added) {
@@ -372,12 +410,12 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
                 'price' => $this->getRealPrice(),
                 'count' => $count,
                 'option_id' => $option_id,
-                'option_price' => 0,
+                'option_price' => $option_price,
                 'size' => $size,
                 'color' => $color,
-				'artikul' => $art,
-				'category' =>$this->getCategoryId(),
-				'skidka_block' =>$skidka_block,
+		'artikul' => $art,
+		'category' =>$this->getCategoryId(),
+		'skidka_block' =>$skidka_block,
             );
             $was_added = true;
         }
@@ -386,10 +424,9 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
 
     public function getOffer(){
         $tmp = $this->getOffers();
-        if ($tmp && $tmp->count())
-            return $tmp[0];
+        if ($tmp && $tmp->count()){return $tmp[0];}
         else
-            return null;
+        { return null;}
     }
 
     static public function showPrice($price){
@@ -410,9 +447,9 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
 
     public function getSystemPath($type = NULL, $filename = NULL){
         if ($type === NULL)
-            $type = $this->type;
+        {$type = $this->type;}
         if ($filename === NULL)
-            $filename = $this->filename;
+        {$filename = $this->filename;}
 
         $path = '';
         switch (strtolower($type)) {
@@ -422,7 +459,7 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
 
             default: $path = INPATH . "files/org/{$filename}";
                 if (!is_file($path))
-                    $path = INPATH . "files/i3/{$filename}";
+                {$path = INPATH . "files/i3/{$filename}";}
 				break;
         }
 
@@ -432,9 +469,9 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
     public function unlink_file($type = NULL, $filename = NULL)
             {
         if ($type === NULL)
-            $type = $this->type;
+        { $type = $this->type;}
         if ($filename === NULL)
-            $filename = $this->filename;
+        {$filename = $this->filename;}
         switch ($type) {
             default:
                 $file = $this->getSystemPath($type, $filename);
@@ -511,13 +548,13 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
          * доп. скидка
          * @$dop_ck
          */
-        $dop_ck  = 0;
+        $dop_ck  = $event_skidka;
 	
-                
+            if (!$this->getSkidkaBlock()) {   
                 if($this->getOptions()){
                     switch ($this->getOptions()->type){
                         
-                        case 'all':
+                        case 'final':
                          $mas['option_id'] = $this->getOptions()->id;
                          $mas['minus'] = $price * ($this->getOptions()->value/100);
                          $mas['price'] = ($price - $mas['minus']);
@@ -526,32 +563,12 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
                             return $mas;
                         case 'dop':
                             $mas['option_id'] = $this->getOptions()->id; 
-                            $dop_ck += $this->getOptions()->value;
+                            $dop_ck = $this->getOptions()->value;
                             $coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;font-size: 10px;">'.$this->getOptions()->option_text.'</div>';
                             break;
                     }
                     
                 }
-
-	if (!$this->getSkidkaBlock()) {
-		
-	
-		/* if ($event_skidka != 0) {
-		  $s = (int)$event_skidka;
-			if($s == 99){ 
-			 $mas['minus'] = $price - 0.01;
-			 $mas['price'] = 0.01; 
-			 $mas['option_id'] = 4;
-			$mas['option_price'] = 0.01;
-			$pr_skidka += 99;
-			$mas['comment'] = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">Вы получаете этот товар за 1 копейку.</div>';
-			$mas['skidka'] = $pr_skidka;
-       
-			return $mas;
-			}
-		 }
-                 */
-		
 		$kod = false;
 		
 	if($kupon !=''){
@@ -571,19 +588,6 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
 	$coment = '<div class="alert alert-danger" style="padding: 5px;margin-top: 10px;">На этот товар промокод не распространяется.</div>';
 	}
 	}
-		
-		
-		
-		//$cat = Skidki::getActivCat($this->getCategoryId());
-		//$a = Skidki::getActiv($this->getId());
-		//if($cat){
-		//$c += $cat->getValue();
-		//$minus = (($price / 100) * ($c->getValue()));
-        //$price -= $minus;
-		 //$pr_skidka += $c->getValue();
-		//}
-		
-	
 		
                 if ((int)$this->getOldPrice() == 0) {
                     if ($skidka != 0) {
@@ -637,8 +641,8 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
                 }else{
 				$minus += ($this->getOldPrice() - $this->getPrice());
 
-                                            if($dop_ck){
-					$m = (($price / 100) * dop_ck);
+                        if($dop_ck){
+					$m = (($price / 100) * $dop_ck);
 						$minus += $m;
 						$price -= $m;
 						//$coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка по промокоду.</div>';
@@ -731,16 +735,9 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
     public function getSmallBlockCachedHtml($rewrite = true, $page = false)
             {
         $cache = Registry::get('cache');
-		$cache->setEnabled(true);
+	$cache->setEnabled(true);
         $view = Registry::get('View');
-		if($page == true){
-                    $type = 'fhd';
-                    
-                }else{
-                    $type = 'site';
-                    
-                }
-        $cache_name = 'one_product_item_' . $this->getId() . '_REDUA_'.$type.'_'.$_SESSION['lang'];
+        $cache_name = 'one_product_item_' . $this->getId() . '_REDUA_site_'.$_SESSION['lang'];
         $article_item = $cache->load($cache_name);
         if (!$article_item || $rewrite) {
             //prepare to view
@@ -751,12 +748,9 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
                                 $label = $this->label->getImage();
                             }
             $view->label = $label;
-			if($page == true)
-                            {
-                                $article_item = $view->render('/cache/fhd_item_block.tpl.php');
-                            }else{
+
                                 $article_item = $view->render('/cache/small_item_block.tpl.php');
-                            }
+
             $cache->save($article_item, $cache_name, array($cache_name), false);
        }
         return $article_item;

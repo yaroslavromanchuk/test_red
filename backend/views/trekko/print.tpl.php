@@ -49,7 +49,7 @@ if($order->getPaymentMethodId() == 4 or $order->getPaymentMethodId() == 5 or $or
 $price_skidka = 0;
 }else{
 $price_skidka = $order->getAmount();
-if($price_skidka < 1) $price_skidka=0;
+if($price_skidka < 1) {$price_skidka=0;}
 }
 ?>
 <tr>

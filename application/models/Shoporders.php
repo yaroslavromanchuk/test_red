@@ -40,7 +40,12 @@ class Shoporders extends wsActiveRecord
 				'type' => 'hasOne',
 				'class' => 'Shoporderstatuses',
 				'field' => 'status'
-			)
+			),
+                        'customer' => [
+                        'type' => 'hasOne',
+                        'class' => self::$_customer_class,
+                        'field' => 'customer_id'
+            ]
         );
     }
 
@@ -136,15 +141,15 @@ class Shoporders extends wsActiveRecord
 
 	static public function getDeliveryPrice()
 	{
-		if ($_SESSION['order_amount'] >= 750 and $_SESSION['basket_contacts']['delivery_type_id'] == 9) return 0;
+		if ($_SESSION['order_amount'] >= 750 and $_SESSION['basket_contacts']['delivery_type_id'] == 9){ return 0;}
 		
 		$d = wsActiveRecord::useStatic('DeliveryPayment')->findFirst(array('delivery_id' => @$_SESSION['basket_contacts']['delivery_type_id'], 'payment_id' => @$_SESSION['basket_contacts']['payment_method_id']));
 
 		if (!$d) {
-			$d = new DeliveryType(@$_SESSION['basket_contacts']['delivery_type_id']);
+			$d = new DeliveryType($_SESSION['basket_contacts']['delivery_type_id']);
 		}
-		if (!$d || !$d->getId())
-			return Config::findByCode('delivery_cost')->getValue();
+		if (!$d || !$d->getId()){return Config::findByCode('delivery_cost')->getValue();}
+                
 		return $d->getPrice();
 	}
 
@@ -233,7 +238,7 @@ class Shoporders extends wsActiveRecord
 		$sum = 0;
         foreach ($this->getArticles() as $article_rec) {
 			$sum = $article_rec->getPrice() * $article_rec->getCount();
-			if($article_rec->getOldPrice() == 0) $sum = $sum * $skidka;
+			if($article_rec->getOldPrice() == 0) { $sum = $sum * $skidka; }
             $total_price +=$sum; // сумма товаров с учетом уценки и количества единиц
         }
         return $total_price;
@@ -298,57 +303,92 @@ class Shoporders extends wsActiveRecord
 	
 	
 	}
-
+    /**
+     * Shoporders::calculateOrderPrice()
+     * Считаем сумму заказа и сохраняет новую сумму в заказ
+     * 
+     * @param type $use_deposit - считать депозит, по умолчанию true
+     * @param type $use_format - true отобразить в формате 100,10 иначе 100.10 по умолчанию true
+     * @param type $delivery - true можно не указывать
+     * @param type $bonus - false можно не указывать
+     * @return float
+     */
     public function calculateOrderPrice($use_deposit = true, $use_format = true, $delivery = true, $bonus = false)
     {
        $order_history_price = $this->getPriceWithSkidka();
 
-	   if($delivery){ $deli = (float)$this->getDeliveryCost(); }else{ $deli = 0; }// esli ukrpochta = true else false
+	   //if($delivery){
+             //  $deli = (float)$this->getDeliveryCost(); }else{
+               $deli =(float)$this->getDeliveryCost();
+               
+         //  }// esli ukrpochta = true else false
 	   
-        if ($order_history_price < 0) $order_history_price = 0;
+        if ($order_history_price < 0) {$order_history_price = 0;}
 
-        if ($use_deposit) {
+        if ($this->getDeposit()) {
             $price_2 = (float)$order_history_price + (float)$deli - (float)$this->getDeposit();
         } else {
             $price_2 = (float)$order_history_price + (float)$deli;
         }
 		
 		
+        if($this->getBonus()){
+            if($price_2 >= Config::findByCode('min_sum_bonus')->getValue()){
+                $price_2 = $price_2 - (float)$this->getBonus();
+            }
+        }	
+
+
+    if ($price_2 < 0) {
+        $price_2 = 0; 
+    }
 		
-		if($price_2 >= Config::findByCode('min_sum_bonus')->getValue() and $this->getBonus()){ $price_2 = $price_2 - (float)$this->getBonus(); }
+	$price_2 = round($price_2, 2);
 		
-        if ($use_format) { $price_2 = Number::formatFloat($price_2, 2); }
-		
-		if ($price_2 < 0) { $price_2 = 0; }
-		
-		$price_2 = round($price_2, 2);
-		
-		if ($price_2 != $this->getAmount()){
+    if ($price_2 != $this->getAmount()){
 		//d($price_2, false);
 		//d((float)$this->getAmount(), false);
-			$this->save();
+	$this->save();
 		}
+                
+        if ($use_format) { $price_2 = Number::formatFloat($price_2, 2); }
 		 
         return $price_2;
     }
-
+    /**
+     * Shoporders::calculateOrderPrice2()
+     * Считаем сумму заказа
+     * 
+     * @param type $use_deposit - считать депозит, по умолчанию true
+     * @param type $use_format - true отобразить в формате 100,10 иначе 100.10 по умолчанию true
+     * @param type $delivery - true можно не указывать
+     * @param type $bonus - false можно не указывать
+     * @return float
+     */
     public function calculateOrderPrice2($use_deposit = true, $use_format = true, $delivery = true, $bonus = false)
     {
       $order_history_price = $this->getPriceWithSkidka();
 	   
-		if($delivery){ $deli = $this->getDeliveryCost(); }else{ $deli = 0; }//
+        $deli = $this->getDeliveryCost();
+        
+        if ($this->getDeposit() > 0){
+            $price_2 = $order_history_price + $deli - $this->getDeposit();
+        } else {
+            $price_2 = $order_history_price + $deli; 
+            
+        }
+	
+        if($this->getBonus() > 0){
+            if($price_2 >= Config::findByCode('min_sum_bonus')->getValue()){
+                $price_2 = $price_2 - $this->getBonus();
+            }
+        }
+        
+        if ($price_2 < 0) { $price_2 = 0; }
 		
-        if ($use_deposit) { $price_2 = $order_history_price + $deli - $this->getDeposit();
-        } else { $price_2 = $order_history_price + $deli; }
-		
-		if($price_2 >= Config::findByCode('min_sum_bonus')->getValue() and $this->getBonus()){ $price_2 = $price_2 - $this->getBonus();}
-		
-       
-		
-        if ($price_2 < 0) {$price_2 = 0; }
-		
-		$price_2 = round($price_2, 2);
-		 if ($use_format) { $price_2 = Number::formatFloat($price_2, 2); }
+	$price_2 = round($price_2, 2);
+        
+	if ($use_format) { $price_2 = Number::formatFloat($price_2, 2); }
 		
         return $price_2;
     }
@@ -382,34 +422,40 @@ class Shoporders extends wsActiveRecord
                 if ($order->getDeposit() == 0) return false;
             }
 
-			$d_cost = $order->getDeliveryCost(); 
+		$d_cost = $order->getDeliveryCost(); 
 			
-             $customer = new Customer($order->getCustomerId());
+            $customer = new Customer($order->getCustomerId());
+            
             $sum = (($order->getPriceWithSkidka() + $d_cost) - $order->getDeposit()) - $customer->getDeposit();
             $old = $order->getDeposit();
             $deposit = ($customer->getDeposit() + $order->getDeposit()) - ($order->getPriceWithSkidka() + $d_cost);
-            if ($sum < 0) $sum = 0;
-            if ($deposit < 0) $deposit = 0;
+            if ($sum < 0) { $sum = 0; }
+            if ($deposit < 0){ $deposit = 0;}
+            
             $dedosit_to_order = ($order->getPriceWithSkidka() + $d_cost) - $sum;
 			
             $customer->setDeposit(round($deposit, 2));
             $order->setDeposit(round($dedosit_to_order, 2));
             $customer->save();
             $order->save();
-            OrderHistory::newHistory($admin, $order->getId(), 'Использован депозит. Депозит сменился ',
-                'C "' . $old . '" на "' . $order->getDeposit() . '"');
-				$no = '-';
-				DepositHistory::newDepositHistory($admin, $customer->getId(), $no, $order->getDeposit(), $order->getId());
+            
+        OrderHistory::newHistory($admin, $order->getId(), 'Использован депозит. Депозит сменился ', 'C "' . $old . '" на "' . $order->getDeposit() . '"');
+	$no = '-';
+	DepositHistory::newDepositHistory($admin, $customer->getId(), $no, $order->getDeposit(), $order->getId());
         }
         return true;
 
     }
-
+    /**
+     * Обновление суммы заказа и запсить скидки клиентской
+     * @param type $delivery - не нужно указывать
+     * сохраняется даннные заказа
+     */
     public function reCalculate($delivery = true)
     {
         $order_owner = new Customer($this->getCustomerId());
         if ($order_owner->getId()) {
-            $this->setAmount(str_replace(',', '.', $this->calculateOrderPrice2(true, false, $delivery)));
+            $this->setAmount(str_replace(',', '.', $this->calculateOrderPrice2(true, false)));
             $this->setSkidka($order_owner->getDiscont($this->getId()));
         }
         $this->save();
@@ -421,9 +467,7 @@ class Shoporders extends wsActiveRecord
 
         $order_owner = new Customer($this->getCustomerId());
         if ($order_owner->getId()) {
-		//if($this->getBonus() > 0){ $bonus = true; }else{ $bonus = false; }
-            $this->setAmount(trim(str_replace(',', '.', $this->calculateOrderPrice2(true, false, true))));
-			//$this->setSkidka($order_owner->getDiscont($this->getId()));
+            $this->setAmount(trim(str_replace(',', '.', $this->calculateOrderPrice2(true, false))));
         }
 
         if ($ws->getCustomer()->isAdmin()) {
@@ -483,7 +527,7 @@ class Shoporders extends wsActiveRecord
         return true;
     }
 	public function LiqPay(){
-	$ammount = $this->calculateOrderPrice2(true, false, true);
+	$ammount = $this->calculateOrderPrice2(true, false);
 	$order_id = $this->getId();
 	$data['button_confirm'] = 'Оплатить '.$ammount.' грн.';
 	$description = 'Заказ №' . $order_id;
@@ -514,11 +558,11 @@ class Shoporders extends wsActiveRecord
         $data['action'] = 'https://www.liqpay.ua/api/3/checkout';
 	return $data;
 	}
-	private function calculateSignature($data, $private_key)
-    {
-        return base64_encode(sha1($private_key . $data . $private_key, true));
-    }
+        
+    private function calculateSignature($data, $private_key)
+        {
+            return base64_encode(sha1($private_key . $data . $private_key, true));
+        }
 
 }
 
-?>

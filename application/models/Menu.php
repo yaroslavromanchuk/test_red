@@ -4,10 +4,13 @@ class Menu extends wsMenu
 	static protected $_top_position = 3;
 	static protected $_admin_menu = 2;
 
-	protected $_multilang = array('name' => 'name',
+	protected $_multilang = array(
+			'name' => 'name',
+       
 									'page_title' => 'page_title',
 									'page_intro' => 'page_intro',
 									'page_body' => 'page_body',
+                                                                        'page_footer' => 'page_footer',
 									'metatag_keywords' => 'metatag_keywords',
 									'metatag_description' => 'metatag_description');
 
@@ -27,7 +30,7 @@ class Menu extends wsMenu
 		return wsActiveRecord::useStatic('Menu')->findBySiteId(1);
 
 		$m = self::findMenu(self::$_top_position);
+                
 		return $m->merge(self::findMenu(null));
 	}
 }
-?>

@@ -1,1 +1,5 @@
-<?php if($this->messega) echo $this->messega; ?>
+<?php 
+if($this->messega){ 
+    echo $this->messega; 
+}
+    

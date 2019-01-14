@@ -1,4 +1,4 @@
-<img src="<?php echo SITE_URL;?><?php echo $this->getCurMenu()->getImage();?>" alt="" width="32" class="page-img" height="32"/>
+<img src="<?=$this->getCurMenu()->getImage()?>" alt="" width="32" class="page-img" height="32"/>
 <h1><?php echo $this->getCurMenu()->getTitle();?></h1>
 
 <form action="" id='histori_find' method="get">
@@ -62,8 +62,4 @@
 	}
 ?>
 </table>
-    <script type="text/javascript">
-        $(document).ready(function(){
-			$('.datetime').datepicker();
-        });
-    </script>
+

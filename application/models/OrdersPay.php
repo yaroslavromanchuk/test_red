@@ -54,10 +54,10 @@ class OrdersPay extends wsActiveRecord
        // foreach ($ords as $order) {
             $order->setAdminPayId($pay->getId());
             $order->setAdminPayTime($pay->getCtime());
+            //$order->calculateOrderPrice(true, false);
             $order->save();
         //}
         return true;
     }
 }
 
-?>

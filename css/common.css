@@ -1,22 +1,30 @@
 
-h1,h2,h3,h4,h5,h6{color:#737373}
+h1,h2{color:#737373}
 #popup{left:0}
 a:hover{text-decoration:none;color:#000}
 a:hover h1,a:hover h2,a:hover h3,a:hover h4,a:hover h5,a:hover h6{color:#000}
 html{position:relative;min-height:100%}
-body{background-color:#fff;padding-top:90px;padding-bottom:20px;min-width:320px}
+body{background-color:#fff;padding-top:100px;padding-bottom:20px;min-width:320px}
+.font-size-100{
+    font-size: 100%;
+    
+}
+
 .navbar-default .navbar-toggle{
 margin: 6px 0 0 10px;
     float: left;
 }
+/*
 .navbar-brand{    float: left;
     height: 50px;
     padding: 5px;
     font-size: 18px;
     line-height: 20px;}
+*/
 .navbar-xs{margin:0!important;height:50px}
 .navbar-xs li{height:50px;padding:0}
 .navbar-xs a{padding:15px!important}
+
 h3.our-shops{text-align:center;margin-bottom:0}
 
 .kat_menu_m{
@@ -37,9 +45,11 @@ margin-top: -7px;
     margin-right: 10px;
 }
 	 
-.logo{margin:12px 0 0 -2px;width:100px;height:40px}
-.logo-grey{position:absolute;background-image:url('../mobil/mimages/logo-grey.png');width:100px;height:40px}
-.logo-red{position:absolute;background-image:url('../mobil/mimages/logo-red.png');width:100px;height:40px;opacity:0;-webkit-transition:opacity .2s ease-in-out;-moz-transition:opacity .2s ease-in-out;-ms-transition:opacity .2s ease-in-out;-o-transition:opacity .2s ease-in-out;transition:opacity .2s ease-in-out}
+.logo_m{margin-left:5px;width:76px;height:40px}
+.logo-grey{position:absolute;background-image:url('../mobil/mimages/logo-red-new-white.png');width:76px;height:40px;background-size: cover;}
+.logo-grey.red{
+    background-image:url('../mobil/mimages/logo-red-new.png');
+}
 
 .navbar-bottom{position:absolute;bottom:0;width:100%;min-width:480px;margin-bottom:0}
 .m_g .banner h3{text-align:center}

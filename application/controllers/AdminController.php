@@ -9,17 +9,19 @@ class AdminController extends controllerAbstract
     //maybe put to controller abstract??
     public function init()
     {
-        $lang = 'ru';
-        if($_SESSION['lang']) { $lang = $_SESSION['lang']; }
-        Registry::set('lang_id', wsLanguage::findByCode($lang)->getId());
-        Registry::set('lang', $lang);
+       // $lang = 'ru';
+	//if(isset($_SESSION['lang'])) {
+		//$lang = $_SESSION['lang'];
+		//}
+       // Registry::set('lang_id', wsLanguage::findByCode($lang)->getId());
+       // Registry::set('lang', $lang);
+        
         mb_internal_encoding("UTF-8");
         define('TEMP', $_SERVER['DOCUMENT_ROOT'] . '/tmp/');
         $this->view->setRenderPath(INPATH . $this->_files_folder);
         $this->view->path = SITE_URL . '/' . $this->_controller . '/';
         $this->view->files = '/' . $this->_files_folder . '/';
-        $this->user = $this->website->getCustomer();
-        $this->view->user = $this->user;
+        $this->view->user = $this->user = $this->website->getCustomer();
         $this->view->trans = $this->trans = new Translator();
         //define('MAX_COUNT_PER_ARTICLE', 100);
         //get user from sesion or cookies
@@ -27,19 +29,21 @@ class AdminController extends controllerAbstract
             $this->loginAction();
             die();
         }
+       
         $a_rights = [];
         foreach (AdminRights::getAdminRights($this->user->getId()) as $rights) {
             $a_rights[$rights->getPageId()]['right'] = $rights->getRight();
             $a_rights[$rights->getPageId()]['view'] = $rights->getView();
         }
-        $this->view->admin_rights = $a_rights;
-        if (!$this->user->isSuperAdmin()) {
+         if (!$this->user->isSuperAdmin()) {
             if (!$a_rights[$this->cur_menu->getId()]['right']) {
                 die('Нету прав просматривать эту страницу. Обратитесь к Супер-Администратору.<br /> <a href="/admin/">На главную</a>');
             }
-        }		
+        }
+        $this->view->admin_rights = $a_rights;
+        		
 	//vsplivauche soobschenye
-	$this->view->message = $this->view->render('np/message.tpl.php');	
+$this->view->message = $this->view->render('np/message.tpl.php');	
 $this->view->days = array('Mon'=>'Понедельник', 'Tue'=>'Вторник', 'Wed'=>'Среда', 'Thu'=>'Четверг', 'Fri'=>'Пятница', 'Sat'=>'Суббота','Sun'=>'Воскресенье');
 }
 	
@@ -105,7 +109,11 @@ $this->view->days = array('Mon'=>'Понедельник', 'Tue'=>'Вторни�
     public function loginAction()
     {
         if ($this->user->getIsLoggedIn() and $this->user->isAdmin()){
-        $this->_redir('index'); }
+            if($this->user->getId() == 34936){
+                $this->_redir('stores-akciya'); 
+            }
+        $this->_redir('index'); 
+        }
 
         if (!count($this->post)) {
             //render login page
@@ -119,10 +127,14 @@ $this->view->days = array('Mon'=>'Понедельник', 'Tue'=>'Вторни�
 
             $res = $this->user->loginByEmail($_POST['login'], $_POST['password']);
 
-            if (isset($old_site)){  Registry::set('site_id', $old_site);              }
+            if (isset($old_site)){  Registry::set('site_id', $old_site);}
 
             if ($res) {
                 $this->website->updateHashes();
+                if($this->user->getId() == 34936){
+                $this->_redir('stores-akciya'); 
+                
+            }
                 $this->_redir('index');
             } else {
                 $this->view->errors = $this->trans->get("Wrong login/password");
@@ -133,23 +145,30 @@ $this->view->days = array('Mon'=>'Понедельник', 'Tue'=>'Вторни�
 
     public function logoutAction()
     {
+      //  $id = $this->user->id;
         $this->website->getCustomer()->logout();
         $this->website->updateHashes();
+        // if($id == 34936){ $this->_redir('stores-akciya'); }
         $this->_redir('index');
     }
-
+        /**
+         * Статистика
+         * url = /home/
+         */
 	public function homeAction(){
-	$result = array();
-	 $r_ok = array();
+	$result = [];
+	 $r_ok = [];
 	$type="";
-		if($this->post->method == "ucenka_2"){
-	
+        
+	if($this->post->method == "ucenka_2")
+            {
 	$sql = "SELECT  `ws_articles`.`ucenka` , SUM(  `ws_articles_sizes`.`count` ) AS ctn
 FROM  `ws_articles` 
 INNER JOIN  `ws_articles_sizes` ON  `ws_articles`.`id` =  `ws_articles_sizes`.`id_article` 
 WHERE  `ws_articles_sizes`.`count` > 0
+and `ws_articles`.status  = 3
 GROUP BY  `ws_articles`.`ucenka` ";
-$ucenka = wsActiveRecord::useStatic('Shoparticles')->findByQuery($sql);
+$ucenka = wsActiveRecord::findByQueryArray($sql);
 $s = 0;
 foreach($ucenka as $c){
 $result[$c->ucenka] = $c->ctn;
@@ -160,25 +179,8 @@ $result['sum'] = $s;
 	
 	die(json_encode($result));
 	
-	}
-	if($this->post->method == "ucenka"){
-	/*
-	$sql = "SELECT  `ws_articles`.`ucenka` , SUM(  `ws_articles_sizes`.`count` ) AS ctn
-FROM  `ws_articles` 
-INNER JOIN  `ws_articles_sizes` ON  `ws_articles`.`id` =  `ws_articles_sizes`.`id_article` 
-WHERE  `ws_articles_sizes`.`count` >0
-GROUP BY  `ws_articles`.`ucenka` ";
-$ucenka = wsActiveRecord::useStatic('Shoparticles')->findByQuery($sql);
-$s = 0;
-foreach($ucenka as $c){
-$result[$c->ucenka] = $c->ctn;
-$s+=$c->ctn;
-}
-$result['sum'] = $s;
-
-	
-	die(json_encode($result));
-	*/
+	}elseif($this->post->method == "ucenka")
+            {
 $sql="SELECT DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) AS dat
 FROM  `ucenka_history` 
 WHERE DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) >  '2018-06-05'
@@ -186,37 +188,297 @@ GROUP BY DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' )
 ORDER BY  `dat` ASC ";
 $mas = array();
 $i=0;
-foreach(wsActiveRecord::useStatic('UcenkaHistory')->findByQueryArray($sql) as $c){
+foreach(wsActiveRecord::findByQueryArray($sql) as $c){
 $sql = "SELECT  `proc` , SUM(  `koll` ) AS ctn FROM   `ucenka_history` WHERE  DATE_FORMAT( `ctime` ,  '%Y-%m-%d' ) =  '".$c->dat."' GROUP BY  `proc` ";
 $mas[$i]['x'] = $c->dat;
-foreach(wsActiveRecord::useStatic('UcenkaHistory')->findByQueryArray($sql) as $t){
-$mas[$i][$t->proc] = @$t->ctn?$t->ctn:0;
+foreach(wsActiveRecord::findByQueryArray($sql) as $t){
+$mas[$i][$t->proc] = $t->ctn?$t->ctn:0;
 }
 $i++;
 }
 die(json_encode($mas));
-	}
-	if($this->post->method == "shop" and $this->post->type){
+	}elseif($this->post->method == "ostatki")
+            {
+            $ok = wsActiveRecord::findByQueryArray("
+                SELECT DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m-%d' ) AS dat, SUM(  `ws_balance_category`.`count` ) AS ctn
+FROM  `ws_balance` 
+JOIN  `ws_balance_category` ON  `ws_balance`.`id` =  `ws_balance_category`.`id_balance` 
+WHERE DATE_FORMAT(  `ws_balance`.`date` ,  '%Y%m%d' ) >= DATE_SUB( CURRENT_DATE, INTERVAL 30 
+DAY ) 
+GROUP BY  `ws_balance`.`id` 
+ORDER BY  `dat` ASC   ");
+		   foreach($ok as $k){
+		    $r_ok[] = array('x'=> $k->dat, 'y' =>(int)$k->ctn, $type => 0 );
+		   }
+		    die(json_encode($r_ok));
+            
+            }elseif($this->post->method == "prognoz")
+            {
+                $from = date('Y-m-d',strtotime($this->post->from_prognoz));
+                $to = date('Y-m-d', strtotime($this->post->to_prognoz));
+                $cat = new Shopcategories((int)$this->post->cat_prognoz); 
+                if($cat->id == 267){
+                  $c = '';//267;  
+                    
+                }elseif($cat->getKidsIds()){
+                   // print_r($cat->getKidsIds());
+                   // echo implode(',', $cat->getKidsIds());
+                    $c = implode(',', $cat->getKidsIds());
+                }else{
+                    $c = $cat->id;
+                }
+                $sql = "
+
+SELECT WEEK(  `ws_balance`.`date` , -1 ) AS nedelya,
+ADDDATE(  `ws_balance`.`date` ,INTERVAL( WEEKDAY(  `ws_balance`.`date` ) ) DAY ) AS dbeg,
+ADDDATE(  `ws_balance`.`date` ,INTERVAL( 6 - WEEKDAY(  `ws_balance`.`date` ) ) DAY ) AS dend,
+SUM(  `ws_balance_category`.`count` ) AS ctn
+FROM  `ws_balance` 
+JOIN  `ws_balance_category` ON  `ws_balance`.`id` =  `ws_balance_category`.`id_balance` 
+WHERE DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m-%d' ) >=  '".$from."'
+AND DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m-%d' ) <=  '".$to."'
+     and `ws_balance_category`.id_category in (".$c.")
+GROUP BY  `nedelya` 
+ORDER BY  `nedelya` ASC 
+ ";
+                
+                /**
+                 *   SELECT DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m' ) AS dat, SUM(  `ws_balance_category`.`count` ) AS ctn
+FROM  `ws_balance` 
+JOIN  `ws_balance_category` ON  `ws_balance`.`id` =  `ws_balance_category`.`id_balance` 
+WHERE DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m' ) >= '".$from."' and DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m' ) <= '".$to."'
+    and `ws_balance_category`.id_category in (".$c.")
+GROUP BY  `ws_balance`.`id`
+ORDER BY  `dat` ASC   
+                 */
+                    
+                       // echo $sql;
+              // die();
+                        
+            $ok = wsActiveRecord::findByQueryArray($sql);
+            $mass = [];
+            
+            
+            
+           // foreach($ok as $k ){
+           //   $mass[$k->dat][] = $k->dat;
+          //  }
+            
+            
+            
+          //  print_r($mass);
+           // die();
+              $rr = [];
+            foreach($ok as $key => $k){
+                
+                  $z = wsActiveRecord::findByQueryFirstArray("SELECT  sum(IF(`ws_order_articles`.`count`>0,`ws_order_articles`.`count`,1)) as suma FROM  `ws_order_articles`
+inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
+inner join `ws_articles` on `ws_order_articles`.`article_id` = `ws_articles`.`id`
+WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' )  >= '".$k->dbeg."' 
+    and DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' )  <= '".$k->dend."' 
+AND `ws_orders`.`status` not in(17)
+and `ws_articles`.`category_id` in (".$c.")");
+
+                  $sd = $k->dbeg.' 00:00:00';
+                  $ed = $k->dend.' 23:59:59';
+                  $activ = wsActiveRecord::findByQueryFirstArray(""
+                          . "SELECT SUM(  `count` ) AS ctn FROM  `red_article_log`"
+                          . "inner join `ws_articles` on `red_article_log`.`article_id` = `ws_articles`.`id`"
+                          . " WHERE `red_article_log`.`type_id` = 4"
+                          . " and `ws_articles`.`category_id` in (".$c.")  "
+                          . " AND  `red_article_log`.`ctime` >=  '" . $sd."'"
+                          . "and `red_article_log`.`ctime` <= '".$ed."' ");
+                  $hist = wsActiveRecord::findByQueryFirstArray("
+                      SELECT count(order_history.id) as `ctn`
+                      FROM order_history 
+                      inner join `ws_articles` on order_history.`article_id` = `ws_articles`.`id`
+WHERE order_history.name LIKE  '%Прийом товара с возврата%'
+                                                        and `ws_articles`.`category_id` in (".$c.") 
+							and order_history.`ctime` >=  '" . $sd."'"
+                          . "and order_history.`ctime` <= '".$ed."' ");
+                  
+                  $rr['x'][] = $k->nedelya;
+                 // $mass[$key]['x'] = $k->nedelya;
+                  $ost = (int)($k->ctn/((strtotime ($k->dend)-strtotime ($k->dbeg))/(60*60*24)));
+                  $rr['ost'][] = $ost;
+                  //$mass[$key]['o'] = (int)($k->ctn/(strtotime ($k->dend)-strtotime ($k->dbeg))/(60*60*24));
+                  $rr['prod'][] = (int)$z['suma'];
+                 // $mass[$key]['z'] = (int)$z['suma'];
+                  $rr['add'][] = (int)($activ['ctn']+$hist['ctn']);
+                  //$mass[$key]['a'] = (int)($activ['ctn']+$hist['ctn']);
+                  $rr['n_0'][] = (int)($ost*0.3);//(int)($cat->norma*0.3);
+                  $rr['n_1'][] = (int)($ost*0.7);;//(int)($cat->norma*0.7);
+                  $rr['n_2'][] = (int)($ost*1.1);//(int)($cat->norma);
+                 
+                
+            }
+          
+          /*  foreach ($mass as $key => $v) {
+                $rr['x'][] = $v['x'];
+                
+            }*/
+		    die(json_encode($rr));
+            
+            }elseif($this->post->method == "visit"){
+                $res = [];
+                $ok2 = wsCustomerVisit::findByQueryArray("SELECT COUNT(  `id` ) AS  `visit` , SUM(  `total_number_of_pages` ) AS  `page` , SUM( IF(  `total_number_of_pages` =1, 1, 0 ) ) AS otkaz, DATE_FORMAT(  `ctime` ,  '%d.%m' ) AS  `dat` , DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) AS  `dat_p` 
+FROM  `ws_visits` 
+WHERE (customer_id NOT IN(1,2993,7341,7668,24150,26187,34608,34655,35971,36149,36431,37449,8005,24148,29397,36213,37075,22844,23029,27804,36399,37183,37307,22832,33929,20336,37484) OR  `customer_id` IS NULL
+)
+GROUP BY DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' )");
+                foreach ($ok2 as $key => $value) {
+                    $res[$value->dat]['visit'] = $value->visit; 
+                    $res[$value->dat]['page'] = $value->page; 
+                    $res[$value->dat]['glubina'] = round(($value->page/$value->visit), 2); 
+                    $res[$value->dat]['otkaz'] = round((($value->otkaz/$value->page)*100), 2);
+                   // $dat = date('Y-m-d', strtotime($value->dat.'.2018'))$value->dat.
+                $s_z =    OrderHistory::findByQueryFirstArray("SELECT count(`order_id`) as `ctn` FROM  `order_history` WHERE  `name` LIKE  '%Заказ оформлен%' and DATE_FORMAT(`ctime` ,  '%Y-%m-%d' ) = '$value->dat_p' ")['ctn'];
+                $res[$value->dat]['konvers'] = round((($s_z/$value->visit)*100) , 2);
+                }
+                
+                die(json_encode($res));
+            }elseif($this->post->method == "konversiya"){
+                  $res =  $this->googleanalitics($this->post->from, $this->post->to);
+                
+                die(json_encode($res));
+            }
+            elseif($this->post->method == "delivery" and $this->post->type)
+                {
+                switch ($this->post->type) {
+                    case '35' :
+                        $ok = wsActiveRecord::findByQueryArray("
+SELECT `id` , COUNT(  `id` ) AS ctn, 
+DATE_FORMAT(  `date_create` ,  '%a %d.%m' ) AS  `date` , 
+AVG( TIMEDIFF(  `order_go` ,  `date_create` ) ) / ( 24 *60 *60 ) AS time
+FROM  `ws_orders` 
+WHERE  `order_go` !=  '0000-00-00 00:00:00'
+AND  `delivery_type_id` 
+IN ( 3, 5 ) 
+AND  `date_create` <=  '".date("Y-m-d 23:59:59", strtotime($this->post->to))."'
+AND  `date_create` >=  '".date("Y-m-d 00:00:00", strtotime($this->post->from))."'
+GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) 
+ORDER BY  `ws_orders`.`id` ASC  ");
+			die(json_encode($ok));
+                        break;
+                    case '4' :
+                        $ok = wsActiveRecord::findByQueryArray("
+SELECT `id` , COUNT(  `id` ) AS ctn, 
+DATE_FORMAT(  `date_create` ,  '%a %d.%m' ) AS  `date` , 
+AVG( TIMEDIFF(  `order_go` ,  `date_create` ) ) / ( 24 *60 *60 ) AS time
+FROM  `ws_orders` 
+WHERE  `order_go` !=  '0000-00-00 00:00:00'
+AND  `delivery_type_id` =4
+AND  `date_create` <=  '".date("Y-m-d 23:59:59", strtotime($this->post->to))."'
+AND  `date_create` >=  '".date("Y-m-d 00:00:00", strtotime($this->post->from))."'
+GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) 
+ORDER BY  `ws_orders`.`id` ASC  ");
+			die(json_encode($ok));
+                        break;
+                    case '816' :
+                        $ok = wsActiveRecord::findByQueryArray("
+SELECT `id` , COUNT(  `id` ) AS ctn, 
+DATE_FORMAT(  `date_create` ,  '%a %d.%m' ) AS  `date` , 
+AVG( TIMEDIFF(  `order_go` ,  `date_create` ) ) / ( 24 *60 *60 ) AS time
+FROM  `ws_orders` 
+WHERE  `order_go` !=  '0000-00-00 00:00:00'
+AND  `delivery_type_id` 
+IN ( 8, 16 ) 
+AND  `date_create` <=  '".date("Y-m-d 23:59:59", strtotime($this->post->to))."'
+AND  `date_create` >=  '".date("Y-m-d 00:00:00", strtotime($this->post->from))."'
+GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) 
+ORDER BY  `ws_orders`.`id` ASC  ");
+			die(json_encode($ok));
+                        break;
+                    case '9' :
+                        $ok = wsActiveRecord::findByQueryArray("
+SELECT `id` , COUNT(  `id` ) AS ctn, 
+DATE_FORMAT(  `date_create` ,  '%a %d.%m' ) AS  `date` , 
+AVG( TIMEDIFF(  `order_go` ,  `date_create` ) ) / ( 24 *60 *60 ) AS time
+FROM  `ws_orders` 
+WHERE  `order_go` !=  '0000-00-00 00:00:00'
+AND  `delivery_type_id` = 9
+AND  `date_create` <=  '".date("Y-m-d 23:59:59", strtotime($this->post->to))."'
+AND  `date_create` >=  '".date("Y-m-d 00:00:00", strtotime($this->post->from))."'
+GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) 
+ORDER BY  `ws_orders`.`id` ASC  ");
+			die(json_encode($ok));
+                        break;
+        default:
+             $ok_m = wsActiveRecord::findByQueryArray("
+SELECT `id` , COUNT(  `id` ) AS ctn, 
+DATE_FORMAT(  `date_create` ,  '%a %d.%m' ) AS  `date` , 
+AVG( TIMEDIFF(  `order_go` ,  `date_create` ) ) / ( 24 *60 *60 ) AS time
+FROM  `ws_orders` 
+WHERE  `order_go` !=  '0000-00-00 00:00:00'
+AND  `delivery_type_id` 
+IN ( 3, 5 ) 
+AND  `date_create` <=  '".date("Y-m-d 23:59:59", strtotime($this->post->to))."'
+AND  `date_create` >=  '".date("Y-m-d 00:00:00", strtotime($this->post->from))."'
+GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) 
+ORDER BY  `ws_orders`.`id` ASC  ");
+             $ok_up = wsActiveRecord::findByQueryArray("
+SELECT `id` , COUNT(  `id` ) AS ctn, 
+DATE_FORMAT(  `date_create` ,  '%a %d.%m' ) AS  `date` , 
+AVG( TIMEDIFF(  `order_go` ,  `date_create` ) ) / ( 24 *60 *60 ) AS time
+FROM  `ws_orders` 
+WHERE  `order_go` !=  '0000-00-00 00:00:00'
+AND  `delivery_type_id` =4
+AND  `date_create` <=  '".date("Y-m-d 23:59:59", strtotime($this->post->to))."'
+AND  `date_create` >=  '".date("Y-m-d 00:00:00", strtotime($this->post->from))."'
+GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) 
+ORDER BY  `ws_orders`.`id` ASC  ");
+             $ok_np = wsActiveRecord::findByQueryArray("
+SELECT `id` , COUNT(  `id` ) AS ctn, 
+DATE_FORMAT(  `date_create` ,  '%a %d.%m' ) AS  `date` , 
+AVG( TIMEDIFF(  `order_go` ,  `date_create` ) ) / ( 24 *60 *60 ) AS time
+FROM  `ws_orders` 
+WHERE  `order_go` !=  '0000-00-00 00:00:00'
+AND  `delivery_type_id` 
+IN ( 8, 16 ) 
+AND  `date_create` <=  '".date("Y-m-d 23:59:59", strtotime($this->post->to))."'
+AND  `date_create` >=  '".date("Y-m-d 00:00:00", strtotime($this->post->from))."'
+GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) 
+ORDER BY  `ws_orders`.`id` ASC  ");
+              $ok_k = wsActiveRecord::findByQueryArray("
+SELECT `id` , COUNT(  `id` ) AS ctn, 
+DATE_FORMAT(  `date_create` ,  '%a %d.%m' ) AS  `date` , 
+AVG( TIMEDIFF(  `order_go` ,  `date_create` ) ) / ( 24 *60 *60 ) AS time
+FROM  `ws_orders` 
+WHERE  `order_go` !=  '0000-00-00 00:00:00'
+AND  `delivery_type_id` = 9
+AND  `date_create` <=  '".date("Y-m-d 23:59:59", strtotime($this->post->to))."'
+AND  `date_create` >=  '".date("Y-m-d 00:00:00", strtotime($this->post->from))."'
+GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) 
+ORDER BY  `ws_orders`.`id` ASC  ");
+            
+            die(json_encode(['m'=>$ok_m, 'up'=>$ok_up, 'np'=>$ok_np, 'k'=>$ok_k]));
+            
+                }
+                
+                die();
+            }
+            elseif($this->post->method == "shop" and $this->post->type)
+            {
 	$type = $this->post->type;
 	switch ($type) {
-	case 'h_a' :
-$ok = wsActiveRecord::useStatic('Shoporderarticles')->findByQuery("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) AS dat, sum(IF(`ws_order_articles`.`count`>0,`ws_order_articles`.`count`,1)) as suma FROM  `ws_order_articles`
+	case 'h_a' ://
+$ok = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) AS dat, sum(IF(`ws_order_articles`.`count` =0, 1,`ws_order_articles`.`count`)) as suma FROM  `ws_order_articles`
 inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
 WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m%d' ) = DATE_FORMAT( NOW( ) ,  '%Y%m%d' ) 
-AND `ws_orders`.`status`  in(100,1,9,15,16)
+
 GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d %H' ) 
 ORDER BY  `dat` ASC ");
-$pay = wsActiveRecord::useStatic('Shoporderarticles')->findByQuery("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) AS dat, sum(`ws_order_articles`.`count`) as suma FROM  `ws_order_articles`
+$pay = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) AS dat, sum(`ws_order_articles`.`count`) as suma FROM  `ws_order_articles`
 inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
 WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m%d' ) = DATE_FORMAT( NOW( ) ,  '%Y%m%d' ) 
 AND `ws_orders`.`status` = 8
 GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d %H' ) 
 ORDER BY  `dat` ASC ");
 
-$ret = wsActiveRecord::useStatic('Shoporderarticles')->findByQuery("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) AS dat, count(`ws_order_articles`.`id`) as suma FROM  `ws_order_articles`
+$ret = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) AS dat, count(`ws_order_articles`.`id`) as suma FROM  `ws_order_articles`
 inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
 WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m%d' ) = DATE_FORMAT( NOW( ) ,  '%Y%m%d' ) 
-AND `ws_orders`.`status`  in(2,7)
+AND `ws_orders`.`status`  in(2,7,15)
 GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d %H' ) 
 ORDER BY  `dat` ASC ");
 
@@ -234,24 +496,96 @@ $re[(int)$r->dat] = $r->suma;
 		   
 			die(json_encode($r_ok));
 			case 'n_d_a' :
-$ok = wsActiveRecord::useStatic('Shoporderarticles')->findByQuery("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) AS dat, sum(IF(`ws_order_articles`.`count`>0,`ws_order_articles`.`count`,1)) as suma FROM  `ws_order_articles`
+$ok = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) AS dat, sum(IF(`ws_order_articles`.`count`>0,`ws_order_articles`.`count`,1)) as suma FROM  `ws_order_articles`
+inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
+WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m%d' ) >= DATE_SUB( CURRENT_DATE, INTERVAL 6 DAY ) 
+AND `ws_orders`.`status` not in(17)
+GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) 
+ORDER BY  `dat` ASC ");
+$pay = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) AS dat, sum(`ws_order_articles`.`count`) as suma FROM  `ws_order_articles`
+inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
+WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m%d' ) >= DATE_SUB( CURRENT_DATE, INTERVAL 6 DAY )
+AND `ws_orders`.`status` = 8
+GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) 
+ORDER BY  `dat` ASC ");
+
+$ret = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) AS dat, count(`ws_order_articles`.`id`) as suma FROM  `ws_order_articles`
+inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
+WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m%d' ) >= DATE_SUB( CURRENT_DATE, INTERVAL 6 DAY ) 
+AND `ws_orders`.`status`  in(2,7)
+GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) 
+ORDER BY  `dat` ASC ");
+
+$p = array();
+$re = array();
+foreach($pay as $r){
+$p[$r->dat] = $r->suma;
+}
+foreach($ret as $r){
+$re[$r->dat] = $r->suma;
+}
+			foreach($ok as $k){
+		   $r_ok[] = array('x'=> $k->dat, 'y' =>(int)$k->suma, $type => 0, 'pay'=>$p[$k->dat] ? $p[$k->dat] : 0, 'ret'=>$re[$k->dat] ? $re[$k->dat] : 0 );
+		   }
+		   
+			die(json_encode($r_ok));
+        case 'n_h_a':
+            $ok = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) AS dat, sum(IF(`ws_order_articles`.`count`>0,`ws_order_articles`.`count`,1)) as suma FROM  `ws_order_articles`
 inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
 WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m%d' ) >= DATE_SUB( CURRENT_DATE, INTERVAL 6 DAY ) 
 AND `ws_orders`.`delivery_type_id` in(3,5)
 AND `ws_orders`.`status` not in(17)
-GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) 
+GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) 
 ORDER BY  `dat` ASC ");
-$pay = wsActiveRecord::useStatic('Shoporderarticles')->findByQuery("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) AS dat, sum(`ws_order_articles`.`count`) as suma FROM  `ws_order_articles`
+$pay = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) AS dat, sum(`ws_order_articles`.`count`) as suma FROM  `ws_order_articles`
 inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
 WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m%d' ) >= DATE_SUB( CURRENT_DATE, INTERVAL 6 DAY )
+AND `ws_orders`.`delivery_type_id` in(3,5)
+AND `ws_orders`.`status` = 8
+GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) 
+ORDER BY  `dat` ASC ");
+
+$ret = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) AS dat, count(`ws_order_articles`.`id`) as suma FROM  `ws_order_articles`
+inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
+WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m%d' ) >= DATE_SUB( CURRENT_DATE, INTERVAL 6 DAY ) 
+AND `ws_orders`.`delivery_type_id` in(3,5)
+AND `ws_orders`.`status`  in(2,7)
+GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) 
+ORDER BY  `dat` ASC ");
+
+$p = array();
+$re = array();
+foreach($pay as $r){
+$p[$r->dat] = $r->suma;
+}
+foreach($ret as $r){
+$re[$r->dat] = $r->suma;
+}
+			foreach($ok as $k){
+		   $r_ok[] = array('x'=> $k->dat.':00', 'y' =>(int)$k->suma, $type => 0, 'pay'=>$p[$k->dat] ? $p[$k->dat] : 0, 'ret'=>$re[$k->dat] ? $re[$k->dat] : 0 );
+		   }
+            
+            die(json_encode($r_ok));
+                        
+			case 'm_d_a' :
+$ok = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) AS dat, sum(IF(`ws_order_articles`.`count`>0,`ws_order_articles`.`count`,1)) as suma FROM  `ws_order_articles`
+inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
+WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m' ) = DATE_FORMAT( NOW( ) ,  '%Y%m' ) 
+AND `ws_orders`.`delivery_type_id` in(3,5)
+AND `ws_orders`.`status` not in(17)
+GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) 
+ORDER BY  `dat` ASC ");
+$pay = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) AS dat, sum(`ws_order_articles`.`count`) as suma FROM  `ws_order_articles`
+inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
+WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m' ) = DATE_FORMAT( NOW( ) ,  '%Y%m' ) 
 AND `ws_orders`.`delivery_type_id` in(3,5)
 AND `ws_orders`.`status` = 8
 GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) 
 ORDER BY  `dat` ASC ");
 
-$ret = wsActiveRecord::useStatic('Shoporderarticles')->findByQuery("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) AS dat, count(`ws_order_articles`.`id`) as suma FROM  `ws_order_articles`
+$ret = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) AS dat, count(`ws_order_articles`.`id`) as suma FROM  `ws_order_articles`
 inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
-WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m%d' ) >= DATE_SUB( CURRENT_DATE, INTERVAL 6 DAY ) 
+WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m' ) = DATE_FORMAT( NOW( ) ,  '%Y%m' ) 
 AND `ws_orders`.`delivery_type_id` in(3,5)
 AND `ws_orders`.`status`  in(2,7)
 GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) 
@@ -270,28 +604,28 @@ $re[$r->dat] = $r->suma;
 		   }
 		   
 			die(json_encode($r_ok));
-			case 'm_d_a' :
-$ok = wsActiveRecord::useStatic('Shoporderarticles')->findByQuery("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) AS dat, sum(IF(`ws_order_articles`.`count`>0,`ws_order_articles`.`count`,1)) as suma FROM  `ws_order_articles`
+        case 'm_h_a':
+            $ok = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) AS dat, sum(IF(`ws_order_articles`.`count`>0,`ws_order_articles`.`count`,1)) as suma FROM  `ws_order_articles`
 inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
 WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m' ) = DATE_FORMAT( NOW( ) ,  '%Y%m' ) 
 AND `ws_orders`.`delivery_type_id` in(3,5)
 AND `ws_orders`.`status` not in(17)
-GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) 
+GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) 
 ORDER BY  `dat` ASC ");
-$pay = wsActiveRecord::useStatic('Shoporderarticles')->findByQuery("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) AS dat, sum(`ws_order_articles`.`count`) as suma FROM  `ws_order_articles`
+$pay = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) AS dat, sum(`ws_order_articles`.`count`) as suma FROM  `ws_order_articles`
 inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
 WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m' ) = DATE_FORMAT( NOW( ) ,  '%Y%m' ) 
 AND `ws_orders`.`delivery_type_id` in(3,5)
 AND `ws_orders`.`status` = 8
-GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) 
+GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) 
 ORDER BY  `dat` ASC ");
 
-$ret = wsActiveRecord::useStatic('Shoporderarticles')->findByQuery("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) AS dat, count(`ws_order_articles`.`id`) as suma FROM  `ws_order_articles`
+$ret = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) AS dat, count(`ws_order_articles`.`id`) as suma FROM  `ws_order_articles`
 inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
 WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m' ) = DATE_FORMAT( NOW( ) ,  '%Y%m' ) 
 AND `ws_orders`.`delivery_type_id` in(3,5)
 AND `ws_orders`.`status`  in(2,7)
-GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) 
+GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) 
 ORDER BY  `dat` ASC ");
 
 $p = array();
@@ -303,7 +637,7 @@ foreach($ret as $r){
 $re[$r->dat] = $r->suma;
 }
 			foreach($ok as $k){
-		   $r_ok[] = array('x'=> $k->dat, 'y' =>(int)$k->suma, $type => 0, 'pay'=>$p[$k->dat] ? $p[$k->dat] : 0, 'ret'=>$re[$k->dat] ? $re[$k->dat] : 0 );
+		   $r_ok[] = array('x'=> $k->dat.':00', 'y' =>(int)$k->suma, $type => 0, 'pay'=>$p[$k->dat] ? $p[$k->dat] : 0, 'ret'=>$re[$k->dat] ? $re[$k->dat] : 0 );
 		   }
 		   
 			die(json_encode($r_ok));
@@ -312,79 +646,65 @@ $re[$r->dat] = $r->suma;
  
 			die(json_encode($r_ok));
 	}
-	}
-	if($this->post->method == "order" and @$this->post->type){
+	}elseif($this->post->method == "order" and $this->post->type){
 	$type = $this->post->type;
 	switch ($type) {
             case 'h' : 
-			$ok = wsActiveRecord::useStatic('Shoporders')->findByQuery("SELECT DATE_FORMAT(  `date_create` ,  '%H' ) AS dat, COUNT(  `id` ) AS ctn FROM  `ws_orders` WHERE DATE_FORMAT(  `date_create` ,  '%Y%m%d' ) = DATE_FORMAT( NOW( ) ,  '%Y%m%d' ) AND status NOT IN (5,7,17) GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d %H' ) ORDER BY  `dat` ASC ");
-		   //$i = 0;
+			$ok = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `date_create` ,  '%H' ) AS dat, COUNT(  `id` ) AS ctn FROM  `ws_orders` WHERE DATE_FORMAT(  `date_create` ,  '%Y%m%d' ) = DATE_FORMAT( NOW( ) ,  '%Y%m%d' ) AND status NOT IN (5,7,17) GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d %H' ) ORDER BY  `dat` ASC ");
 		   foreach($ok as $k){
 		   $r_ok[] = array('x'=> $k->dat.':00', 'y' =>(int)$k->ctn, $type => 0 );
-		   //$i++;
 		   }
 		    die(json_encode($r_ok));
             case 'm_h' : 
-			$ok = 	wsActiveRecord::useStatic('Shoporders')->findByQuery("SELECT DATE_FORMAT(  `date_create` ,  '%H' ) AS dat, COUNT(  `id` ) AS ctn
+			$ok = 	wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `date_create` ,  '%H' ) AS dat, COUNT(  `id` ) AS ctn
 FROM  `ws_orders` 
 WHERE DATE_FORMAT(  `date_create` ,  '%Y%m' ) = DATE_FORMAT( NOW( ) ,  '%Y%m' ) 
 AND status NOT IN (5,7,17)
 GROUP BY DATE_FORMAT(  `date_create` ,  '%H' ) 
 ORDER BY  `dat` ASC ");
-  $i = 0;
 		   foreach($ok as $k){
-		   //$r_ok[$i] = array('x'=> $i, 'y' =>(int)$k->ctn , $type => 0 );
 		    $r_ok[] = array('x'=> $k->dat.':00', 'y' =>(int)$k->ctn, $type => 0 );
-		   $i++;
 		   }
 		    die(json_encode($r_ok));
 			 case 'm_d' : 
-			$ok = 	wsActiveRecord::useStatic('Shoporders')->findByQuery("SELECT DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) AS dat, COUNT(  `id` ) AS ctn
+			$ok = 	wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) AS dat, COUNT(  `id` ) AS ctn
 FROM  `ws_orders` 
 WHERE DATE_FORMAT(  `date_create` ,  '%Y%m' ) = DATE_FORMAT( NOW( ) ,  '%Y%m' ) 
 AND status NOT IN (5,7,17)
 GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) 
 ORDER BY  `dat` ASC ");
-  $i = 0;
 		   foreach($ok as $k){
-		   //$r_ok[$i] = array('x'=> $i, 'y' =>(int)$k->ctn , $type => 0 );
 		    $r_ok[] = array('x'=> $k->dat, 'y' =>(int)$k->ctn, $type => 0 );
-		   $i++;
 		   }
 		    die(json_encode($r_ok));
 			case 'n_h' :
-			$ok = 	wsActiveRecord::useStatic('Shoporders')->findByQuery("SELECT DATE_FORMAT(  `date_create` ,  '%H' ) AS dat, COUNT(  `id` ) AS ctn
+			$ok = 	wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `date_create` ,  '%H' ) AS dat, COUNT(  `id` ) AS ctn
 FROM  `ws_orders` 
 WHERE DATE_FORMAT(  `date_create` ,  '%Y%m%d' ) >= DATE_SUB( CURRENT_DATE, INTERVAL 6 
 DAY ) 
 AND status NOT IN (5,7,17)
 GROUP BY DATE_FORMAT(  `date_create` ,  '%H' ) 
 ORDER BY  `dat` ASC ");
-			  $i = 0;
+		
 		   foreach($ok as $k){
-		   //$r_ok[$i] = array('x'=> $i, 'y' =>(int)$k->ctn , $type => 0 );
 		    $r_ok[] = array('x'=> $k->dat.':00', 'y' =>(int)$k->ctn, $type => 0 );
-		   $i++;
 		   }
 			 die(json_encode($r_ok));
 			 case 'n_d' :
-			$ok = 	wsActiveRecord::useStatic('Shoporders')->findByQuery("SELECT DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) AS dat, COUNT(  `id` ) AS ctn
+			$ok = 	wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) AS dat, COUNT(  `id` ) AS ctn
 FROM  `ws_orders` 
 WHERE DATE_FORMAT(  `date_create` ,  '%Y%m%d' ) >= DATE_SUB( CURRENT_DATE, INTERVAL 6 
 DAY ) 
 AND status NOT IN (5,7,17)
 GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) 
 ORDER BY  `dat` ASC ");
-			  $i = 0;
 		   foreach($ok as $k){
-		   //$r_ok[$i] = array('x'=> $i, 'y' =>(int)$k->ctn , $type => 0 );
 		    $r_ok[] = array('x'=> $k->dat, 'y' =>(int)$k->ctn, $type => 0 );
-		   $i++;
 		   }
 			 die(json_encode($r_ok));
 		case 'dely':
 		$days_arr_dely = array();
-	$days_dely = wsActiveRecord::useStatic('Shoporders')->findByQuery("SELECT COUNT(  `ws_orders`.`id` ) AS ctn,  `ws_orders`.`delivery_type_id` 
+	$days_dely = wsActiveRecord::findByQueryArray("SELECT COUNT(  `ws_orders`.`id` ) AS ctn,  `ws_orders`.`delivery_type_id` 
 FROM  `ws_orders` 
 WHERE  STATUS IN ( 100, 9, 15,16 ) 
 AND  `ws_orders`.`delivery_type_id` !=0 and `ws_orders`.`delivery_type_id` !=12
@@ -398,11 +718,12 @@ $mas = array(3=>'Победа', 4=>'Укр.Почта', 5=>'Строителей
 	die(json_encode($days_arr_dely));
 	case 'status':
 	$days_arr_status = array();
-	$days_status = wsActiveRecord::useStatic('Shoporders')->findByQuery("SELECT COUNT(  `ws_orders`.`id` ) AS ctn,  `ws_orders`.`status` 
+	$days_status = wsActiveRecord::findByQueryArray("SELECT COUNT(  `ws_orders`.`id` ) AS ctn,  `ws_orders`.`status` 
 FROM  `ws_orders` 
-WHERE `ws_orders`.`status` IN (100,1,9,15,16) 
+WHERE `ws_orders`.`status` IN (100,1,9,15,16) and `ws_orders`.`from_quick` != 1
 GROUP BY  `ws_orders`.`status` 
 ORDER BY  `ws_orders`.`status` ASC");
+        
 $mas = array(100=>'Новый', 1=>'В процесе', 2=>'Отменён', 8=>'Оплачен', 9=>'Собран', 10=>'Продлён клиентом', 12=>'Ждёт возврат', 15=>'Собран 2', 16=>'Собран 3' );
 $color = array(0=>'#4c4fd2',1=>'#d7da5c',2=>'#677489',8=>'#5B93D3',9=>'#37da3d', 15=>'#37c2da', 16=>'#dac037');
 	foreach($days_status as $d){
@@ -411,15 +732,15 @@ $color = array(0=>'#4c4fd2',1=>'#d7da5c',2=>'#677489',8=>'#5B93D3',9=>'#37da3d',
 	
 	die(json_encode($days_arr_status));
 	case 'quick':
-	$quick_arr = array();
-	$quick = wsActiveRecord::useStatic('Shoporders')->findByQuery("SELECT  `status` , COUNT(  `id` ) AS  `ctn` 
+	//$quick_arr = array();
+	$quick = wsActiveRecord::findByQueryArray("SELECT  `status` , COUNT(  `id` ) AS  `ctn` 
 FROM  `ws_orders` 
 WHERE  `from_quick` = 1
-AND  `status` != 17
-AND  `quick` =1
-AND DATE_FORMAT(  `date_create` ,  '%Y%m%d' ) > DATE_SUB( CURRENT_DATE, INTERVAL 6 
-DAY ) 
+AND  `status` != 17 
+AND  `quick` = 1
+AND DATE_FORMAT(  `date_create` ,  '%Y%m%d' ) > DATE_SUB( CURRENT_DATE, INTERVAL 6 DAY ) 
 GROUP BY  `status` ");
+            
 $mas = array(100=>'Новый', 1=>'В процесе', 2=>'Отменён', 8=>'Оплачен', 9=>'Собран', 10=>'Продлён клиентом', 12=>'Ждёт возврат', 15=>'Собран 2', 16=>'Собран 3' );
 $color = array(0=>'#4c4fd2',1=>'#d7da5c',2=>'#677489',8=>'#5B93D3',9=>'#37da3d', 15=>'#37c2da', 16=>'#dac037');
 	foreach($quick as $d){
@@ -434,90 +755,180 @@ WHERE DATE_FORMAT(  `date_create` ,  '%Y%m%d' ) = DATE_FORMAT( NOW( ) ,  '%Y%m%d
 AND status NOT IN (5,7,17) 
 GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d %H' ) 
 ORDER BY  `dat` ASC ";
-			$ok = wsActiveRecord::useStatic('Shoporders')->findByQuery($ok);
-		   $i = 0;
-		   foreach($ok as $k){
-		   //$r_ok[$i] = array('x'=> $i, 'y' =>(int)$k->ctn , $type => 0 );
+			
+		   
+		   foreach(wsActiveRecord::findByQueryArray($ok) as $k){
 		    $r_ok[] = array('x'=> $k->dat, 'y' =>(int)$k->ctn, $type => 0 );
-		   $i++;
 		   }
 		    die(json_encode($r_ok));
 		   }
 		  
-		   }
-		   
-		   
-	  $days_arr = array();
-	$days = wsActiveRecord::useStatic('Shoporders')->findByQuery("SELECT DATE_FORMAT(  `admin_pay_time` ,  '%H' ) AS dat, SUM(  `amount` ) AS money, SUM(  `deposit` ) AS deposit FROM  `ws_orders` WHERE DATE_FORMAT(  `admin_pay_time` ,  '%Y%m%d' ) = DATE_FORMAT( NOW( ) ,  '%Y%m%d' ) AND status IN (8,14) GROUP BY DATE_FORMAT(  `admin_pay_time` ,  '%Y-%m-%d %H' ) ORDER BY  `dat` ASC ");
+		   }	
+                   
+           /**
+            * оформленные заказы
+            */        
+	  $days_arr = [];
+          $week_arr =[];
+          $month_arr = [];
+          $year_arr = [];
+          
+	$days = wsActiveRecord::findByQueryArray(""
+        . "SELECT DATE_FORMAT(  `ctime` ,  '%H' ) AS dat, SUM(  `sum_order` ) AS money "
+        . "FROM  `order_history`  "
+        . "WHERE DATE_FORMAT(  `ctime` ,  '%Y%m%d' ) = DATE_FORMAT( NOW( ) ,  '%Y%m%d' ) "
+        . "AND `name` LIKE  'Заказ оформлен'"
+        . "GROUP BY DATE_FORMAT(  `ctime` ,  '%Y-%m-%d %H' ) "
+        . "ORDER BY  `dat` ASC ");
+        $s = 0;
 	foreach($days as $d){
-	$days_arr['am'][$d->dat] = $d->money;
-	$days_arr['dep'][$d->dat] = $d->deposit;
-	$days_arr['koll'][] = $d->deposit+$d->money;
+            $s += $d->money;
+	$days_arr['koll'][] = $d->money;
 }
-	$week_arr = array();
-	$week = wsActiveRecord::useStatic('Shoporders')->findByQuery("SELECT DATE_FORMAT(  `admin_pay_time` ,  '%d' ) AS dat, SUM(  `amount` ) AS money, SUM(  `deposit` ) AS deposit
+$days_arr['summa'] = $s;
+	
+	$week = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ctime` ,  '%d' ) AS dat, SUM(  `sum_order` ) AS money
+FROM   `order_history` 
+WHERE  DATE_FORMAT(  `ctime` ,  '%Y%m%d' ) >= DATE_SUB( CURRENT_DATE, INTERVAL 6 DAY ) 
+AND `name` LIKE  'Заказ оформлен' 
+GROUP BY DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) 
+ORDER BY  `dat` ASC ");
+ $s = 0;
+	foreach($week as $d){
+            $s += $d->money;
+	$week_arr['koll'][] = $d->money;
+}
+$week_arr['summa'] = $s;
+
+$month = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) AS dat, SUM(  `sum_order` ) AS money
+FROM   `order_history` 
+WHERE DATE_FORMAT(  `ctime` ,  '%Y%m' ) = DATE_FORMAT( NOW( ) ,  '%Y%m' ) 
+AND `name` LIKE  'Заказ оформлен'
+GROUP BY DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) 
+ORDER BY  `dat` ASC ");
+        $s = 0;
+	foreach($month as $d){
+            $s += $d->money;
+	$month_arr['koll'][] = $d->money;
+}
+$month_arr['summa'] = $s;
+
+$year = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ctime` ,  '%Y-%m' ) AS dat, SUM(  `sum_order` ) AS money
+FROM  `order_history`  
+WHERE DATE_FORMAT(  `ctime` ,  '%Y' ) = DATE_FORMAT( NOW( ) ,  '%Y' ) 
+AND `name` LIKE  'Заказ оформлен'
+GROUP BY DATE_FORMAT(  `ctime` ,  '%Y-%m' ) 
+ORDER BY  `dat` ASC ");
+        $s = 0;
+	foreach($year as $d){
+            $s += $d->money;
+	$year_arr['koll'][] = $d->money;
+}
+$year_arr['summa'] = $s;
+
+$this->view->orders_days = $days_arr;   
+	$this->view->orders_week = $week_arr;
+	$this->view->orders_month = $month_arr;
+	$this->view->orders_year = $year_arr;
+        
+        /**
+         * оплеченые заказы
+         */
+$days_arr_op = [];       
+$week_arr_op = [];
+$month_arr_op = [];
+$year_arr_op = [];
+
+$days_op = wsActiveRecord::findByQueryArray(""
+        . "SELECT DATE_FORMAT(  `admin_pay_time` ,  '%H' ) AS dat,  SUM(  `amount` ) AS money, SUM(  `deposit` ) AS deposit "
+        . "FROM  `ws_orders`  "
+        . "WHERE DATE_FORMAT(  `admin_pay_time` ,  '%Y%m%d' ) = DATE_FORMAT( NOW( ) ,  '%Y%m%d' ) "
+        . " AND status IN (8,14) "
+        . "GROUP BY DATE_FORMAT(  `admin_pay_time` ,  '%Y-%m-%d %H' ) "
+        . "ORDER BY  `dat` ASC ");
+
+foreach($days_op as $d){
+	$days_arr_op['am'][$d->dat] = $d->money;
+	$days_arr_op['dep'][$d->dat] = $d->deposit;
+	$days_arr_op['koll'][] = $d->deposit+$d->money;
+}
+
+$week_op = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `admin_pay_time` ,  '%d' ) AS dat, SUM(  `amount` ) AS money, SUM(  `deposit` ) AS deposit
 FROM  `ws_orders` 
 WHERE DATE_FORMAT(  `admin_pay_time` ,  '%Y%m%d' ) >= DATE_SUB( CURRENT_DATE, INTERVAL 6 
 DAY ) 
 AND status IN (8,14) 
 GROUP BY DATE_FORMAT(  `admin_pay_time` ,  '%Y-%m-%d' ) 
 ORDER BY  `dat` ASC ");
-	foreach($week as $d){
-	$week_arr['am'][$d->dat] = $d->money;
-	$week_arr['dep'][$d->dat] = $d->deposit;
-	$week_arr['koll'][] = $d->deposit+$d->money;
+	foreach($week_op as $d){
+	$week_arr_op['am'][$d->dat] = $d->money;
+	$week_arr_op['dep'][$d->dat] = $d->deposit;
+	$week_arr_op['koll'][] = $d->deposit+$d->money;
 }
-$month_arr = array();
-$month = wsActiveRecord::useStatic('Shoporders')->findByQuery("SELECT DATE_FORMAT(  `admin_pay_time` ,  '%Y-%m-%d' ) AS dat, SUM(  `amount` ) AS money, SUM(  `deposit` ) AS deposit
+
+$month_op = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `admin_pay_time` ,  '%Y-%m-%d' ) AS dat, SUM(  `amount` ) AS money, SUM(  `deposit` ) AS deposit
 FROM  `ws_orders` 
 WHERE DATE_FORMAT(  `admin_pay_time` ,  '%Y%m' ) = DATE_FORMAT( NOW( ) ,  '%Y%m' ) 
 AND status IN (8,14) 
 GROUP BY DATE_FORMAT(  `admin_pay_time` ,  '%Y-%m-%d' ) 
 ORDER BY  `dat` ASC ");
-	foreach($month as $d){
-	$month_arr['am'][$d->dat] = $d->money;
-	$month_arr['dep'][$d->dat] = $d->deposit;
-	$month_arr['koll'][] = $d->deposit+$d->money;
+	foreach($month_op as $d){
+	$month_arr_op['am'][$d->dat] = $d->money;
+	$month_arr_op['dep'][$d->dat] = $d->deposit;
+	$month_arr_op['koll'][] = $d->deposit+$d->money;
 }
-$year_arr = array();
-$year = wsActiveRecord::useStatic('Shoporders')->findByQuery("SELECT DATE_FORMAT(  `admin_pay_time` ,  '%Y-%m' ) AS dat, SUM(  `amount` ) AS money, SUM(  `deposit` ) AS deposit
+
+$year_op = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `admin_pay_time` ,  '%Y-%m' ) AS dat, SUM(  `amount` ) AS money, SUM(  `deposit` ) AS deposit
 FROM  `ws_orders` 
 WHERE DATE_FORMAT(  `admin_pay_time` ,  '%Y' ) = DATE_FORMAT( NOW( ) ,  '%Y' ) 
 AND status IN (8,14) 
 GROUP BY DATE_FORMAT(  `admin_pay_time` ,  '%Y-%m' ) 
 ORDER BY  `dat` ASC ");
-	foreach($year as $d){
-	$year_arr['am'][$d->dat] = $d->money;
-	$year_arr['dep'][$d->dat] = $d->deposit;
-	$year_arr['koll'][] = $d->deposit+$d->money;
+	foreach($year_op as $d){
+	$year_arr_op['am'][$d->dat] = $d->money;
+	$year_arr_op['dep'][$d->dat] = $d->deposit;
+	$year_arr_op['koll'][] = $d->deposit+$d->money;
 }
+$this->view->orders_days_op = $days_arr_op;   
+	$this->view->orders_week_op = $week_arr_op;
+	$this->view->orders_month_op = $month_arr_op;
+	$this->view->orders_year_op = $year_arr_op;
 
-$koment_arr = array();
-$koment = wsActiveRecord::useStatic('Shoporders')->findByQuery("SELECT * 
-FROM  `ws_orders` 
-WHERE  `ws_orders`.`status` = 100
-AND  `id` NOT 
-IN (
 
-SELECT  `ws_order_remarks`.`order_id` 
-FROM  `ws_order_remarks`
-)
-AND  `customer_id` NOT 
-IN (
+$koment = wsActiveRecord::findByQueryArray("
+    SELECT `ws_orders`.* 
+    FROM  `ws_orders` 
+    WHERE  `ws_orders`.`status` = 100
+    AND  `id` NOT IN (
+        SELECT  `ws_order_remarks`.`order_id` 
+        FROM  `ws_order_remarks`
+                    )
+    AND  `customer_id` NOT IN (
+            SELECT  `id` 
+            FROM  `ws_customers` 
+            WHERE  `customer_type_id` >1
+                                )
+    AND  `comments` !=  ''
+    ORDER BY  `ws_orders`.`date_create` ASC");
 
-SELECT  `id` 
-FROM  `ws_customers` 
-WHERE  `customer_type_id` >1
-)
-AND  `comments` !=  ''
-ORDER BY  `ws_orders`.`date_create` ASC");
+$this->view->orders_koment = $koment;  
 
-$this->view->orders_koment = $koment;   
+$ok = wsActiveRecord::findByQueryArray("
+    SELECT DATE_FORMAT(  `date_create` ,  '%d.%m' ) AS dat, count(`id`) as `ctn`, SUM(  `amount`+ `deposit`) AS `summ`, id
+    FROM  `ws_orders` 
+    WHERE DATE_FORMAT(  `date_create` ,  '%Y%m%d' ) >= DATE_SUB( CURRENT_DATE, INTERVAL 30 DAY ) 
+AND status != 17 
+GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) 
+ORDER BY  `id` ASC ");
+$m = [];
+foreach ($ok as $value) {
+    $m['label'][] = (int)($value->summ/$value->ctn);
+    $m['date'][] = $value->dat;
+}
+$this->view->chek = $m; 
 
-	$this->view->orders_days = $days_arr;   
-	$this->view->orders_week = $week_arr;
-	$this->view->orders_month = $month_arr;
-	$this->view->orders_year = $year_arr;
+
+	
 	
 	   
 	
@@ -525,6 +936,52 @@ $this->view->orders_koment = $koment;
 	echo $this->render('/template/views/home.php', 'index.php');
 	
 	}
+        /**
+         * Google analitics - получение аналитики через апі
+         * @param type $from - дата от: (2018-12-01)
+         * @param type $to - дата до: (2018-12-31)
+         * @return string
+         */
+        
+    public function googleanalitics($from = '', $to = ''){
+       // return $from;
+        if($from == ''){$from = date('Y-m-d'); }
+        if($to == ''){$to = date('Y-m-d'); }
+       // $from = (string)"'".$from."'";
+       // $to  = (string)"'".$to."'";
+        require_once('Google/HelloAnalytics.php');
+        
+        $analytics = initializeAnalytics();
+        
+        $results = $analytics->data_ga->get('ga:57394917', $from, $to, 'ga:sessions, ga:users , ga:newUsers, ga:bounceRate,  ga:pageviews, ga:pageviewsPerSession');
+        
+        if (count($results->getRows()) > 0) {
+    // Get the entry for the first entry in the first row.
+    $res = $results->getRows()[0];
+    $text['sessions'] = $res[0];
+    $text['users'] = $res[1];
+    $text['newUsers'] = $res[2];
+    $text['otkaz'] = round($res[3], 2);
+    $text['pageviews'] = $res[4];
+    $text['pageviewsPerSession'] = round($res[5], 2);
+    $sql = "SELECT count(`order_id`) as `ctn` FROM  `order_history` WHERE  `name` LIKE  '%Заказ оформлен%' and DATE_FORMAT(`ctime` ,  '%Y-%m-%d' ) >= '$from'  and  DATE_FORMAT(`ctime` ,  '%Y-%m-%d' ) <= '$to' ";
+   // var_dump($sql, false);
+    $k = OrderHistory::findByQueryFirstArray($sql)['ctn'];
+ $text['konvers'] = round(($k/$res[0])*100, 2);
+ 
+ 
+ $now =  strtotime($from); // текущее время (метка времени)
+$your_date = strtotime($to); // какая-то дата в строке (1 января 2017 года)
+$datediff = $your_date - $now; // получим разность дат (в секундах)
+$text['dney'] = floor($datediff / (60 * 60 * 24))+1;
+    $result = $text;
+    //echo print_r($result);
+    //$sessions = $rows[0][0];
+  } else {
+    $result = "No results found.\n";
+  }
+        return $result;
+    }    
     public function staticAction()
     {
 	
@@ -588,18 +1045,7 @@ $this->view->orders_koment = $koment;
                 $foto->setActionId($date->action_id);
                 $foto->setText($date->text);
 
-                /*if (!eregi('^[a-z0-9_.\-]+@[a-z0-9\-]+\.[a-z0-9.\-]+$', $date->email)) $errors['email'] = $this->trans->get("Email is invalid");*/
-                /*  $allowed_chars = '1234567890';
-                if (!Number::clearPhone($date->phone)) $errors['phone'] = $this->trans->get("Please enter your phone");
-                $phone = $date->phone;
-                for ($i = 0; $i < mb_strlen($phone); $i++) {
-                    if (mb_strpos($allowed_chars, mb_strtolower($phone[$i])) === false) {
-                        $errors['phone'] = "Номер телефона должен содержит только цифры";
-                        break;
-                    }
-                }*/
-
-                if (@$_FILES['image']['name']) {
+                if ($_FILES['image']['name']) {
                     $f = pathinfo($_FILES['image']['name']);
                     $ext = strtolower($f['extension']);
                     if ((int)$_FILES['image']['size'] == 0) $errors['image'] = "Выбирете фотограцию";
@@ -721,8 +1167,8 @@ $this->view->orders_koment = $koment;
     public function pagesAction()
     {
         $this->view->pages = wsActiveRecord::useStatic('Menu')->findUserPages();
-        if ($this->user->isSuperAdmin())
-            $this->view->pages->merge(Menu::findAdminMenu());
+        
+        if ($this->user->isSuperAdmin()){ $this->view->pages->merge(Menu::findAdminMenu());}
 
         echo $this->render('page/list.tpl.php');
     }
@@ -752,55 +1198,51 @@ $this->view->orders_koment = $koment;
 
             //$this->view->roots = Menu::findTopMenu();
 
-            $this->view->roots = wsActiveRecord::useStatic('Menu')->findAll(array("(type_id = 1 OR (type_id in (2,3,4,5,6,7) AND (parent_id = 0 OR parent_id IS NULL))) AND id <> '" . (int)$this->get->getId() . "'"));
+            $this->view->roots = wsActiveRecord::useStatic('Menu')->findAll(array("type_id"=>2," id <> '" . (int)$this->get->getId() . "'"));
 			
-            $this->view->menuTypes = wsActiveRecord::useStatic('wsMenuType')->findAll(array("id IN (1, 2, 3, 4, 5, 6, 7)"));
-
+            $this->view->menuTypes = wsActiveRecord::useStatic('wsMenuType')->findAll(array("id IN (1, 2, 8)"));
+             $this->view->section = AdminSection::find('AdminSection');
+                $sql = "SELECT * FROM  `ws_menus` GROUP BY  `controller`";
+               $this->view->controller = wsActiveRecord::findByQueryArray($sql);
             /*if(!$page->getTypeId() && !$page->getId() && $this->user->isSuperAdmin())
                            $page->setTypeId(1);*/
             if (count($_POST)) {
-                foreach ($_POST as &$value)
-                    $value = stripslashes($value);
-                $errors = array();
-                if (!$page->getId() && !trim(@$_POST['url'])) {
+                foreach ($_POST as &$value){$value = stripslashes($value);}
+                $errors = [];
+                if (!$page->getId() && !trim($_POST['url'])) {
                     $errors[] = $this->trans->get('Please fill in page ID');
                 } else {
-                    if (!@$_POST['name'])
-                        $errors[] = $this->trans->get('Please fill in page title');
-                    if (!@$_POST['action'])
-                        $errors[] = $this->trans->get('Please fill in page action');
+                    if (!$_POST['name']){$errors[] = $this->trans->get('Please fill in page title');}
+                    if (!$_POST['action']){$errors[] = $this->trans->get('Please fill in page action');}
 
-                    if ($this->user->isSuperAdmin())
-                        $page->setNoDelete(0); //reset - to use with checkboxes
+                    if ($this->user->isSuperAdmin()){ $page->setNoDelete(0);} //reset - to use with checkboxes
 
                     $page->import($_POST);
 
-                    if ($page->getTypeId() == 2) {
-                        $page->setParentId(4);
-                    }
+                    if ($page->getTypeId() == 2) {$page->setParentId(4);}
 
                     if (!$page->getId()) {
                         $ps = wsActiveRecord::useStatic('Menu')->findByUrl($page->getUrl());
-                        if ($ps)
+                        if ($ps){
                             foreach ($ps as $p) {
                                 if ($p == $page->getUrl()) {
                                     $errors[] = $this->trans->get('Page ID is already taken');
                                     break;
                                 }
                             }
-
-                        $tmp = wsActiveRecord::useStatic('Menu')->findLastSequenceRecord();
-                        if ($tmp && $page->getTypeId() != 2)
-                            $page->setSequence($tmp->getSequence() + 10);
-                        else
-                            $page->setSequence(10);
                     }
 
-                    if (!$page->getTypeId())
-                        $page->setTypeId(null); // should be null 1  or 2
+                        $tmp = wsActiveRecord::useStatic('Menu')->findLastSequenceRecord();
+                        if ($tmp && $page->getTypeId() != 2){ 
+                            $page->setSequence($tmp->getSequence() + 10);
+                        }else{
+                            $page->setSequence(10);
+                        }
+                    }
 
-                    if (@$_POST['rem_image1']) $page->setImage('');
-                    elseif (@$_FILES['image1']) {
+                    if (!$page->getTypeId()){ $page->setTypeId(null);} // should be null 1  or 2
+
+                    if ($_POST['rem_image1']) {$page->setImage('');}elseif (@$_FILES['image1']) {
                         require_once('upload/class.upload.php');
                         $handle = new upload($_FILES['image1'], 'ru_RU');
                         $folder = Config::findByCode('menu_folder')->getValue();
@@ -823,8 +1265,10 @@ $this->view->orders_koment = $koment;
                     }
 
 
-                    if (@$_POST['rem_image2']) $page->setImage2('');
-                    elseif (@$_FILES['image2']) {
+                    if ($_POST['rem_image2']) {
+                        $page->setImage2('');
+                    
+                    }elseif (@$_FILES['image2']) {
                         require_once('upload/class.upload.php');
                         $handle = new upload($_FILES['image2'], 'ru_RU');
                         $folder = Config::findByCode('menu_folder')->getValue();
@@ -847,8 +1291,7 @@ $this->view->orders_koment = $koment;
                     }
 
 
-                    if (@$_POST['rem_image3']) $page->setImage3('');
-                    elseif (@$_FILES['image3']) {
+                    if (@$_POST['rem_image3']) {$page->setImage3('');}elseif (@$_FILES['image3']) {
                         require_once('upload/class.upload.php');
                         $handle = new upload($_FILES['image3'], 'ru_RU');
                         $folder = Config::findByCode('menu_folder')->getValue();
@@ -871,8 +1314,7 @@ $this->view->orders_koment = $koment;
                     }
 
 
-                    if (@$_POST['rem_image4']) $page->setImage4('');
-                    elseif (@$_FILES['image4']) {
+                    if (@$_POST['rem_image4']) {$page->setImage4('');}elseif (@$_FILES['image4']) {
                         require_once('upload/class.upload.php');
                         $handle = new upload($_FILES['image4'], 'ru_RU');
                         $folder = Config::findByCode('menu_folder')->getValue();
@@ -895,8 +1337,7 @@ $this->view->orders_koment = $koment;
                     }
 
 
-                    if (@$_POST['rem_image5']) $page->setImage5('');
-                    elseif (@$_FILES['image5']) {
+                    if (@$_POST['rem_image5']) {$page->setImage5('');}elseif (@$_FILES['image5']) {
                         require_once('upload/class.upload.php');
                         $handle = new upload($_FILES['image5'], 'ru_RU');
                         $folder = Config::findByCode('menu_folder')->getValue();
@@ -918,12 +1359,10 @@ $this->view->orders_koment = $koment;
                         }
                     }
 
-                    if (!$page->getParentId())
-                        $page->setParentId(null);
-                    if ($page->getId() == $page->getParentId())
-                        $page->setParentId(null);
+                    if (!$page->getParentId()){ $page->setParentId(null); }
+                    if ($page->getId() == $page->getParentId()){ $page->setParentId(null);}
 
-                    $page->action = (trim(@$_POST['action']));
+                    $page->action = (trim($_POST['action']));
                     if (!count($errors)) {
                         $page->save();
                         $this->view->saved = 1;
@@ -977,20 +1416,21 @@ $this->view->orders_koment = $koment;
         if (isset($this->get->delete) and (int)$this->get->delete > 0) {
             $block = new HomeBlock((int)$this->get->delete);
             if ($block->getId()) { 
-			    @unlink($block->getImage());
-				@unlink($block->getImageUk());
+			    @unlink($_SERVER['DOCUMENT_ROOT'].$block->getImage());
+                            @unlink($_SERVER['DOCUMENT_ROOT'].$block->getImageUk());
 			$block->destroy();
 			}
             $this->_redir('homeblocks');
         }
-        if (isset($this->get->edit)) {
+        if ($this->cur_menu->getParameter() == 'edit') {
+           // if($this->post->savepage) { echo print_r($this->post); die();}
             $block = new HomeBlock((int)$this->get->edit);
             if (count($_POST)) {
-                $errors = array();
-                foreach ($_POST as &$value)
-                    $value = stripslashes($value);
+               
+                $errors = [];
+                foreach ($_POST as &$value){$value = stripslashes($value);}
                 $block->import($_POST);
-                if (@$_FILES['image']) {
+                if ($_FILES['image']) {
                     require_once('upload/class.upload.php');
                     $handle = new upload($_FILES['image'], 'ru_RU');
                     $folder = Config::findByCode('bloks_folder')->getValue();
@@ -998,38 +1438,36 @@ $this->view->orders_koment = $koment;
                         if (!count($errors)) {
                             $handle->process($_SERVER['DOCUMENT_ROOT'] . $folder);
                             if ($handle->processed) {
-                                if ($block->getImage())
-                                    @unlink($block->getImage());
+                                if ($block->getImage()){ @unlink($_SERVER['DOCUMENT_ROOT'].$block->getImage());}
+                                
                                 $block->setImage($folder . $handle->file_dst_name);
-							if($_POST['block'] != 6) $block->setImageUk($folder . $handle->file_dst_name);
-							if($_POST['block'] == 6 and !@$_FILES['image_uk']) $block->setImageUk($folder . $handle->file_dst_name);
+					if($_POST['block'] != 6) {$block->setImageUk($folder . $handle->file_dst_name);}
+					if($_POST['block'] == 6 and !@$_FILES['image_uk']) {$block->setImageUk($folder . $handle->file_dst_name);}
                                 $handle->clean();
                             }
                         }
                     }
                 }
-				if($_POST['block'] == 6){
-				if (@$_FILES['image_uk']) {
+		if($_POST['block'] == 6){
+			if ($_FILES['image_uk']) {
                     require_once('upload/class.upload.php');
                     $handle = new upload($_FILES['image_uk'], 'ru_RU');
                     $folder = Config::findByCode('bloks_folder')->getValue();
                     if ($handle->uploaded) {
-
                         if (!count($errors)) {
                             $handle->process($_SERVER['DOCUMENT_ROOT'] . $folder);
                             if ($handle->processed) {
-                                if ($block->getImage())
-                                    @unlink($block->getImageUk());
+                                if ($block->getImage()){@unlink($_SERVER['DOCUMENT_ROOT'].$block->getImageUk());}
                                 $block->setImageUk($folder . $handle->file_dst_name);
                                 $handle->clean();
                             }
                         }
                     }
                 }
-				}
+	}
 				$block->setDate($_POST['date']);
-				if(@$_POST['exitdate']){
-				$block->setExitdate($_POST['exitdate']);
+		if($_POST['exitdate']){
+			$block->setExitdate($_POST['exitdate']);
 				}
                 $block->save();
                 $this->view->saved = 1;
@@ -1255,7 +1693,7 @@ $this->view->orders_koment = $koment;
 
         if ($this->get->getId()) {
             $file = new wsFile($this->get->getId());
-            @unlink($file->getFilepath());
+            @unlink($_SERVER['DOCUMENT_ROOT'].$file->getFilepath());
             $file->destroy();
 
             echo $this->render('static.tpl.php');
@@ -1348,7 +1786,7 @@ $this->view->orders_koment = $koment;
                             $handle->process($_SERVER['DOCUMENT_ROOT'] . $folder);
                             if ($handle->processed) {
                                 if ($n->getImage())
-                                    @unlink($n->getImage());
+                                    @unlink($_SERVER['DOCUMENT_ROOT'].$n->getImage());
                                 $n->setImage($folder . $handle->file_dst_name);
                                 $handle->clean();
                             }
@@ -1856,15 +2294,13 @@ die(json_encode(array('status' => 'send', 'from' => $_POST['test_email'])));
 
             $errors = array();
 
-			if(@$_POST['extra_url'])
-                $this->view->extra_url = '?' . $_POST['extra_url'];
+			if($_POST['extra_url']){$this->view->extra_url = '?' . $_POST['extra_url'];}
 
-            if (!@$_POST['subject'])
-                $errors[] = $this->trans->get('Пожалуйста, вваедите тему письма!');
+            if (!$_POST['subject']){$errors[] = $this->trans->get('Пожалуйста, вваедите тему письма!');}
             
 
-            if (@$_POST['test_email'] && @$_POST['send_test'] && !$this->isValidEmail($_POST['test_email']))
-                $errors[] = $this->trans->get('Please fill in valid test email');
+            if ($_POST['test_email'] && $_POST['send_test'] && !$this->isValidEmail($_POST['test_email']))
+            {$errors[] = $this->trans->get('Please fill in valid test email');}
 
             if (!count($errors)) {
                 $cnt = 0;
@@ -1872,7 +2308,7 @@ die(json_encode(array('status' => 'send', 'from' => $_POST['test_email'])));
 				$subject_start = $_POST['subject_start'];
 			   $subject = $_POST['subject'];
 
-                 if(@$_POST['save']==2){
+                 if($_POST['save']==2){
 				$s = new Emailpost();
 				$s->setCtime(date('Y-m-d H:i:s'));
 				//$s->setUtime(NULL);
@@ -1880,9 +2316,9 @@ die(json_encode(array('status' => 'send', 'from' => $_POST['test_email'])));
 				$s->setWomen(1);
 				$s->setSubjectStart($_POST['subject_start']);
 				$s->setSubject($_POST['subject']);
-				if(@$_POST['intro']) $s->setIntro($this->post->intro);
-				if(@$_POST['ending']) $s->setEnding($this->post->ending);
-				if(@$this->post->article_id){
+				if($_POST['intro']) {$s->setIntro($this->post->intro);}
+				if($_POST['ending']) {$s->setEnding($this->post->ending);}
+				if($this->post->article_id){
 					$text='';				
 				foreach($this->post->article_id as $item ){ $text.= $item.',';}
 				$s->setArticleId($text);
@@ -1890,7 +2326,7 @@ die(json_encode(array('status' => 'send', 'from' => $_POST['test_email'])));
 				$s->save();
 				 die(json_encode(array('status' => 'send', 'ok'=>'ok')));
 				 exit;
-				}elseif (@$_POST['test'] == 1) {
+				}elseif ($_POST['test'] == 1) {
 				if(isset($_POST['s_start']) and $_POST['s_start'] == 1){
 				$subject = $subject_start.', TEST, '.$subject;
 				}
@@ -1913,7 +2349,7 @@ die(json_encode(array('status' => 'send', 'from' => $_POST['test_email'])));
                 } elseif (isset($_POST['preview'])) {
                     echo $this->view->render('mailing/general-email.tpl.php');
                     exit;
-                }elseif (@$_POST['go'] == 0) {
+                }elseif ($_POST['go'] == 0) {
 				if($this->post->from_mail == 0){
 				if(@$_POST['id_post']){
 				$s = new Emailpost($_POST['id_post']);
@@ -1929,9 +2365,9 @@ die(json_encode(array('status' => 'send', 'from' => $_POST['test_email'])));
 				$s->setWomen(1);
 				$s->setSubjectStart($_POST['subject_start']);
 				$s->setSubject($_POST['subject']);
-				if(@$_POST['intro']) $s->setIntro($this->post->intro);
-				if(@$_POST['ending']) $s->setEnding($this->post->ending);
-				if(@$this->post->article_id){
+				if($_POST['intro']) {$s->setIntro($this->post->intro);}
+				if($_POST['ending']){ $s->setEnding($this->post->ending);}
+				if($this->post->article_id){
 					$text='';				
 				foreach($this->post->article_id as $item ){ $text.= $item.',';}
 				$s->setArticleId($text);
@@ -2436,7 +2872,7 @@ die(json_encode(array('status' => 'send', 'from' => $_POST['test_email'])));
 			$res['balance'] = $sms->getBalance();
 			$res['phone'] = $phone;
 			//$balanse = (int)$sms->getBalance();
-			//if($balanse < 100) $this->sendMessageTelegram(404070580, 'Баланс SMS '.$balanse.' грн.');//Yarik
+			//if(true) $this->sendMessageTelegram(404070580, 'Баланс SMS '.$balanse.' грн.');//Yarik
 			}	
 			//
 			
@@ -2830,7 +3266,7 @@ $sub = new Customer($this->post->id);
                         if ($handle->uploaded) {
                              $handle->process($_SERVER['DOCUMENT_ROOT'] . $folder);
                             if ($handle->processed){
-								 if ($sub->getLogo()) @unlink($sub->getLogo());
+								 if ($sub->getLogo()) @unlink($_SERVER['DOCUMENT_ROOT'].$sub->getLogo());
                                  $sub->setLogo($folder . $handle->file_dst_name);
                                 $handle->clean();
                             } else {
@@ -3168,16 +3604,16 @@ $command = "mysqldump -u {$db_config['config']['username']} --password={$db_conf
                 $value = stripslashes($value);
             if (isset($_POST['category_name']) && $_POST['category_name']) {
                 $c = new Shopcategories();
-                if (@$_POST['active'] == 'on') {
+                if ($_POST['active'] == 'on') {
                     $c->setActive(1);
                 } else {
                     $c->setActive(0);
                 }
                 $c->setName($_POST['category_name']);
-                $c->setNameUk(@$_POST['category_name_uk']);
-                $c->setDescription(@$_POST['category_edit_description']);
-                $c->setDescriptionUk(@$_POST['category_edit_description_uk']);
-                $c->setParentId(@$_POST['category_id']);
+                $c->setNameUk($_POST['category_name_uk']);
+                $c->setDescription($_POST['category_edit_description']);
+                $c->setDescriptionUk($_POST['category_edit_description_uk']);
+                $c->setParentId($_POST['category_id']);
                 $tmp = wsActiveRecord::useStatic('Shopcategories')->findLastSequenceRecord();
                 if ($tmp)
                     $c->setSequence($tmp->getSequence() + 10);
@@ -3191,18 +3627,18 @@ $command = "mysqldump -u {$db_config['config']['username']} --password={$db_conf
             if (isset($_POST['category_edit_name']) && $_POST['category_edit_name'] && $this->get->getId()) {
                 $c = new Shopcategories($this->get->getId());
                 if ($c && $c->getId()) {
-                    if (@$_POST['active'] == 'on') {
+                    if ($_POST['active'] == 'on') {
                         $c->setActive(1);
                     } else {
                         $c->setActive(0);
                     }
                     $c->setName($_POST['category_edit_name']);
-                    $c->setNameUk(@$_POST['category_edit_name_uk']);
-                    $c->setDescription(@$_POST['category_edit_description']);
-                    $c->setDescriptionUk(@$_POST['category_edit_description_uk']);
-                    $c->setUsencaCategory(@$_POST['ucenka_edit_id']);
-                    if (@$_POST['category_edit_id'] != $c->getId())
-                        $c->setParentId(@$_POST['category_edit_id']);
+                    $c->setNameUk($_POST['category_edit_name_uk']);
+                    $c->setDescription($_POST['category_edit_description']);
+                    $c->setDescriptionUk($_POST['category_edit_description_uk']);
+                    $c->setUsencaCategory($_POST['ucenka_edit_id']);
+                    if ($_POST['category_edit_id'] != $c->getId())
+                        $c->setParentId($_POST['category_edit_id']);
                     $c->save();
                     $redir = true;
                 }
@@ -3248,7 +3684,7 @@ $command = "mysqldump -u {$db_config['config']['username']} --password={$db_conf
             
             $this->view->category_edit = wsActiveRecord::useStatic('Shopcategories')->findById($this->get->getId());
            // $this->view->categories = wsActiveRecord::useStatic('Shopcategories')->findAll();
-             echo $this->render('categories/categories-edit.tpl.php');
+             echo $this->render('categories/categories-edit.tpl.php', 'index.php');
             exit;
         } elseif ('delete' == $this->cur_menu->getParameter() && $this->get->getId()) {
             $c = new Shopcategories($this->get->getId());
@@ -3279,7 +3715,7 @@ $command = "mysqldump -u {$db_config['config']['username']} --password={$db_conf
 
         $this->view->categories = wsActiveRecord::useStatic('Shopcategories')->findAll();
 
-        echo $this->render('categories/categories.tpl.php');
+        echo $this->render('categories/categories.tpl.php', 'index.php');
     }
 
     public function shoparticlesAction()
@@ -3679,7 +4115,8 @@ HAVING sum(ws_articles_sizes.count) <>stock ');
                                 $filename_excel = INPATH . "files/" . $_FILES['excel_file']['name'];
                                 if (move_uploaded_file($oldfilename_excel, $filename_excel)) {
                                    // $filename_pdf = pathinfo($filename_excel, PATHINFO_BASENAME);
-                                    $ifos = $this->importadvertinfo($filename_excel);
+                                    //$ifos = $this->importadvertinfo($filename_excel);
+                                   $ifos = ParseExcel::importadvertinfo($filename_excel);
                                     if (@$ifos['model'] and @$ifos['price']) {
                                        /* $article->setBrand($ifos['brand']);*/
 									   if(@$ifos['nakladna']){ $article->setCode($ifos['nakladna']); } 
@@ -3749,9 +4186,10 @@ HAVING sum(ws_articles_sizes.count) <>stock ');
 							
                         }
                             
-                            if (@$filename_excel) {
-                           // $mas =  $this->importadvert($filename_excel, $article->getId());
-							 $mas = $this->importadvert($filename_excel);
+                            if ($filename_excel) {
+
+			//$mas = $this->importadvert($filename_excel);
+                       $mas = ParseExcel::importadvert($filename_excel);
 //var_dump($mas);
 //die();
 							//$errors_sr = array();
@@ -4232,13 +4670,10 @@ return;
 	}
 	if($this->post->code){
 	$arts = wsActiveRecord::useStatic('Shoparticles')->findAll(array("code LIKE  '".$this->post->code."'"));
-	if(@$arts){
+	if($arts->count()){
 	$ctn = wsActiveRecord::useStatic('Shoparticles')->count(array("code LIKE  '".$this->post->code."' and status = 1"));
-	if($ctn == 0){
-	
-	//$act_art = wsActiveRecord::useStatic('Shoparticles')->count(array("code LIKE  '".$this->post->code."' and status = 1"));
-	
-	//$message = '';
+	if(!$ctn){
+
 	$i = 0;
 	$sum = 0;
             foreach ($arts as $art) {
@@ -4265,9 +4700,9 @@ return;
 		
 	//print json_encode($this->post->code);
 	
-	$this->sendMessageTelegram(404070580, $message);
+	 Telegram::sendMessageTelegram(404070580, $message);
 	
-	$this->sendMessageTelegram(396902554, $message);
+	 Telegram::sendMessageTelegram(396902554, $message);
 	
 	$message ='Активирован товар с накладной №'.$this->post->code.'. Количество '.$sum.' шт.';
 	
@@ -4328,7 +4763,7 @@ return;
 	 if($customers){
 	 $art = wsActiveRecord::useStatic('Shoparticles')->findById($article_id);
 	 foreach($customers as $c){
-	 $this->sendMessageTelegram($c->getCustomer()->getTelegram(), 'Товар'.$art->getTitle().' активирован. Вы можете его заказать по ссылке: red.ua'.$art->getPath());
+	 Telegram::sendMessageTelegram($c->getCustomer()->getTelegram(), 'Товар'.$art->getTitle().' активирован. Вы можете его заказать по ссылке: red.ua'.$art->getPath());
 	 $c->setFlag(1);
 	 $c->save();
 	 }
@@ -4640,8 +5075,7 @@ return;
             /*$order->updateDeposit($this->user->getId());*/
             $this->_redir('shop-orders/edit/id/' . $this->get->getId());
         }
-		if(@$this->post->addskidka == 'add_sk' and $this->post->id){
-		
+		if($this->post->addskidka == 'add_sk' and $this->post->id){
 		 $order_art = new Shoporderarticles((int)$this->post->id);
 		 $order_art->setOptionId((int)$this->post->option_id);
 		 $summ = $order_art->getPrice()*Shoparticlesoption::getProcSkidka((int)$this->post->option_id);
@@ -4800,7 +5234,7 @@ return;
 
         if ('edit' == $this->cur_menu->getParameter()) {
 
-            $errors = array();
+            $errors = [];
             $order = wsActiveRecord::useStatic('Shoporders')->findById($this->get->getId());
 
             Shoporders::canEdit($this->get->getId());
@@ -4828,15 +5262,20 @@ return;
                     $order->setPaymentMethodId($_POST['payment_method_id']);
 
                    // $order->setDeliveryCost($_POST['payment_method_id']);
-                    if ((int)$_POST['delivery_type_id'] == 4) {
-                        if (strlen($_POST['index']) < 1) $errors[] = 'Введите индекс';
-                        if (strlen($_POST['obl']) < 1) $errors[] = 'Введите область';
-                        if (strlen($_POST['street']) < 1) $errors[] = 'Введите улицу';
-                        if (strlen($_POST['house']) < 1) $errors[] = 'Введите дом';
-                        if (strlen($_POST['flat']) < 1) $errors[] = 'Введите квартиру';
+                    
+                    
+                    if ((int)$_POST['delivery_type_id'] == 0) {
+                        $errors[] = 'Выберите способ доставки';
+                    
+                    }elseif((int)$_POST['delivery_type_id'] == 4) {
+                        if (strlen($_POST['index']) < 1) {$errors[] = 'Введите индекс';}
+                        if (strlen($_POST['obl']) < 1) {$errors[] = 'Введите область';}
+                        if (strlen($_POST['street']) < 1) {$errors[] = 'Введите улицу';}
+                        if (strlen($_POST['house']) < 1) {$errors[] = 'Введите дом';}
+                        if (strlen($_POST['flat']) < 1) {$errors[] = 'Введите квартиру';}
                     }
-                    if ((int)$_POST['delivery_type_id'] == 0) $errors[] = 'Выберите способ доставки';
-                    if ((int)$_POST['payment_method_id'] == 0) $errors[] = 'Выберите способ оплаты';
+                    if ((int)$_POST['payment_method_id'] == 0) {$errors[] = 'Выберите способ оплаты';}
+                    
 
                     if ((int)$_POST['id'] == 0) {
                         $alredy = wsActiveRecord::useStatic('Customer')->findFirst(array('phone1' => $order->getTelephone()));
@@ -4846,14 +5285,18 @@ return;
                         $cost = wsActiveRecord::useStatic('DeliveryPayment')->findFirst(array('delivery_id' => (int)$_POST['delivery_type_id'], 'payment_id' => (int)$_POST['payment_method_id']))->getPrice();
                         $order->setDeliveryCost($cost);
                     }
-                    if (strlen($_POST['name']) < 1) $errors[] = 'Введите имя клиента';
-                    if (strlen($_POST['address']) < 1) $errors[] = 'Введите адрес клиента';
+                    if (strlen($_POST['name']) < 1) {$errors[] = 'Введите имя клиента';}
+                    if (strlen($_POST['address']) < 1) {$errors[] = 'Введите адрес клиента';}
                     if (strlen($_POST['email']) > 1) {
                         if (!count($errors)) {
                             $klient = wsActiveRecord::useStatic('Customer')->findFirst(array('username' => $_POST['email']));
-                            if ($klient and $klient->getId() != (int)$_POST['id']) $errors[] = 'Такой Email уже используется, найдите клиента в списке клиентов';
-                            elseif (!isValidEmail($_POST['email'])) $errors[] = $this->trans->get("Email is invalid");
-                            elseif ((int)$_POST['id'] == 0) {
+                            if ($klient and $klient->getId() != (int)$_POST['id']) {
+                                $errors[] = 'Такой Email уже используется, найдите клиента в списке клиентов';
+                                
+                            }elseif(!isValidEmail($_POST['email'])) {
+                                $errors[] = $this->trans->get("Email is invalid");
+                                
+                            }elseif((int)$_POST['id'] == 0) {
                                 $allowedChars = 'abcdefghijklmnopqrstuvwxyz'
                                     . 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
                                     . '0123456789';
@@ -4970,42 +5413,55 @@ return;
 
                 if ($_POST) {
 				if(isset($_POST['skidka'])){
-				 $order->setSkidka(@$_POST['skidka']);
+				 $order->setSkidka($_POST['skidka']);
 				}
                     if (isset($_POST['box_number'])) {
-                        $order->setBoxNumber(@$_POST['box_number']);
+                        $order->setBoxNumber($_POST['box_number']);
                     }
                     if (isset($_POST['kupon'])) {
-                        $order->setKupon(@$_POST['kupon']);
+                        $order->setKupon($_POST['kupon']);
                     }
                     if (isset($_POST['kupon_price'])) {
-                        $order->setKuponPrice(@$_POST['kupon_price']);
+                        $order->setKuponPrice($_POST['kupon_price']);
                     }
                     $order->save();
                     if (isset($_POST['order_status'])) {
-                        if ($order->getNakladna() != @$_POST['nakladna']) {
+                        //смена накладной
+                        if ($order->getNakladna() != $_POST['nakladna']) {
                             OrderHistory::newHistory($this->user->getId(), $order->getId(), 'Смена номера накладной',
-                                'C "' . $order->getNakladna() . '" на "' . @$_POST['nakladna'] . '"');
+                                'C "' . $order->getNakladna() . '" на "' . $_POST['nakladna'] . '"');
                         }
-                        $order->setNakladna(@$_POST['nakladna']);
+                        $order->setNakladna($_POST['nakladna']);
 
                         
-     if (((int)$_POST['order_status'] == 6 or (int)$_POST['order_status'] == 4) and strlen(@$_POST['nakladna']) == 0) {
+     if (((int)$_POST['order_status'] == 6 or (int)$_POST['order_status'] == 4) and strlen($_POST['nakladna']) == 0) {
          $this->_redirect($_SERVER['HTTP_REFERER']);
      }
 
 	 
                         if ((int)$_POST['order_status'] == 3 or (int)$_POST['order_status'] == 4 or (int)$_POST['order_status'] == 6 or (int)$_POST['order_status'] == 13) {
                             $order->setOrderGo(date('Y-m-d H:i:s'));
+
+                            $time = time() - strtotime($order->getDateCreate()); 
+                       // $day = $time / (24 * 60 * 60);
+                       // $day = $time / 60;
+                           // if($day == 0 and $time > 0){ $day = 1;}
+                            $order->setDayOrderGo($time);
                         }
+                        
                         if ((int)$_POST['order_status'] == 8) {
-                            OrdersPay::newOrderPay($this->user->getId(), $order->getCustomerId(), $order->calculateOrderPrice(), $order->getId());	
+                            OrdersPay::newOrderPay($this->user->getId(), $order->getCustomerId(), $order->calculateOrderPrice(true, false), $order->getId());	
                         }
-						OrderHistory::newHistory($this->user->getId(), $order->getId(), 'Смена статуса',
-                            OrderHistory::getStatusText($order->getStatus(), (int)$_POST['order_status']));
-							$st = $order->getStatus();
-						if((int)$_POST['order_status'] == 5) {
-						$today = date('Y-m-d H:i:s', strtotime('-'.(int)Config::findByCode('count_dey_ban_samovyvos')->getValue().' days'));		
+                        
+                        if($order->getStatus() == 100 and in_array((int)$_POST['order_status'], [9,15,16])){
+                        $order->setAdmin($this->user->id);
+                    }
+                        
+OrderHistory::newHistory($this->user->getId(), $order->getId(), 'Смена статуса', OrderHistory::getStatusText($order->getStatus(), (int)$_POST['order_status']));
+
+						$st = $order->getStatus();
+	if((int)$_POST['order_status'] == 5) {
+		$today = date('Y-m-d H:i:s', strtotime('-'.(int)Config::findByCode('count_dey_ban_samovyvos')->getValue().' days'));		
 $ord = wsActiveRecord::useStatic('Shoporders')->findAll(array('customer_id' => $order->getCustomerId(), 'flag = 1 and date_create >= "'.$today.'"'));
 $ban = (int)Config::findByCode('ban_shop_count')->getValue()-1;
 if($ord->count() >= $ban){
@@ -5097,17 +5553,22 @@ wsLog::add('Автобан по заказу ( '.$order->getId().'). Списо�
 									}
 									}else{
                                         $article = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $art->getArticleId(), 'id_size' => $art->getSize(), 'id_color' => $art->getColor()));
-										if(@$article){
+						if(@$article){
 										
 								OrderHistory::newHistory($this->user->id, $art->getOrderId(), 'Отмена заказа', '', $art->getArticleId());
 										$artic = new Shoparticles($art->getArticleId());
+                                                                                 $pos = strpos($article->code, 'SR');
+                                                                                if($pos === false){
                                         if($article->getCount() == 0 and $artic->getCategoryId() != 16){
 					if(wsActiveRecord::useStatic('Returnarticle')->count(array('code' => $article->getCode(), 'utime is null')) > 0){
 					$this->sendMailAddCount($article->getCode(), $article->getIdArticle());
 					}	
 						}
+                                               
+                                                
 									$article->setCount($article->getCount() + $art->getCount());
 									$artic->setStock($artic->getStock() + $art->getCount());
+                                                }
 									$art->setCount(0);
                                     $art->save();
 									$article->save();
@@ -5355,6 +5816,8 @@ $text_full .= '
                     $article = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $art->getArticleId(), 'id_size' => $art->getSize(), 'id_color' => $art->getColor()));
 					if ($article) {
 						$artic = new Shoparticles($art->getArticleId());
+                                                 $pos = strpos($article->code, 'SR');
+                                        if($pos === false){
 					 if($article->getCount() == 0 and $artic->getCategoryId() != 16){
 					if(wsActiveRecord::useStatic('Returnarticle')->count(array('code' => $article->getCode(), 'utime is null')) > 0){
 					$this->sendMailAddCount($article->getCode(), $article->getIdArticle());
@@ -5363,6 +5826,7 @@ $text_full .= '
 					
 						$article->setCount($article->getCount() + $art->getCount());
 						$artic->setStock($artic->getStock() + $art->getCount());
+                                        }
 						$article->save();
 						$artic->save();	
 						 $art->setCount(0);
@@ -5400,9 +5864,10 @@ $text_full .= '
             if ($c && $c->getId()) {
                 $order_id = $c->getOrder()->getId();
                 $article = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $c->getArticleId(), 'id_size' => $c->getSize(), 'id_color' => $c->getColor()));
-				if(@$article){
+				if($article){
 					$artic = new Shoparticles($c->getArticleId());
-				
+				 $pos = strpos($article->code, 'SR');
+                                if($pos === false){
 					if($article->getCount() == 0 and $artic->getCategoryId() != 16){
 					if(wsActiveRecord::useStatic('Returnarticle')->count(array('code' => $article->getCode(), 'utime is null')) > 0){
 					$this->sendMailAddCount($article->getCode(), $article->getIdArticle());
@@ -5410,6 +5875,7 @@ $text_full .= '
 						}
 			    $article->setCount($article->getCount() + $c->getCount());
                 $artic->setStock($artic->getStock() + $c->getCount());
+                                }
 
 			   OrderHistory::newHistory($this->user->getId(), $c->getOrderId(), 'Удаление товара',
                     OrderHistory::getNewOrderArticle($c->getId()), $c->getArticleId());
@@ -5484,7 +5950,7 @@ $text_full .= '
                 $c->save();	
 				
 	OrderHistory::newHistory($this->user->getId(), $c->getOrderId(), 'Возврат товара', OrderHistory::getNewOrderArticle($c->getId()), $c->getArticleId());
-					if(@$this->post->js){
+					if($this->post->js){
 					die(json_encode('ok'));
 					}else{
                  $this->_redir('shop-orders/edit/id/' .$c->getOrder()->getId().'/#flag='.$this->get->getId());
@@ -5496,7 +5962,7 @@ $text_full .= '
 		
 		
 		}elseif ('adeletenoshop' == $this->cur_menu->getParameter()) {
-			if(@$this->get->getMes()){
+			if($this->get->getMes()){
 			$mes = $this->get->getMes();
 			}else{
 			$mes = '';
@@ -5533,11 +5999,16 @@ $text_full .= '
 
         $data = array();
 
-        if ('quick' == $this->cur_menu->getParameter()) $data[] = 'quick = 1';
-        else $data[] = 'quick = 0';
+        if ('quick' == $this->cur_menu->getParameter()){ 
+            $data[] = 'quick = 1';
+            
+        }else{
+            $data[] = 'quick = 0';
+            
+        }
 
         $admins = wsActiveRecord::useStatic('Customer')->findAll(array('customer_type_id >1'));
-        $adminsid = array();
+        $adminsid = [];
         foreach ($admins as $ad) {
             $adminsid[] = $ad->getId();
         }
@@ -5598,6 +6069,10 @@ $text_full .= '
                 $data['status'] = (int)$_GET['status'];
             }
         }
+        if(isset($_GET['admin']) and (int)$_GET['admin'] > 0){
+            
+            $data['admin'] = (int)$_GET['admin'];
+        }
 
 
         if ((isset($_GET['create_from']) and strlen($_GET['create_from']) > 0) or (isset($_GET['create_to']) and strlen($_GET['create_to']) > 0)) {
@@ -5642,7 +6117,8 @@ $text_full .= '
             $data[] = 'nakladna LIKE "%' . $_GET['nakladna'] . '%"';
         }
 
-        $onPage = 40;
+        $onPage = $_COOKIE['item_page']?$_COOKIE['item_page']:40;
+        
         $page = !empty($this->get->page) && (int)$this->get->page ? (int)$this->get->page : 1;
         $startElement = ($page - 1) * $onPage;
 		if(isset($_GET['go'])){
@@ -5667,10 +6143,12 @@ $text_full .= '
             echo $this->render('template/shop/orders.tpl.php');
 		}else{
 		
-        if ('quick' == $this->cur_menu->getParameter())
+        if ('quick' == $this->cur_menu->getParameter()){
             echo $this->render('shop/orders-quick.tpl.php');
-        else
+            
+        }else{
             echo $this->render('shop/orders.tpl.php');
+        }
 			}
 
 
@@ -6162,7 +6640,7 @@ public function generatePassword($length = 10){
             $amount = sprintf("%.2F", $order->getAmount());
             $amount_round = sprintf("%.2F", ceil($order->getAmount()));
 
-            list($doz, $poslez) = explode('.', (string)$amount);
+           // list($doz, $poslez) = explode('.', (string)$amount);
             list($doz_r, $poslez_r) = explode('.', (string)$amount_round);
 
            // $this->view->doz = $doz;
@@ -6580,8 +7058,10 @@ $text = '';
             $orders = wsActiveRecord::useStatic('Shoporders')->findAll(array('id in (' . $this->get->id . ')'));
             if ($orders->count() > 0) {
                 foreach ($orders as $order) {
-                    OrderHistory::newHistory($this->user->getId(), $order->getId(), 'Смена статуса',
-                        OrderHistory::getStatusText($order->getStatus(), (int)$this->get->status));
+                    if($order->getStatus() == 100 and in_array((int)$this->get->status, [9,15,16])){
+                        $order->setAdmin($this->user->id);
+                    }
+                    OrderHistory::newHistory($this->user->getId(), $order->getId(), 'Смена статуса', OrderHistory::getStatusText($order->getStatus(), (int)$this->get->status));
 						$st = $order->getStatus();
 						if((int)$this->get->status == 5){
 						$today = date('Y-m-d H:i:s', strtotime('-'.(int)Config::findByCode('count_dey_ban_samovyvos')->getValue().' days'));	
@@ -6610,6 +7090,10 @@ $order->setFlag(1);
                     $order->setStatus((int)$this->get->status);
                     if ((int)$this->get->status == 3 or (int)$this->get->status == 4 or (int)$this->get->status == 6 or (int)$this->get->status == 13) {
                         $order->setOrderGo(date('Y-m-d H:i:s'));
+                        $time = time() - strtotime($order->getDateCreate()); 
+                       // $day = $time / (24 * 60 * 60);
+                            //if($day == 0 and $time > 0){ $day = 1;}
+                            $order->setDayOrderGo($time);
                     }
                     $rez = $order->save();
                     if ($rez) {
@@ -6685,13 +7169,16 @@ $order->setFlag(1);
 									}
 									}else{
                                     $article = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $art->getArticleId(), 'id_size' => $art->getSize(), 'id_color' => $art->getColor()));
-									if($article){
+				if($article){
 									OrderHistory::newHistory($this->user->id, $art->getOrderId(), 'Отмена заказа', '', $art->getArticleId());
+                                         $pos = strpos($article->code, 'SR');
+                                    if($pos === false){
                                     $article->setCount($article->getCount() + $art->getCount());
                                     $article->save();
                                     $artic = new Shoparticles($art->getArticleId());
                                     $artic->setStock($artic->getStock() + $art->getCount());
                                     $artic->save();
+                                                                                }
 									$art->setCount(0);
                                     $art->save();
 									}
@@ -6716,7 +7203,7 @@ $order->setFlag(1);
                         }
                         if ((int)$this->get->status == 8) {
   //OrdersPay::newOrderPay($this->user->getId(), $order->getCustomerId(), (($order->getPriceWithSkidka() + $order->getDeliveryCost()) - $order->getDeposit()), $order->getId());
-						OrdersPay::newOrderPay($this->user->getId(), $order->getCustomerId(), $order->calculateOrderPrice(), $order->getId());
+						OrdersPay::newOrderPay($this->user->getId(), $order->getCustomerId(), $order->calculateOrderPrice(true, false), $order->getId());
                         }
                         if ((int)$this->get->status == 3 or (int)$this->get->status == 4 or (int)$this->get->status == 6 or (int)$this->get->status == 13) {
                             $phone = Number::clearPhone($order->getTelephone());
@@ -7421,9 +7908,9 @@ if(isValidEmailNew($this->view->email) and isValidEmailRu($this->view->email)){
     //-------Brands
     public function brandsAction()
     {
-        $data = array();
-        $this->view->brands = wsActiveRecord::useStatic('Brand')->findAll($data, array('name' => 'ASC'));
-        echo $this->render('brand/list.tpl.php');
+        $this->view->brands = wsActiveRecord::useStatic('Brand')->findAll([], ['name' => 'ASC']);
+        echo $this->render('brand/list.tpl.php', 'index.php');
+        //echo $this->render('/template/views/home.php', 'index.php');
     }
 
     public function brandAction()
@@ -7433,16 +7920,16 @@ if(isValidEmailNew($this->view->email) and isValidEmailRu($this->view->email)){
             $sub = new Brand($this->get->getId());
 
             if (count($_POST)) {
-                foreach ($_POST as &$value)
-                    $value = stripslashes($value);
+                foreach ($_POST as &$value){$value = stripslashes($value);}
+                
                 $errors = array();
 
-                if (!@$_POST['name'])
-                    $errors[] = $this->trans->get('Please fill name');
+                if (!$_POST['name']){ $errors[] = $this->trans->get('Please fill name');}
+                
                 $sub->setTop(0);
                 $sub->import($_POST);
                 if (!count($errors)) {
-                    if (@$_FILES['image']) {
+                    if ($_FILES['image']) {
                         require_once('upload/class.upload.php');
                         $handle = new upload($_FILES['image'], 'ru_RU');
                         $folder = '/storage/brands/';
@@ -7451,14 +7938,14 @@ if(isValidEmailNew($this->view->email) and isValidEmailRu($this->view->email)){
                                 $handle->process($_SERVER['DOCUMENT_ROOT'] . $folder);
                                 if ($handle->processed) {
                                     if ($sub->getImage())
-                                        @unlink($sub->getImage());
+                                        unlink($sub->getImage());
                                     $sub->setImage($folder . $handle->file_dst_name);
                                     $handle->clean();
                                 }
                             }
                         }
                     }
-                    if (@$_FILES['logo']) {
+                    if ($_FILES['logo']) {
                         require_once('upload/class.upload.php');
                         $handle = new upload($_FILES['logo'], 'ru_RU');
                         $folder = '/storage/brands/';
@@ -7467,20 +7954,19 @@ if(isValidEmailNew($this->view->email) and isValidEmailRu($this->view->email)){
                                 $handle->process($_SERVER['DOCUMENT_ROOT'] . $folder);
                                 if ($handle->processed) {
                                     if ($sub->getlogo())
-                                        @unlink($sub->getLogo());
+                                        unlink($sub->getLogo());
                                     $sub->setLogo($folder . $handle->file_dst_name);
                                     $handle->clean();
                                 }
                             }
                         }
                     }
-                }
-                if (!count($errors)) {
+                
                     $sub->save();
-                    foreach ($sub->articles as $article) {
-                        $article->setBrand($sub->getName());
-                        $article->save();
-                    }
+                    //foreach ($sub->articles as $article) {
+                      //  $article->setBrand($sub->getName());
+                      //  $article->save();
+                  //  }
                     $this->view->saved = 1;
                     //unset($this->view->errors);
                 } else {
@@ -7490,7 +7976,7 @@ if(isValidEmailNew($this->view->email) and isValidEmailRu($this->view->email)){
                 $this->view->errors = $errors;
             }
             $this->view->sub = $sub;
-            echo $this->render('brand/edit.tpl.php');
+            echo $this->render('brand/edit.tpl.php', 'index.php');
 
         } elseif ($this->cur_menu->getParameter() == 'delete') {
             if ($this->get->getId()) {
@@ -7659,12 +8145,19 @@ if(isValidEmailNew($this->view->email) and isValidEmailRu($this->view->email)){
         die();
     }
 
-    public function exelarticlesAction(){//
+    public function exelarticlesAction(){ //
         if ($this->get->id) {
+			
             $mas = explode(',', $this->get->id);
+			
             if (count($mas) > 0) {
-                require_once('PHPExel/PHPExcel.php');
-                $orders = wsActiveRecord::useStatic('Shoporders')->findAll(array('id in( ' . $this->get->id . ')'), array('id'=>'ASC'));
+              //  
+				
+                $orders = wsActiveRecord::useStatic('Shoporders')->findAll(array(' id in( ' . $this->get->id . ')'), array('id'=>'ASC'));
+				//$orders = wsActiveRecord::useStatic('Shoporders')->findAll(array('id in (' . $this->get->id . ')'));
+				//echo print_r($orders);
+			//die();
+				require_once('PHPExel/PHPExcel.php');
                 $filename = '1C_'.$this->user->middle_name.'_'.date("d.m.Y H-i-s").'.xls';	
                 $pExcel = new PHPExcel();
                 $pExcel->setActiveSheetIndex(0);
@@ -7752,7 +8245,7 @@ if(isValidEmailNew($this->view->email) and isValidEmailRu($this->view->email)){
 					ORDER BY
 						ctime DESC
 					LIMIT
-						200
+						100
 				)
 				UNION
 				(
@@ -7768,7 +8261,7 @@ if(isValidEmailNew($this->view->email) and isValidEmailRu($this->view->email)){
 					ORDER BY
 						ctime DESC
 					LIMIT
-						200
+						100
 				)
 			) LOG
 			LEFT JOIN
@@ -7779,7 +8272,7 @@ if(isValidEmailNew($this->view->email) and isValidEmailRu($this->view->email)){
 			ORDER BY
 				LOG.ctime DESC
 			LIMIT
-				200
+				100
 		";
 		$this->view->logs = wsActiveRecord::findByQueryArray($sql);
 
@@ -7863,7 +8356,7 @@ if(isValidEmailNew($this->view->email) and isValidEmailRu($this->view->email)){
 
     public function ucenkaAction()
     {
-if(@$this->post->ucenka_id){
+if($this->post->ucenka_id){
 $result = array();
 //$id = explode(',', $this->post->ucenka_id);
 $id = $this->post->ucenka_id;
@@ -7912,7 +8405,7 @@ UcenkaHistory::newUcenka($this->user->getId(), $art->getId(), $s_p, $art->getPri
 					$result['id'][] = $art->getId();
                 }
 				
-	if($i > 0) $this->sendMessageTelegram(404070580, "Уценено ".$i." товаров на ".$this->post->usenka_id_proc." %. Товары: ".$this->post->ucenka_id);
+        if($i > 0) { Telegram::sendMessageTelegram(404070580, "Уценено ".$i." товаров на ".$this->post->usenka_id_proc." %. Товары: ".$this->post->ucenka_id);}
 
 $result['uceneno'] = $i;
 
@@ -7923,7 +8416,7 @@ die(json_encode($result));
 
             $order_by = 'ctime';
             $order_by_type = 'DESC';
-            if (isset($_GET['sort']) and strlen(@$_GET['sort']) > 0) {
+            if (isset($_GET['sort']) and strlen($_GET['sort']) > 0) {
                 if ($_GET['sort'] == 'dateplus') {
                     $order_by = 'ctime';
                     $order_by_type = 'DESC';
@@ -7958,6 +8451,14 @@ die(json_encode($result));
                 }
                 if ($_GET['sort'] == 'brandza') {
                     $order_by = 'barnd';
+                    $order_by_type = 'DESC';
+                }
+                if ($_GET['sort'] == 'ucenkazr') {
+                    $order_by = 'ucenka';
+                    $order_by_type = 'ASC';
+                }
+                if ($_GET['sort'] == 'ucenkasp') {
+                    $order_by = 'ucenka';
                     $order_by_type = 'DESC';
                 }
             }
@@ -9059,7 +9560,7 @@ AND  `ws_articles`.`active` =  'y'
 		
 		if($this->post->method == 'list_brand'){
 		
-		$arr = array();
+		$arr = [];
 		$sql = "SELECT  `ws_articles`.`brand_id` 
 FROM  `ws_articles` 
 JOIN  `ws_articles_sizes` ON  `ws_articles_sizes`.`id_article` =  `ws_articles`.`id` 
@@ -9144,10 +9645,11 @@ ORDER BY  `ws_articles`.`category_id`, `ws_articles`.`brand_id` ASC";
 					$aSheet->setCellValue('L1', 'Цена после уценки');
 					$aSheet->setCellValue('M1', 'Добавлен');
 					$aSheet->setCellValue('N1', 'Уценен');
+                                        $aSheet->setCellValue('O1', 'Id');
 
 					$i = 2;
                    
-                    $aSheet->getStyle('A1:N1')->applyFromArray($boldFont);
+                    $aSheet->getStyle('A1:O1')->applyFromArray($boldFont);
 				}else{
 			$pExcel = PHPExcel_IOFactory::load($path1file);
 			$pExcel->setActiveSheetIndex(0);
@@ -9157,7 +9659,7 @@ ORDER BY  `ws_articles`.`category_id`, `ws_articles`.`brand_id` ASC";
 
                   //  $i = 2;
 					
-					$assoc = array();   
+                    $assoc = [];   
                     foreach ($articles as $article) {
 					$cat = $article->category_id;
 					//$assoc[$article->brand_id]['n_brand'] = $article->brand;
@@ -9190,6 +9692,7 @@ ORDER BY  `ws_articles`.`category_id`, `ws_articles`.`brand_id` ASC";
 					$assoc[$article->brand_id][$cat][$article->acode]['price'] =  $article->price;
 					$assoc[$article->brand_id][$cat][$article->acode]['ctime'] =  date("d-m-Y", strtotime($article->ctime));
 					$assoc[$article->brand_id][$cat][$article->acode]['ucenka'] =  date("d-m-Y", strtotime($article->data_ucenki));
+                                        $assoc[$article->brand_id][$cat][$article->acode]['id'] =  $article->id;
 				
                     }
 					
@@ -9228,6 +9731,7 @@ ORDER BY  `ws_articles`.`category_id`, `ws_articles`.`brand_id` ASC";
 					  $aSheet->setCellValue('L' . $i, $q['price']);
 					  $aSheet->setCellValue('M' . $i, $q['ctime']);
 					  $aSheet->setCellValue('N' . $i, $q['ucenka']);
+                                          $aSheet->setCellValue('O' . $i, $q['id']);
 					  
 					$p += (int)$q['prichod']?(int)$q['prichod']:0;
 					$r += (int)$q['order']?(int)$q['order']:0;
@@ -9292,7 +9796,7 @@ die(json_encode(array('start'=>(int)$i, 'end'=>(int)$this->post->end, 'proc'=>(i
                 AND date_create <="' . date('Y-m-d', $to) . ' 23:59:59"
                 AND date_create >= "' . date('Y-m-d', $from) . ' 00:00:00"
                 ';
-            if (@$_POST['no_new']) {
+            if ($_POST['no_new']) {
                 $q .= 'AND status in (1,3,4,6,8,9,11,13,14,15,16)';
             }
             $articles = wsActiveRecord::useStatic('Shoporderarticles')->findByQuery($q);
@@ -11458,33 +11962,7 @@ die($text);
         echo $this->render('event/edit.tpl.php');
     }
 
-    public function importadvertinfo($file)
-    {
-        require_once('PHPExel/PHPExcel/IOFactory.php');
-        $objPHPExcel = PHPExcel_IOFactory::load($file);
-        $objPHPExcel->setActiveSheetIndex(0);
-        //$aSheet = $objPHPExcel->getActiveSheet();
-		$aSheet = $objPHPExcel->getActiveSheet()->toArray();
-$mas=array('model'=>$aSheet[1][3], 'price' =>$aSheet[1][32], 'min_price'=>$aSheet[1][35], 'max_skidka'=>$aSheet[1][38], 'nakladna'=>$aSheet[1][0]);
-
-        return $mas;
-    }
-    public function importadvert($file)
-    {
-        require_once('PHPExel/PHPExcel/IOFactory.php');
-        $objPHPExcel = PHPExcel_IOFactory::load($file);
-        $objPHPExcel->setActiveSheetIndex(0);
-       // $aSheet = $objPHPExcel->getActiveSheet();
-		$aSheet = $objPHPExcel->getActiveSheet()->toArray();
-		
-		$mas = array();
-		unset($aSheet[0]);
-		foreach($aSheet as $k => $m){
-		if($m[1] != NULL) { $mas[] = array('sr'=>$m[20], 'color'=>$m[23], 'size'=>$m[26], 'count'=>$m[29]);}
-		}
-		 @unlink($file);
-		 return $mas;
-    }
+   
 
     public function editskidkabyorderAction()
     {
@@ -11657,12 +12135,12 @@ $mas=array('model'=>$aSheet[1][3], 'price' =>$aSheet[1][32], 'min_price'=>$aShee
     {
         $data = array();
         $this->view->colors = wsActiveRecord::useStatic('Shoparticlescolor')->findAll($data, array('name' => 'ASC'));
-        echo $this->render('color/list.tpl.php');
+        echo $this->render('color/list.tpl.php', 'index.php');
     }
 
     public function colorAction()
     {
-        if ((int)@$this->get->del > 0) {
+        if ((int)$this->get->del > 0) {
             $sub = new Shoparticlescolor((int)$this->get->del);
             if (!$sub->articles->count()) {
                 $sub->destroy();
@@ -11693,7 +12171,7 @@ $mas=array('model'=>$aSheet[1][3], 'price' =>$aSheet[1][32], 'min_price'=>$aShee
             $this->view->errors = $errors;
         }
         $this->view->sub = $sub;
-        echo $this->render('color/edit.tpl.php');
+        echo $this->render('color/edit.tpl.php', 'index.php');
 
 
     }
@@ -11704,12 +12182,12 @@ $mas=array('model'=>$aSheet[1][3], 'price' =>$aSheet[1][32], 'min_price'=>$aShee
     {
         $data = array();
         $this->view->sizes = wsActiveRecord::useStatic('Size')->findAll($data, array('category_id' => 'ASC', 'size' => 'ASC'));
-        echo $this->render('size/list.tpl.php');
+        echo $this->render('size/list.tpl.php', 'index.php');
     }
 
     public function sizeAction()
     {
-        if ((int)@$this->get->del > 0) {
+        if ((int)$this->get->del > 0) {
             $sub = new Size((int)$this->get->del);
             if (!$sub->articles->count()) {
                 $sub->destroy();
@@ -11724,7 +12202,7 @@ $mas=array('model'=>$aSheet[1][3], 'price' =>$aSheet[1][32], 'min_price'=>$aShee
                 $value = stripslashes($value);
             $errors = array();
 
-            if (!@$_POST['size'])
+            if (!$_POST['size'])
                 $errors[] = $this->trans->get('Please fill size');
 
             $sub->import($_POST);
@@ -11740,7 +12218,7 @@ $mas=array('model'=>$aSheet[1][3], 'price' =>$aSheet[1][32], 'min_price'=>$aShee
             $this->view->errors = $errors;
         }
         $this->view->sub = $sub;
-        echo $this->render('size/edit.tpl.php');
+        echo $this->render('size/edit.tpl.php', 'index.php');
 
 
     }
@@ -11838,16 +12316,20 @@ $mas=array('model'=>$aSheet[1][3], 'price' =>$aSheet[1][32], 'min_price'=>$aShee
             if ($c && $c->getId() && $c->getCount() > 0) {
                 $article = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $c->getArticleId(), 'id_size' => $c->getSize(), 'id_color' => $c->getColor()));
 				if($article){
+                                     $pos = strpos($article->code, 'SR');
+                                    if($pos === false){
 					$artic = new Shoparticles($c->getArticleId());
 					if($article->getCount() == 0 and $artic->getCategoryId() != 16 and false){
 					if(wsActiveRecord::useStatic('Returnarticle')->count(array('code' => $article->getCode(), 'utime is null')) > 0){
 					$this->sendMailAddCount($article->getCode(), $article->getIdArticle());
 					}	
 						}
+                                                
 			    $article->setCount($article->getCount() + $c->getCount());
                 $artic->setStock($artic->getStock() + $c->getCount());
 				$article->save();
 				$artic->save();
+                                }
 				$c->setCount(0);
 				$c->setStatus(1);
 				$c->setUtime(date("Y-m-d h:i:s"));
@@ -12076,30 +12558,7 @@ $article = wsActiveRecord::useStatic('Shoporderarticles')->findFirst(array("orde
 	}
         $this->view->order_status = array(1 => 'Принят', 2 => 'В процессе', 3 => 'Обработан', 4=>'Возврат', 5=> 'Отменён');
 		
-        if(isset($_GET['search'])){
-		$order_by = array('date_create' => 'DESC');
-		$data = array();
-		if(@$this->get->status){ $data['status'] = (int)$this->get->status; 
-		if($this->get->status == 3) $order_by = array('date_obrabotan' => 'DESC');
-		}
-		if(@$this->get->customer_id) $data['customer_id'] = (int)$this->get->customer_id;
-		if(@$this->get->order) $data['order_id'] = (int)$this->get->order;
-		if(@$this->get->create_from) $data[] = " date_create >='".date('Y-m-d 00:00:00', strtotime($this->get->create_from))."' ";
-		if(@$this->get->create_to) $data[] = " date_create <= '".date('Y-m-d 23:59:59', strtotime($this->get->create_to))."' ";
-		if(@$this->get->sposob) $data['sposob'] = (int)$this->get->sposob;
-		//echo print_r($data);
-		//die();
-		$orders = wsActiveRecord::useStatic('ShopordersVozrat')->findAll($data, $order_by);
-		if($orders){
-		$this->view->orders = $orders;
-		
-		 echo $this->render('return_articles/vozvrat_list.tpl.php');
-		}
-		//echo print_r($orders);
-		//die();
-		
-		
-		}elseif ($this->get->id) {
+        if($this->get->id) {
 		$vozrat = new ShopordersVozrat((int)$this->get->id);
 		
 		if($vozrat->getId()){
@@ -12157,7 +12616,7 @@ $article = wsActiveRecord::useStatic('Shoporderarticles')->findFirst(array("orde
 								//die();
 								if($article_order){
 									
-		$article = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array("id_article" => $article_order->article_id, "code LIKE '".$article_order->artikul."' "));
+$article = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array("id_article" => $article_order->article_id, "id_color" =>$article_order->color, "id_size" => $article_order->size));
 									if($article){
 									if($article_order->getCount() > 1){
 									for($i=1; $i<=$article_order->getCount(); $i++){
@@ -12293,7 +12752,8 @@ DepositHistory::newDepositHistory($this->user->getId(), $customer->getId(), '+',
 								
 								if($article_order){
 									
-		$article = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array("id_article" => $article_order->article_id, "code LIKE '".$article_order->artikul."' "));
+		//wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array("id_article" => $article_order->article_id, "code LIKE '".$article_order->artikul."' "));
+               $article =  wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array("id_article" => $article_order->article_id, "id_color" =>$article_order->color, "id_size" => $article_order->size));
 									if($article){
 									if($article_order->getCount() > 1){
 									for($i=1; $i<=$article_order->getCount(); $i++){
@@ -12413,20 +12873,21 @@ DepositHistory::newDepositHistory($this->user->getId(), $customer->getId(), '+',
 									
 									$vozrat->save();
 						
-						OrderHistory::newHistory($this->user->getId(), $order->getId(), 'Смена статуса',
-                        OrderHistory::getStatusText($order->getStatus(), 7));
+		OrderHistory::newHistory($this->user->getId(), $order->getId(), 'Смена статуса', OrderHistory::getStatusText($order->getStatus(), 7));
 						
 						foreach($order->articles as $art){
 						
-						$article = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array("id_article" => $art->getArticleId(), "id_size" => $art->getSize(), "id_color" => $art->getColor(), "code LIKE '".$art->artikul."' "));
-									if($article){
+						$article = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array("id_article" => $art->getArticleId(), "id_size" => $art->getSize(), "id_color" => $art->getColor()));
+						if($article){
 									OrderHistory::newHistory($this->user->id, $art->getOrderId(), 'Отмена заказа', '', $art->getArticleId());
-									
+					 $pos = strpos($article->code, 'SR');
+                                        if($pos === false){				
                                     $article->setCount($article->getCount() + $art->getCount());
                                     $article->save();
                                     $artic = new Shoparticles($art->getArticleId());
                                     $artic->setStock($artic->getStock() + $art->getCount());
                                     $artic->save();
+                                                }
 									$art->setCount(0);
                                     $art->save();
 									}
@@ -12452,15 +12913,15 @@ DepositHistory::newDepositHistory($this->user->getId(), $customer->getId(), '+',
 						 $order->save();
 							
 							
-							$remark = new Shoporderremarks();
-                        $data = array(
-                            'order_id' => $order->getId(),
-                            'date_create' => date("Y-m-d H:i:s"),
-                            'remark' => 'Клиент не забрал посылку',
-							'name' => $this->user->getMiddleName()
-                        );
-                        $remark->import($data);
-                        $remark->save();
+						//	$remark = new Shoporderremarks();
+                       // $data = array(
+                           // 'order_id' => $order->getId(),
+                            //'date_create' => date("Y-m-d H:i:s"),
+                           // 'remark' => 'Клиент не забрал посылку',
+						//	'name' => $this->user->getMiddleName()
+                      //  );
+                       // $remark->import($data);
+                       // $remark->save();
 						
 						}else{
 						die($_POST['order_status']);
@@ -12473,51 +12934,42 @@ DepositHistory::newDepositHistory($this->user->getId(), $customer->getId(), '+',
 					die();
 					}
 					
-                   /* if (isset($_POST['edit'])) {
-                        foreach ($_POST as $key => $val) {
-                            $m = explode('_', $key);
-                            if (count($m) == 2) {
-                                if ($m[0] == 'count') {
-                                    $article = new ShoporderarticlesVozrat($m[1]);
-                                    $article->setCount($val);
-                                    $article->save();
-                                }
-                            }
-                        }
-                    }*/
-					
-                   /* if (isset($_POST['add'])) {
-                        foreach ($_POST as $key => $val) {
-                            $m = explode('_', $key);
-                            if (count($m) == 2) {
-                                if ($m[0] == 'adda') {
-                                    $o_article = new Shoporderarticles($m[1]);
-                                    $article = new ShoporderarticlesVozrat();
-                                    $article->import($o_article->export());
-                                    $article->setCount($_POST['addcount_' . $m[1]]);
-                                    $article->setId(null);
-                                    $article->setOldArticle($o_article->getId());
-                                    $article->setOrderId($order->getId());
-                                    $article->save();
-                                }
-                            }
-                        }
-
-                    }*/
-
-
+               
                 }
 				$this->view->vozrat = $vozrat;
                 $this->view->order = $order;
-                echo $this->render('return_articles/vozvrat.tpl.php');
+                echo $this->render('return_articles/vozvrat.tpl.php', 'index.php');
             } else {
                 $this->_redir('vozrat');
             }
 			}else{
 			$this->_redir('vozrat');
 			}
-        }else{
-		echo $this->render('return_articles/vozvrat_list.tpl.php');
+        }elseif($_GET){
+		$order_by = array('date_create' => 'DESC');
+		$data = array();
+		if($this->get->status){ $data['status'] = (int)$this->get->status; 
+		if($this->get->status == 3) { $order_by = array('date_obrabotan' => 'DESC');}
+		}
+		if($this->get->customer_id) {$data['customer_id'] = (int)$this->get->customer_id;}
+		if($this->get->order) { $data['order_id'] = (int)$this->get->order;}
+		if($this->get->create_from) {$data[] = " date_create >='".date('Y-m-d 00:00:00', strtotime($this->get->create_from))."' ";}
+		if($this->get->create_to) {$data[] = " date_create <= '".date('Y-m-d 23:59:59', strtotime($this->get->create_to))."' ";}
+		if($this->get->sposob){ $data['sposob'] = (int)$this->get->sposob;}
+		//echo print_r($data);
+		//die();
+		$orders = wsActiveRecord::useStatic('ShopordersVozrat')->findAll($data, $order_by);
+		if($orders){
+		$this->view->orders = $orders;
+		
+		 echo $this->render('return_articles/vozvrat_list.tpl.php', 'index.php');
+		}
+		//echo print_r($orders);
+		//die();
+		
+		
+		}else{
+		echo $this->render('return_articles/vozvrat_list.tpl.php', 'index.php');
         }
 
 
@@ -12913,9 +13365,26 @@ if($articles) $this->_redirect('/product/id/'.$articles['0']->getId().'/');
             $this->_redirect('/admin/');
         }
         if (count($_POST)) {
-            foreach ($_POST as &$value)
-                $value = stripslashes($value);
-				
+            if(isset($_POST['open_pay'])){
+                            $_POST['open_pay'] = 1;
+                $remark = new Shoporderremarks();
+                        $data = array(
+                            'order_id' =>  $order->id,
+                            'date_create' => date("Y-m-d H:i:s"),
+                            'remark' => 'Открыта онлайн оплата',
+			'name' => $this->user->getMiddleName()
+                        );
+                        $remark->import($data);
+                        $remark->save();        
+                        }else{
+                            $_POST['open_pay'] = 0;
+                        
+                        }
+            foreach ($_POST as &$value){ $value = stripslashes($value); }
+           // print_r($_POST);
+            //die();
+                        
+                        
 				//$ms=array();
 				//$ms = $order;	
 				$n = $order->getName();
@@ -12931,19 +13400,20 @@ if($articles) $this->_redirect('/product/id/'.$articles['0']->getId().'/');
 				$d = $order->getDeliveryDate();
 				
             $order->import($_POST);
+            
 			$text = '';
 			
-			if($n != $order->getName())$text .=' Имя с "'.$n.'" на "'.$order->getName().'"';
-			if($f != $order->getMiddleName())$text .= ' Фамилия с '.$f.'" на "'.$order->getMiddleName().'"';
-			if($c != $order->getCity())$text .=' Гогод с "'.$c.'" на "'.$order->getCity().'"';
-			if($index != $order->getIndex())$text .=' Индекс с "'.$index.'" на "'.$order->getIndex().'"';
-			if($s != $order->getStreet())$text .= ' Улица с "'.$s.'" на "'.$order->getStreet().'"';
-			if($house != $order->getHouse())$text .= ' Дом с "'.$house.'" на "'.$order->getHouse().'"';
-			if($flat != $order->getFlat())$text .= ' Квартира с "'.$flat.'" на "'.$order->getFlat().'"';
-			if($sk != $order->getSklad())$text .= ' Склад с "'.$sk.'" на "'.$order->getSklad().'"';
-			if($t != $order->getTelephone())$text .= ' Телефон с '.$t.'" на "'.$order->getTelephone().'"';
-			if($em != $order->getEmail())$text .= ' Email с "'.$em.'" на "'.$order->getEmail().'"';
-			if($d != $order->getDeliveryDate())$text .= ' Дата доставки с "'.$d.'" на "'.$order->getDeliveryDate().'"';
+			if($n != $order->getName()){$text .=' Имя с "'.$n.'" на "'.$order->getName().'"';}
+			if($f != $order->getMiddleName()){$text .= ' Фамилия с '.$f.'" на "'.$order->getMiddleName().'"';}
+			if($c != $order->getCity()){$text .=' Гогод с "'.$c.'" на "'.$order->getCity().'"';}
+			if($index != $order->getIndex()){$text .=' Индекс с "'.$index.'" на "'.$order->getIndex().'"';}
+			if($s != $order->getStreet()){$text .= ' Улица с "'.$s.'" на "'.$order->getStreet().'"';}
+			if($house != $order->getHouse()){$text .= ' Дом с "'.$house.'" на "'.$order->getHouse().'"';}
+			if($flat != $order->getFlat()){$text .= ' Квартира с "'.$flat.'" на "'.$order->getFlat().'"';}
+			if($sk != $order->getSklad()){$text .= ' Склад с "'.$sk.'" на "'.$order->getSklad().'"';}
+			if($t != $order->getTelephone()){$text .= ' Телефон с '.$t.'" на "'.$order->getTelephone().'"';}
+			if($em != $order->getEmail()){$text .= ' Email с "'.$em.'" на "'.$order->getEmail().'"';}
+			if($d != $order->getDeliveryDate()){$text .= ' Дата доставки с "'.$d.'" на "'.$order->getDeliveryDate().'"';}
 			
 			
 			if($order->getDeliveryTypeId() == 9 and false){
@@ -13005,7 +13475,7 @@ if($articles) $this->_redirect('/product/id/'.$articles['0']->getId().'/');
             }
 
         }
-        if (@$_POST['ajax']) {
+        if (isset($_POST['ajax'])) {
             if (count($errors)) {
                 echo '
 					<img src="/img/icons/error.png" alt="" class="page-img"/>
@@ -13013,8 +13483,11 @@ if($articles) $this->_redirect('/product/id/'.$articles['0']->getId().'/');
 					<div>
 						' . implode(", ", $errors) . '
 					</div>';
+            }else{
+              echo 'success';
+                die();
             }
-            exit;
+         
         }
         $this->view->errors = $errors;
         $this->view->order = $order;
@@ -13542,7 +14015,7 @@ if($articles) $this->_redirect('/product/id/'.$articles['0']->getId().'/');
 				inner JOIN pay_send ON pay_send.LMI_PAYMENT_NO = pay_result.LMI_PAYMENT_NO
 			ORDER BY
 				pay_result.cdt DESC 
-				LIMIT 30
+				LIMIT 200
 		";
 		$payments = wsActiveRecord::findByQueryArray($sql);
         $this->view->payments = $payments;
@@ -13562,7 +14035,7 @@ if($articles) $this->_redirect('/product/id/'.$articles['0']->getId().'/');
 				WHERE pay_unsuccess.LMI_PAYMENT_NO IS NOT NULL 
 			ORDER BY
 				pay_unsuccess.cdt DESC  
-				LIMIT 30
+				LIMIT 100
 		";
 		$payments = wsActiveRecord::findByQueryArray($sql);
         $this->view->payments = $payments;
@@ -13579,7 +14052,7 @@ if($articles) $this->_redirect('/product/id/'.$articles['0']->getId().'/');
 				inner JOIN pay_send ON pay_send.LMI_PAYMENT_NO = pay_result.LMI_PAYMENT_NO
 			ORDER BY
 				pay_result.cdt DESC 
-				LIMIT 30
+				LIMIT 100
 		";
 		$payments = wsActiveRecord::findByQueryArray($sql);
         $this->view->payments = $payments;
@@ -13760,29 +14233,71 @@ case 5:
     }
 
     public function blogAction()
-    {
-        $this->view->blog = wsActiveRecord::useStatic('Blog')->findAll();
-        echo $this->render('blog/list.tpl.php');
-    }
-	
-	public function blogeditAction()
-    {
-
-	if (isset($this->get->delete) and (int)$this->get->delete > 0) {
+    { 
+        
+        if (isset($this->get->delete) and (int)$this->get->delete > 0) {
         $n = new Blog((int)$this->get->delete);
-		if ($n->getId()) $n->destroy();
+		if ($n->getId()) {$n->destroy();}
             $this->_redir('blog-post');
         }
-		if (isset($this->get->edit)) {
-            $block = new Blog((int)$this->get->edit);
+        
+        if($this->cur_menu->getParameter() == 'new'){
+            if (count($_POST)) {
+                 $block = new Blog();
+                 $errors = array();
+                 $errors = array();
+		if (!$_POST['post_name']){$errors[] = 'Пожалуйста заполните поле "Заголовок"';}
+                if(!$_POST['preview_post']){ $errors[] = 'Пожалуйста заполните поле "Вступительная часть"';}
+                if(!$_POST['content_post']){ $errors[] = 'Пожалуйста заполните поле "Содержимое"';}
+                
+                if (!count($errors)) {
+				
+					$block->setPostName($_POST['post_name']);
+					$block->setPostNameUk($_POST['post_name']);
+					$block->setCtime($_POST['ctime']);
+					$block->setUtime(date("y-m-d h:i:s"));
+					if(isset($_POST['autor'])) { $block->setAutor($_POST['autor']); $block->setAutorUk($_POST['autor']);}
+					//$block->setAutor($autor);
+					$block->setPreviewPost($_POST['preview_post']);
+					$block->setPreviewPostUk($_POST['preview_post']);
+					$block->setContentPost($_POST['content_post']);
+					$block->setContentPostUk($_POST['content_post']);
+					$block->setContentPostUk($_POST['content_post']);
+					if (isset($_POST['public']))$block->setPublic(1);
+						else $block->setPublic(0);
+						$text_cat = '0';	
+						if(isset($_POST['c1'])) {$text_cat .=',1';}
+						if(isset($_POST['c2'])) {$text_cat .=',2';}
+						if(isset($_POST['c3'])) {$text_cat .=',3';}
+						if(isset($_POST['c4'])) {$text_cat .=',4';}
+						if(isset($_POST['c5'])) {$text_cat .=',5';}
+						if(isset($_POST['c6'])) {$text_cat .=',6';}
+						if(isset($_POST['c7'])) {$text_cat .=',7';}
+					$block->setDescription($_POST['description']);
+					$block->setKeyword($_POST['keyword']);
+					$block->setCategories($text_cat);
+					$block->setImage($_POST['image']);
+					
+                    $block->save();
+					
+                $this->view->saved = 1;
+                $this->view->blogedit = $block;
+                $this->_redir('blog-post/edit/id/'.$block->id);
+                } else {
+                    $this->view->errors = $errors;
+                }
+            }
+            
+             echo $this->render('blog/new.tpl.php');
+            
+        }elseif($this->cur_menu->getParameter() == 'edit'){
+            $block = new Blog((int)$this->get->id);
+           // var_dump($this->get);
             if (count($_POST)) {
                 $errors = array();
-				 if (!@$_POST['post_name'])
-                    $errors[] = 'Пожалуйста заполните поле "Заголовок"';
-                if(!@$_POST['preview_post'])
-                $errors[] = 'Пожалуйста заполните поле "Вступительная часть"';
-                if(!@$_POST['content_post'])
-                                    $errors[] = 'Пожалуйста заполните поле "Содержимое"';
+		if (!$_POST['post_name']){$errors[] = 'Пожалуйста заполните поле "Заголовок"';}
+                if(!$_POST['preview_post']){ $errors[] = 'Пожалуйста заполните поле "Вступительная часть"';}
+                if(!$_POST['content_post']){ $errors[] = 'Пожалуйста заполните поле "Содержимое"';}
 
 				if (!count($errors)) {
 				
@@ -13821,9 +14336,19 @@ case 5:
     
             }
             $this->view->blogedit = $block;
-            echo $this->render('blog/edit.tpl.php');
-
+        echo $this->render('blog/edit.tpl.php');
+            
+        }else{
+        $this->view->blog = wsActiveRecord::useStatic('Blog')->findAll();
+        echo $this->render('blog/list.tpl.php');
         }
+    }
+	
+	public function blogeditAction()
+    {
+
+	
+	
 		
 		
 
@@ -13881,21 +14406,33 @@ WHERE  `action` =  '-'";
 	// yarik - nova pochta
 	public function novapochtaAction(){
 	require_once('np/NovaPoshta.php');
-	$np = new NovaPoshta('2c28a9c1a5878cb01c8f9c440e827a61', 'ru', true, 'curl');
-if(isset($_GET['id']) and $_GET['id'] > 0){
-$this->view->order = wsActiveRecord::useStatic('Shoporders')->findById((int)$this->get->id);
-}
-if($this->post->metod == 'new_registr'){
-$res = array();
+	$np = new NovaPoshta('1e594a002b9860276775916cdc07c9a6', 'ru', true, 'curl');
+        
+//if(isset($_GET['id']) and $_GET['id'] > 0){
+//$this->view->order = wsActiveRecord::useStatic('Shoporders')->findById((int)$this->get->id);
+//}
+if($this->post->metod == 'delete_document'){
+    $res = [];
+    $res = $np->getDeleteDocument($this->post->ref);
+    if($res['success']){
+        $order = new Shoporders((int)$this->post->order);
+        $order->setNakladna('');
+        $order->save();
+    }
+die(json_encode($res));
+}elseif($this->post->metod == 'delete_document'){
+     $res = $np->deleteScanSheet($this->post->ref);
+    die(json_encode($res));
+}elseif($this->post->metod == 'new_registr'){
 $ref = array();
 $id = explode(',', $this->post->id);
 foreach($id as $r){
 $re = wsActiveRecord::useStatic('Shopordersmeestexpres')->findById((int)$r)->getRef();
-if(@$re) $ref[] = $re;
+if($re){ $ref[] = $re;}
 }
 $res = $np->newRegistr($ref);
 //$res = $np->getRegistr('8b1e5571-c61f-11e7-becf-005056881c6b');
-if(@$res['data'][0]['Ref']){
+if($res['data'][0]['Ref']){
 	$reg = new WsMeestRegister();
 	$reg->setCtime(date('Y-m-d H:i:s'));
 	//$reg->setList($res['data'][0]['success']);
@@ -13948,12 +14485,15 @@ $params['BackwardDeliveryData'] = [array(
 //$res = array($sender, $recipient, $params, $errors);
 
 $res = $np->newInternetDocument($sender, $recipient, $params);
-if(@$res['data'][0]['Ref']){
+if($res['data'][0]['Ref']){
+    unset($_COOKIE['uid_city']);
+    unset($_COOKIE['uid_counterparties']);
+    unset($_COOKIE['uid_warehouses']);
 $order = new Shoporders((int)$this->post->clientbarcode);
-if(@$order){
-if(@$order->getMeestId()){
+if($order){
+if($order->getMeestId()){
 $or_np = new Shopordersmeestexpres((int)$order->getMeestId());
-if(@$or_np){
+if($or_np){
 $or_np->setRef($res['data'][0]['Ref']);
 $or_np->setStatus(1);
 $or_np->setCost($res['data'][0]['CostOnSite']);
@@ -13974,7 +14514,7 @@ $or_np_new->save();
 $order->setMeestId($or_np_new->getId());
 }
 $cust = new Customer($order->getCustomerId());
-if(@$cust){
+if($cust){
 if($cust->getUuidNp() == NULL){
 $cust->setUuidNp($this->post->recipientname);
 $cust->save();
@@ -13988,11 +14528,11 @@ $order->save();
 }
 die(json_encode($res));
 }elseif($this->post->metod == 'update_counterparties'){
-$res = array();
+//$res = array();
 $res = $np->updateContactPerson($this->post->ref, $this->post->lastname, $this->post->firstname, $this->post->middlename, $this->post->phone);
 die(json_encode($res));
 }elseif($this->post->metod == 'new_counterparties'){
-$res = array();
+//$res = array();
 $res = $np->newContactPerson($this->post->lastname, $this->post->firstname, $this->post->middlename, $this->post->phone);
 die(json_encode($res));
 }elseif ($this->get->metod == 'warehouses') {
@@ -14010,25 +14550,25 @@ $text = '';
 $result = $np->documentsTracking2($this->get->getTracking());
 if($result['StatusCode'] != 3 and $result['StatusCode'] != 1){
 	$text.="Відправлення: ".$result['Number']."<br>";
-	if(@$result['RecipientFullName'])$text.="Отримувач: ".$result['RecipientFullName']."<br>";
-	if(@$result['PhoneRecipient']) $text.="Телефон отримувача: ".$result['PhoneRecipient']."</br>";
+	if($result['RecipientFullName'])$text.="Отримувач: ".$result['RecipientFullName']."<br>";
+	if($result['PhoneRecipient']) $text.="Телефон отримувача: ".$result['PhoneRecipient']."</br>";
 	$text.="Маршрут: ".$result['CitySender']." - ".$result['CityRecipient']."<br>";
 	$text.="Адреса: ".$result['RecipientAddress']."<br>";
-	if(@$result['RecipientDateTime']) {
+	if($result['RecipientDateTime']) {
 	$text.="Статус: ".$result['Status']." ".$result['RecipientDateTime']."<br>";
 	}else{
 	$text.="Статус: ".$result['Status'].".  Очікувана дата доставки ".$result['ScheduledDeliveryDate']."<br>";
 	}
 	$text.="Вага відправлення: ".$result['DocumentWeight']." кг.<br>"; 
 	$text.="Ціна доставки: ".$result['DocumentCost']." грн.<br>"; 
-	if($result['Redelivery']==1) $text.="Зворотня доставка: ".$result['RedeliverySum']." грн.<br>";
-	if(@$result['LastTransactionStatusGM']) $text.="Відправлений  грошевой переказ. Статус: ".$result['LastTransactionStatusGM']."</br>";
-	if(@$result['UndeliveryReasonsSubtypeDescription']) $text.="Причина відмови: ".$result['UndeliveryReasonsSubtypeDescription']."</br>";
-	if(@$result['LastCreatedOnTheBasisNumber'] and strlen($result['LastCreatedOnTheBasisNumber']) ==14){
+	if($result['Redelivery']==1) {$text.="Зворотня доставка: ".$result['RedeliverySum']." грн.<br>";}
+	if($result['LastTransactionStatusGM']) {$text.="Відправлений  грошевой переказ. Статус: ".$result['LastTransactionStatusGM']."</br>";}
+	if($result['UndeliveryReasonsSubtypeDescription']) {$text.="Причина відмови: ".$result['UndeliveryReasonsSubtypeDescription']."</br>";}
+	if($result['LastCreatedOnTheBasisNumber'] and strlen($result['LastCreatedOnTheBasisNumber']) ==14){
 	$result1 = $np->documentsTracking2($result['LastCreatedOnTheBasisNumber']);
 	$text.="</br>Повернення: ";
 	$text.=$result1['Number']."</br>";
-	if(@$result1['RecipientFullName'])$text.="Отримувач: ".$result1['RecipientFullName']."<br>";
+	if($result1['RecipientFullName']){$text.="Отримувач: ".$result1['RecipientFullName']."<br>";}
 	$text.="Маршрут: ".$result1['CitySender']." - ".$result1['CityRecipient']."<br>";
 	$text.="Адреса: ".$result1['WarehouseRecipient']."<br>";
 	$text.="Статус: ".$result1['Status']." ".$result1['RecipientDateTime']."<br>";
@@ -14055,26 +14595,24 @@ die($text);
 	
 				die();
 				}elseif($this->get->what == 'warehouses'){
-				  $wh = $np->getWarehouses1($_COOKIE["uid_city"], $this->get->term);
-				$mas = array();
+			$wh = $np->getWarehouses1($_COOKIE['uid_city'], $this->get->term);
+				$mas = [];
 		$i = 0;
+
 		foreach ($wh['data'] as $c) {
 		$mas[$i]['label'] = $c['Description'];
 		$mas[$i]['value'] = $c['Description'];
 		$mas[$i]['id'] = $c['Ref']; 
-		$mas[$i]['city'] = $_COOKIE["uid_city"];
+		$mas[$i]['city'] = $_COOKIE['uid_city'];
 		$mas[$i]['term'] = $this->get->term;
 		$i++;
 			}
 			echo json_encode($mas);
-				
-				
-	
 				die();
 				}elseif($this->get->what == 'counterparties'){
-				$counterparties = $np->getCounterpartyContactPersons('ea1b5c6e-3875-11e6-a54a-005056801333', $this->get->term, $_COOKIE["uid_city"]);
+				$counterparties = $np->getCounterpartyContactPersons('ea1b5c6e-3875-11e6-a54a-005056801333', $this->get->term, $_COOKIE['uid_city']);
 
-		$mas = array();
+		$mas = [];
 		$i = 0;
 		foreach ($counterparties['data'] as $c) {
 		$mas[$i]['label'] = $c['Description'].', тел: '.$c['Phones'];
@@ -14108,7 +14646,16 @@ $result .='Сервис временно недоступен!';
     }
 //var_dump($result);
 die($result);
-				}else{
+				}elseif($this->cur_menu->getParameter() == 'list'){
+            $this->view->registers = $np->getScanSheetList();
+            
+            echo $this->render('np/register_list.php', 'index.php');
+        }elseif($this->cur_menu->getParameter() == 'new'){
+            if($this->get->id){
+$this->view->order = wsActiveRecord::useStatic('Shoporders')->findById((int)$this->get->id);
+}
+   echo $this->render('np/new_ttn.php', 'index.php');
+        }else{
 				
 		$o_stat = wsActiveRecord::useStatic('OrderStatuses')->findAll();
         $mas_os = array();
@@ -14125,7 +14672,7 @@ IN ( 0, 1, 8, 9, 15, 16 ) ORDER BY  `ws_order_meestexpres`.`ctime` DESC ';	*/
 		//------
 		//$cities = $np->getCities();
 		//$this->view->cities = $cities['data']; 
-			echo $this->render('np/np.tpl.php');
+			echo $this->render('np/np.tpl.php', 'index.php');
 }
 	
 	}
@@ -14343,99 +14890,7 @@ $sheet->setCellValue("A2", 'Бренд');
 $sheet->setCellValue("B2", 'Категория');
 }
 
-$h = array(
-0 => 'A',
-1 => 'B',
- 2 => 'C',
- 3 => 'D',
- 4 => 'E',
- 5 => 'F',
- 6 => 'G',
- 7 => 'H',
- 8 => 'I',
- 9 => 'J',
- 10 => 'K',
- 11 => 'L',
- 12 => 'M',
- 13 => 'N',
- 14 => 'O',
- 15=>'P',
- 16=>'Q',
- 17=>'R',
- 18=>'S',
- 19=>'T',
- 20=>'U',
- 21=>'V',
- 22=>'W', 
- 23=>'X', 
- 24=>'Y', 
- 25=>'Z',
- 26=>'AA',
- 27=>'AB',
- 28=>'AC',
- 29=>'AD',
- 30=>'AE',
- 31=>'AF',
- 32=>'AG',
- 33=>'AH',
- 34=>'AI',
- 35=>'AJ',
- 36=>'AK',
- 37=>'AL',
- 38=>'AM',
- 39=>'AN',
- 40=>'AO',
- 41=>'AP',
- 42=>'AQ',
- 43=>'AR',
- 44=>'AS',
- 45=>'AT',
- 46=>'AU',
- 47=>'AV',
- 48=>'AW',
- 49=>'AX',
- 50=>'AY',
- 51=>'AZ',
- 52=>'BA',
- 53=>'BB',
- 54=>'BC',
- 55=>'BD',
- 56=>'BE',
- 57=>'BF',
- 58=>'BG',
- 59=>'BH',
- 60=>'BI',
- 61=>'BJ',
- 62=>'BK',
- 63=>'BL',
- 64=>'BM',
- 65=>'BN',
- 66=>'BO',
- 67=>'BP',
- 68=>'BQ',
- 69=>'BR',
- 70=>'BS',
- 71=>'BT',
- 72=>'BU',
- 73=>'BV',
- 74=>'BW',
- 75=>'BX',
- 76=>'BY',
- 77=>'BZ',
- 78=>'CA',
- 79=>'CB',
- 80=>'CC',
- 81=>'CD',
- 82=>'CE',
- 83=>'CF',
- 84=>'CG',
- 85=>'CH',
- 86=>'CI',
- 87=>'CJ',
- 88=>'CK',
- 89=>'CL',
- 90=>'CM'
- );
+require_once('PHPExel/excelarray.php');//массив буквенных обозначений в excel
 
 
 $balance = wsActiveRecord::useStatic('Balance')->findFirst(array('date = "'.$from.'" '));
@@ -14828,6 +15283,12 @@ $masa =  0.5;
 	$order->import($_POST);
 	if($id_m != 0) $order->setMeestId($id_m);
 	$order->setOrderGo(date('Y-m-d', strtotime($this->post->date_go)));
+        
+        $time = time() - strtotime($order->getDateCreate()); 
+                        //$day = $time / (24 * 60 * 60);
+                           // if($day == 0 and $time > 0){ $day = 1;}
+                            $order->setDayOrderGo($time);
+                            
 	$order->save();
 	
 	$result = array();
@@ -15061,7 +15522,7 @@ AND  `m`.`status` = ".$data." order by `m`.`id` DESC");
 	$result = $api->getStatusTrekko($id);
 	//$res = $result->response->$id;
 	die($mmss[$result->response->$id]);
-	}else if(@$this->get->prints){
+	}elseif($this->get->prints){
 	$orders = wsActiveRecord::useStatic('Shoporders')->findAll(array('id in('.$this->get->prints.')'));
 	/*foreach($orders as $order){
 	OrderHistory::newHistory($this->user->getId(), $order->getId(), 'Смена статуса', OrderHistory::getStatusText($order->getStatus(), 13));
@@ -15074,7 +15535,8 @@ AND  `m`.`status` = ".$data." order by `m`.`id` DESC");
 	$this->view->name= $this->user->getMiddleName().' '.$this->user->getFirstName();
 	echo $this->render('','trekko/print.tpl.php');
 	die();
-	}else if(@$this->post->method == 'add_ttn'){
+        
+	}elseif($this->post->method == 'add_ttn'){
 
 	$res = array();
 	$array = array();
@@ -15091,27 +15553,31 @@ AND  `m`.`status` = ".$data." order by `m`.`id` DESC");
 	}
 	die(json_encode($res));
 	
-	}elseif(@$this->post->method == 'add_ttn_all'){
-	$shipment =  explode(',', $this->post->id);
-	$res = array();
-	$mas_res_ok = array();
-	$mas_res_off = array();
+	}elseif($this->post->method == 'add_ttn_all')
+            {
+                $shipment =  explode(',', $this->post->id);
+	$res = [];
+	$mas_res_ok = [];
+	$mas_res_off = [];
 	$i=0;
-	foreach($shipment as $or){
-	$order = new Shoporders($or);
-	$dt = date('d.m.Y', strtotime($order->getDeliveryDate()));
-	$name = $order->getMiddleName().' '.$order->getName();
-	$adress = 'г.'.$order->getCity().', ул.'.$order->getStreet().', д.'.$order->getHouse().', кв.'.$order->getFlat();
+            foreach($shipment as $or){
+                $order = new Shoporders($or);
+                    $dt = date('d.m.Y', strtotime($order->getDeliveryDate()));
+                    $name = $order->getMiddleName().' '.$order->getName();
+                    $adress = 'г.'.$order->getCity().', '.$order->getStreet().', д.'.$order->getHouse().', кв.'.$order->getFlat();
+                    
 	if($order->getPaymentMethodId() == 4 or $order->getPaymentMethodId() == 6 or $order->getPaymentMethodId() == 8){
-	$summ = 0;
+            $summ = 0;
 	}else{
-	$summ = $order->getAmount();
+            $summ = $order->getAmount();
 	}
+        
 	if($order->getDeposit() > 0){
-	$strach = ($order->getAmount()+$order->getDeposit());
+            $strach = ($order->getAmount()+$order->getDeposit());
 	}else{
-	$strach = ceil($order->getAmount());
+            $strach = ceil($order->getAmount());
 	}
+        
 	$res[] = array('product_order' => $order->getId(), 'contact' => $name, 'tel'=>$order->getTelephone(), 'city'=>'Киев', 'adress'=>$adress, 'time'=>$order->getDeliveryInterval(), 'delivery_date'=>$dt, 'naimenovanie' => 'Одежда',  'summa_oplaty'=>$summ, 'summa_strahovki'=>$strach, 'ves'=>'1', 'mest'=>'1', 'primechanie'=>' ', 'id_service' => '1','id_status' => '1');
 	$i++;
 	}
@@ -15126,50 +15592,71 @@ AND  `m`.`status` = ".$data." order by `m`.`id` DESC");
 	$ord->setNakladna((int)$resp->id);
 	$ord->setStatus(13);
 	$ord->setOrderGo(date('Y-m-d H:i:s'));
+        $time = time() - strtotime($ord->getDateCreate()); 
+                        //$day = $time / (24 * 60 * 60);
+                           // if($day == 0 and $time > 0){ $day = 1;}
+                            $ord->setDayOrderGo($time);
 	$ord->save();
-	
-	//$order->setStatus(13);
-	//$order->setNakladna($order->getId());
-	
 	}
 	}else{
 	//$cur = '';
 	$mas_res_off[] = array('success'=>$result->success, 'code'=>$result->code, 'error'=>$result->error);
 	}
 	die(json_encode(array('ok'=>$mas_res_ok, 'off'=>$mas_res_off, 'cur'=>$cur->success)));
-	}else if(@$this->get->edit){// открытие формы создания ттн
+	
+        
+        }elseif($this->get->edit)// открытие формы создания ттн
+            {
 	$this->view->id = $this->get->edit;
 	$id = $this->get->edit;
 	$this->view->order_trekko_edit = wsActiveRecord::useStatic('Shoporders')->findById($id);
 	echo $this->render('trekko/add_order.tpl.php');
+        
 	}else{
 	$orders = wsActiveRecord::useStatic('Shoporders')->findAll(array('status in (9,15,16)', 'delivery_type_id'=>9, 'delivery_date != 0000-00-00'));
 	$this->view->order_trekko = $orders;
-		echo $this->render('trekko/list-trekko.tpl.php');
+		echo $this->render('trekko/list-trekko.tpl.php', 'index.php');
 		}
 	}
 	  
 	public function search_articulAction(){
-	$mass = array();
-	if(@$this->post->articul){
-	$add = wsActiveRecord::useStatic('Shoparticlelog')->findByQuery("SELECT sum(count) as addsum FROM  `red_article_log` WHERE type_id in(3,6) and `code` LIKE '".$this->post->articul."'")->at(0)->addsum;
+	$mass = [];
+        
+	if($this->post->articul){
+            $ostatok = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery("SELECT count, id_article, code, code_sr FROM ws_articles_sizes WHERE code LIKE '%".$this->post->articul."%' or code_sr LIKE '%".$this->post->articul."%' ")->at(0);
+if($ostatok){
+            $mass['ostatok'] = $ostatok->count;
+
+	$add = wsActiveRecord::useStatic('Shoparticlelog')->findByQuery("SELECT sum(count) as addsum FROM  `red_article_log` WHERE type_id in(3,6) and `code` LIKE '%".$this->post->articul."'")->at(0)->addsum;
 $mass['add'] = $add;
-	$del = wsActiveRecord::useStatic('Shoparticlelog')->findByQuery("SELECT sum(count) as del FROM  `red_article_log` WHERE type_id = 2 and `code` LIKE '".$this->post->articul."'")->at(0)->del;
+
+	$del = wsActiveRecord::useStatic('Shoparticlelog')->findByQuery("SELECT sum(count) as del FROM  `red_article_log` WHERE type_id in(2,7) and `code` LIKE '".$this->post->articul."'")->at(0)->del;
 $mass['del'] = $del;
+
 	$order = wsActiveRecord::useStatic('Shoporderarticles')->findByQuery("SELECT  sum(ws_order_articles.count) as sumaorder FROM ws_order_articles
 	WHERE ws_order_articles.artikul LIKE  '".$this->post->articul."'")->at(0)->sumaorder;
 $mass['order'] = $order;
+
 $return = wsActiveRecord::useStatic('ShoporderarticlesVozrat')->findByQuery("SELECT  sum(ws_order_articles_vozrat.count) as sumreturn FROM ws_order_articles_vozrat
 	WHERE ws_order_articles_vozrat.cod LIKE  '".$this->post->articul."'")->at(0)->sumreturn;
 $mass['return'] = $return;
-$ostatok = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery("SELECT count, id_article FROM ws_articles_sizes WHERE code LIKE '".$this->post->articul."' ")->at(0);
-$mass['ostatok'] = $ostatok->count;
+
+
 
 $img = wsActiveRecord::useStatic('Shoparticles')->findById($ostatok->id_article);
-$mass['img'] = $img->getImagePath('detail');
+
+$mass['img'] = $img->getImagePath();
 $mass['cat'] = $img->category->getRoutez();
 $mass['id'] = $ostatok->id_article;
 $mass['cup'] = $img->ArtycleBuyCount();
+$mass['code'] = $ostatok->code;
+$mass['sr'] = $ostatok->code_sr;
+}else{
+    $mass['error'] = $this->post->articul.' не нашлось(((';
+}
+
+    
+
 	print json_encode($mass);
             die();
 	//$this->view->article = $mass;
@@ -15180,14 +15667,13 @@ $mass['cup'] = $img->ArtycleBuyCount();
 	}
 	
 	public function revisiyaAction(){
-	$ms = array();
-	$errors = array();
-	if(@$this->post->method == 'dell'){ 
+	$ms = [];
+	$errors = [];
+	if($this->post->method == 'dell'){ 
 		$q = "TRUNCATE TABLE ws_revisiya";
        	wsActiveRecord::query($q);
 		die(json_encode('База очищена!'));
-	}
-	if($this->post->method == 'start'){
+	}elseif($this->post->method == 'start'){
 	$from = (int)$this->post->from;
 	$limit = (int)$this->post->limit;
 	$i=0;
@@ -15195,12 +15681,13 @@ $mass['cup'] = $img->ArtycleBuyCount();
 	$z = 0;
 	$s = 0;
 	$r_o = 0;
+        
 	$sql = "SELECT ws_articles_sizes.* FROM ws_articles_sizes
 join ws_articles on ws_articles_sizes.id_article = ws_articles.id
- 	WHERE ws_articles.status != 1 and ws_articles_sizes.`ctime` !=  '0000-00-00 00:00:00'
-AND  ws_articles_sizes.`ctime` >  '2016-05-01 00:00:00'
+ 	WHERE ws_articles.status != 1 and ws_articles_sizes.`ctime` !=  '0000-00-00 00:00:00' AND  ws_articles_sizes.`ctime` >  '2017-01-01 00:00:00'
 	ORDER BY ws_articles_sizes.id DESC
 	LIMIT ".$from.", ".$limit;
+        
 	$articles = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery($sql);
 		foreach ($articles as $siz){ 
 		//d($siz->code, false);
@@ -15209,7 +15696,7 @@ AND  ws_articles_sizes.`ctime` >  '2016-05-01 00:00:00'
 	$reviz = wsActiveRecord::useStatic('Revisiya')->findFirst(array('sr LIKE "'.$siz->code.'"'));
 	//echo print_r($reviz);
 	//die();
-		if(@$reviz and $reviz->flag == 0){
+		if($reviz and $reviz->flag == 0){
 		//die();
 		$count = $siz->count;// ostatok
 		
@@ -15221,18 +15708,17 @@ AND  ws_articles_sizes.`ctime` >  '2016-05-01 00:00:00'
 		WHERE `ws_orders`.`status` = 100
 		and `ws_order_articles`.`color` = '.$siz->id_color.' 
 		and `ws_order_articles`.`size` = '.$siz->id_size.' 
-		and `ws_order_articles`.`article_id` = '.$siz->id_article.'
-		and  `ws_order_articles`.`artikul` LIKE "'.$siz->code.'" ')->at(0)->getOrc();
+		and `ws_order_articles`.`article_id` = '.$siz->id_article)->at(0)->getOrc();
 		
 											
-		if($r) $z = $r;// to chto nashli v zakazach
+		if($r) {$z = $r;}// to chto nashli v zakazach
 		
 		if($z > 0){  $count += $z; } // dobavlaem to chto nashli v zakazach
 											
 											
 		if($count != $reviz->count){ //sravnivaem ostatok i reviziy
 		
-					$r_o += $z; //suma naidenich v zakach
+		$r_o += $z; //suma naidenich v zakach
 												
 		if($count > $reviz->count){ //ostatok bolshe chem reviziya 
 				$co = $count - $reviz->count; 
@@ -15254,21 +15740,21 @@ AND  ws_articles_sizes.`ctime` >  '2016-05-01 00:00:00'
 							$ms[$s]['type'] = $f;
 							
 								$aa = $reviz->count - $z;
-								if($aa < 0) $aa = 0;
+								if($aa < 0) {$aa = 0;}
 								
 								
 							if(true){
 							
 									$log = new Shoparticlelog();
-                                    $log->setCustomerId($this->user->getId());
-									$log->setUsername($this->user->getUsername());
-                                    $log->setArticleId($siz->id_article);
-									$log->setInfo($siz->size->getSize().' '.$siz->color->getName());
-									$log->setTypeId($f);
-									$log->setCount($co);
-									$log->setComents($log_text);
-									$log->setCode($siz->code);
-									$log->save();
+                                                                            $log->setCustomerId($this->user->getId());
+                                                                            $log->setUsername($this->user->getUsername());
+                                                                            $log->setArticleId($siz->id_article);
+                                                                            $log->setInfo($siz->size->getSize().' '.$siz->color->getName());
+                                                                            $log->setTypeId($f);
+                                                                            $log->setCount($co);
+                                                                            $log->setComents($log_text);
+                                                                            $log->setCode($siz->code);
+                                                                            $log->save();
 				
 										$siz->setCount($aa);
 										$siz->save();
@@ -15303,8 +15789,7 @@ AND  ws_articles_sizes.`ctime` >  '2016-05-01 00:00:00'
 															
 die(json_encode(array('status' => 'send', 'from' => $from+$limit,  'saved'=>$i, 'coll'=>$j, 'order'=>$r_o, 'article' => $ms)));  
 							///////////////////////////////
-							}
-	if ($_POST and isset($_POST['save'])){
+	}elseif($_POST and isset($_POST['save'])){
 	 //$errors = $_FILES;
 	if(isset($_FILES['exel'])){
 	ini_set('memory_limit', '1024M');
@@ -15314,7 +15799,10 @@ die(json_encode(array('status' => 'send', 'from' => $from+$limit,  'saved'=>$i, 
                                 $filename_excel = INPATH . "files/" . $_FILES['exel']['name'];
 								
                                 if (move_uploaded_file($oldfilename_excel, $filename_excel)) {
-                                   $res = $this->parse_excel_file($filename_excel);
+                                    
+                                   $res = ParseExcel::getExcelToArray($filename_excel);
+                                           
+                                           
 								   $i=0;
 								   if($res){
 								   foreach ($res as $s) {
@@ -15344,37 +15832,17 @@ die(json_encode(array('status' => 'send', 'from' => $from+$limit,  'saved'=>$i, 
 		}
 		
 							
-if(count($errors) > 0) $this->view->errors = $errors;	
-echo $this->render('page/revisiya.tpl.php');
+    if(count($errors) > 0) {$this->view->errors = $errors;}	
+    
+        echo $this->render('page/revisiya.tpl.php');
+        
 		}
 							
-public function parse_excel_file($file)
-    {
-	$i=0;
-	 require_once('PHPExel/PHPExcel/IOFactory.php');
-        $objPHPExcel = PHPExcel_IOFactory::load($file);
-        $objPHPExcel->setActiveSheetIndex(0);
-		@unlink($file);
-		 return $objPHPExcel->getActiveSheet()->toArray();
-     // $aSheet = $objPHPExcel->getActiveSheet()->toArray();
-	  
-	/*  foreach ($aSheet as $s) {
-	  if($s[0]){
-	  $sr = new Revisiya();
-	  $sr->setSr($s[0]);
-	  $sr->setCount($s[1]);
-	  $sr->save();
- $i++;
-	  }
-	  }*/
-	   
-	  return $i;
-    }
+ 
 	public function addttnorderAction(){
-	if(@$this->post->ttn){
+	if($this->post->ttn){
 	require_once('np/NovaPoshta.php');
-	require_once('np/NovaPoshtaApi2Areas.php');
-	$np = new NovaPoshta('2c28a9c1a5878cb01c8f9c440e827a61','ru', true, 'curl' );
+	$np = new NovaPoshta('1e594a002b9860276775916cdc07c9a6','ru', true, 'curl' );
 	$rr = '';
 	$result = $np->getOrderNumber($this->post->ttn);
 	if($result != 'error'){
@@ -15572,7 +16040,7 @@ $result.= '</div>';
 		
 //выгрузка товаров с базы
 $data = array('admin'=>$this->user->getId());
-	if($this->user->getId() == 1 or $this->user->getId() == 8005) $data = array();
+if($this->user->getId() == 1 or $this->user->getId() == 8005) {$data = array();}
 	
 $onPage = 100;
             $page = !empty($this->get->page) && (int)$this->get->page ? (int)$this->get->page : 1;
@@ -15589,12 +16057,15 @@ $onPage = 100;
             $this->view->end = $onPage * ($page - 1) + $onPage;
 $this->view->article = wsActiveRecord::useStatic('Amazon')->findAll($data, array('category'=>'ASC'), array($startElement, $onPage));
 						
-if(count($errors) > 0) $this->view->errors = $errors;	
+if(count($errors) > 0){ $this->view->errors = $errors;	}
+
 echo $this->render('amazon/amazon.tpl.php');
-	}
+
+}
+        
 	//чтение файла с амазона и загрузка в базу 
 	public function parse_excel_file_amazon($file)
-    {
+{
 	$i=0;
 	//$mass = array();
 	 require_once('PHPExel/PHPExcel/IOFactory.php');
@@ -15623,7 +16094,7 @@ echo $this->render('amazon/amazon.tpl.php');
 	  }
  $i++;
 	  }
-	   @unlink($file);
+	   unlink($file);
 	// die(print_r($mass));
 	  return $i;
     }
@@ -15645,7 +16116,7 @@ echo $this->render('amazon/amazon.tpl.php');
 	$order = new Amazonorders($or_art->getOrderId());
 	$order->ReCalculate();
 	die(json_encode(array('cnt'=>$or_art->getCount(), 'sum'=>$or_art->getCount()*$or_art->getPrice())));
-	} elseif ($this->post->method == 'ok'){
+	}elseif($this->post->method == 'ok'){
 	$order = new Amazonorders($this->post->id);
 	$order->setFlag(1);//odbrit
 	$order->save();
@@ -15888,7 +16359,11 @@ $j=1;
 	}// заказы в амазон
 	
 	public function ukrpostAction(){
-	
+        require_once('up/UkrPostAPI.php');
+
+//$up = 
+$this->view->up = $up =  new UkrPostAPI();
+
 	if($this->cur_menu->getParameter() == 'ukrpost_transfer' and $this->get->id){
 	$id = $this->get->id;
 	$order = new Shoporders($id);
@@ -15912,9 +16387,248 @@ $j=1;
 $text = 'Помилка';
 }
 	die($text);
-	}
+        }elseif($this->cur_menu->getParameter() == 'print'){
+           
+       if($this->get->sticker){
+            switch ($this->get->sticker){
+                case 'shipment':
+                    $res =  $up->getSticker100_100($this->get->uuid);
+                    header('Content-type: application/pdf');
+                   // header('Content-Disposition: attachment; filename='.$this->get->uuid.'.pdf');
+                    echo '<div style="padding: 10px;    margin: 10px;">'.$res.'</div>'; 
+                   // exit();
+                    break;
+                case 'group':  
+                    $res =  $up->getSticker100_100Group($this->get->uuid);
+                    header('Content-type: application/pdf'); 
+                    echo $res;
+                   // exit();
+                    break;
+                case 'form103': 
+                    $res = $up->getForm103a($this->get->uuid); 
+                    header('Content-type: application/pdf');
+                    echo $res;
+                    //exit(); 
+                    break;
+                default: $res = ['hnjgfh'];
+            }
+        }
+            die();
+            
+        }elseif($this->cur_menu->getParameter() == 'new-group'){
+            if(count($_POST)){
+                $res = $up->getNewShipmentGroups($_POST['name']);
+                if($res->uuid){
+                     $this->_redir('ukrpost');
+                   // $this->_redirect('ukrpost/?group='.$res->uuid);
+                }else{
+                    $this->_redir('ukrpost');
+                }
+            }
+           //print_r($_POST);
+          //  die();
+        }elseif($this->cur_menu->getParameter() == 'new-client'){
+            
+            if($this->post->method == 'put_address'){
+                
+             $res =  $up->putAddressClient($this->post->uuid, $this->post->ids);
+             if($res->uuid){
+                 die(json_encode(['status'=>'ok']));
+                  //$this->_redir('ukrpost/new-shipment/id/'.$this->post->order.'/');
+             }else{
+                  die(json_encode(['status'=>'err',  'message'=>$res->message]));
+             }
+             
+           
+            
+        }else{
+            //echo '<pre>';
+           // echo print_r($this->post);
+            // echo '</pre>';
+           // die();
+         $client = $up->getNewClient($this->post->last_name, $this->post->first_name, $this->post->middle_name, $this->post->phone_number, $this->post->external_id, $this->post->postcode, $this->post->region, $this->post->city, $this->post->district, $this->post->street, $this->post->house_number, $this->post->apartment_number, $this->post->email);
+          //  $cl = new Ukrpostkontragent();
+           // $cl->setName('fdgdf');
+            //$cl->setPostcode('11033');
+           // $cl->setMiddlename($_POST['first_name']);
+           // $cl->setFirstName($_POST['first_name']);
+         //$cl = new Ukrpostclient();
+         //$cl->setLastName('vhjkhjvl');
+          //  echo $_POST['postcode'];
+     //  $cl->import($_POST);
+       //  $cl->save();
+         //$mas = [];
+            if($client->uuid){
+                $mas = ['status'=>'ok', 'message'=>$client->name];
+            }elseif($client){
+                 $mas = ['status'=>'error', 'message'=>$client->message];
+            }else{
+                $mas = ['status'=>'error', 'message'=>'ошибка'];
+            }
+            
+            
+           //$mas = $_POST;
+           
+          // echo print_r($_POST);
+         // echo print_r($this->post);
+            
+            die(json_encode($mas));
+        }
+        }elseif($this->cur_menu->getParameter() == 'new-address'){
+            if ($this->get->query == 'postcode') {
+              //  echo print_r($this->get);
+                $res = $up->getPostIndexFilter((string)$this->get->term);
+            $mas = [];
+            $i = 0;
+            foreach ($res as $item) { 
+                $mas[$i]['label'] = $item->TECHINDEX;
+                $mas[$i]['value'] = $item->TECHINDEX;
+                $mas[$i]['id'] = $item->TECHINDEX;
+                $mas[$i]['REGION'] = $item->REGION_RU;
+                $mas[$i]['DISTRICT'] = $item->DISTRICT_RU;
+                $mas[$i]['CITY'] = $item->PDCITY_RU;
+                $mas[$i]['CITYID'] = $item->POCITY_ID;
+                
+                $i++;
+            }
+            echo json_encode(array('query' => $this->get->query, 'suggestions' => $mas));
+            die();
+        }elseif($this->post->method == 'info_address'){
+            //$res = $this->post->ids;
+           $res = UkrPostAddress::getAddress($this->post->ids);
+           $mas = [
+               'postcode' => $res->postcode,
+               'region' => $res->region,
+               'district' => $res->district,
+               'city' => $res->city,
+               'street' => $res->street,
+               'houseNumber' => $res->houseNumber,
+               'apartmentNumber' => $res->apartmentNumber,
+               'description' => $res->description
+           ];
+            die(json_encode($mas));
+        }elseif(isset($this->post->save_address)){
+           //  echo print_r($this->post);
+            //die();
+            $res = $up->newAddress($this->post->m_postcode, $this->post->m_region, $this->post->m_district, $this->post->m_city, $this->post->m_street, $this->post->m_houseNumber, '', $this->post->customer_id);
+             if($res->id){
+                  $res =  $up->putAddressClient($this->post->uuid, $res->id);
+                  if($res->id){
+                 $this->_redir('ukrpost/new-shipment/id/'.$this->post->m_order_id.'/');
+                  }else{
+                        $this->_redir('ukrpost/new-shipment/id/'.$this->post->m_order_id.'/');
+                  }
+             }else{
+                 $this->_redir('ukrpost/new-address/');
+             }
+            
+           // echo print_r($this->post);
+          //  die();
+        }
+        
+            
+            
+            echo $this->render('template/views/ukrpost/ukrpost_new_address.tpl.php', 'index.php');
+        }elseif($this->cur_menu->getParameter() == 'new-shipment'){
+          //  print_r($this->get);
+           // die();
+            $errors = [];
+            if($this->post->method == 'delete_shipment'){
+                $up->getDeleteShipments($this->post->uuid);
+                die(json_encode(true));
+            }elseif(count($_POST) and isset($_POST['add_ttn'])){
+         //  echo '<pre>';
+          //  print_r($this->post);
+         //   echo '</pre>';
+           /// echo $this->get->id;
+          //  $this->post = [];
+           // die(); 
+$s = $up->getShipmentInGroups(
+        $_POST['shipmentGroupUuid'],
+        $_POST['recipient_uuid'],
+        $_POST['lastName'],
+        $_POST['firstName'],
+        $_POST['middleName'],
+        $_POST['externalId'],
+        $_POST['weight'],
+        $_POST['length'],
+        $_POST['declaredPrice'],
+        $_POST['postPay'],
+        $_POST['description'],
+        $_POST['transferPostPayToBankAccount'],
+        $_POST['paidByRecipient'],
+        $_POST['postPayPaidByRecipient']
+        );
+
+
+
+if($s->uuid){
+    $ord= new Shoporders((int)$this->get->id);
+   // OrderHistory::newHistory($this->user->getId(), $ord->getId(), 'Смена статуса', OrderHistory::getStatusText($ord->getStatus(), 4));
+	$ord->setNakladna($s->barcode);
+	//$ord->setStatus(4);
+	//$ord->setOrderGo(date('Y-m-d H:i:s'));
+      //  $time = time() - strtotime($ord->getDateCreate()); 
+                        //$day = $time / (24 * 60 * 60);
+                           // if($day == 0 and $time > 0){ $day = 1;}
+                     //       $ord->setDayOrderGo($time);
+
+   
+    $ord->save();
+    
+    //$this->_redir('ukrpost');
+   $this->_redir('ukrpost/print/sticker/shipment/uuid/'.$s->uuid);
+    
+}elseif($s){
+    
+    
+    //print_r($s);
+    $errors = 'Помилка. '.$s->message;
+     $order = new Shoporders((int)$_POST['externalId']);
+     $this->view->order = $order;
+                    $this->view->sender = Ukrpostkontragent::getSender(1); //$up->getClientExternalId(1);//
+                    $this->view->client = $up->getClientExternalId($order->customer_id);//Ukrpostkontragent::getRecipient($order->customer_id); 
+                    $this->view->sgroup = $up->getListGroups();
+    
+}else{
+     $errors = 'Ошибка связи с сервером!!!!';
+     $order = new Shoporders((int)$_POST['externalId']);
+     $this->view->order = $order;
+                    $this->view->sender = Ukrpostkontragent::getSender(1); //$up->getClientExternalId(1);//
+                    $this->view->client = $up->getClientExternalId($order->customer_id);//Ukrpostkontragent::getRecipient($order->customer_id); 
+                    $this->view->sgroup = $up->getListGroups();
+}
+ // echo '<pre>';
+       //     print_r($s);
+        //    echo '</pre>';
+//die();
+ // echo $this->render('template/views/ukrpost/ukrpost_new_shipment.tpl.php', 'index.php');
+            
+            }elseif($this->get->id){
+                $order = new Shoporders((int)$this->get->id);
+                if($order->id){
+                    $this->view->order = $order;
+                    $this->view->sender = Ukrpostkontragent::getSender(1); //$up->getClientExternalId(1);//
+                    $this->view->client = $up->getClientExternalId($order->customer_id);//Ukrpostkontragent::getRecipient($order->customer_id); 
+                    $this->view->sgroup = $up->getListGroups();
+                }else{
+                    $errors = 'Заказ с № '.$this->get->id.' отсутствует!';
+                }  
+            }
+            
+            $this->view->error = $errors;
+            
+             echo $this->render('template/views/ukrpost/ukrpost_new_shipment.tpl.php', 'index.php');
+        }else{
+            if($this->get->group){
+                $this->view->shipments = $up->getShipmentsGroup($this->get->group, ['status' => 'CREATED']);
+            }
+            $this->view->all_order = wsActiveRecord::useStatic('Shoporders')->findAll(array('status in(1,9,15,16)', 'delivery_type_id = 4'));
+            
+           echo $this->render('template/views/ukrpost/ukrpost.tpl.php', 'index.php'); 
+        }
 	
-	echo $this->render('template/views/page/ukrpost.tpl.php', 'index.php');
+	
 	
 	}
 	
@@ -15951,9 +16665,13 @@ $text = 'Помилка';
 	
 	}
 	
-		public function sendMessageTelegram($chat_id, $message) {
+   /*   
+public function sendMessageTelegram($chat_id, $message) {
   file_get_contents('https://api.telegram.org/bot'.Config::findByCode('telegram_key')->getValue().'/sendMessage?chat_id=' . $chat_id . '&text=' . urlencode($message));
 }
+ */
+  
+
 
 public function articlesaddAction(){
 
@@ -16004,7 +16722,7 @@ $("#"+c.id).prop("checked", true);
 			$article->setSizeType($this->post->size_type);
 			$article->setSezon($this->post->sezon);
 			if($this->post->soot_rozmer){$article->setSootRozmer($this->post->soot_rozmer);}
-			$article->setSezon($this->post->sezon);
+                        if($this->post->model_id){$article->setModelId($this->post->model_id);}
 		
 		if ($_FILES) {//загрузка фоток
                     if ($_FILES['image_file']) {
@@ -16135,12 +16853,12 @@ if(isset($this->post->long_text) and $this->post->long_text != ''){
 								if(isset($_POST['version'])){
 								if($_POST['version'] == 1){//старая версия
 								
-								$ifos = $this->parseexcelfiletemp($tmp_name_excel);
+								$ifos = ParseExcel::getExcelArticlesStaraVersiya($tmp_name_excel);
 									//echo '<pre>';
 									//echo print_r($ifos);
 									//echo '</pre>';
 									//die();
-                                    if (@$ifos) {
+                                    if ($ifos) {
 									if(!count($ifos['error'])){
 									unset($ifos['error']);
 									foreach($ifos as $a){
@@ -16207,7 +16925,7 @@ if(isset($this->post->long_text) and $this->post->long_text != ''){
 								
 								
 								}elseif($_POST['version'] == 2){//новая версия
-								$ifos = $this->parseexcelfile($tmp_name_excel);
+								$ifos = ParseExcel::getExcelArticles($tmp_name_excel);
 									//echo '<pre>';
 									//echo print_r($ifos);
 									//echo '</pre>';
@@ -16343,140 +17061,22 @@ if(isset($this->post->long_text) and $this->post->long_text != ''){
 
 }
 
-public function parseexcelfile($file)
-    {
-        require_once('PHPExel/PHPExcel/IOFactory.php');
-        $objPHPExcel = PHPExcel_IOFactory::load($file);
-        $objPHPExcel->setActiveSheetIndex(0);
-        //$aSheet = $objPHPExcel->getActiveSheet();
-		$aSheet = $objPHPExcel->getActiveSheet()->toArray();
-		$mas = array();
-		$errors = array();
-		unset($aSheet[0]);
-		unset($aSheet[1]);
-		foreach($aSheet as $k => $m){
-		if($m[0]){
-		//$mas[$m[16]]['nakladnaya'] = $nakladna[2];
-		$mas[$m[16]]['model'] = trim($m[1]);
-		
-		$mas[$m[16]]['brand'] = trim($m[2]);
-		
-		$mas[$m[16]]['stock'] = $mas[$m[16]]['stock'] + (int)$m[8];
-				
-			$sex = wsActiveRecord::useStatic('Shoparticlessex')->findFirst(array('id_1c'=>(int)$m[9]));
-				if (!$sex) { $errors[] = 'Ошибка Пола "' . $m[10] . '", строка '.$m[0]; $sex = 0; }else{ $sex = $sex->id;}
-				
-		$mas[$m[16]]['id_sex'] = $sex;
-		$mas[$m[16]]['sex'] = $m[10];
-		
-				$season = wsActiveRecord::useStatic('Shoparticlessezon')->findFirst(array('id_1c'=>(int)$m[11]));
-				if (!$season) { $errors[] = 'Ошибка сезона "' . $m[12] . '", строка '.$m[0]; $season = 0; }else{ $season = $season->id;}
-				
-		$mas[$m[16]]['id_season'] = $season;
-		$mas[$m[16]]['season'] = $m[12];
-		
-					
-		
-		$mas[$m[16]]['price'] = trim($m[13]);
-		$mas[$m[16]]['cc'] = trim($m[14]);
-		$mas[$m[16]]['skidka'] = trim($m[15]);
-		
-		
-		//$size = wsActiveRecord::useStatic('Size')->findFirst(array('id_1c'=>(int)$m[6]));
-		//	if (!$size) { $errors[] = 'Ошибка размера "' . $m[7] . '", строка '.$m[0]; $size_id = 0; $size_name = $m[7]; }else{ $size_id = $size->id; $size_name = $size->size;}
-			
-		$size = wsActiveRecord::useStatic('Size')->findFirst(array('size LIKE "'.trim($m[7]).'"'));
-			if (!$size) { $errors[] = 'Ошибка размера "' . $m[7] . '", строка '.$m[0]; $size_id = 0; $size_name = $m[7]; }else{ $size_name = $size->size; $size_id = $size->id;}
-			
-		$color = wsActiveRecord::useStatic('Shoparticlescolor')->findFirst(array('id_1c' =>(int)$m[4]));
-			if (!$color) { $errors[] = 'Ошибка с цветом "' . $m[5] . '", строка '.$m[0]; $color_id = 0; $color_name = $m[5]; }else{ $color_id = $color->id; $color_name = $color->name;}
-			
-		$art = wsActiveRecord::useStatic('Shoparticlessize')->count(array("code LIKE  '".trim($m[3])."' "));
-			if ($art) { $errors[] = 'Товар с штрихкодом '.trim($m[3]).' уже существует. id: '.$art->id.' Строка в накладной: '.$m[0]; }
-		
-		$mas[$m[16]]['color_id'] = $color_id;
-		
-		$mas[$m[16]]['sizes'][] = array(
-		'code'=>trim($m[3]),
-		'id_color'=>$color_id,
-		'color'=>$color_name,
-		'id_size'=>$size_id,
-		'size'=>$size_name,
-		'count'=>(int)$m[8]
-		);
-		}else{
-		break;
-		}
-		}
-		$mas['error'] = $errors;
-               // echo '<pre>';
-               // echo print_r($mas);
-               // // echo '</pre>';
-               // var_damp($mas);
-              //  die();
-        return $mas;
-    }
-   public function parseexcelfiletemp($load_file){//старые накладные
-   
-         require_once('PHPExel/PHPExcel/IOFactory.php');
-        $objPHPExcel = PHPExcel_IOFactory::load($load_file);
-        $objPHPExcel->setActiveSheetIndex(0);
-		$aSheet = $objPHPExcel->getActiveSheet()->toArray();
-		$mas = array();
-		$errors = array();
-		unset($aSheet[0]);
-		unset($aSheet[1]);
-		unset($aSheet[2]);
-		unset($aSheet[3]);
-		unset($aSheet[4]);
-		unset($aSheet[5]);
-		unset($aSheet[6]);
-		unset($aSheet[7]);
-		//return $aSheet;
-		foreach($aSheet as $k => $m){
-		if($m[1]){
-		$mas[$m[41]]['model'] = trim($m[3]);
-		$mas[$m[41]]['brand'] = trim($m[17]);
-		$mas[$m[41]]['stock'] = $mas[$m[41]]['stock'] + (int)$m[29];
-		$mas[$m[41]]['price'] = trim($m[32]);
-		$mas[$m[41]]['cc'] = trim($m[35]);
-		$mas[$m[41]]['skidka'] = trim($m[38]);
-		
-		$size = wsActiveRecord::useStatic('Size')->findFirst(array("size LIKE '".trim($m[26])."' "));
-			if (!$size) { $errors[] = 'Ошибка размера "' . $m[26] . '", строка '.$m[1]; $size = 0; }else{ $size = $size->id;}
-		$color = wsActiveRecord::useStatic('Shoparticlescolor')->findFirst(array('name' => mb_strtolower($m[23])));
-			if (!$color) { $errors[] = 'Ошибка с цветом "' . $m[23] . '", строка '.$m[1]; $color = 0; }else{ $color = $color->id;}
-		$art = wsActiveRecord::useStatic('Shoparticlessize')->count(array("code LIKE  '".trim($m[20])."' "));
-			if ($art) { $errors[] = 'Товар с штрихкодом '.trim($m[20]).' уже существует. id: '.$art->id.' Строка в накладной: '.$m[1]; }
-		
-		
-		$mas[$m[41]]['color_id'] = $color;
-		$mas[$m[41]]['sizes'][] = array(
-		'code'=>trim($m[20]),
-		'id_color'=>$color,
-		'color'=>trim($m[23]),
-		'id_size'=>$size,
-		'size'=>trim($m[26]),
-		'count'=>(int)$m[29]
-		);
-		}else{
-		break;
-		}
-		}
-		$mas['error'] = $errors;
-		 //@unlink($file);
-		 return $mas;
-    }
-	public function withdrawAction(){
-	
+    /**
+     * Снятие товра
+     */
+	public function withdrawAction()
+                {
+	if(isset($_POST['close_article'])){
 			if (isset($_FILES['excel_file'])) {
 //die('tut');
                             if (is_uploaded_file($_FILES['excel_file']['tmp_name'])) {
 							
                                 $tmp_name_excel = $_FILES['excel_file']['tmp_name'];
-								 $res = $this->parse_excel_file($tmp_name_excel);
+                                
+                                $res = ParseExcel::getExcelToArray($tmp_name_excel);
+
 								 if($res){
-								 $ma_rez = array();
+								 $ma_rez = [];
 								 $i=0;
 								 foreach($res as $r){
 								 $a = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array(" code LIKE'".trim($r[0])."' and count >".$r[1]));
@@ -16485,13 +17085,13 @@ public function parseexcelfile($file)
 								 $a->setFlag($temp);
 								 $a->setCount((int)$r[1]);
 								 $a->save();
-								$temp = ($temp - (int)$r[1]);
+								$temp -= (int)$r[1];
 								$log = new Shoparticlelog();
 											$log->setCustomerId($this->user->getId());
 											$log->setUsername($this->user->getUsername());
 											$log->setArticleId($a->id_article);
 											$log->setComents('Снятие с продажи');
-											$log->setInfo($s['size'].' '.$s['color']);
+											$log->setInfo($a->size->size.' '.$a->color->name);
 											$log->setTypeId(2);
 											$log->setCount($temp);
 											$log->setCode($r[0]); 
@@ -16511,24 +17111,15 @@ public function parseexcelfile($file)
                 $filename = 'Собрать_'.$this->user->getMiddleName().'_'.date("d.m.Y H-i").'.xls';
                 $pExcel = new PHPExcel();
                 $pExcel->setActiveSheetIndex(0);
-                
-				//$pExcel->getDefaultStyle()->getFont()->setSize(8);				
-				//$pExcel->getDefaultStyle()->getAlignment()->setWrapText(true);
                 $aSheet = $pExcel->getActiveSheet();
                 $aSheet->setTitle('На снятие');
-				
-				//$aSheet->getPageSetup()->setOrientation(PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE);
-				//$aSheet->getPageSetup()->SetPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4);
 
                 $aSheet->getColumnDimension('A')->setWidth(20);
-				$aSheet->getColumnDimension('B')->setWidth(30);
+		$aSheet->getColumnDimension('B')->setWidth(30);
                 $aSheet->getColumnDimension('C')->setWidth(15);
                 $aSheet->getColumnDimension('D')->setWidth(10);
 
-				
-				//$aSheet->getRowDimension(1)->setRowHeight(-1);
-		
-				$aSheet->setCellValue('A1', 'Категория');
+		$aSheet->setCellValue('A1', 'Категория');
                 $aSheet->setCellValue('B1', 'Товар');
                 $aSheet->setCellValue('C1', 'Артикул');
                 $aSheet->setCellValue('D1', 'КоллСнять');
@@ -16549,38 +17140,192 @@ public function parseexcelfile($file)
 				$pathfile = INPATH . "backend/excel/". $filename;
 				
 				if (file_exists($pathfile)){
-						if (unlink($pathfile)) $objWriter->save($pathfile);
+						if (unlink($pathfile)) {$objWriter->save($pathfile);}
 						}else{
 						$objWriter->save($pathfile);
 						}
 						
 						$email = 'php@red.ua';
-						$name = 'Ярослав';
-                        $admin_name = 'Ярослав';
+						//$name = 'Ярослав';
+                                                $admin_name = 'Ярослав';
 						$subject = 'Снятие товара';
 						$msg = 'Файл на снятие во вложении';
 						
-       MailerNew::getInstance()->sendToEmail($email, $admin_name, $subject, $msg, 0, '', $admin_name, $smtp = 1, $usubscribe_text = 0, $subsciber = 0, $uploadfile = $pathfile, $filename = $filename);
-						
-								 
-//SendMail::getInstance()->sendEmail($email, $name, $subject, $msg, $uploadfile = $pathfile, $filename = $filename, '', '', 0, 'yaroslav_148@icloud.com', 'Ярослав');
+       MailerNew::getInstance()->sendToEmail($email, $admin_name, $subject, $msg, 0, '', $admin_name, 1, 0, 0, $pathfile, $filename);
 
 								 }
-								// echo '<pre>';
-								// echo print_r($ma_rez);
-								//// echo '</pre>';
-							//	 die();
 								 }
 									}else{
 									die('Ошибка чтения excel файла!');
 									}
 									
 									}
+                }elseif(isset($_POST['otbor_artikul'])){
+                    
+                    //$size = wsActiveRecord::useStatic('Shoparticlessize')->findAll(["`code` LIKE  '%SR%'", "`count` > 0 "], ['id'=> 'ASC'], [0,100]);
+                   // echo '<pre>';
+                   // foreach ($size as $v) {
+                       // echo $v->code.'<br>';
+                   // }
+                   // echo '</pre>';
+                   // die();
+                    if (true) {
+
+                                $res = wsActiveRecord::useStatic('Shoparticlessize')->findAll(["`code` LIKE  '%SR%'", "`count` > 0 "], ['id'=> 'ASC'], [0,100]);
+                                if($res){
+					$ma_rez = [];
+					$i = 0;
+					foreach($res as $a){
+					//$a = wsActiveRecord::useStatic('Shoparticlessize')->findFirst([" code LIKE'".trim($r[0])."'"]);
+						$log = new Shoparticlelog();
+						$log->setCustomerId($this->user->getId());
+						$log->setUsername($this->user->getUsername());
+						$log->setArticleId($a->id_article);
+						$log->setComents('Снятие на замену артикула');
+						$log->setInfo($a->size->size.' '.$a->color->name);
+						$log->setTypeId(2);
+						$log->setCount($a->count);
+						$log->setCode($a->code); 
+						$log->save();
+
+						$ma_rez[$i]['code'] = $a->code;
+						$ma_rez[$i]['snatye'] = $a->count;
+                                                
+                                                $a->setFlag($a->count);
+						$a->setCount(0);
+						$a->save();
+                                                
+								 $i++;
+                                                
+						}
+		if(count($ma_rez)){
+
+                require_once('PHPExel/PHPExcel.php');
+                $filename = 'zamena_artikula_'.$this->user->getMiddleName().'_'.date("d.m.Y H-i").'.xls';
+                $pExcel = new PHPExcel();
+                $pExcel->setActiveSheetIndex(0);
+                $aSheet = $pExcel->getActiveSheet();
+                $aSheet->setTitle('Zamena artikula');
+
+                $aSheet->getColumnDimension('A')->setWidth(15);
+		$aSheet->getColumnDimension('B')->setWidth(10);
+
+               // $aSheet->setCellValue('A1', 'Артикул');
+                //$aSheet->setCellValue('B1', 'КоллСнять');
+                $i = 1;
+                $count = 0;
+                foreach ($ma_rez as $t) { 
+                        $aSheet->setCellValue('A'.$i, $t['code']);	
+                        $aSheet->setCellValue('B'.$i, $t['snatye']);	
+                        $i++;
+                        $count+=$t['snatye'];
+                }
+				
+				
+                require_once("PHPExel/PHPExcel/Writer/Excel5.php");
+                $objWriter = new PHPExcel_Writer_Excel5($pExcel);
+
+				//$pathfile = INPATH . "backend/excel/". $filename;
+				
+				//if (file_exists($pathfile)){
+				//if (unlink($pathfile)) {$objWriter->save($pathfile);}
+				//}else{
+				//$objWriter->save($pathfile);
+				//}
+               header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+                header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
+                header("Cache-Control: no-cache, must-revalidate");
+                header("Pragma: no-cache");
+                header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
+                $objWriter->save('php://output');
+						
+						//$email = 'php@red.ua';
+						//$name = 'Ярослав';
+                                               // $admin_name = 'Ярослав';
+						//$subject = 'Снятие товара на замену артикулов';
+						//$msg = 'Файл на снятие во вложении';
+						
+      // MailerNew::getInstance()->sendToEmail('php@red.ua', $admin_name, $subject, $msg, 0, '', $admin_name, 1, 0, 0, $pathfile, $filename);
+      // MailerNew::getInstance()->sendToEmail('sku@red.ua', $admin_name, $subject, $msg, 0, '', $admin_name, 1, 0, 0, $pathfile, $filename);
+  $this->view->save = 'Снято  '. $count.' записей';
+				}
+                        }else{
+                             $this->view->warning = 'Нет записей на снятие! ';
+                        }             
+                    }
+                    
+                }elseif(isset($_POST['edit_artikul'])){
+                    if (isset($_FILES['excel_file_artikul'])) {
+                            if (is_uploaded_file($_FILES['excel_file_artikul']['tmp_name'])) {
+							
+                                $tmp_name_excel = $_FILES['excel_file_artikul']['tmp_name'];
+                                
+                                $res = ParseExcel::getExcelToArray($tmp_name_excel);
+                                
+                                if($res){
+                                    unset($res[0]); 
+                                //echo '<pre>';
+                               // echo print_r($res);
+                              //  echo '</pre>';
+                              // die();
+                                $i = 0;
+                                $j = 0;
+                                $error = [];
+                                foreach ($res as $key => $value) {
+                                   // echo $key.' - '.$value[0].' - '.$value[1].'<br>';
+                                     $a = wsActiveRecord::useStatic('Shoparticlessize')->findFirst([" code LIKE'".trim($value[24])."'"]);
+                                     if($a){
+                                        $log = new Shoparticlelog();
+					$log->setCustomerId($this->user->getId());
+					$log->setUsername($this->user->getUsername());
+					$log->setArticleId($a->id_article);
+					$log->setComents('Замена артикула');
+					$log->setInfo('C '.$value[24].' на '.$value[25]);
+					$log->setTypeId(1);
+					$log->setCount($a->getFlag());
+					$log->setCode($value[25]); 
+					$log->save();
+                                        
+                                         $a->setCount((int)$value[20]);
+                                         $a->setCode(trim($value[25]));
+                                         $a->save();
+                                         
+                                        $i++;  
+                                     }else{
+                                         $error[] = $value[24];
+                                     }
+                                   $j++;
+                                }
+                                if($i != $j){
+                                     $this->view->warning = 'Найдено '.$i.' записей с  '.$j;
+                                      $this->view->error = 'Проблемы с  артикулами:'. implode(',', $error);
+                                }else{
+                                    $this->view->save = 'Найдено '.$i.' записей с  '.$j;
+                                   
+                                }
+                                
+                                   //  die();
+                                }else{
+                                    $this->view->error = 'В выбраном файле нет записей!';
+                                }
+                                
+                                
+                            }
+                    }
+                    
+                }
+                $this->view->article = Shoparticlessize::findByQueryFirstArray("SELECT COUNT(  `id` ) AS st, SUM( `count`) AS suma
+FROM  `ws_articles_sizes` 
+WHERE  `count` >0
+AND  `code` LIKE  'SR%'");
 									
 			//$this->view->status = wsActiveRecord::useStatic('Shoparticlesstatus')->findAll();
 			echo $this->render('template/views/page/withdraw.tpl.php', 'index.php');
 	}
-	
+	/**
+         * отправка письма
+         * указывается тема, содержимое 
+         */
 	public function emailAction(){
 	
 	
@@ -16592,12 +17337,12 @@ public function parseexcelfile($file)
 	if(isset($this->post->send)){
 	$email = 'php@red.ua';
 	$name = 'Ярослав';
-    $admin_name = 'Ярослав';
-	$subject = 'Снятие товара';
-		if($this->post->subject) $subject = $this->post->subject;
+   // $admin_name = 'Ярослав';
+	$subject = 'Новое висьмо';
+		if($this->post->subject) {$subject = $this->post->subject;}
 		
-	$msg = 'Файл на снятие во вложении';
-		if($this->post->message) $msg = $this->post->message;
+	$msg = 'текст';
+		if($this->post->message) {$msg = $this->post->message;}
 	
 	$uploadfile = '';
 	$filename = '';
@@ -16618,32 +17363,77 @@ public function parseexcelfile($file)
 	}
 	
 	/**
-         * акции с использованием option_id
+         * Акции с использованием option_id
          */
 	public function discountsAction()
 	{
-            //die('dfgsdf');
+            /**
+             * История покупок по акции
+             */
             if($this->get->method == 'histoory'){
-                //die('tutu');
-                $result = "";
                 $query = Shoporderarticles::findByQueryFirstArray("
-                    SELECT SUM( IF(  `count` =0, 1,  `count` ) ) AS  `all` , SUM( IF(  `count` =0,  `option_price` , (
- `option_price` *  `count`
-) ) ) AS  `summa_all` , SUM(  `count` ) AS  `fact` , SUM(  `option_price` *  `count` ) AS  `summa_fact`
+                    SELECT 
+                        SUM( IF(  `count` = 0, 1,  `count` ) ) AS  `all` ,
+                        SUM( IF(  `count` = 0,  `option_price` , (`option_price` *  `count`) ) ) AS  `summa_all` ,
+                        SUM( IF(  `count` = 0,  `price` , (`price` *  `count`) ) ) AS  `summa_all_no_akciya` ,
+                        SUM(  `count` ) AS  `fact` ,
+                        SUM(  `option_price` *  `count` ) AS  `summa_fact`,
+                        SUM(  `price` *  `count` ) AS  `summa_fact_no_akciya`
                         FROM  `ws_order_articles` 
                             WHERE  `option_id` =".$this->get->id);
-               // echo print_r($query);
-                //die();
-                
-                
-                
+
                 $this->view->message = $query;
+                $this->view->id = $this->get->id;
                 $rezult = $this->view->render('discounts/history.php');
-               // $msg = $this->view->render('mailing/general-email.tpl.php');
                 die($rezult);
-            }
+            }elseif($this->get->to_excel){
+              
+                
+                    $mass = [];
+                    $query = Shoporderarticles::findByQueryFirstArray("
+                    SELECT 
+                        SUM( IF(  `count` =0, 1,  `count` ) ) AS  `all` ,
+                        SUM( IF(  `count` =0,  `option_price` , (`option_price` *  `count`) ) ) AS  `summa_all` ,
+                        SUM( IF(  `count` =0,  `price` , (`price` *  `count`) ) ) AS  `summa_all_no_akciya` ,
+                        SUM(  `count` ) AS  `fact` ,
+                        SUM(  `option_price` *  `count` ) AS  `summa_fact`,
+                        SUM(  `price` *  `count` ) AS  `summa_fact_no_akciya`
+                        FROM  `ws_order_articles` 
+                            WHERE  `option_id` = ".$this->get->to_excel);
+                    
+                    $mass[0][0] =  'Заказано';
+                    $mass[0][1] =  'Сумма без акции';
+                    $mass[0][2] =  'Сумма по акции';
+                    $mass[0][3] =  'Разница';
+                    $mass[0][4] =  'Выкуплено';
+                    $mass[0][5] =  'Сумма без акции';
+                    $mass[0][6] =  'Сумма по акции';
+                    $mass[0][7] =  'Разница';
+                    
+                    $mass[1][0] =  $query['all'];
+                    $mass[1][2] =  $query['summa_all'];
+                    $mass[1][1] =  $query['summa_all_no_akciya'];
+                    $mass[1][3] =  $query['summa_all_no_akciya']-$query['summa_all'];
+                    $mass[1][4] =  $query['fact'];
+                    $mass[1][6] =  $query['summa_fact'];
+                    $mass[1][5] =  $query['summa_fact_no_akciya'];
+                    $mass[1][7] =  $query['summa_fact_no_akciya']-$query['summa_fact'];
+                    
+                   // foreach ($query as $k => $value) {
+                        //   $mass[1][] =  $value;
+                   // }
+                    //$res = $mass;
+                ParseExcel::saveToExcel('akciya', $mass);
+
+               // echo json_encode($res);
+                die();
             
-	if($this->get->edit){
+            }
+         /**
+          * редактирование акции и добавление содержимого
+          */  
+	if($this->get->edit)
+            {
             $errors = [];
             if($this->post->dell){
                 $op = new Shoparticlesoptions($this->post->id);
@@ -16651,49 +17441,89 @@ public function parseexcelfile($file)
             }elseif($this->post->save){
               
                 
-                if (!empty($this->post->article_id) and empty($this->post->category_id) and empty($this->post->brand_id)) {
-                    foreach (Shoparticlesoptions::find('Shoparticlesoptions', ['option_id'=>$this->post->option_id]) as $v) {
+                if ((!empty($this->post->article_id) or isset($_FILES['excel_file'])) and empty($this->post->category_id) and empty($this->post->brand_id)) {
+                       
+                    foreach (Shoparticlesoptions::find('Shoparticlesoptions', ['option_id'=>(int)$this->post->option_id]) as $v) {
                         if($v->category_id){
                            $errors[] = 'В этой акции участвует категория, добавление товара не возможно!';  
                         }elseif($v->brand_id){  
                             $errors[] = 'В этой акции участвует бренд, добавление товара не возможно!';  
                         }
                     }
-                           if(count($errors) == 0){
+                    
+                           if(!count($errors)){
+                              // echo print_r('$errors');
+              //die();
+                               if (isset($_FILES['excel_file']) and $_FILES['excel_file']['name']) {
+                                  // echo print_r($_FILES['excel_file']);
+                                  // die();
+                                    if (is_uploaded_file($_FILES['excel_file']['tmp_name'])) {
+                                            $tmp_name_excel = $_FILES['excel_file']['tmp_name'];
+                                           $array =  ParseExcel::getExcelToArray($tmp_name_excel);
+                                          // echo '<pre>';
+                                          // echo print_r($array);
+                                           // echo '</pre>';
+                                          // die();
+                                           if(count($array)){
+                                               foreach ($array as $d => $v){
+                                                  // echo (int)$v['0'],'<br>';
+                                                        $o = new Shoparticlesoptions();
+                                                        $o->setOptionId($this->post->option_id);
+                                                        $o->setArticleId((int)$v['0']);
+                                                        $o->save(); 
+                                                }   
+                                           }else{
+                                               $errors[] = 'Ошибка Excel файла!';
+                                           }
+                                           unset($_FILES['excel_file']);
+                                    }
+                               }else{
+                                   // echo print_r($this->post->article_id);
+            //  die();
                                $art = explode(',', $this->post->article_id);
                                foreach ($art as $d => $v){
                                     $o = new Shoparticlesoptions();
                                     $o->setOptionId($this->post->option_id);
                                     $o->setArticleId($v);
                                     $o->save(); 
+                                    }
                                }
                                 
                            
+                           }else{
+                               $this->view->errors = $errors;
                            }
                 } elseif(empty($this->post->article_id) and !empty($this->post->category_id) and empty($this->post->brand_id)){
                     foreach (Shoparticlesoptions::find('Shoparticlesoptions', ['option_id'=>$this->post->option_id]) as $v) {
                         if($v->article_id){
                            $errors[] = 'В этой акции участвует товар, добавление категории не возможно!';  
                         }elseif($v->brand_id){  
-                            $errors[] = 'В этой акции участвует товар, добавление категории не возможно!';  
+                            $errors[] = 'В этой акции участвует бренд, добавление категории не возможно!';  
                         }
                     }
                     if(count($errors) == 0){
-                        $cat = new Shopcategories($this->post->category_id);
+                       // echo print_r($_POST);
+                        //$cat_id = explode(',', $this->post->category_id);
+                       // echo print_r($this->post->category_id);
+                        //die();
+                        foreach ($this->post->category_id as $value) {
+                             $cat = new Shopcategories($value);
                         if($cat and count($cat->getKidsIds()) > 1){
-                            foreach ($cat->getKidsIds() as $key => $value) {
+                            foreach ($cat->getKidsIds() as  $val) {
                                 $o = new Shoparticlesoptions();
                                 $o->setOptionId($this->post->option_id);
-                                $o->setCategoryId($value);
+                                $o->setCategoryId($val);
                                 $o->save(); 
                             }
                         }else{
                           $o = new Shoparticlesoptions();
                                 $o->setOptionId($this->post->option_id);
-                                $o->setCategoryId($this->post->category_id);
+                                $o->setCategoryId($value);
                                 $o->save(); 
                             
                         }
+                        }
+                       
                            
                                 
                            
@@ -16719,22 +17549,23 @@ public function parseexcelfile($file)
                     $errors[] = 'В акцию можно добавлять по одному критерию: товар, категорию или бренд!';
                     
                 }
-                //$o->import($this->post);
-                
-               // echo print_r($this->post);
-               // die();
-                
+
             }elseif(isset($this->post->save_cat)){
                
                  $a = new Shoparticlesoption($this->post->id);
                  if($a){
-                $a->import($this->post);
-                if(!isset($this->post->status)){ $a->setStatus(0);}
-                $a->save();
+                        $a->import($this->post);                       
+                            if(!isset($this->post->status)){
+                                $a->setStatus(0);
+                            }
+                            if(!isset($this->post->timer)){
+                                $a->setTimer(0);
+                            }
+                        $a->save();
                  } 
                 
             }
-            if(count($errors) > 0){$this->view->errors = $errors;}
+            if(count($errors) > 0){ $this->view->errors = $errors;}
 	//var_dump($this->get);
 	$discounts = wsActiveRecord::useStatic('Shoparticlesoption')->findById((int)$this->get->edit);
 	//var_dump($discounts);
@@ -16746,22 +17577,29 @@ public function parseexcelfile($file)
 	
 	echo $this->render('discounts/discounts-edit.tpl.php');
 	}else{
+            /**
+             * Создание акции
+             */
             if($this->post and isset($this->post->add)){
-                
-               // echo print_r($this->post);
-              //  die();
                 $a = new Shoparticlesoption();
                 $a->import($this->post);
                 if(!isset($this->post->status)){ $a->setStatus(0);}
                 $a->save();
+            }elseif($this->post and isset($this->post->dell_akciya)){
                 
+                wsActiveRecord::query("DELETE FROM `ws_articles_options` WHERE `option_id` = ".$this->post->id);
+                 wsActiveRecord::query("DELETE FROM `ws_articles_option` WHERE `id` = ".$this->post->id); 
             }
-
+            /**
+             * выборка всех акций
+             */
 	$this->view->discounts = wsActiveRecord::useStatic('Shoparticlesoption')->findAll();
-	
+	/**
+             * отображение всех акций
+             */
 	echo $this->render('discounts/discounts.tpl.php');
 	}
-	}
+    }
         
   /**
    * Загрузка файлов на сервер(фотки, документы и другое)
@@ -16771,6 +17609,269 @@ public function dialogAction()
 		
 		echo $this->render('', 'dialog/dialog.tpl.php');
 	}
+        
+public function articlemodelsAction()
+	{ 
+
+    if($this->get->new){
+        
+         $model = new Shoparticlesmodel();
+        // var_dump($_POST);
+        if(isset($_POST['save'])){
+            $model->import($_POST);
+           $model->save();
+           $this->_redir('articlemodels');
+        }else{
+            //$this->view->error = 'Ошибка ввода даных';
+            
+        }
+           echo $this->render('template/views/model_articles/article_models_new.php', 'index.php');
+    }elseif($this->get->edit){
+       // var_dump($this->get);
+       $model = new Shoparticlesmodel((int)$this->get->edit);
+        
+        if($_POST){
+            $model->import($_POST);
+           $model->save();
+        }
+        $this->view->model = $model;
+        echo $this->render('template/views/model_articles/article_models_edit.php', 'index.php');
+    }else{
+
+       $this->view->models = wsActiveRecord::useStatic('Shoparticlesmodel')->findAll();
+            
+		echo $this->render('template/views/model_articles/article_models_list.php', 'index.php');
+    }
+	}
+        public function storesinfoAction(){
+            
+            if ($this->cur_menu->getParameter() == 'delete') {
+            if ($this->get->id) {
+                $info = new Stores((int)$this->get->id);
+                if ($info->getId()){$info->destroy();}
+            }
+            $this->_redir('stores-info');
+        } elseif($this->cur_menu->getParameter() == 'edit'){
+             $info = new Stores((int)$this->get->id);
+             
+             if(count($_POST)){
+                 if(!isset($_POST['active'])){
+                     $_POST['active'] = 0;
+                 }
+                 if ($_FILES['src']) {
+                        require_once('upload/class.upload.php');
+                        $handle = new upload($_FILES['src'], 'ru_RU');
+                        $folder = '/storage/images/RED_ua/stores/info/';
+                        if ($handle->uploaded) {;
+                            if ($handle->image_src_x != $handle->image_src_y) {
+                                  $errors = ['Картинка должна быть квадратной. Сейчас: '.$handle->image_src_x.'x'.$handle->image_src_y];
+                            }
+                            if (!count($errors)) {
+                                $handle->process($_SERVER['DOCUMENT_ROOT'] . $folder);
+                                if ($handle->processed) {
+                                    if ($info->getSrc()){ unlink($_SERVER['DOCUMENT_ROOT'].$info->getSrc()); }
+                                    //$info->setSrc($folder . $handle->file_dst_name);
+                                    $_POST['src'] = $folder . $handle->file_dst_name;
+                                    $handle->clean();
+                                }
+                            }else{
+                               $this->view->error =  $errors;
+                            }
+                        }
+                    }
+                    $info->import($_POST);
+                 $info->save();
+                 if(!$this->get->id) {
+                     $this->_redir('stores-info/edit/id/'.$info->id);
+                     }
+             }
+              $this->view->info = $info;
+                echo $this->render('stores/info_edit.php', 'index.php');
+            }else{
+              $this->view->info =  $info = Stores::getInfo();
+            
+           echo $this->render('stores/info_list.php', 'index.php');
+            }
+        }
+         public function storesakciyaAction(){
+             if($this->post->metod == 'sort'){
+                // $ids = implode(',', $this->post->id);
+                 $ids = array_flip($this->post->id);
+                 foreach ($ids as $key => $id) {
+                      $akciya = new Stores((int)$key);
+                      $akciya->setSort($id);
+                      $akciya->save();
+                     
+                 }
+                 //$mas_id = array_flip($this->post->id);
+                // echo print_r($mas_id);
+                 die();
+             }
+            
+             if ($this->cur_menu->getParameter() == 'delete') {
+            if ($this->get->id) {
+                $akciya = new Stores((int)$this->get->id);
+                if ($akciya->getId()){$akciya->destroy();}
+            }
+            $this->_redir('stores-akciya');
+        } elseif($this->cur_menu->getParameter() == 'edit'){
+             $akciya = new Stores((int)$this->get->id);
+
+             if(count($_POST)){
+                 if(!isset($_POST['active'])){
+                     $_POST['active'] = 0;
+                 }
+                 if ($_FILES['src']) {
+                        require_once('upload/class.upload.php');
+                        $handle = new upload($_FILES['src'], 'ru_RU');
+                        $folder = '/storage/images/RED_ua/stores/action/';
+                        if ($handle->uploaded) {
+
+                            if ($handle->image_src_x != $handle->image_src_y) {
+                                 $errors = ['Картинка должна быть квадратной. Сейчас: '.$handle->image_src_x.'x'.$handle->image_src_y];
+                            }
+                            if (!count($errors)) {
+                                $handle->process($_SERVER['DOCUMENT_ROOT'] . $folder);
+                                if ($handle->processed) {
+                                    if ($akciya->getSrc()){ unlink($_SERVER['DOCUMENT_ROOT'].$akciya->getSrc());}
+                                   // $akciya->setSrc($folder . $handle->file_dst_name);
+                                     $_POST['src'] = $folder . $handle->file_dst_name;
+                                    $handle->clean();
+                                }
+                            }else{
+                               $this->view->error =  $errors;
+                            }
+                        }
+                    }
+                     $akciya->import($_POST);
+                 $akciya->save();
+                 if(!$this->get->id) {
+                     $this->_redir('stores-akciya/edit/id/'.$akciya->id);
+                     }
+             }
+              $this->view->akciya = $akciya;
+                echo $this->render('stores/akciya_edit.php', 'index.php');
+            }else{
+              $this->view->akciya  = Storess::getAkcii();
+            
+           echo $this->render('stores/akciy_list.php', 'index.php');
+            }
+        }
+        public function storestempAction(){
+             if($this->post->metod == 'sort'){
+                // $ids = implode(',', $this->post->id);
+                 $ids = array_flip($this->post->id);
+                 foreach ($ids as $key => $id) {
+                      $akciya = new Stores((int)$key);
+                      $akciya->setSort($id);
+                      $akciya->save();
+                     
+                 }
+                 //$mas_id = array_flip($this->post->id);
+                // echo print_r($mas_id);
+                 die();
+             }
+            
+             if ($this->cur_menu->getParameter() == 'delete') {
+            if ($this->get->id) {
+                $akciya = new Stores((int)$this->get->id);
+                if ($akciya->getId()){$akciya->destroy();}
+            }
+            $this->_redir('stores-temp');
+        } elseif($this->cur_menu->getParameter() == 'edit'){
+             $akciya = new Stores((int)$this->get->id);
+
+             if(count($_POST)){
+                 if(!isset($_POST['active'])){
+                     $_POST['active'] = 0;
+                 }
+                 if ($_FILES['src']) {
+                        require_once('upload/class.upload.php');
+                        $handle = new upload($_FILES['src'], 'ru_RU');
+                        $folder = '/storage/images/RED_ua/stores/temp_post/';
+                        if ($handle->uploaded) {
+
+                            if ($handle->image_src_x != $handle->image_src_y) {
+                                 $errors = ['Картинка должна быть квадратной. Сейчас: '.$handle->image_src_x.'x'.$handle->image_src_y];
+                            }
+                            if (!count($errors)) {
+                                $handle->process($_SERVER['DOCUMENT_ROOT'] . $folder);
+                                if ($handle->processed) {
+                                    if ($akciya->getSrc()){ unlink($_SERVER['DOCUMENT_ROOT'].$akciya->getSrc());}
+                                   // $akciya->setSrc($folder . $handle->file_dst_name);
+                                     $_POST['src'] = $folder . $handle->file_dst_name;
+                                    $handle->clean();
+                                }
+                            }else{
+                               $this->view->error =  $errors;
+                            }
+                        }
+                    }
+                     $akciya->import($_POST);
+                 $akciya->save();
+                 if(!$this->get->id) {
+                     $this->_redir('stores-temp/edit/id/'.$akciya->id);
+                     }
+             }
+              $this->view->akciya = $akciya;
+                echo $this->render('stores/akciya_temp_edit.php', 'index.php');
+            }else{
+              $this->view->akciya  = Storess::getTempAkcii();
+            
+           echo $this->render('stores/akciy_temp_list.php', 'index.php');
+            }
+        }
+         public function storesaddressAction(){
+            
+            if ($this->cur_menu->getParameter() == 'delete') {
+            if ($this->get->id) {
+                $address = new Stores((int)$this->get->id);
+                if ($address->getId()){$address->destroy();}
+            }
+            $this->_redir('stores-address');
+        } elseif($this->cur_menu->getParameter() == 'edit'){
+             $address = new Stores((int)$this->get->id);
+
+             if(count($_POST)){
+                 if(!isset($_POST['active'])){
+                     $_POST['active'] = 0;
+                 }
+                
+                 if ($_FILES['src']) {
+                        require_once('upload/class.upload.php');
+                        $handle = new upload($_FILES['src'], 'ru_RU');
+                        $folder = '/storage/images/RED_ua/stores/address/';
+                        if ($handle->uploaded) {
+                            if ($handle->image_src_x != $handle->image_src_y){
+                                $errors = ['Картинка должна быть квадратной. Сейчас: '.$handle->image_src_x.'x'.$handle->image_src_y];
+                            }
+                            if (!count($errors)) {
+                                $handle->process($_SERVER['DOCUMENT_ROOT'] . $folder);
+                                if ($handle->processed) {
+                                    if ($address->getSrc()){ unlink($_SERVER['DOCUMENT_ROOT'].$address->getSrc());}
+                                    //$address->setSrc($folder . $handle->file_dst_name);
+                                    $_POST['src'] = $folder . $handle->file_dst_name;
+                                    $handle->clean();
+                                }
+                            }else{
+                               $this->view->error =  $errors;
+                            }
+                        }
+                    }
+                     $address->import($_POST);
+                 $address->save();
+                  if(!$this->get->id) {
+                     $this->_redir('stores-address/edit/id/'.$address->id);
+                     }
+             }
+              $this->view->address = $address;
+                echo $this->render('stores/address_edit.php', 'index.php');
+            }else{
+              $this->view->address =  $address = Stores::getAllSrores();
+            
+           echo $this->render('stores/address_list.php', 'index.php');
+            }
+        }
 
 
 

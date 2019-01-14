@@ -1,5 +1,5 @@
-<script  src="<?=SITE_URL.$this->files?>scripts/tinymce/tinymce.min.js"></script>
-<img src="<?=SITE_URL.$this->getCurMenu()->getImage()?>" alt=""  class="page-img"/>
+<script  src="<?=$this->files?>scripts/tinymce/tinymce.min.js"></script>
+<img src="<?=$this->getCurMenu()->getImage()?>" alt=""  class="page-img"/>
 <h1><?=$this->getCurMenu()->getTitle();?> </h1>
 <?=$this->getCurMenu()->getPageBody();?>
 <?php $today=date("Y-m-d H:i:s"); ?>
@@ -27,7 +27,7 @@ if($this->errors){
 	{
 ?>	
 	<div id="pagesaved">
-		<img src="<?=SITE_URL?>/img/icons/accept.png" alt=""  class="page-img" />
+		<img src="/img/icons/accept.png" alt=""  class="page-img" />
 		<h1>Данные успешно сохранены.</h1>
 	</div>
 <?php
@@ -35,11 +35,11 @@ if($this->errors){
 	
 ?>
 
-	<form method="post" action="<?=$this->path?>blogedit/edit/<?=$this->blogedit->getId()?>/"  enctype="multipart/form-data">
+	<form method="post" action=""  enctype="multipart/form-data">
     <table id="editpage" cellpadding="5" cellspacing="0" class="table">
       <tr>
         <td class="kolom2">Заголовок</td>
-        <td><input name="post_name" type="text" class="form-control input" id="paginaid" value="<?=$this->blogedit->getPostName();?>" /></td>
+        <td><input name="post_name" type="text" class="form-control input" id="paginaid" value="<?=$this->blogedit->getPostName()?>" /></td>
       </tr>
 	  <tr>
         <td class="kolom2">Публиковать</td>
@@ -62,7 +62,7 @@ if($this->errors){
 	  <tr>
         <td class="kolom2">Путь к картинке для главной страницы</td>
         <td><label>
-		http://www.red.ua/storage
+		https://www.red.ua/storage
           <input type="text" name="image" class="form-control" style="width: 350px;display:inline-block;"  id="image" value="<?=$this->blogedit->getImage();?>"/>
         </label></td>
       </tr>
@@ -111,8 +111,7 @@ if($this->errors){
 		</td>
       </tr>
        <tr>
-        <td class="kolom2">Вступительная часть<br>
-		Картинка 50%</td>
+        <td class="kolom2">Вступительная часть<br>Картинка 50%</td>
         <td><textarea name="preview_post" cols="1000" rows="25" class="message-h" id="preview_post"><?=$this->blogedit->getPreviewPost();?></textarea></td>
       </tr> 
       <tr>

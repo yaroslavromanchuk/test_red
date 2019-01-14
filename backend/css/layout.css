@@ -40,20 +40,54 @@ html{
 }
 body {
 
-    min-height: 100%;
+  /*  min-height: 100%;
 	padding:0;
 	margin: 0 auto;
-	font-family: sans-serif;
+	font-family: sans-serif;*/
 	    background-attachment: fixed;
     background-position: 50% 0%;
     background-repeat: no-repeat;
 	background-size: cover;
-	background-image: url(/img/fon/admin/autumn.jpg);
+	background-image: url(/img/fon/admin/winter_2018_4.jpg);
+        /*background-image: url(/img/fon/admin/winter2018.1.jpg);*/
+        
 	z-index: 1;
 } 
 #container :hover{
 /*cursor: url(/img/pauk.cur);*/
 }
+
+#video-bg {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    z-index: -1;
+    background: url(/img/fon/admin/winter_2018_2.jpg) no-repeat #94a233;
+    background-size: cover;
+}
+ 
+#video-bg > video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    min-width: 100%; 
+    min-height: 100%;
+    width: auto;
+    height: auto; 
+}
+ 
+ @supports (object-fit: cover) {
+     #video-bg > video {
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+         object-fit: cover;
+     }
+ }
 /*сделал ярик снег*/
 .knopka{
   background: #eee;

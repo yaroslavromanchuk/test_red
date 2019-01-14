@@ -10,4 +10,3 @@ protected $_table = 'ws_scan';
 		
 		}
 }
-?>

@@ -3,37 +3,20 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <meta name="google-site-verification" content="5KsgGP4-JCTjV0dafIfi5_AI73MIryFuGqLvAgIthAI" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"/>
+
     <?php
 	//clearstatcache();
     $descriptions = '';
-    $keywords = '';
-    if ($this->getCurMenu()->getMetatagDescription()){
+        if ($this->getCurMenu()->getMetatagDescription()){
 	$descriptions = $this->getCurMenu()->getMetatagDescription();
-	}if($this->getShopItem()) {
-	$descriptions = strip_tags(stripslashes($this->getShopItem()->getModel())) . ' ' . strip_tags(stripslashes($this->getShopItem()->getBrand())) . '. ' . strip_tags(stripslashes($this->getShopItem()->getLongText()));
-	}elseif ($this->getOnepostblog()){ 
-	if($this->onepostblog[0]->description){
-	$descriptions = $this->onepostblog[0]->description;
-	}else{
-	$descriptions = $this->onepostblog[0]->post_name;
-	}
-	}elseif($this->getCategory()){ 
+	}elseif($this->getCategory()){
+           if($this->descriptions){
+            $descriptions = $this->descriptions;
+            }else{
 	$descriptions = strip_tags(stripslashes($this->getCategory()->getDescription()));
+            }
 	}
-	
-	if ($this->getCurMenu()->getMetatagKeywords()){
-	$keywords = $this->getCurMenu()->getMetatagKeywords();
-	}elseif($this->getBlog()) {
-	$keywords = 'блог, ред, мода, стиль, одежда, обувь, бренд';
-	}elseif ($this->getOnepostblog()){ 
-	$keywords = $this->onepostblog[0]->keyword;
-	}elseif($this->getCategory()) {
-	$keywords = strip_tags(stripslashes($this->getCategory()->getName())) .' '. strip_tags(stripslashes($this->getCategory()->getDescription()));
-	}elseif ($this->getShopItem()) {
-	$keywords = strip_tags(stripslashes($this->getShopItem()->getModel())) . ', ' . strip_tags(stripslashes($this->getShopItem()->getBrand()));
-	}
-	
 	if($this->getShopItem()){
 	$view = strip_tags(stripslashes($this->getShopItem()->getImagePath('listing'))); 
 	}elseif($this->getCategory()){
@@ -41,46 +24,38 @@
 	}elseif($this->getOnepostblog()){
 	$view = '/storage'. strip_tags(stripslashes($this->onepostblog[0]->image)); 
 	}elseif($this->getBlog()){
-	$view = '/img/logo/logo_red.jpg'; 
+	$view = '/img/logo/RED_Logo_min.png'; 
 	}else{
-	$view = '/img/logo/logo_red.jpg';
+	$view = '/img/logo/RED_Logo_min.png';
 	}
 	//2702-2018-0827
-if(Registry::get('device') == 'computer' or ($_COOKIE['mobil'] and $_COOKIE['mobil'] == 10)){ $desctop = true; }else{ $desctop = false;}
-	?>
-    <meta name="description" content="<?= htmlspecialchars($descriptions); ?>"/>
-    <meta name="keywords" content="<?=htmlspecialchars($keywords); ?>"/>
+if(Registry::get('device') == 'computer' or ($_COOKIE['mobil'] and $_COOKIE['mobil'] == 10)){
+    $desctop = true; 
+}else{
+    $desctop = false;
+} ?>
+    
+    <meta name="description" content="<?=htmlspecialchars($descriptions)?>"/>
+    
 	<meta  name="image"  content="https://www.red.ua<?=htmlspecialchars($view);?>" />
 	<meta  property="og:image"  content="https://www.red.ua<?=htmlspecialchars($view);?>" />
+        
+        <?php if($this->get->page){
+           echo '<link rel="canonical" href="https://www.red.ua'.$this->g_url.'" />';
+        } ?>
 	<?php if($this->getCurMenu()->getNofollow()){ ?>
 	 <meta name="robots" content="noindex, follow"/>
 	<?php }elseif($this->get->controller == 'Account'){ ?>
 	<meta name="robots" content="noindex, follow"/>
-	<?php } ?>
+        <?php }elseif($this->get->controller == 'Developer'){ ?>
+          
+          <meta name="robots" content="noindex, nofollow"/>
+    <?php  } ?>
+          
     <title>
         <?php
-		if($this->getShopItem()){
-		$title = $this->getShopItem()->getModel().' '.$this->getShopItem()->getBrand().' '.$this->trans->get('color').' '.$this->getShopItem()->getColorName()->getName().' ';
-		echo $title.$this->trans->get('price').' '.$this->getShopItem()->getPriceSkidka().' грн. - '.Config::findByCode('website_title')->getValue();
-		}elseif($this->getOnepostblog()){
-		$title = $this->onepostblog[0]->post_name;
-		echo $title?$title.' - '.Config::findByCode('website_name')->getValue():Config::findByCode('website_name')->getValue();
-		}elseif($this->getCategory()){
-		if($this->getCategory()->getTitle()){
-		if(!$this->getCategory()->getParent(1)){
-		echo $this->getCategory()->getTitle().' - '.$this->trans->get('купить в интернет магазине RED');
-		}else{
-		//$price= ' ';
-		//$this->getCategory()->getParent(1)->getTitle()
-		//if(@$this->price_min and @$this->price_max) $price= ', '.$this->trans->get('цена').' '.(int)$this->price_min.' - '.(int)$this->price_max.' грн.';
-		echo $this->getCategory()->getTitle().' '.$this->trans->get('dop_title');
-		}
-		}else{
-		echo $this->getCurMenu()->getTitle().' - '.Config::findByCode('website_title')->getValue();
-		}
-		} elseif ($this->getBlog()){
-		echo $this->getCurMenu()->getPageTitle().' - '.Config::findByCode('website_name')->getValue();
-		
+                if($this->getCurMenu()->getTitle()){		
+		echo $this->getCurMenu()->getTitle();
 		}elseif($this->getCurMenu()->getUrl() == 'search'){
 		echo $this->getCurMenu()->getPageTitle().' - '.Config::findByCode('website_name')->getValue();
 		}else{
@@ -89,7 +64,62 @@ if(Registry::get('device') == 'computer' or ($_COOKIE['mobil'] and $_COOKIE['mob
 		} ?>
     </title>  
 	
-	<?php if($this->ws->getCustomer()->getId() == 8005){
+	<?php
+	global $uk;
+	global $ru;
+
+switch($_SESSION['lang']){
+	case 'uk': 
+	$uk = $_SERVER['REQUEST_URI'];
+	$ru = substr($_SERVER['REQUEST_URI'], 3);
+	break;
+	case 'ru': 
+	$uk = '/uk'.$_SERVER['REQUEST_URI'];
+	$ru = $_SERVER['REQUEST_URI'];
+	break;
+	default: 
+	$uk = '/uk'.$_SERVER['REQUEST_URI'];
+	$ru = $_SERVER['REQUEST_URI'];
+	break;
+	
+}
+?>
+	
+		<link rel="alternate" hreflang="ru-UA" href="https://www.red.ua<?=$ru?>" />
+		<link rel="alternate" hreflang="uk-UA" href="https://www.red.ua<?=$uk?>" />
+		<link  rel="shortcut icon" href="/favicon.ico"/>
+		<link href="/js/slider-fhd/slick.css" rel="stylesheet" type="text/css" />
+		<link href="/js/slider-fhd/slick-theme.css" rel="stylesheet" type="text/css" />  
+		<link rel="stylesheet" type="text/css" href="/css/bs/css/bootstrap.css?v=1.0"/>
+                <link rel="stylesheet" type="text/css" href="/css/Ionicons/css/ionicons.min.css"/>
+                <link rel="stylesheet" type="text/css" href="/js/select2/css/select2.min.css?v=1.2"/>
+		<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.2.7"/>
+                <?php if(!$desctop){ ?><link rel="stylesheet" type="text/css" href="/css/common.css?v=2.38"/><?php } ?>	
+		<link rel="stylesheet" type="text/css" href="/css/new.css?v=1.0"/>
+		<link rel="stylesheet" type="text/css" href="/css/cloud-zoom.css"/>
+		<link rel="stylesheet" type="text/css" href="/css/jquery.lightbox-0.5.css" media="screen"/>		
+		
+	<script src="/js/jquery.js"></script>
+        <script src="/js/timer.js?v=1.6"></script>
+		 
+    <?php if (false) { ?>
+        <script src="http://maps.google.com/maps?file=api&amp;v=2.x&amp;key=<?=Config::findByCode('google_map_api')->getValue();?>"></script>
+    <?php } ?>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-5DFS2PQ');</script>
+<!-- End Google Tag Manager -->
+</head>
+<body>
+    <?php if($this->user->id == 8005){
+        //var_dump($this->getCategory());
+        //echo print_r($this->getProduct());
+       // echo 'tut';
+        //echo print_r($this->get);
+       // var_damp($this->get);
            // echo print_r($this->files);
 	//echo $this->get
 	/*if($this->getShopItem()){
@@ -106,47 +136,18 @@ if(Registry::get('device') == 'computer' or ($_COOKIE['mobil'] and $_COOKIE['mob
 	//d(,false);
 	//echo $_SERVER['REQUEST_URI'];
 	//echo $this->getCurMenu()->getPath();
-	//echo $this->getCurMenu()->getUrl();
-	//echo '<pre>';
-	//echo print_r($this->getCategory()->getParent(1)->getTitle());
-	//echo '</pre>';
-	} ?>
+	//echo $this->getCurMenu()->getTitle();
 	
-		<link rel="alternate" hreflang="ru-UA" href="https://www.red.ua<?=$_SERVER['REQUEST_URI']?>" />
-		<link rel="alternate" hreflang="uk-UA" href="https://www.red.ua/uk<?=$_SERVER['REQUEST_URI']?>" />
-		<link  rel="shortcut icon" href="/favicon.ico"/>
-		<link href="/js/slider-fhd/slick.css" rel="stylesheet" type="text/css" />
-		<link href="/js/slider-fhd/slick-theme.css" rel="stylesheet" type="text/css" />
+         //  echo '<pre>';
+          // print_r($this->transla);
+			// print_r($this->getCurMenu());
+			// print_r($this->meta);
+			//echo print_r($this->getCategory()->getParent(1)->getTitle());
+			//echo '</pre>';
         
-		<link rel="stylesheet" type="text/css" href="/css/bs/css/bootstrap.css?v=1.0"/>
-		<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.1.9.1"/>
-
-                <?php if(!$desctop){ ?><link rel="stylesheet" type="text/css" href="/css/common.css?v=2.1"/><?php } ?>	
-		
-		<link rel="stylesheet" type="text/css" href="/js/select2/css/select2.min.css?v=1.0"/>
-		<link rel="stylesheet" type="text/css" href="/css/new.css?v=1.0"/>
-		<link rel="stylesheet" type="text/css" href="/css/cloud-zoom.css"/>
-		<link rel="stylesheet" type="text/css" href="/css/jquery.lightbox-0.5.css" media="screen"/>		
-		
-	<script src="/js/jquery.js"></script>
-	
-				 
-    <?php if (false) { ?>
-        <script src="http://maps.google.com/maps?file=api&amp;v=2.x&amp;key=<?=Config::findByCode('google_map_api')->getValue();?>"></script>
-    <?php } ?>
-	<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-5DFS2PQ');</script>
-<!-- End Google Tag Manager -->
-
-</head>
-<body>
+	} ?>
 <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5DFS2PQ"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5DFS2PQ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 <div id="simple_overlay_back" class="simple_overlay_back"></div>
 <header>
@@ -157,230 +158,69 @@ echo $this->cached_topcategories;
  echo $this->cached_mobi_menu;
 } ?>
 </header>
-<div class="container-fluid">
-	<div class="row">
-		<nav aria-label="breadcrumb" style="margin: 3px;">
-			<ol class="breadcrumb">
-				<li class="breadcrumb-item"><a href="/"><?=$this->trans->get('Главная')?></a></li>
-				<li class="breadcrumb-item active" aria-current="page"><?php echo @$this->getCategory() ? $this->getCategory()->getRoute() : $this->getCurMenu()->getName();?></li>
-			</ol>
-		</nav>
-	</div>
-<div class="clearfix"></div>
-<div class="row column-1">
-<div class="col-lg-12 text-center"><?php 
-	if ($this->getShopItem()){
-	
-	 echo '<h1 class="text-dark">'.$title.'</h1>'; 
- 
-} elseif ($this->getCurMenu()->getUrl() == 'category' and $this->getCategory()){
-
- echo '<h1 class="text-dark">'.$this->getCategory()->getTitle().'</h1>';
- 
- }elseif($this->getCurMenu()->getUrl() == 'search'){
- echo '<h1 class="text-dark">'.$this->getCurMenu()->getPageTitle().'</h1>';
- } elseif ($this->getBlog()){
- echo '<h1 class="text-dark">'.$this->getCurMenu()->getPageTitle().'</h1>';
- } elseif ($this->getOnepostblog()){
- 
-	echo '<h1 class="text-dark">'.$this->onepostblog[0]->post_name.'</h1>';
- 
+<div itemscope <?php if(trim($this->getCurMenu()->getUrl()) == 'product'){ echo 'itemtype="http://schema.org/Product"';} ?>  class="container-fluid">
+<div class="row d-none d-md-block d-lg-block d-xl-block">
+<nav aria-label="breadcrumb" style="margin: 3px;">
+    <ol class="breadcrumb">
+	<li class="breadcrumb-item" itemscope itemtype="http://data-vocabulary.org/Breadcrumb"><a itemprop="url" href="/"><span itemprop="title"><?=$this->trans->get('Главная')?></span></a></li>
+       <?php  if($this->getCategory()){
+           echo $this->getCategory()->getRoute();
+       }else{
+           echo '<li class="breadcrumb-item active" aria-current="page" itemscope itemtype="http://data-vocabulary.org/Breadcrumb"><a itemprop="url" href="" ><span itemprop="title">'.$this->getCurMenu()->getName().'</span></a></li>';
+       } ?>
+    </ol>
+</nav>
+</div>
+<div class="row">
+    <div class="col-sm-12 text-center">
+    <?php
+if($this->g_url){ ?>
+     <input type="text" hidden id="g_url" itemprop="url" value="<?=$this->g_url?>">
+   <?php 
+}
+ ?>
+                <h1 itemprop="name"  class="h1 text-dark font-size-100">
+     <?php   if ($this->getCurMenu()->getName()){
+	 echo ucfirst($this->getCurMenu()->getName()); 
+}elseif($this->getCurMenu()->getUrl() == 'search'){
+ echo $this->getCurMenu()->getTitle();
+ }elseif ($this->getBlog()){
+ echo $this->getCurMenu()->getTitle();
+ }elseif($this->getOnepostblog()){
+echo '<h1 itemprop="name" class="text-dark font-size-100">'.$this->onepostblog[0]->post_name.'</h1>';
  }
  ?>
+                    
+            </h1>
+         </div>
+</div>
+<div class="row column-1 d-none d-md-block d-lg-block d-xl-block">
+<div class="col-lg-12 text-center">
 </div>
 </div>		
 <div class="row column-2">
-<div class="content-box p-1">
-<?php
-$list_id = '';
- echo $this->getContent(); ?>
+<div class="content-box w-100"><?=$this->getContent()?></div>
 </div>
-</div>
-
 <div class="row column-3">
-<hr>
-<?php if($this->getCurMenu()->getUrl() == 'category' and $this->getCategory() and $this->getCategory()->getFooter()){ ?>
+<?php
+if($this->getCurMenu()->getFooter()){ ?>
 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 p-3 "  >
 <div class="caregory_footer bg-white p-3 text-secondary" style="font-size:12px;">
-<?=$this->getCategory()->getFooter()?>
-</div>
-</div>
-        <?php }elseif(trim($this->getCurMenu()->getUrl()) == 'basket'){
-					$price_basket_hist = $this->trans->get('Цена');
-					$mas_b = array();
-					foreach ($_SESSION['basket'] as $k => $v){
-					$mas_b[] = $v['article_id'];
-					}
-					$mass = array();
-if($this->history){ ?>
-<div class="block-title py-4 w-100">
-	<div class="vc_separator    vc_sep_pos_align_center vc_sep_color_black double-bordered-thick ">
-	<span class="vc_sep_holder vc_sep_holder_l"><span class="vc_sep_line"></span></span>
-	<h4><?=$this->trans->get('Вы недавно смотрели');?><span><?=$this->trans->get('успейте купить пока есть в наличии')?></span></h4>
-	<span class="vc_sep_holder vc_sep_holder_r"><span class="vc_sep_line"></span></span>
-	</div>
-</div>
-<div  class=" top_articles  col-md-12 px-0"> 
-                    <?php
-					$i=0; 
-					foreach ($this->history as $v) {
-					if(in_array($v->id, $mas_b)) continue;
-
-					?>
-			<div class="top_articles_item col-xs-12 col-sm-6 col-md-3" >
-         <a  href="<?=$v->getPath();?>" style="    text-align: center;">
-        <img  src="<?=$v->getImagePath('detail'); ?>" alt="<?=$v->getBrand();?>" style="max-width:100%;"  >  
-		</a>
-				<div class="post-name" >
-				<h3><a href="<?=$v->getPath();?>"><?=$v->getModel();?></a></h3>
-				<h4><a href="<?=$v->getPath();?>"><?=$v->getBrand();?></a></h4>
-				</div>
-				<hr>
-				<p><?=$v->getPrice()?> грн</p>
-     </div>
-                    <?php 
-					$i++;
-                    if($i == 15) break;
-					} ?>
-					</div>
- 
- <?php
-}elseif(count($_SESSION['hist']) > 0){
-foreach ($_SESSION['hist'] as $v) {
-if(!in_array($v, $mas_b))$mass[] = $v;
-}
-$mass = array_unique($mass);
-krsort($mass);
-
-
-if(count($mass) > 0){ ?>
-<div class="block-title py-4 w-100">
-	<div class="vc_separator    vc_sep_pos_align_center vc_sep_color_black double-bordered-thick ">
-	<span class="vc_sep_holder vc_sep_holder_l"><span class="vc_sep_line"></span></span>
-	<h4><?=$this->trans->get('Вы недавно смотрели')?><span><?=$this->trans->get('успейте купить пока есть в наличии')?></span></h4>
-	<span class="vc_sep_holder vc_sep_holder_r"><span class="vc_sep_line"></span></span>
-	</div>
-</div>
-<div  class=" top_articles  col-md-12 px-0"> 
-                    <?php
-					$i=0; 
-					foreach ($mass as $v) {
-					$block = wsActiverecord::useStatic('Shoparticles')->findById($v); 
-						if($block and $block->getStock() > 0){
-					?>
-			<div class="top_articles_item col-xs-12 col-sm-6 col-md-3" >
-         <a  href="<?=$block->getPath();?>" style="    text-align: center;">
-        <img  src="<?=$block->getImagePath('detail')?>" alt="<?=$block->getBrand()?>" style="max-width:100%;"  >  
-		</a>
-				<div class="post-name" >
-				<h3><a href="<?=$block->getPath()?>"><?=$block->getModel()?></a></h3>
-				<h4><a href="<?=$block->getPath()?>"><?=$block->getBrand()?></a></h4>
-				</div>
-				<hr>
-				<p><?=$block->getPrice()?> грн</p>
-     </div>
-                    <?php 
-					$i++;
-					}
-                    if($i == 15) break;
-					} ?>
-					</div>
-
-					<?php }
-
-					}?>
-					
-					
-					<?php } elseif (trim($this->getCurMenu()->getUrl()) == 'product'){
-$articles_query1 = '
-SELECT * FROM ws_articles WHERE
-ws_articles.`stock` not like "0"
-AND  (ws_articles.`model` =  "'.$this->getShopItem()->getModel().'" or ws_articles.`model_uk` =  "'.$this->getShopItem()->getModel().'")
-AND  ws_articles.`category_id` ='.$this->getShopItem()->getCategoryId().'
-AND   ws_articles.id != '.$this->getShopItem()->getId().'
-AND ws_articles.active =  "y"
-and ws_articles.status = 3
-ORDER BY  `ws_articles`.`ctime` ASC 
-LIMIT 10';
-$finish_articles1 = wsActiveRecord::useStatic('Shoparticles')->findByQuery($articles_query1);
-    if ($finish_articles1->count() > 5 ) { ?>
-<div class="col-md-12 mx-auto w-100">
-<div class="block-title py-4 w-100">
-	<div class="vc_separator    vc_sep_pos_align_center vc_sep_color_black double-bordered-thick ">
-	<span class="vc_sep_holder vc_sep_holder_l"><span class="vc_sep_line"></span></span>
-	<h4><?=$this->trans->get('Мы рекомендуем');?><span><?=$this->trans->get('похожие товары с модельного ряда')?></span></h4>
-	<span class="vc_sep_holder vc_sep_holder_r"><span class="vc_sep_line"></span></span>
-	</div>
-	</div>
-<div class="top_articles col-md-12 px-0"> 
-<?php
-foreach ($finish_articles1 as $block) {
-if ($block->getId()) {
-?>
-		<div class="top_articles_item col-xs-12 col-sm-6 col-md-3" >
-        <a  href="<?=$block->getPath();?>" style="    text-align: center;">
-        <img  src="<?=$block->getImagePath('detail')?>" alt="<?=$block->getBrand();?>" style="max-width:100%;"  >  
-		</a>
-				<div class="post-name" >
-				<h3><a href="<?=$block->getPath()?>"><?=$block->getModel();?></a></h3>
-				<h4><a href="<?=$block->getPath()?>"><?=$block->getBrand();?></a></h4>
-				</div>
-				<hr>
-				<p><?=$block->getPrice()?> грн</p>
-     </div>
-<?php } } ?>         
+    <!--seo-text-begin-->
+<?=$this->getCurMenu()->getFooter()?>
+    <!--seo-text-end-->
 </div>
 </div>
 <?php } ?>
-
-<?php } ?>
-<!--/похожее товары-->
 </div>
 <div class="clearfix"></div>
-<?php if(trim($this->getCurMenu()->getUrl()) == 'product'){ ?>
-<script>
-    window.rnt=window.rnt||function(){(rnt.q=rnt.q||[]).push(arguments)};
-    rnt('add_event', {advId: 20676});
-    //<!-- EVENTS START -->
-rnt('add_audience', {audienceId: '20676_254951d7-6d13-4ea2-a507-747c9e6fe802', priceId: '3047', productId: '<?=$this->getShopItem()->getId()?>'});
-rnt('add_product_event', {advId: '20676', priceId: '3047', productId: '<?=$this->getShopItem()->getId()?>'});
-    //<!-- EVENTS FINISH -->
-</script>
-<?php }else if(trim($this->getCurMenu()->getUrl()) == 'basket'){
-$list_id = '';
-$i=0;
-foreach ($this->getBasket() as $key => $item) {
-if($item['count'] > 0){
-if($i == 0) {
-		$list_id .= $item['article_id'];
-		}else{
-		$list_id .= ', '.$item['article_id'];
-		}
-		$i++;
-		}
-}
-?>
-<script>
-    window.rnt=window.rnt||function(){(rnt.q=rnt.q||[]).push(arguments)};
-    rnt('add_event', {advId: 20676});
-    //<!-- EVENTS START -->
-rnt('add_shopping_cart_event', {advId: '20676', priceId: '3047', productIds: '<?=$list_id?>'});
-    //<!-- EVENTS FINISH -->
-</script>
-<?php }else if(trim($this->getCurMenu()->getUrl()) == 'category'){
-$list_id = '';
-$i=0;
-foreach($this->articles as $article){
-if($i == 0) {
-		$list_id .= $article->getId();
-		}else{
-		$list_id .= ', '.$article->getId();
-		}
-		$i++;
-}
+<?php  if(trim($this->getCurMenu()->getUrl()) == 'category'){
+$sp = [];
+foreach($this->articles as $article){$sp[] = $article->getId();}
+$list_id = implode(',', $sp);
  ?>
 <script>
-    window.rnt=window.rnt||function(){(rnt.q=rnt.q||[]).push(arguments)};
+    window.rnt=window.rnt||function(){(rnt.q=rnt.q||[]).push(arguments);};
     rnt('add_event', {advId: 20676});
     //<!-- EVENTS START -->
 	rnt('add_category_event', {advId: '20676', priceId: '3047', categoryId: '<?=$this->getCategory()->getId()?>', productIds: '<?=$list_id?>'});
@@ -389,7 +229,7 @@ if($i == 0) {
 </script>
 <?php }else if(trim($this->getCurMenu()->getUrl()) == 'ordersucces'){ ?>
 <script>
-    window.rnt=window.rnt||function(){(rnt.q=rnt.q||[]).push(arguments)};
+    window.rnt=window.rnt||function(){(rnt.q=rnt.q||[]).push(arguments);};
     rnt('add_event', {advId: 20676});
     //<!-- EVENTS START -->
 	rnt('add_order_event', {advId: '20676', priceId: '3047', productIds: '<?=$_SESSION['list_articles_order']?>'});
@@ -399,65 +239,18 @@ if($i == 0) {
 unset($_SESSION['list_articles_order']);
 }else{ ?>
 <script>
-    window.rnt=window.rnt||function(){(rnt.q=rnt.q||[]).push(arguments)};
+    window.rnt=window.rnt||function(){(rnt.q=rnt.q||[]).push(arguments);};
     rnt('add_event', {advId: 20676});
     //<!-- EVENTS START -->
 rnt('add_audience', {audienceId: '20676_254951d7-6d13-4ea2-a507-747c9e6fe802'});
     //<!-- EVENTS FINISH -->
 </script>
 <?php } ?>
-<!-- socsety--><?php if(trim($this->getCurMenu()->getUrl()) != 'product' and trim($this->getCurMenu()->getUrl()) !='basket' and trim($this->getCurMenu()->getUrl()) != 'shop-checkout-step2')  echo $this->socsety;?><!-- exit socsety-->
-<!--пуш о смене email -->
-<?php if(!isset($_COOKIE['puch_close']) and isset($_COOKIE['s']) and $_COOKIE['s'] !='' and false){ 
-if($this->ws->getCustomer()->getIsLoggedIn()){ 
-if( !$this->ws->getCustomer()->isClosePuch()){
- echo $this->puch;
- }
-}else{
-echo $this->puch;
-}
-} ?>
-<!--/пуш о смене email -->
 </div>
-
-<!--
-<script>
-    /* <![CDATA[ */
-    var google_conversion_id = 1005381332;
-    var google_conversion_label = "1vqdCJyg5gMQ1M2z3wM";
-    var google_custom_params = window.google_tag_params;
-    var google_remarketing_only = true;
-    /* ]]> */
-</script>
-<script   src="//www.googleadservices.com/pagead/conversion.js"></script>
-<noscript><div style="display:inline;">
-<img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/1005381332/?value=0&amp;label=1vqdCJyg5gMQ1M2z3wM&amp;guid=ON&amp;script=0"/>
-</div></noscript>
--->
-<script>
-function hideShowDiv(){//filter hide/show
-	$('#top').toggle();
-      $('#filter').toggle();
-	  $('body,html').animate({ scrollTop: 5 }, 'slow');  
-}
-$(document).ready(function(){ 
-	   $('.top_articles').slick({
-	prevArrow: '<img src="#" style="background-image:url(/img/slider/p-n-b.png);" data-role="none" class="slick-prev-next prev" aria-label="Previous" tabindex="0" role="button">',
-nextArrow: '<img src="#" style="background-image:url(/img/slider/p-n-b.png);"  data-role="none" class="slick-prev-next next" aria-label="Next" tabindex="0" role="button">',
-      slidesToShow: 5,
-	  responsive: [ { breakpoint: 700, settings: { slidesToShow: 3 } },
-	  { breakpoint: 480, settings: { slidesToShow: 1 } }],
-	  autoplaySpeed: 3000,
-	  speed: 500,
-	  easing: 'fade',
-	  autoplay: true,
-	  });  
-});
-
-</script>
-<script  src="/js/engine.js?v=2.3.31"></script>
+ 
+<script  src="/js/filter.js?v=5.5"></script>
 <script   src="/js/jquery.liFixar.js"></script>
-    <script src="/js/functions.js?v=1.3"></script>
+    <script src="/js/functions.js?v=2.99"></script>
     <script   src="/js/cloud-zoom.1.0.2.js"></script>
     <script  src="/js/jquery.cycle.all.js?v=3.0.3"></script>
     <script  src="/js/jquery.lightbox-0.5.js"></script>
@@ -478,6 +271,14 @@ nextArrow: '<img src="#" style="background-image:url(/img/slider/p-n-b.png);"  d
         })();
     </script>
    <!-- footer--><?php if($desctop == true){ echo $this->cached_bottom_menu; }else{ echo $this->cached_mobi_futer; } ?><!-- exit footer-->	     
-        
+ <?php
+if($this->user->id == 8005){
+   //echo '<pre>';
+   // print_r($this->getCurMenu());
+   //print_r($_GET);print_r($this->get);
+   
+   //echo '</pre>';
+}
+ ?>       
 </body>
 </html>

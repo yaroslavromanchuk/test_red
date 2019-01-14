@@ -16,11 +16,13 @@
 	<link  rel="stylesheet" type="text/css" href="/js/slider-fhd/slick.css?v=1"  />
 	<link  rel="stylesheet" type="text/css" href="/js/slider-fhd/slick-theme.css?v=1" />
     <link rel="stylesheet" type="text/css" href="/css/bs/css/bootstrap.css?v=1.0"/>
-    <link rel="stylesheet" type="text/css" href="/css/style.css?v=2.0"/>
+    <link rel="stylesheet" type="text/css" href="/css/style.css?v=2.3"/>
     <link rel="stylesheet" type="text/css" href="/css/new.css?v=1.3"/>
+    <!--<link rel="stylesheet" type="text/css" href="/css/stores/fm.revealator.jquery.min.css"/>-->
     
 	
     <script src="/js/jquery.js"></script>
+     <script src="/js/timer.js?v=1.6"></script>
 	
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -41,21 +43,71 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </header>
 <!-- содержымое главной страницы-->
 <?php /*if($this->ws->getCustomer()->isAdmin()){ } */?>
-<?php if($this->ws->getCustomer()->getId() == 8005 and false){
-echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/new_homepage_new/">Реклама</a></div>';}?>
+<?php if($this->ws->getCustomer()->getId() == 8005){
+echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/new_homepage_new/">Реклама</a></div>';
+
+}?>
 <section>
 <div class="container-fluid">
+    <?php if(true){ ?>
+        <div class="row bg-dark p-1">
+        <style>.col.text-center.p-1 a:hover { text-decoration: none;</style>   
+            <div class="col text-center p-1">
+                <a href="/advantages/" class="text-white font-weight-bold text-uppercase">
+                <div class="d-inline-block">
+                    <img class="" style="width: 25px" src="/storage/images/RED_ua/pays/delyvery.png" alt="Card image cap">
+                </div>
+                <span><?=$this->trans->get('Доставка товара от 1 дня')?></span>
+                </a>
+            </div>
+             <div class="col text-center p-1 ">
+                <a href="/advantages/" class="text-white font-weight-bold text-uppercase">
+                <div class="d-inline-block">
+                    <img class="" style="width: 25px" src="/storage/images/RED_ua/pays/new.png" alt="Card image cap">
+                </div>
+                <span><?=$this->trans->get('Новый товар каждый день')?></span>
+                </a>
+            </div>
+            <div class="col text-center p-1">
+                <a href="/advantages/" class="text-white font-weight-bold text-uppercase">
+                <div class="d-inline-block">
+                    <img class="" style="width: 25px" src="/storage/images/RED_ua/pays/sizes.png" alt="Card image cap">
+                </div>
+                <span><?=$this->trans->get('Возможность примерки товара')?></span>
+                </a>
+            </div>
+    </div>
+        
+    <?php } ?>
 <?php $c = $this->block6->count(); if ($c > 0) { ?>
 <!--новый банер-->
 <div class="row">
 	<div class="slider-baner col-md-12 col-xl-12 px-0" >
-     <?php   foreach ($this->block6 as $block) { ?>
-			<div class="item" style="text-align:center;"  >
+            <div id="moby_slider" class="carousel slide" data-ride="carousel" data-keyboard="true">
+                <ol class="carousel-indicators">
+                    <?php for($j=0; $j<$c;$j++){ ?>
+    <li data-target="#moby_slider" data-slide-to="<?=$j?>" <?=$j==0?'class="active"':''?> ></li>
+                    <?php }?>
+  </ol>
+                
+  <div class="carousel-inner">
+           <?php $i=0;  foreach ($this->block6 as $block) { ?>
+			<div class="carousel-item <?=$i==0?'active':''?>"  >
 				<a class="img" href="<?=$block->getUrl()?>">
-					<img  class="w-100" src="<?=$block->getImage()?>" alt="<?=$block->getName()?>" onclick="dataLayer.push({'event' : 'banner', 'eventAction' : 'click'});" />
+					<img  class="d-block w-100" src="<?=$block->getImage()?>" alt="<?=$block->getName()?>" onclick="dataLayer.push({'event': 'banner'});" />
 				</a>
 			</div>
-<?php }?>
+<?php $i++; }?>
+  </div>
+  <a class="carousel-control-prev" href="#moby_slider" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#moby_slider" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div>
 	</div>
 </div>
 <!--/ новый банер-->
@@ -78,8 +130,8 @@ echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/new_homepage_n
         <img  src="<?=$block->getImagePath('detail'); ?>" alt="<?=$block->getBrand();?>" style="max-width:100%;"  >  
 		</a>
 				<div class="post-name" >
-				<h3><a href="<?=$block->getPath();?>"><?=$block->getModel();?></a></h3>
-				<h4><a href="<?=$block->getPath();?>"><?=$block->getBrand();?></a></h4>
+				<h2><a href="<?=$block->getPath();?>"><?=$block->getModel();?></a></h2>
+				<h2><a href="<?=$block->getPath();?>"><?=$block->getBrand();?></a></h2>
 				</div>
 				<hr>
 				<p><?=$block->getPrice()?> грн</p>
@@ -92,7 +144,7 @@ echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/new_homepage_n
 
 <?php if($this->homeblock->count() > 0) { ?>
 <!--top categories-->
-<div class="row homeblock" >
+<div class="row homeblock"  >
 <?php foreach ($this->homeblock as $block) { ?>
 <div class=" col-xs-12 col-sm-6 col-md-3 p-1">
 <div class="column-inner">
@@ -112,7 +164,7 @@ echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/new_homepage_n
 <?php } ?>
 <!--one articles-->
 <?php if ($this->oneproduct->count() > 4) { ?>
-<div class="row">
+<div class="row  ">
 <div class="block-title py-4 w-100">
 	<div class="vc_separator    vc_sep_pos_align_center vc_sep_color_black double-bordered-thick ">
 	<span class="vc_sep_holder vc_sep_holder_l"><span class="vc_sep_line"></span></span>
@@ -128,8 +180,8 @@ echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/new_homepage_n
         <img  src="<?=$block->getImagePath('detail'); ?>" alt="<?=$block->getBrand();?>" style="max-width:100%;"  >  
 		</a>
 				<div class="post-name" >
-				<h3><a href="<?=$block->getPath();?>"><?=$block->getModel();?></a></h3>
-				<h4><a href="<?=$block->getPath();?>"><?=$block->getBrand();?></a></h4>
+				<h2><a href="<?=$block->getPath();?>"><?=$block->getModel();?></a></h2>
+				<h2><a href="<?=$block->getPath();?>"><?=$block->getBrand();?></a></h2>
 				</div>
 				<hr>
 				<p><?=$block->getPrice()?> грн</p>
@@ -141,7 +193,7 @@ echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/new_homepage_n
 <!--one articles-->
 <!--blog-->
 <?php if($this->blog){ ?>
-<div class="row">
+<div class="row  ">
 <div class="block-title py-4 w-100">
 	<div class="vc_separator    vc_sep_pos_align_center vc_sep_color_black double-bordered-thick ">
 	<span class="vc_sep_holder vc_sep_holder_l"><span class="vc_sep_line"></span></span>
@@ -161,7 +213,7 @@ echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/new_homepage_n
 			   </a>
 			   </div>
 			   <div class="post-name">
-				<h3><a href="<?=$b->getPath()?>?utm_source=blog&utm_medium=link&utm_content=Blog&utm_campaign=Blog"><?=$b->getPostName()?></a></h3>
+				<h2><a href="<?=$b->getPath()?>?utm_source=blog&utm_medium=link&utm_content=Blog&utm_campaign=Blog"><?=$b->getPostName()?></a></h2>
 				</div>
 				<div class="post-date"><?=date("d.m.Y", strtotime($b->getUtime()))?></div>
 				</div>
@@ -173,7 +225,7 @@ echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/new_homepage_n
 <?php } ?>
 <!--blog-->
 <!--brand-->
-<div class="row brand mt-2" >
+<div class="row brand mt-2  " >
 <div class="new_brand_slider" >
 <div class="border-box">
 					<?php $i=0; if($this->cached_brands->count() >= 3){
@@ -195,6 +247,15 @@ echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/new_homepage_n
 	</div>
 </div>
 <!--brand-->
+<div class="row mt-2  ">
+    <div class="card p-3">
+        <div class="carg-body">
+            <!--seo-text-begin-->
+    <?=$this->getCurMenu()->getPageFooter()?>
+            <!--seo-text-end-->
+        </div>
+    </div>
+</div>
 <!--пуш о смене email -->
 <?php if(!isset($_COOKIE['puch_close']) and isset($_COOKIE['s']) and $_COOKIE['s'] !='' and false){ 
 if($this->ws->getCustomer()->getIsLoggedIn()){ 
@@ -239,7 +300,7 @@ if(width <= 1200){w = 5;}
 if(width <= 1003) { w = 4;}
 if(width <= 993) { w = 3;}
 if(width <= 770) { w = 2;}
-
+/*
 $('.slider-baner').slick({
 accessibility: true,
 adaptiveHeight: true,
@@ -253,7 +314,7 @@ easing: 'fade',
 fade: true,
 speed: 1000,
 dots: true
-});
+});*/
 $('.top_articles').slick({
 	prevArrow: '<img src="#" style="background-image:url(/img/slider/p-n-b.png);" data-role="none" class="slick-prev-next prev" aria-label="Previous" tabindex="0" role="button">',
 nextArrow: '<img src="#" style="background-image:url(/img/slider/p-n-b.png);"  data-role="none" class="slick-prev-next next" aria-label="Next" tabindex="0" role="button">',
@@ -269,10 +330,32 @@ nextArrow: '<img src="#" style="background-image:url(/img/slider/p-n-b.png);"  d
 <script src="/js/slider-fhd/slick.min.js"></script>	
 	<script  src="/js/functions.js?v=1.3"></script>	
 	<script src="/js/jquery.liFixar.js"></script>
-	
      <script  src="/css/bs/js/bootstrap.js?v=1.0"></script>
 	 <script   src="/css/bs/js/bootstrap.bundle.min.js?v=1.0"></script>
+         <!--<script  src="/js/stores/fm.revealator.jquery.min.js?v=1.0"></script>-->
+       <!--  <script  src="/js/parallax/parallax.min.js?v=1.0"></script>	-->
+          
 	 <script>
+     
+     $(window).bind('scroll',function(e){
+         parallaxScroll();
+    console.log($(window).scrollTop());
+});
+function parallaxScroll(){
+    var scrolled = $(window).scrollTop();
+    if(scrolled >= 490){ // transform: matrix(1, 0, 0, 1, 0, 31);
+        
+        //-o-transform: translateY(-20px);
+ // -ms-transform: translateY(-20px);
+  //-moz-transform: translateY(-20px);
+  //-webkit-transform: translateY(-20px);  
+  //transform: translateY(-20px);
+       // $('.homeblock').css('transform', translateY(-21)+'px');
+    //$('.homeblock').css('top',(0-(scrolled*.25))+'px');
+    }
+    //$('#parallax-bg2').css('top',(0-(scrolled*.5))+'px');
+   // $('#parallax-bg3').css('top',(0-(scrolled*.75))+'px');
+}
         jQuery.browser = {};
         (function () {
             jQuery.browser.msie = false;

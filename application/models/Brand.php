@@ -29,11 +29,11 @@ protected $_multilang = array('text' => 'text');
     }
     public function getPath()
     	{
-    		return "/brands/id/" . $this->getId() .'/'.$this->_generateUrl($this->getName());
+    		return "/brands/id/" . $this->getId() .'/'.mb_strtolower($this->_generateUrl($this->name)).'/';
     	    	}
 
     public function getPathFind(){
-        return "/category/brands/".$this->getId()."/";
+        return "/all/articles/brands-".mb_strtolower($this->name);
     }
 
     static public function findAllActive()
@@ -56,7 +56,7 @@ AND brand_id >0';
                 $brand_obj = new Brand($brand->getBrandId());
                 $array[] = array(
                     'id' => $brand->getBrandId(),
-                    'name' => $brand->getBrand(),
+                    'name' => mb_strtolower($brand->getBrand()),
                     'cnt' => $brand->getCnt(),
                     'image' => $brand_obj->getImage(),
                     'path' => $brand_obj->getPath()
@@ -85,4 +85,3 @@ AND brand_id >0';
     }
 }
 
-?>

@@ -1,8 +1,6 @@
-<img src="<?php echo SITE_URL;?><?php echo $this->getCurMenu()->getImage();?>" alt="" width="32" class="page-img"
-     height="32"/>
-<h1><?php echo $this->getCurMenu()->getTitle();?> </h1>
-<?php echo $this->getCurMenu()->getPageBody(); ?>
-
+<div class="card pd-30">
+        <h6 class="card-body-title"><?=$this->getCurMenu()->getTitle()?></h6>
+<div class="card-body">
 <?php
 if ($this->errors) {
     ?>
@@ -36,33 +34,39 @@ if ($this->saved) {
 }
 ?>
 
-<form method="POST" action="<?php echo $this->path;?>size/id/<?php echo (int)$this->sub->getId();?>/"
+<form method="POST" action="<?=$this->path?>size/id/<?=(int)$this->sub->getId()?>/"
       enctype="multipart/form-data">
-    <table id="editpage" cellpadding="5" cellspacing="0">
+    <table class="table">
         <tr>
-            <td class="kolom1">Название</td>
-            <td><input name="size" type="text" class="formfields" id="paginatitle"
-                       value="<?php echo $this->sub->getSize();?>"/></td>
+            <td>Название</td>
+            <td><input name="size" type="text" class="form-control"
+                       value="<?=$this->sub->getSize()?>"/></td>
         </tr>
         <tr>
-            <td class="kolom1">Категория</td>
+            <td>Категория</td>
             <td>
-                <select name="category_id">
+                <select name="category_id" class="form-control">
                     <option value="0">Без категории</option>
                     <?php foreach (wsActiveRecord::useStatic('SizeCategory')->findAll() as $cat) { ?>
-                    <option value="<?php echo $cat->getId()?>"><?php echo $cat->getName()?></option>
+                    <option value="<?=$cat->id?>" <?php if($this->sub->category_id == $cat->getId()){ echo 'selected';} ?>><?=$cat->getName()?></option>
                     <?php } ?>
                 </select>
             </td>
         </tr>
+        <tr>
+            <td>id-1C</td>
+             <td><?=$this->sub->id_1c?></td>
+        </tr>
 
 
         <tr>
-            <td class="kolom1">&nbsp;</td>
+            <td>&nbsp;</td>
             <td><input type="submit" class="buttonps" name="savepage" id="savepage" value="Сохранить"/></td>
         </tr>
     </table>
 </form>
+</div>
+</div>
 
 
 

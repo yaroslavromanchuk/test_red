@@ -128,11 +128,11 @@ FROM ws_articles_sizes
 JOIN ws_articles ON ws_articles_sizes.id_article = ws_articles.id
 WHERE ws_articles_sizes.count >0
 AND ws_articles.active =  "y"
-AND ws_articles.stock >1
+AND ws_articles.stock > 1
 AND ws_articles.ctime < "'.$t_f.'"
 AND ws_articles.category_id
 IN (' . (implode(',', $mas)) . ') 
-ORDER BY  `ws_articles`.`ctime` DESC';
+ORDER BY  `ws_articles`.`ctime` DESC limit 10';
 		
 	$articles = wsActiveRecord::useStatic('Shoparticles')->findByQuery($qq);
 		
@@ -149,9 +149,9 @@ ORDER BY  `ws_articles`.`ctime` DESC';
 		// $offer->appendChild($dom->createElement("code", $a->code));//
 		 $offer->appendChild($dom->createElement("vendor",  htmlspecialchars(strip_tags($a->brand))));//
 		 $offer->appendChild($dom->createElement("name", $a->model));//
-		 $offer->appendChild($dom->createElement("description",  htmlspecialchars(strip_tags($a->long_text))));//
+		 //$offer->appendChild($dom->createElement("description",  htmlspecialchars(strip_tags($a->long_text))));//
 		 $offer->appendChild($dom->createElement("url",  "https://www.red.ua".htmlspecialchars(strip_tags($a->getPath()))));//
-		 $offer->appendChild($dom->createElement("image",  "https://www.red.ua".htmlspecialchars(strip_tags($a->getImagePath('detail')))));//
+		 //$offer->appendChild($dom->createElement("image",  "https://www.red.ua".htmlspecialchars(strip_tags($a->getImagePath('listing')))));//
 		 $offer->appendChild($dom->createElement("priceRUAH",  $a->price));//
 		 $offer->appendChild($dom->createElement("stock",  iconv('windows-1251', 'UTF-8', "В наличии")));//
 		 $offer->appendChild($dom->createElement("guarantee",  iconv('windows-1251', 'UTF-8',"14 дней")));//

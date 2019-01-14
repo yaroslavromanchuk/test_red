@@ -3,4 +3,3 @@ class CustomerVisit extends wsCustomerVisit
 {
 	
 }
-?>

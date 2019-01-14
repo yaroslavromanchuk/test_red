@@ -1,95 +1,83 @@
-<img src="<?php echo SITE_URL;?><?php echo $this->getCurMenu()->getImage();?>" alt="" width="32" class="page-img"
-     height="32"/>
-<h1><?php echo $this->getCurMenu()->getTitle();?> </h1>
-<?php echo $this->getCurMenu()->getPageBody(); ?>
-
-<?php
-if ($this->errors) {
-    ?>
-<div id="errormessage"><img src="<?php echo SITE_URL;?>/img/icons/error.png" alt="" class="page-img"/>
-
-    <h1>Ошибка:</h1>
-    <ul>
-        <?php
-        foreach ($this->errors as $error) {
-            ?>
-            <li><?php echo $error;?></li>
-            <?php
-
-        }
-        ?>
-    </ul>
+<div class="sl-pagebody ">
+       <?php if ($this->errors) { ?>
+<div class="alert alert-danger alert-dismissable">
+  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+  <strong>Ошибка!</strong>
+  <ul> <?php foreach ($this->errors as $error) { ?><li><?=$error?></li><?php } ?> </ul>
 </div>
-<?php
-
-}
-
-if ($this->saved) {
-    ?>
-<div id="pagesaved">
-    <img src="<?php echo SITE_URL;?>/img/icons/accept.png" alt="" class="page-img"/>
-
-    <h1>Запись сохранена.</h1>
+<?php } ?>
+      <?php if ($this->saved) { ?>
+<div class="alert alert-success alert-dismissable">
+  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+  <strong>Запись сохранена.</strong>
 </div>
-<?php
+<?php } ?>   
+    
+<div class="card card pd-20 pd-sm-40">
+    <h6 class="card-body-title"><?=$this->getCurMenu()->getTitle()?></h6>
 
-}
-?>
-
-<form method="POST" action="<?php echo $this->path;?>brand/edit/id/<?php echo (int)$this->sub->getId();?>/"
-      enctype="multipart/form-data">
-    <input type="hidden" value="<?php echo @$_GET['order_id'];?>" name="order_id">
-    <table id="editpage" cellpadding="5" cellspacing="0">
-        <tr>
-            <td class="kolom1">Название</td>
-            <td><input name="name" type="text" class="formfields" id="paginatitle"
-                       value="<?php echo $this->sub->getName();?>"/></td>
-        </tr>
-        <tr>
-            <td class="kolom1">На главной</td>
-            <td><input name="top" type="checkbox"  <?php if($this->sub->getTop()){?>checked="checked" <?php } ?>  value="1"/></td>
-        </tr>
-        <tr>
-            <td class="kolom1">Содержимое</td>
-            <td><textarea name="text" cols="45" rows="30" class="message-h"
-                          id="paginatext"><?php echo $this->sub->getText();?></textarea></td>
-        </tr>
-        <tr>
-            <td class="kolom1">Фото</td>
-            <td>
-                <label>
-                    <input name="image" type="file" class="formfields-1" id="fileField"/>
-                </label>
-                <?php if ($this->sub->getImage()) {
-                echo '<br/><img src="' . $this->sub->getImage() . '" />';
+   <form method="POST" action="<?=$this->path?>brand/edit/id/<?=(int)$this->sub->getId()?>/" enctype="multipart/form-data" >
+  <div class="card-body">
+      <div class="row">
+          <div class="col-lg-4">
+    <div class="form-group inline">
+    <label class="sr-only1" for="paginatitle" >Название</label>
+    <input name="name" type="text" class="form-control" id="paginatitle" required="" value="<?=$this->sub->getName()?>"/>
+  </div>
+    </div>
+          <div class="col-lg-4">
+    <div class="form-group inline">
+    <label class="sr-only1" for="country_brand" >Страна бренда</label>
+   <input name="country_brand" type="text" class="form-control" id="country_brand" required=""
+                       value="<?=$this->sub->getCountryBrand()?>"/>
+  </div>
+          </div>
+          <div class="col-lg-4">
+    <div class="form-group inline">
+    <label class="sr-only1" for="top" >На главной</label>
+   <input name="top" type="checkbox" id="top"  <?php if($this->sub->getTop()){?>checked="checked" <?php } ?>  value="1"/>
+  </div>
+      </div>
+    </div>
+      <div class="row">
+          <div class="col-lg-12">
+          <div class="form-group inline">
+    <label class="sr-only1" for="paginatext" >Содержимое</label>
+   <textarea name="text"   class="message-h"
+                          id="paginatext"><?=$this->sub->getText()?></textarea>
+  </div>
+              </div>
+          </div>
+      <div class="row">
+          <div class="col-lg-6">
+    <div class="form-group inline">
+    <label class="sr-only1" for="fileField" >Фото</label>
+   <input name="image" type="file" class="form-control" id="fileField"/>
+   <?php if ($this->sub->getImage()) {
+                echo '<br/><img src="' . $this->sub->getImage() . '" style="max-width: 300px;" />';
             } ?>
-            </td>
-        </tr>
-
-        <tr>
-                   <td class="kolom1">Логотип</td>
-                   <td>
-                       <label>
-                           <input name="logo" type="file" class="formfields-1" id="fileFieldLogo"/>
-                       </label>
-                       <?php if ($this->sub->getLogo()) {
-                       echo '<br/><img src="' . $this->sub->getLogo() . '" />';
+  </div>
+    </div>
+      <div class="col-lg-6">    
+    <div class="form-group inline">
+    <label class="sr-only1" for="fileFieldLogo" >Логотип</label>
+    <input name="logo" type="file" class="form-control" id="fileFieldLogo"/>
+    <?php if ($this->sub->getLogo()) {
+                       echo '<br/><img src="' . $this->sub->getLogo() . '" style="max-width: 300px;" />';
                    } ?>
-                   </td>
-               </tr>
+  </div>
+          </div>
+          </div>
+      </div>
+      <div class="card-footer">
+          <input type="submit" class="btn btn-primary btn-lg" name="savepage" id="savepage" value="Сохранить"/>
+      </div>
+      </form>
+</div>
+    </div>
+<script src="<?=$this->files?>scripts/tiny_mce/tiny_mce.js"></script>
+<script>
 
-        <tr>
-            <td class="kolom1">&nbsp;</td>
-            <td><input type="submit" class="buttonps" name="savepage" id="savepage" value="Сохранить"/></td>
-        </tr>
-    </table>
-</form>
-<script type="text/javascript"
-        src="<?php echo SITE_URL;?><?php echo $this->files;?>scripts/tiny_mce/tiny_mce.js"></script>
-<script type="text/javascript">
-    $(document).ready(function () {
-        $('#datetime').datepicker();
-    });
     tinyMCE.init({
         // General options
         mode:"exact",
@@ -115,9 +103,9 @@ if ($this->saved) {
         remove_script_host:true,
 
         // Example word content CSS (should be your site CSS) this one removes paragraph margins
-        content_css:"<?php echo SITE_URL;?>/standard.css",
-        external_link_list_url:"<?php echo SITE_URL;?>/admin/pages/tinymce_list/",
-        external_image_list_url:"<?php echo SITE_URL;?>/admin/pages/tinymce_imagelist/"
+        //content_css:"<?=SITE_URL?>/standard.css",
+        external_link_list_url:"<?=SITE_URL?>/admin/pages/tinymce_list/",
+        external_image_list_url:"<?=SITE_URL?>/admin/pages/tinymce_imagelist/"
 
     });
 </script>

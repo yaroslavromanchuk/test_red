@@ -53,7 +53,7 @@
 <style>#liracrm-callme{    bottom: -1%;
     right: -1%;}
 </style>
-<script src='//uaadcodedsp.rontar.com/rontar_aud_async.js'></script>
+<script src="//uaadcodedsp.rontar.com/rontar_aud_async.js"></script>
 <script>
 window.rnt=window.rnt||function(){(rnt.q=rnt.q||[]).push(arguments)};
     rnt('add_event', {advId: 20676});
@@ -61,87 +61,8 @@ window.rnt=window.rnt||function(){(rnt.q=rnt.q||[]).push(arguments)};
 rnt('add_event', {advId: '20676', pageType:'home'});
 rnt('add_audience', {audienceId: '20676_254951d7-6d13-4ea2-a507-747c9e6fe802'});
     //<!-- EVENTS FINISH -->
-$(document).ready(function(){
-
-$("#scrolled-socials").hide();
-	// hide #back-top first
-	$("#back-top").hide();
-	// fade in #back-top
-	$(function () {
-		$(window).scroll(function () {
-			if ($(this).scrollTop() > 100) {
-			$("#scrolled-socials").fadeIn();
-				$('#back-top').fadeIn();
-			} else {
-			$("#scrolled-socials").fadeOut();
-				$('#back-top').fadeOut();
-			}
-		});
-		// scroll body to 0px on click
-		$('#back-top a').click(function () {
-			$('body,html').animate({
-				scrollTop: 0
-			}, 800);
-			return false;
-		}); 
-	});
-});
 
 /*widget*/
-(function() {
-var widgetId = 'a977b0023f4594ba63190bf5ca00d6ba';
-var s = document.createElement('script');
-s.type = 'text/javascript';
-s.charset = 'utf-8';
-s.async = true;
-s.src = '//callme.voip.com.ua/script/widget/'+widgetId;
-var ss = document.getElementsByTagName('script')[0];
-ss.parentNode.insertBefore(s, ss);}
-)();
 
-function setUk(l) {
-var s = '<?=$_SESSION['lang']?>';
-if(l.name != s){
-      $.ajax({
-         type: "POST",
-         url: "/ajax/setlang/",
-         data: "&lang="+l.name,
-         success: function(res){
-		var  hr = location.href;
-		/* if(res == 'ru' && hr.indexOf('uk') != -1){
-		 location.replace(hr.replace('uk',''));
-		 } else */
-                 /*    if (res == 'uk') {
-                          location.replace(location.origin+'/'+res+location.pathname);
-		// location.replace(hr.replace('ru', 'uk'));
-		 }else{
-		 location.replace(location.origin+'/'+location.pathname);
-		 }
-                 */
-                console.log(location);
-                 console.log(res);
-                // url = location.origin+location.pathname;
-                if(l.name == 'uk'){
-                     location.replace(location.origin+'/'+res+location.pathname);
-                      //console.log(url);
-                } else if(l.name == 'ru' && location.pathname.indexOf('uk') != -1){
-                    location.replace(location.href.replace('/uk',''));
-                    
-                }else{
-                    
-                    location.replace(location.href);
-                }
-                
-           /// console.log(url);
-           // location.replace(url);
-		 }
-          });
-		  }
-          return false;
-}
-function setCooki(e) {
-document.cookie = "mobil =" + e;
-location.reload();
-          return false;
-}
+
 </script>

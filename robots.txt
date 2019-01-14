@@ -1,5 +1,6 @@
 User-agent: *
 Disallow: /admin
+Disallow: /developer
 Allow: /?
 Allow: /?s=             
 Allow: /&
@@ -11,6 +12,7 @@ Allow: /*.jpeg
 
 User-Agent: Yandex
 Disallow: /admin
+Disallow: /developer
 Allow: /?
 Allow: /?s=             
 Allow: /&

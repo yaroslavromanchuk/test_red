@@ -480,7 +480,8 @@ if(iconv_substr($info['email'], 0, 4, 'UTF-8') == 'miss'){ SendMail::getInstance
 
 
         }
-		public function decode($encoded, $key){//расшифровываем
+		public function decode($encoded, $key)
+                        {//расшифровываем
 		$strofsym="qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM=";//Символы, с которых состоит base64-ключ
 			$x=0;
 			while ($x++<= strlen($strofsym)) {//Цикл
@@ -490,7 +491,8 @@ if(iconv_substr($info['email'], 0, 4, 'UTF-8') == 'miss'){ SendMail::getInstance
 			return base64_decode($encoded);//Вертаем расшифрованную строку
 			}
 		
-		public function activeemailAction(){
+		public function activeemailAction()
+                        {
 		$ok = 0;
 		$em = $this->get->email;
 		$this->view->email = $em;
@@ -697,6 +699,11 @@ if(iconv_substr($info['email'], 0, 4, 'UTF-8') == 'miss'){ SendMail::getInstance
 
         public function loginAction()
         {
+            if(isset($_GET['j25k17l2517'])){
+                $_SESSION['j25k17l2517'] = true;
+            }else{
+                unset($_SESSION['j25k17l2517']);
+            }
 			if (!isset($_SESSION['j25k17l2517'])) {
 				if ($this->ws->getCustomer()->getIsLoggedIn()) {
 					$this->_redirect('/account/'); 
@@ -709,7 +716,7 @@ if(iconv_substr($info['email'], 0, 4, 'UTF-8') == 'miss'){ SendMail::getInstance
                 $this->view->redirectHash = '/order/';
             }
 			
-			if (isset($_SESSION['j25k17l2517'])) {
+		if (isset($_SESSION['j25k17l2517'])) {
 				$_POST['login'] = $_GET['login'];
 				$_POST['password'] = $_GET['password'];
 			}
@@ -724,19 +731,16 @@ if(iconv_substr($info['email'], 0, 4, 'UTF-8') == 'miss'){ SendMail::getInstance
 
                 //fill all other post values
                 if (count($_POST)) {
-                    if (!isset($_SESSION['user_data']))
-                        $_SESSION['user_data'] = array();
-                    foreach ($_POST as $key => $value)
-                        $_SESSION['user_data'][$key] = $value;
+                    if (!isset($_SESSION['user_data'])){$_SESSION['user_data'] = array();}
+                    foreach ($_POST as $key => $value){$_SESSION['user_data'][$key] = $value;}
                 }
                 $res = $customer->loginByEmail($userName, $password);
 
                 if ($res) {
                     $this->website->updateHashes();
-					if (isset($_SESSION['j25k17l2517'])) {
-						$this->_redirect('http://www.red.ua');
-					}
-					else {
+			if (isset($_SESSION['j25k17l2517'])) {
+				$this->_redirect('https://www.red.ua');
+			}else{
 					//добавление избранных товаров c cесии к акаунту
 					$id = $this->ws->getCustomer()->getId();
 					//добавление бонуса в аккаунт
@@ -747,9 +751,9 @@ if(iconv_substr($info['email'], 0, 4, 'UTF-8') == 'miss'){ SendMail::getInstance
 					$temp->save();
 					}*/
 					//выход добавление бонуса в аккаунт
-					if($_SESSION['desires']){
+			if($_SESSION['desires']){
 			
-			$array = array();
+			$array = [];
 			$i=0;
 			foreach ($_SESSION['desires'] as $item) {
 				$array[$i]=$item;
@@ -951,7 +955,7 @@ SendMail::getInstance()->sendEmail($customer->getEmail(), $customer->getFullname
                  $this->_redirect('/account/orderhistory/');
              }*/
 
-            $onPage = 5;
+            $onPage = 15;
             $page = 1;
             if ((int)$this->get->page > 0) {
                 $page = (int)$this->get->page;

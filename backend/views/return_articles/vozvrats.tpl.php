@@ -23,14 +23,17 @@
 	 <option value="3" <?php if (isset($_GET['status']) and $_GET['status'] == '3') echo 'selected="selected"';?>>Возврат в заказ</option>
 </select>
 </td>
-	<td ><input type="text" style="width:75px;" value="<?php echo @$_GET['order']?>" autofocus class="form-control input" name="order" id="order"/></td>
-	<td><input type="text"  value="<?php echo @$_GET['articul']?>" class="form-control input" name="articul"/></td>
+	<td ><input type="text" style="width:75px;" value="<?=$_GET['order']?>"  class="form-control input" name="order" id="order"/></td>
+	<td><input type="text"  value="<?=$_GET['articul']?>" class="form-control input" name="articul"/></td>
 	<td>
 	<select name="delivery" class="form-control input">
     <option value="">Все</option>
     <option value="3" <?php if (isset($_GET['delivery']) and $_GET['delivery'] == '3') echo 'selected="selected"';?>>пр.Победы</option>
-    <option value="12" <?php if (isset($_GET['delivery']) and $_GET['delivery'] == '12') echo 'selected="selected"';?>>ул.Мишуги</option>
 	 <option value="5" <?php if (isset($_GET['delivery']) and $_GET['delivery'] == '5') echo 'selected="selected"';?>>ул.Строителей</option>
+         <option value="4" <?php if (isset($_GET['delivery']) and $_GET['delivery'] == '4') echo 'selected="selected"';?>>Укр.Почта</option>
+         <option value="8" <?php if (isset($_GET['delivery']) and $_GET['delivery'] == '8') echo 'selected="selected"';?>>Нова.Почта</option>
+         <option value="16" <?php if (isset($_GET['delivery']) and $_GET['delivery'] == '16') echo 'selected="selected"';?>>Нова.Почта НП</option>
+         <option value="9" <?php if (isset($_GET['delivery']) and $_GET['delivery'] == '9') echo 'selected="selected"';?>>Курьер</option>
 </select>
 </td>
 	<td>
@@ -62,11 +65,24 @@ $owner = new Customer($m->admin_id);
 
 </form>
 <?php 
-if (@$this->getArticles()) {
+if ($this->getArticles()) {
 $deli = array(12 => 'Мишуга', 3 => 'Победа', 5 => 'Строителей', 4=>'УкрПочта', 9=>'Курьер', 8=>'НП', 16=>'НП:НП');
 ?> 
-<script type="text/javascript">
+<script>
+       $(document).ready(function() {
+     $("body").keypress(function(e) {
+         switch(e.originalEvent.code){
+             case 'NumpadMultiply': if($('.chekAll').is(":checked")){ $('.chekAll').prop('checked', false); }else{$('.chekAll').prop('checked', true);}  chekAll(); break;
+             case 'NumpadAdd': pr('p_all'); break;
+         }
+         console.log(e.originalEvent.code);
+         // if (e.which == 13) {
+            //  return false;
+          //}
+     });
+});
         function chekAll() {
+            console.log($(this))
 		if($('.chekAll').is(":checked")){
 		$('.cheker').prop('checked', true);
 		}else{
@@ -75,13 +91,15 @@ $deli = array(12 => 'Мишуга', 3 => 'Победа', 5 => 'Строител�
             return false;
         }
 </script>
-<i class="icon ion-checkmark green tx-30 pd-5 mg-5" id="p_all" name="p_all"  onclick="return pr('p_all');" data-tooltip="tooltip" data-original-title="Принять отмеченый товар"></i>
+<i class="icon ion-checkmark green tx-30 pd-5 mg-5" id="p_all" name="p_all"  onclick="return pr('p_all');" data-tooltip="tooltip" data-placement="left" data-original-title="Принять отмеченый товар"></i>
 <?php if($this->user->getId()== 8005){ ?>
-<i class="icon ion-close red tx-30 pd-5"  id="dell_all" name="dell_all" onclick="return dell('dell_all');" data-tooltip="tooltip" data-original-title="Удалить без возврата на сайт"></i>
+<i class="icon ion-close red tx-30 pd-5"  id="dell_all" name="dell_all" onclick="return dell('dell_all');" data-tooltip="tooltip" data-placement="right" data-original-title="Удалить без возврата на сайт"></i>
 <?php }?>
-<table cellspacing="0" cellpadding="4" id="orders" class="table table-hover" >
+<div id="alert"></div>
+
+<table cellspacing="0" cellpadding="4" id="orders" class="table table-hover table-bordered" >
     <tr>
-		<th><label class="ckbox" data-tooltip="tooltip" title="Выделить все товары"><input onchange="chekAll();" class="chekAll" type="checkbox"/><span></span></label></th>
+		<th><label class="ckbox" data-tooltip="tooltip" data-placement="left" title="Выделить все товары"><input onchange="chekAll();" class="chekAll" type="checkbox"/><span></span></label></th>
         <th>Действия</th>
         <th>Статус</th>
         <th>Заказ</th>
@@ -96,12 +114,13 @@ $deli = array(12 => 'Мишуга', 3 => 'Победа', 5 => 'Строител�
 		<th>Дата</th>
 		<th>Магазин</th>
     </tr>
-    <?php $row = 'row2'; foreach ($this->getArticles() as $order) {
-    $row = ($row == 'row2') ? 'row1' : 'row2';
+    <?php //$row = 'row2';
+    foreach ($this->getArticles() as $order) {
+   // $row = ($row == 'row2') ? 'row1' : 'row2';
     $owner_add = new Customer($order->user);
 	$owner_pr = new Customer($order->user_pr);
     ?>
-    <tr class="<?=$row;?>" <?php if($order->deposit == 1) echo 'style="background: #11c118b5;"'; ?> id="<?=$order->getId();?>">
+    <tr  <?php if($order->deposit == 1){ echo 'style="background: #11c118b5;"';  } ?> id="<?=$order->getId();?>">
         <td>
 <?php if($order->count > 0 and  $this->admin_rights['492']['right'] == 1) { ?>
  <label class="ckbox"><input type="checkbox" class="order-item cheker" name="item_<?=$order->getId()?>"/><span></span></label>
@@ -109,93 +128,52 @@ $deli = array(12 => 'Мишуга', 3 => 'Победа', 5 => 'Строител�
         </td>
         <td>
 		<?php if($order->count > 0 and  $this->admin_rights['492']['right'] == 1) { ?>
-		<i class="icon ion-checkmark green tx-30 pd-5 mg-5"   onclick="return pr(<?=$order->getId()?>);" data-tooltip="tooltip" data-original-title="Принять товар"></i>
+		<i class="icon ion-checkmark green tx-30 pd-5 mg-5"   onclick="return pr(<?=$order->getId()?>);" data-tooltip="tooltip" data-placement="left" data-original-title="Принять товар"></i>
 		<?php } ?>
 		<?php if($order->count > 0 and  $this->admin_rights['493']['right'] == 1) { ?>
-		<i class="icon ion-refresh bleak tx-30 pd-5 mg-5"  name="ret_<?=$order->getId()?>" onclick="return ret_ord(<?=$order->getId()?>);" data-tooltip="tooltip" data-original-title="Вернуть товар в заказ"></i>
+		<i class="icon ion-refresh bleak tx-30 pd-5 mg-5"  name="ret_<?=$order->getId()?>" onclick="return ret_ord(<?=$order->getId()?>);" data-placement="right" data-tooltip="tooltip" data-original-title="Вернуть товар в заказ"></i>
 		<?php } ?>		 
 		<?php if($order->count > 0 and  $this->admin_rights['492']['right'] == 1) { ?>
-		<i class="icon ion-close red tx-30 pd-5"   onclick="return dell(<?=$order->getId();?>);" data-tooltip="tooltip" data-original-title="Удалить без возврата на сайт"></i>
+		<i class="icon ion-close red tx-30 pd-5"   onclick="return dell(<?=$order->getId();?>);" data-tooltip="tooltip" data-placement="right" data-original-title="Удалить без возврата на сайт"></i>
 		<?php } ?>
         </td>
         <td><?=$this->order_status[$order->status];?></td>
-		<td><a href="<?=$this->path;?>shop-orders/edit/id/<?=$order->order_id;?>/"><?=$order->order_id;?></a></td>
-        <td><?=$order->cod;?></td>
-        <td><?=$order->title;?></td>
-        <td><?=$order->count;?></td>
-        <td><?=$order->price;?></td>
-        <td><?=$order->old_price;?></td>
-		<td><?=$owner_add->middle_name;?></td>
-        <td><?=$order->ctime;?></td>
-		<td><?=$owner_pr->middle_name;?></td>
-        <td><?=$order->utime;?></td>
-        <td><?=$deli[$order->delivery];?></td>
+	<td><a href="<?=$this->path?>shop-orders/edit/id/<?=$order->order_id?>/"><?=$order->order_id?></a></td>
+        <td><?=$order->cod?></td>
+        <td><?=$order->title?></td>
+        <td><?=$order->count?></td>
+        <td><?=$order->price?></td>
+        <td><?=$order->old_price?></td>
+	<td><?=$owner_add->middle_name?></td>
+        <td><?=$order->ctime?></td>
+	<td><?=$owner_pr->middle_name?></td>
+        <td><?=$order->utime?></td>
+        <td><?=$deli[$order->delivery]?></td>
     </tr>
     <?php } ?>
 </table>
-<?php
-    $limitLeft = 2;
-    $limitRight = 2;
-    $url = explode('?', $_SERVER['REQUEST_URI']);
-    if (count($url) == 2) {
-        $ur = $url[0];
-        $get = '?' . $url[1];
-    } else {
-        $ur = $_SERVER['REQUEST_URI'];
-        $get = '';
-    }
-    $pager = preg_replace('/\/page\/\d*/', '', $ur) . '/page/';
-    $paginator = '&nbsp;&nbsp;';
-    if ($this->page > 1) {
-        $paginator .= '<a href="' . $pager . '1' . $get . '"><<</a>&nbsp;<a href="' . $pager . ($this->page - 1) . $get . '"><</a>&nbsp;';
-    } else {
-        $paginator .= '<span class="grey"><</span>&nbsp;<span class="grey"><<</span>&nbsp;';
-    }
-    $start = 1;
-    $end = $this->totalPages;
-    if ($this->page > $limitLeft) {
-        $paginator .= '...&nbsp;';
-        $start = $this->page - $limitLeft;
-    }
-    if (($this->page + $limitRight) < $this->totalPages) {
-        $end = $this->page + $limitRight;
-    }
-    //for ($i = 1; $i <= $this->totalPages; $i++){
-    for ($i = $start; $i <= $end; $i++) {
-        if ($i == $this->page) {
-            $paginator .= '<span>' . $i . '</span>';
-        } else {
-            $paginator .= '<span><a href="' . $pager . $i . $get . '">' . $i . '</a></span>';
-        }
-        if ($i <= $end - 1) {
-            $paginator .= '<span class="delimiter">&nbsp;|&nbsp;</span>';
-        }
 
-    }
-    if ($this->page == $this->totalPages) {
-        $paginator .= '&nbsp;<span class="grey">>></span>&nbsp;<span class="grey">></span>';
-    } else {
-        $paginator .= '&nbsp;<a href="' . $pager . ($this->page + 1) . $get . '">></a>&nbsp;<a href="' . $pager . $this->totalPages . $get . '">>></a>';
-    }
-    echo $paginator;
-    ?><br/>
-Всего страниц: <?=$this->totalPages?>,  записей: <?=$this->count ?>
-<?php } else echo 'Нет записей'; ?>
+<?php }else{
+    
+    echo 'Нет записей';
+
+} ?>
 <script>
-var $i = 0;
+ 
+var  n = 0;
 $('#order').keypress(function(e){
  //if(e.key == 'Enter')  $('#myform').submit(); 
- if($i == 6) {
-	  $i = 0;
+ if(n == 6) {
+	 n = 0;
 	  console.log($("#order").val());
 	//$("#order").val('');
 	//$("#order").focus();
 	$('#myform').submit(); 
 	  } 
-      e = e || event;
-      if (e.ctrlKey || e.altKey || e.metaKey) return;
+     // e = e || event;
+      if (e.ctrlKey || e.altKey || e.metaKey){ return false;}
 	  if(e.which > 47 && e.which < 58 ){
-	  $i++;
+	  n++;
 	 // console.log($i);
 	  return true;
 	  }else{
@@ -208,7 +186,12 @@ var ch = $('input:radio:checked').prop("checked");
 //return confirm('Удалить товар без возврата на склад? (товар не вернется на склад)');
 function pr(th){
 var nakladna = $('#nakladna').val();
-if(nakladna.length == 0){ alert('Введите номер накладной!'); return false;}
+if(nakladna.length == 0){
+    $('#alert').html('<div class="alert alert-danger" role="alert"><strong>Ошибка!</strong> Введите номер накладной!</div>');
+    setTimeout(function(){$('#alert').html('')}, 2000);
+            
+            return false;
+        }
 
  if ($('.order-item:checked').val() && th == 'p_all') {
                    var id = '';
@@ -225,7 +208,7 @@ if(nakladna.length == 0){ alert('Введите номер накладной!')
 var dat = '&id='+id+'&nakladna='+nakladna;
 if(id){
 $.ajax({
-			beforeSend: function( data ) { fopen('Возвраты', '<img  id="loading" src="/img/loader-article.gif">'); },
+			//beforeSend: function( data ) { fopen('Возвраты', '<img  id="loading" src="/img/loader-article.gif">'); },
 			type: "POST",
 			url: '/admin/vozvrats/',
 			dataType: 'json',
@@ -247,7 +230,9 @@ $.ajax({
 			r +=data.text[index]+'<br>';
 			}
 			//console.log(data);
-			fopen('Возвраты', r);
+                        $('#alert').html('<div class="alert alert-danger" role="alert"><strong>'+r+'</div>');
+                        setTimeout(function(){$('#alert').html('')}, 2000);
+			//fopen('Возвраты', r);
 			//setTimeout(FormClose, 700);
 			}
 			},
@@ -255,14 +240,20 @@ $.ajax({
 			jQuery.each($('.order-item:checked'), function () {
 			$("#"+$(this).attr('name').substr(5)).hide();
 			});
-			FormClose();
+			//FormClose();
 			$("#order").val('');
 			$("#order").focus();
 			},
-			error: function( e ) { fopen('Ощибка', 'Что-то пошло нетак! Заказ не добавлен, внесите изменения и попробуйте снова!');}
+			error: function( e ) {
+                            $('#alert').html('<div class="alert alert-danger" role="alert"><strong>Ошибка!</strong> Что-то пошло нетак! Заказ не добавлен, внесите изменения и попробуйте снова!</div>');
+                        //setTimeout(function(){$('#alert').html('')}, 2000);
+                           // fopen('Ощибка', 'Что-то пошло нетак! Заказ не добавлен, внесите изменения и попробуйте снова!');
+                        }
 		});
 }else{
-fopen('Ощибка', 'Вы не выбрали товары который нужно принять!');
+$('#alert').html('<div class="alert alert-warning" role="alert"><strong>Предупреждение</strong> Вы не выбрали товары который нужно принять!</div>');
+setTimeout(function(){$('#alert').html('')}, 5000);
+//fopen('Ощибка', 'Вы не выбрали товары который нужно принять!');
 }
 return false;
 }
@@ -276,7 +267,7 @@ if(value === '') return false;
 if(value.length > 1){
 dat +='&mes='+value;
 $.ajax({
-			beforeSend: function( data ) { fopen('Загрузка', '<img  id="loading" src="/img/loader-article.gif">'); },
+			//beforeSend: function( data ) { fopen('Загрузка', '<img  id="loading" src="/img/loader-article.gif">'); },
 			type: "POST",
 			url: '/admin/vozvrats/',
 			dataType: 'json',
@@ -284,7 +275,9 @@ $.ajax({
 			success: function( data ) {
 			console.log(data);
 			if(data.send == 1){ $('#'+th).hide(); }
-			fopen('Возвращение товара', data.text+' ( '+data.ss+' )');
+			//fopen('Возвращение товара', data.text+' ( '+data.ss+' )');
+                        $('#alert').html('<div class="alert alert-success" role="alert"><strong>Возвращение товара</strong>'+data.text+' ( '+data.ss+')</div>');
+setTimeout(function(){$('#alert').html('')}, 5000);
 			},
 			error: function( e ) {
 			fopen('Ошибка', 'Что-то пошло нетак! Заказ не добавлен, внесите изменения и попробуйте снова!');
@@ -295,7 +288,11 @@ return false;
 }	
 function dell(th){
 var nakladna = $('#nakladna').val();
-if(nakladna.length == 0){ alert('Введите номер накладной!'); return false; }
+if(nakladna.length == 0){
+    $('#alert').html('<div class="alert alert-danger" role="alert"><strong>Ошибка!</strong> Введите номер накладной!</div>');
+    setTimeout(function(){$('#alert').html('')}, 2000);
+    //alert('Введите номер накладной!');
+    return false; }
 if ($('.order-item:checked').val() && th == 'dell_all') {
                    var id = '';
                     i = 0;
@@ -318,9 +315,9 @@ var dat = '&id='+id+'&nakladna='+nakladna;
 	//	dat +='&mes='+value;
 if(id){
 $.ajax({
-			beforeSend: function( data ) {
-			fopen('Удаление товара','<img  id="loading" src="/img/loader-article.gif">');
-			},
+			//beforeSend: function( data ) {
+			//fopen('Удаление товара','<img  id="loading" src="/img/loader-article.gif">');
+			//},
 			type: "POST",
 			url: '/admin/vozvrats/',
 			dataType: 'json',

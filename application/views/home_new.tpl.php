@@ -10,12 +10,8 @@
 
 	<link rel="stylesheet" type="text/css" href="/css/style.css?v=14082017"/>
 	<link rel="stylesheet" type="text/css" href="/css/new.css?v=20131227x"/>
-	
-	
-	 
 	<script  type="text/javascript" src="/js/jquery.js"></script>
-	
-	 
+
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -27,17 +23,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 <body style="display: none;">
 <div class="content-box" style="width: 98%; height: 98%;padding: 1%;text-align: center; ">
-
 <?php echo $this->render('finder/list.fhd.tpl.php'); ?>
-
-            </div>
-			<div style="width: 100%; height: 100%; display: none;" id="div_video">
+</div>
+<div style="width: 100%; height: 100%; display: none;" id="div_video">
 <video id="video" src="" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"' style="width:100%"></video>
-			</div>
-<?php if($this->ws->getCustomer()->getId() == 8005){
-echo '<a href="/" align="center" style="position: fixed;bottom: 20px;right: 22px;"><img src="/img/logo/lg.png" style="width:155px;"></a>';
-} ?>
-<script defer type="text/javascript">
+</div>
+<?php if($this->ws->getCustomer()->getId() == 8005){ echo '<a href="/" align="center" style="position: fixed;bottom: 20px;right: 22px;"><img src="/img/logo/lg.png" style="width:155px;"></a>';} ?>
+<script >
     /* <![CDATA[ */
     var google_conversion_id = 1005381332;
     var google_conversion_label = "1vqdCJyg5gMQ1M2z3wM";

@@ -1,7 +1,11 @@
 <img src="<?=SITE_URL.$this->getCurMenu()->getImage();?>" alt="" width="32" class="page-img" height="32"/>
 <h1><?=$this->getCurMenu()->getTitle(); ?> </h1>
 <?=$this->getCurMenu()->getPageBody(); ?>
-
+<?php
+echo '<pre>';
+//print_r($this->admin->visit_last); 
+echo '</pre>';
+?>
 <?php
 if ($this->saved) {
     ?>

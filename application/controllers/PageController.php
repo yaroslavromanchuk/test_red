@@ -73,8 +73,7 @@ echo $s->cod.' - '.$s->count.'<br>';
 
     }
 
-    public
-    function clickbestfotoAction()
+    public function clickbestfotoAction()
     {
         if (isset($_GET['id']) and isset($_GET['score'])) {
             $id = @intval($_GET['id']);
@@ -318,36 +317,63 @@ echo $s->cod.' - '.$s->count.'<br>';
 
     }
 
-    
-
-    public
-    function mapAction()
+    public function mapAction()
     {
         echo $this->render('pages/map.tpl.php');
     }
 
-    public
-    function sitemapAction()
+    public function sitemapAction()
     {
-		header("Content-Type: application/xml ");
-        $rss = new Sitemap(Config::findByCode('website_name')->getValue());
-        $rss->link = "https://{$_SERVER['HTTP_HOST']}/sitemap/";
-		$rss->copyright="© Интернет-магазин RED.UA, ".date('Y');
+       // header("Content-type: application/xml; charset: UTF-8");
+
+
+        $rss = new Sitemap('www.red.ua');
+        $rss->link = 'https://www.red.ua';
+	$rss->copyright="© Интернет-магазин RED.UA, ".date('Y');
         $rss->description ='Стильные и яркие вещи по доступной цене. Обувь, сумки, платья, летняя одежда для детей и подростков.';
-		$rss->category ="Мода, стиль, одежда";
-		$rss->language="ru";
+	$rss->category ="Мода, стиль, одежда";
+	$rss->language="ru";
 		//$rss->ManagingEditor="market@red.ua";
 
-       // $this->_items_per_page = Config::findByCode('news_in_rss')->getValue();
-        $menu = wsActiveRecord::useStatic('Menu')->findAll(array('type_id is not null', 'parent_id' => null), array('sequence' => 'ASC'));
-		$cats = wsActiveRecord::useStatic('Shopcategories')->findAll(array('parent_id' => 0, 'active' => 1));
-        echo $rss->get($menu,$cats);
+        $this->_items_per_page = Config::findByCode('news_in_rss')->getValue();
+        
+        $menu = wsActiveRecord::useStatic('Menu')->findAll(array('type_id is not null', 'parent_id' => null, 'no_sitemap'=>NULL, 'nofollow'=>NULL), array('sequence' => 'ASC'));
+	$cats = wsActiveRecord::useStatic('Shopcategories')->findAll(array('sitemap' => 1, 'active' => 1));
+        //$rss->get($menu,$cats);
+        //var_dump($cats);
+        //echo "<pre>".htmlspecialchars($rss->get($menu,$cats))."</pre>";
+       // var_dump($rss->get($menu,$cats));
+        $file = 'sitemap.xml';
+// Открываем файл для получения существующего содержимого
+//$current = file_get_contents($file);
+// Добавляем нового человека в файл
+//$current .= "John Smith\n";
+// Пишем содержимое обратно в файл
+file_put_contents($file, $rss->get($menu,$cats));
+       // echo $rss->get($menu,$cats);
+
         die();
 	
        // echo $this->render('pages/sitemap.tpl.php');
     }
 
-		public function contactAction(){
+	public function contactAction(){
+            if($this->post->email and $this->post->phone and $this->post->sender){
+                
+                $message = $this->post->message;
+                $message .= '<br><br><br><br><b>Это сообщение отправлено с формы обратной связи сайта.</b>';
+                $res = SendMail::getInstance()->sendSubEmail('market@red.ua', $this->post->name, $this->post->sender, $message, '','',$this->post->email, $this->post->name, 0, '', '');
+                if($res){
+                    $this->view->message_contact = ['status'=>'ok', 'message'=>'Ваше сообщение успешно отправлено'];
+                }else{
+                     $this->view->message_contact = ['status'=>'error', 'message'=>'Возникли ошибки при отправке сообщения'];
+                }
+                $this->post = [];
+                //print_r($this->post);
+                //die();
+                
+                
+            }
 			 echo $this->render('pages/contact.tpl.php');
 	}
     public function contactsAction()
@@ -503,25 +529,26 @@ if(@$this->get->id){
 	 $result='';
 	 $post = $this->post;
 	 if($post->send == 'orders'){
-	 $mas = array(3=>'Победа', 4=>'Укр.Почта', 5=>'Сторители', 8=>'НП:Онлайн', 9=>'Курьер', 16=>'НП:Наложка', 12=>'Мишуга');
+	 $mas = array(3=>'Победа', 5=>'Сторители', 4=>'Укр.Почта',  8=>'НП', 16=>'НП:Наложка', 9=>'Курьер');
 	 switch($post->type){
 	 case 1:
-		$ord = wsActiveRecord::useStatic('Shoporders')->findByQuery("SELECT  `delivery_type_id` AS  `d` , COUNT(  `id` ) AS  `ctn`
+	$ord = wsActiveRecord::findByQueryArray("SELECT  `delivery_type_id` AS  `d` , COUNT(  `id` ) AS  `ctn`
 FROM  `ws_orders` 
-WHERE STATUS IN ( 0, 9, 15, 16 ) 
-AND  `quick` =0
+WHERE STATUS IN ( 100, 9, 15, 16 ) 
+AND  `quick` = 0
 GROUP BY  `delivery_type_id`");
 $sum=0;
+$result.='(Новый, Собран, Собран2, Собран3)'.PHP_EOL;
 			foreach($ord as $r){
-			$result.=$mas[$r->d].' - '.$r->ctn.PHP_EOL;
+			$result.= $mas[$r->d].' - '.$r->ctn.PHP_EOL;
 			$sum+=$r->ctn;
 			}
 			$result.='Общее количество - '.$sum;
         break;
 	case 2:
-        $ord = wsActiveRecord::useStatic('Shoporders')->findByQuery("SELECT  `delivery_type_id` AS  `d` , COUNT(  `id` ) AS  `ctn` 
+        $ord = wsActiveRecord::findByQueryArray("SELECT  `delivery_type_id` AS  `d` , COUNT(  `id` ) AS  `ctn` 
 FROM  `ws_orders` 
-WHERE  `status` =3
+WHERE  `status` = 3
 GROUP BY  `delivery_type_id`");
 $sum=0;
 			foreach($ord as $r){
@@ -535,76 +562,73 @@ $sum=0;
 	 }elseif($post->send == 'articles'){
 	 switch($post->type){
 	 case 1:
-	 $activ = wsActiveRecord::useStatic('Shoparticlelog')->findByQuery("SELECT SUM(  `count` ) AS ctn FROM  `red_article_log` WHERE `red_article_log`.`type_id` = 4  AND  `ctime` >  '" . date('Y-m-d 00:00:00')."' ")->at(0)->getCtn();
-	$new_add = wsActiveRecord::useStatic('Shoparticlelog')->findByQuery("SELECT SUM(  `red_article_log`.`count` ) AS  `ctn` FROM  `red_article_log` 
+$activ = wsActiveRecord::findByQueryFirstArray("SELECT SUM(  `count` ) AS ctn FROM  `red_article_log` WHERE `red_article_log`.`type_id` = 4  AND  `ctime` >  '" . date('Y-m-d 00:00:00')."' ");
+	
+$new_add = wsActiveRecord::findByQueryFirstArray("SELECT SUM(  `red_article_log`.`count` ) AS  `ctn` FROM  `red_article_log` 
 	inner join ws_articles on red_article_log.article_id = ws_articles.`id`
 WHERE  `red_article_log`.`type_id` = 3 AND ws_articles.status > 1
-AND  `red_article_log`.`ctime` >  '" . date('Y-m-d 00:00:00')."' ")->at(0)->getCtn();
+AND  `red_article_log`.`ctime` >  '" . date('Y-m-d 00:00:00')."' ");
 
-	$hist = wsActiveRecord::useStatic('OrderHistory')->findByQuery("SELECT count(order_history.id) as `ctn` FROM order_history WHERE
+	$hist = wsActiveRecord::findByQueryFirstArray("SELECT count(order_history.id) as `ctn` FROM order_history WHERE
 							order_history.name LIKE  '%Прийом товара с возврата%'
-							and ctime >= '" . date('Y-m-d 00:00:00') . "' ")->at(0)->getCtn();
-        $result = 'Добавлено: '.$new_add.PHP_EOL;
-		$result .= 'Активировано: '.$activ.PHP_EOL;
-		$result .= 'Добавлено с возврата: '.$hist.PHP_EOL;
+							and ctime >= '" . date('Y-m-d 00:00:00') . "' ");
+        $result = 'Добавлено: '.$new_add['ctn'].PHP_EOL;
+		$result .= 'Активировано: '.$activ['ctn'].PHP_EOL;
+		$result .= 'Добавлено с возврата: '.$hist['ctn'].PHP_EOL;
         break;
 	case 2:
 	$date = date('Y-m-d 00:00:00');
 	$date = strtotime($date);
 	$date = date('Y-m-d 00:00:00', strtotime("-1 day", $date));
-        $activ = wsActiveRecord::useStatic('Shoparticlelog')->findByQuery("SELECT SUM(  `count` ) AS ctn FROM  `red_article_log` WHERE `red_article_log`.`type_id` = 4  AND  `ctime` >  '" . $date."' and  `ctime` <  '" . date('Y-m-d 00:00:00')."' ")->at(0)->getCtn();
-	$new_add = wsActiveRecord::useStatic('Shoparticlelog')->findByQuery("SELECT SUM(  `red_article_log`.`count` ) AS  `ctn` FROM  `red_article_log` 
+        $activ = wsActiveRecord::findByQueryFirstArray("SELECT SUM(  `count` ) AS `ctn` FROM  `red_article_log` WHERE `red_article_log`.`type_id` = 4  AND  `ctime` >  '" . $date."' and  `ctime` <  '" . date('Y-m-d 00:00:00')."' ");
+	$new_add = wsActiveRecord::findByQueryFirstArray("SELECT SUM(  `red_article_log`.`count` ) AS  `ctn` FROM  `red_article_log` 
 	inner join ws_articles on red_article_log.article_id = `ws_articles`.`id`
-WHERE  `red_article_log`.`type_id` = 3 AND ws_articles.status > 1  AND   `red_article_log`.`ctime` >  '" . $date."' and  `red_article_log`.`ctime` <  '" . date('Y-m-d 00:00:00')."' ")->at(0)->getCtn();
+WHERE  `red_article_log`.`type_id` = 3 AND ws_articles.status > 1  AND   `red_article_log`.`ctime` >  '" . $date."' and  `red_article_log`.`ctime` <  '" . date('Y-m-d 00:00:00')."' ");
 
-	$hist = wsActiveRecord::useStatic('OrderHistory')->findByQuery("SELECT count(order_history.id) as `ctn` FROM order_history WHERE
+	$hist = wsActiveRecord::findByQueryFirstArray("SELECT count(order_history.id) as `ctn` FROM order_history WHERE
 							order_history.name LIKE  '%Прийом товара с возврата%'
-							and ctime > '" . $date . "' and ctime < '" . date('Y-m-d 00:00:00') . "' ")->at(0)->getCtn();
-        $result = 'Добавлено: '.$new_add.PHP_EOL;
-		$result .= 'Активировано: '.$activ.PHP_EOL;
-		$result .= 'Добавлено с возврата: '.$hist.PHP_EOL;
+							and ctime > '" . $date . "' and ctime < '" . date('Y-m-d 00:00:00') . "' ");
+        $result = 'Добавлено: '.$new_add['ctn'].PHP_EOL;
+		$result .= 'Активировано: '.$activ['ctn'].PHP_EOL;
+		$result .= 'Добавлено с возврата: '.$hist['ctn'].PHP_EOL;
         break;
 	case 3:
 	$date = date('Y-m-d 00:00:00');
 	$date = strtotime($date);
 	$date = date('Y-m-d 00:00:00', strtotime("-6 day", $date));
-        $activ = wsActiveRecord::useStatic('Shoparticlelog')->findByQuery("SELECT SUM(  `count` ) AS ctn FROM  `red_article_log` WHERE `red_article_log`.`type_id` = 4  AND  `ctime` >  '" . $date."' ")->at(0)->getCtn();
-	$new_add = wsActiveRecord::useStatic('Shoparticlelog')->findByQuery("SELECT SUM(  `red_article_log`.`count` ) AS  `ctn` FROM  `red_article_log` 
+        $activ = wsActiveRecord::findByQueryFirstArray("SELECT SUM(  `count` ) AS ctn FROM  `red_article_log` WHERE `red_article_log`.`type_id` = 4  AND  `ctime` >  '" . $date."' ");
+	$new_add = wsActiveRecord::findByQueryFirstArray("SELECT SUM(  `red_article_log`.`count` ) AS  `ctn` FROM  `red_article_log` 
 	inner join ws_articles on red_article_log.article_id = ws_articles.`id`
-WHERE  `red_article_log`.`type_id` = 3 AND ws_articles.status >1  AND  `red_article_log`.`ctime` >  '" . $date."'  ")->at(0)->getCtn();
+WHERE  `red_article_log`.`type_id` = 3 AND ws_articles.status >1  AND  `red_article_log`.`ctime` >  '" . $date."'  ");
 
-	$hist = wsActiveRecord::useStatic('OrderHistory')->findByQuery("SELECT count(order_history.id) as `ctn` FROM order_history WHERE
+	$hist = wsActiveRecord::findByQueryFirstArray("SELECT count(order_history.id) as `ctn` FROM order_history WHERE
 							order_history.name LIKE  '%Прийом товара с возврата%'
-							and ctime > '" . $date . "'  ")->at(0)->getCtn();
-        $result = 'Добавлено: '.$new_add.PHP_EOL;
-		$result .= 'Активировано: '.$activ.PHP_EOL;
-		$result .= 'Добавлено с возврата '.$hist.PHP_EOL;
+							and ctime > '" . $date . "'  ");
+        $result = 'Добавлено: '.$new_add['ctn'].PHP_EOL;
+		$result .= 'Активировано: '.$activ['ctn'].PHP_EOL;
+		$result .= 'Добавлено с возврата: '.$hist['ctn'].PHP_EOL;
         break;
 	case 4:
-        $result = 'Неактивного товара: '.wsActiveRecord::useStatic('Shoparticles')->findByQuery("
-	SELECT SUM(  `stock` ) AS ctn
-FROM  `ws_articles` 
-WHERE  `stock` NOT LIKE  '0'
-AND  `active` =  'n' and status > 1 ")->at(0)->getCtn();
+        $result = 'Неактивного товара: '.wsActiveRecord::findByQueryFirstArray("SELECT SUM(  `stock` ) AS ctn FROM  `ws_articles` WHERE  `stock` NOT LIKE  '0' AND  `active` =  'n' and status > 1 ")['ctn'];
         break;
 	case 5:
-        $result = 'В студии: '.wsActiveRecord::useStatic('Shoparticles')->findByQuery("
+        $result = 'В студии: '.wsActiveRecord::findByQueryFirstArray("
 	SELECT SUM(  `stock` ) AS ctn
 FROM  `ws_articles` 
 WHERE  `stock` NOT LIKE  '0'
-AND  `active` =  'n' and status = 1 ")->at(0)->getCtn();
+AND  `active` =  'n' and status = 1 ")['ctn'];
         break;
 	 }
 	 }elseif($post->send == 'ucenka'){
-	 $uc = wsActiveRecord::useStatic('Shoparticles')->findByQuery("SELECT  `ucenka` , SUM(  `stock` ) AS ctn
+	 $uc = wsActiveRecord::findByQueryArray("SELECT  `ucenka` , SUM(  `stock` ) AS ctn
 FROM  `ws_articles` 
 WHERE  `stock` NOT LIKE  '0'
 AND  `active` =  'y'
 GROUP BY  `ucenka`");
 $sum=0;
 $result='Данные уценки'.PHP_EOL;
-			foreach($uc as $r){
-			if($r->ucenka != 0) $sum+=$r->ctn;
+			foreach($uc as  $r){
+			if($r->ucenka != 0){ $sum+=$r->ctn;}
 			$result.=$r->ucenka.' - '.$r->ctn.PHP_EOL;
 			}
 			$result.='Уценено всего - '.$sum.' единиц.';
@@ -622,9 +646,9 @@ $result='Данные уценки'.PHP_EOL;
 
     public function getcountAction()
     {
-        $article = @intval($_GET['article_id']);
-        $size = @intval($_GET['size_id']);
-        $color = @intval($_GET['color_id']);
+        $article = intval($_GET['article_id']);
+        $size = intval($_GET['size_id']);
+        $color = intval($_GET['color_id']);
         if ($article != 0) {
             $items = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $article, 'id_size' => $size, 'id_color' => $color, 'count > 0'));
             $count = array();
@@ -816,9 +840,9 @@ $result='Данные уценки'.PHP_EOL;
     public function savedelyveryordrAction()
     {
 
-        $delivery = @intval($_GET['delyvery']);
-        $order = @intval($_GET['id']);
-        $payment = @intval($_GET['payment']);
+        $delivery = (int)$_GET['delyvery'];
+        $order = (int)$_GET['id'];
+        $payment = (int)$_GET['payment'];
         $ord = new Shoporders($order);
 
         if ($delivery != 0 and $order != 0 and $payment != 0 and $ord->getId() and $this->ws->getCustomer()->isSuperAdmin()) {
@@ -833,15 +857,14 @@ $result='Данные уценки'.PHP_EOL;
 			 $ord->setDeliveryCost($pr['price']);
 			 if($pr['meest_id'] != 0) $ord->setMeestId($pr['meest_id']);
 			}else*/
-			if($delivery == 9 and $ord->getAmount()+$ord->getDeposit() > 750){
+			if($delivery == 9 and ($ord->getAmount()+$ord->getDeposit()) > 750){
 			$p = 0;
-			$ord->setDeliveryCost($p);
+			$ord->setDeliveryCost(0);
 			}else{
 			$p = $pp->getPrice();
             $ord->setDeliveryCost($p);
 			}
             $ord->save();
-           // die(array('pay'=>$p, 'price'=>$ord->getPaymentMethodId(), 'dely'=>$ord->getDeliveryTypeId()));
 		   die($p);
         } else {
             die('_' . $this->ws->getCustomer()->getId());

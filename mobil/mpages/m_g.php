@@ -33,4 +33,3 @@ $articles = wsActiveRecord::useStatic('Shoparticles')->count(array('category_id 
 	} ?></div>	
 </div>
 </div>
-</div>

@@ -78,7 +78,13 @@ class Plural {
 		if ($value!=0) { $ends = ($triade[1]==1?'1':'').$triade[2]; $result.= self::_ending($ends,$endings).' '; }
 		return $result;
 	}
-	
+	/**
+         * 
+         * @param type $value
+         * @param type $mode
+         * @param array $endings
+         * @return type
+         */
 	static public function asString($value, $mode = self::MALE, array $endings = array()) {
 		if (empty($endings)) { $endings = array('','',''); }
 		$result = '';
@@ -93,7 +99,12 @@ class Plural {
 		}
 		return $result;
 	}
-	
+	/**
+         * Валюта
+         * @param type $value
+         * @param type $kop
+         * @return string
+         */
 	static public function currency($value, $kop = 1)
 	{
 		$parts = explode(',',str_replace(' ', '', Number::formatPrice($value,2)));
@@ -107,7 +118,13 @@ class Plural {
 		return trim($first . $second);
 	}
 	
-	
+	/**
+         * Склонение
+         * @param type $int
+         * @param type $expressions
+         * @param type $showint
+         * @return string
+         */
 	public static function declension($int, $expressions, $showint = true) {
 		settype($int, "integer");
 		$count = $int % 100;
@@ -125,7 +142,11 @@ class Plural {
 		}
 		return $result;
 	 }
-	 
+	 /**
+          * Относительное время
+          * @param type $timestamp
+          * @return string
+          */
 	static public function relativeTime($timestamp) {
 		$difference = time() - $timestamp;
 		$periods = array(	array("секунду", "секунды", "секунд"), 
@@ -154,4 +175,3 @@ class Plural {
 	}	 
 	
 }
-?>

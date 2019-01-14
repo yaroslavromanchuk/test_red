@@ -16,6 +16,11 @@ class wsLog extends wsActiveRecord
 		$logger->setPriority(1);
 		$logger->setMessage($message);
 		$logger->save();
+                
+                if($type == 'EMERG'){
+                   Telegram::sendMessageTelegram(404070580, 'ERROR!'.PHP_EOL.'URL:'.$_SERVER['REQUEST_URI'].PHP_EOL.'Message:'.$message);
+                }
 	}
+        
+        
 }
-?>

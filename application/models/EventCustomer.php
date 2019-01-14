@@ -26,8 +26,8 @@
 					red_event_customers.status = 1
 					AND red_events.publick = 1
 					AND red_event_customers.customer_id = ".$customer_id."
-					AND red_events.start <= '".date('Y-m-d',$time)."'
-					AND red_events.finish >= '".date('Y-m-d',$time)."'
+					AND red_events.start <= '".date('Y-m-d', $time)."'
+					AND red_events.finish >= '".date('Y-m-d', $time)."'
 					AND ( red_events.disposable = 0 OR (red_events.disposable = 1 AND red_event_customers.st <= 2))
 					AND red_event_customers.end_time > '".$utime."'
 			";//AND red_event_customers.session_id = '".session_id()."'

@@ -32,6 +32,9 @@ class Shopordersmeestexpres extends wsActiveRecord
         $post->save();
 		return $post->getId();
     }
+    public function getUuid($id){
+        return wsActiveRecord::useStatic('Shopordersmeestexpres')->findById($id);
+    }
 
 	
 	
@@ -39,8 +42,3 @@ class Shopordersmeestexpres extends wsActiveRecord
 	
 	
 	}
-
-
-
-
-?>

@@ -12,7 +12,7 @@ protected $_multilang = array('name' => 'name', 'image' => 'image');
  public function _beforeDelete()
     {
 
-        @unlink($_SERVER['DOCUMENT_ROOT'].$this->getImage());
+        unlink($_SERVER['DOCUMENT_ROOT'].$this->getImage());
         return true;
     }
     public function getBlockText(){

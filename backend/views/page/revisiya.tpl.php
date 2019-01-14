@@ -6,19 +6,19 @@
  $sql = "SELECT  count(ws_articles_sizes.id) as ctn FROM ws_articles_sizes
 join ws_articles on ws_articles_sizes.id_article = ws_articles.id
  	WHERE ws_articles.status != 1 and ws_articles_sizes.`ctime` !=  '0000-00-00 00:00:00'
-AND  ws_articles_sizes.`ctime` >  '2016-05-01 00:00:00' ";
+AND  ws_articles_sizes.`ctime` >  '2017-01-01 00:00:00' ";
  $ostatok = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery($sql)->at(0)->ctn;
  if ($this->errors) { ?>
     <div id="errormessage" style="margin: auto;">
-	<img src="<?php echo SITE_URL; ?>/img/icons/error.png" alt=""  class="page-img"/>
+	<img src="/img/icons/error.png" alt=""  class="page-img"/>
         <span style="font-size: 14px;font-weight: bold;">Найдены ошибки:</span><br>
         <ul>
-            <?php foreach ($this->errors as $error) echo "<li>{$error}</li>"; ?>
+            <?php foreach ($this->errors as $error) {echo "<li>{$error}</li>"; }?>
         </ul>
     </div>
 <?php
 }
-if($this->add_count) echo 'Загружено : '.$this->add_count;
+if($this->add_count) {echo 'Загружено : '.$this->add_count;}
 ?>
     <div id="pagesaved" align="center" style="margin: auto;display:none;font-size: 14px;">
         <img src="<?=SITE_URL?>/img/icons/accept.png" alt="" width="25" height="25" class="page-img"/>
@@ -30,7 +30,7 @@ if($this->add_count) echo 'Загружено : '.$this->add_count;
 		</div>
     </div>
 
-<div align="center" style="margin-top: 5px;<?php if($all > 0) echo 'display:none;'; ?>" id="form_pa">
+<div align="center" style="margin-top: 5px;<?php if($all > 0){ echo 'display:none;'; }?>" id="form_pa">
 <form method="POST" action="" enctype="multipart/form-data" class="form-inline">
 <div class="form-group">
 <input type="file" name="exel" class="form-control input" >
@@ -77,7 +77,7 @@ if($this->add_count) echo 'Загружено : '.$this->add_count;
 		if(count_sr > 0) $('#div_res').show();
 		
         var start = 0;//nachalo
-		var limit = 100; //limit
+	var limit = 100; //limit
 		
         //var count = 0;
 		
@@ -106,7 +106,7 @@ $('#form_pa').hide();
             //$(this).attr('disabled', 'true');
           // $('.mailing_start').show();
 		   var new_data = '&method=dell';
-			surl = url+new_data;
+		var surl = url+new_data;
             $.ajax({
                 url: surl,
                 type: 'POST',
@@ -129,7 +129,7 @@ $('#form_pa').hide();
                 dataType: 'json',
                 data: '&method=start&limit='+limit+'&from='+go,
                 success: function (res) {
-                    if (res.status = 'send') {
+                    if (res.status == 'send') {
 					
 					console.log(res);
 					//console.log(res.article.length);

@@ -70,17 +70,14 @@ class wsMenu extends wsActiveRecord
 	
     public function getPath()
     {
-		if($this->getRedirectUrl())
-			return $this->getRedirectUrl();
+		if($this->getRedirectUrl()){return $this->getRedirectUrl();}
 
         $items = array();
         $result = '';
 
-        if (!$items = $this->getParents())
-            return Registry::get('Website')->getSite()->getPath() . '/' . $this->getUrl() . '/';
+        if (!$items = $this->getParents()){return Registry::get('Website')->getSite()->getPath() . '/' . $this->getUrl() . '/';}
 
-        foreach ($items as $item)
-            $result .= '/' . $item->getUrl();
+        foreach ($items as $item){$result .= '/' . $item->getUrl();}
 
         $result .= '/' . $this->getUrl() . '/';
 		
@@ -102,13 +99,19 @@ class wsMenu extends wsActiveRecord
 
     public function getParents()
     {
-    	if ($this->_parents)
+    	if ($this->_parents){
     		return $this->_parents;
+                
+        }
         $parent = null;
-        if ( ($this->getParentId() == -1) || !$this->getParentId() )
+        if ( ($this->getParentId() == -1) || !$this->getParentId() ){
             return;
-        if (!$parent = $this->getParent())
+            
+        }
+        if (!$parent = $this->getParent()){
         	return;
+                
+        }
 
         $parents = array();
 
@@ -126,6 +129,10 @@ class wsMenu extends wsActiveRecord
 	public function getTitle()
 	{
 		return ($this->getPageTitle() ? $this->getPageTitle() : $this->getName());
+	}
+        public function getFooter()
+	{
+		return $this->getPageFooter();
 	}
 
 	public function setUrl($url) 
@@ -176,4 +183,4 @@ class wsMenu extends wsActiveRecord
 	
 
 }
-?>
+

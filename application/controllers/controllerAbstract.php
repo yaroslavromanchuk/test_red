@@ -9,24 +9,33 @@ abstract class controllerAbstract extends Controller
 
         $this->domain = strtolower(str_replace('www', '', $_SERVER['HTTP_HOST']));
         $this->ws = $this->website = Registry::get('website');
+        $this->view->user = $this->ws->getCustomer();
 
 
         if (strtotime($this->ws->getCustomer()->machine_last_visit->getCtime()) < (time() - (24 * 60 * 60))) {
             $this->ws->getCustomer()->logout();
             $this->ws->updateHashes();
 $str = ((isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], $_SERVER['HTTP_HOST']) !== false) ? $_SERVER['HTTP_REFERER'] :  $_SERVER['REQUEST_URI']);// заменить $_SERVER['REQUEST_URI'] на '/'
-if (isset($_GET['redirect'])) $str = $_GET['redirect'];
+    
+    if (isset($_GET['redirect'])){ 
+        $str = $_GET['redirect'];
+    
+    }else{
 
             $this->_redirect($str);
-			
+    }
         } elseif ($_SERVER['REMOTE_ADDR'] != $this->ws->getCustomer()->machine_last_visit->getIpCreated()) {
             $this->ws->getCustomer()->logout();
             $this->ws->updateHashes();
             $str = ((isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], $_SERVER['HTTP_HOST']) !== false)
                     ? $_SERVER['HTTP_REFERER'] :  $_SERVER['REQUEST_URI']);// заменить $_SERVER['REQUEST_URI'] на '/'
-            if (isset($_GET['redirect']))
-                $str = $_GET['redirect'];
+            
+            if (isset($_GET['redirect'])){
+            $str = $_GET['redirect'];
+            
+            }else{
             $this->_redirect($str);
+            }
         }
 
         $this->message = Registry::get('message');
@@ -36,22 +45,21 @@ if (isset($_GET['redirect'])) $str = $_GET['redirect'];
         $this->view->message = $this->message;
         $this->view->get = $this->get;
         $this->view->post = $this->post;
+
 		
         Registry::set('View', $this->view);
 		
         $this->_global_template = 'site.tpl.php';
 
 
-        if (!isset($_SESSION['basket']))
-            $_SESSION['basket'] = array();
+        if (!isset($_SESSION['basket'])){$_SESSION['basket'] = [];}
         $this->basket = $this->view->basket = $_SESSION['basket'];
 
-        if (!isset($_SESSION['basket_contacts']))
-            $_SESSION['basket_contacts'] = array();
+        if (!isset($_SESSION['basket_contacts'])){$_SESSION['basket_contacts'] = [];}
         $this->basket_contacts = $this->view->basket_contacts = $_SESSION['basket_contacts'];
 
-        if (!isset($_SESSION['basket_articles']))
-            $_SESSION['basket_articles'] = array();
+        if (!isset($_SESSION['basket_articles'])){$_SESSION['basket_articles'] = [];}
+        
         $this->basket_articles = $this->view->basket_articles = $_SESSION['basket_articles'];
 
      ////   if (!isset($_SESSION['basket_options']))
@@ -76,7 +84,8 @@ if (isset($_GET['redirect'])) $str = $_GET['redirect'];
 	
         //menus_caching
         $cache = Registry::get('cache');
-		$cache->setEnabled(true);
+	$cache->setEnabled(true);
+                $lang = Registry::get('lang');//$_COOKIE['lang']?$_COOKIE['lang']:$_SESSION['lang'];
 		//socsety
 	/*	$cache_name = 'socsety_'.$_SESSION['lang'];
         $socsety = @$cache->load($cache_name);
@@ -86,7 +95,7 @@ if (isset($_GET['redirect'])) $str = $_GET['redirect'];
         }
         $this->view->socsety = $socsety;
 		*/
-		if(Registry::get('device') == 'computer' or (@$_COOKIE['mobil'] and $_COOKIE['mobil'] == 10)){ 
+		if(Registry::get('device') == 'computer' or ($_COOKIE['mobil'] and $_COOKIE['mobil'] == 10)){ 
 		$this->view->cached_top_menu = $this->view->render('/cache/top_menu.tpl.php');
 		//new_year
 		/*$cache_name = 'new_year_fon';
@@ -98,8 +107,8 @@ if (isset($_GET['redirect'])) $str = $_GET['redirect'];
         $this->view->cached_new_year = $new_year;
 		*/
 		//top menu 2
-        $cache_name = 'topcategories_3_'.$_SESSION['lang'];
-    //  $topcategories = $cache->load($cache_name);// меню навигации
+        $cache_name = 'topcategories_3_'.$lang;
+      $topcategories = $cache->load($cache_name);// меню навигации
         if (!$topcategories) { //если сломалось пищещь сюда TRUE // верхнее меню
             $topcategories = $this->view->render('/cache/topcategories.tpl.php');
             $cache->save($topcategories, $cache_name, array($cache_name), false);
@@ -107,9 +116,9 @@ if (isset($_GET['redirect'])) $str = $_GET['redirect'];
 		//$topcategories = $this->view->render('/cache/topcategories.tpl.php');
         $this->view->cached_topcategories = $topcategories;
 		 //bottom menu
-        $cache_name = 'footer_'.$_SESSION['lang'];
+        $cache_name = 'footer_'.$lang;
         $bottom_menu = $cache->load($cache_name);
-        if (!$botton_menu) { //если сломалось пищещь сюда TRUE
+        if (!$bottom_menu) { //если сломалось пищещь сюда TRUE
             $bottom_menu = $this->view->render('/cache/footer.tpl.php');
             $cache->save($bottom_menu, $cache_name, array($cache_name), false);
         }
@@ -117,7 +126,7 @@ if (isset($_GET['redirect'])) $str = $_GET['redirect'];
 		}else{
 		 $this->view->cached_mobi_menu = $this->view->render('/cache/mobi_menu.tpl.php');
 		 		//mobi_futer
-		$cache_name = 'mobi_futer_'.$_SESSION['lang'];
+		$cache_name = 'mobi_futer_'.$lang;
         $mobi_futer = $cache->load($cache_name);
         if (!$mobi_futer) { //если сломалось пищещь сюда TRUE
             $mobi_futer = $this->view->render('/cache/mobi_futer.tpl.php');
@@ -127,12 +136,12 @@ if (isset($_GET['redirect'])) $str = $_GET['redirect'];
 		}
 		
 		
-			   if($this->ws->getCustomer()->getId()){ 
+if($this->ws->getCustomer()->getId()){ 
 		$sql = "SELECT  `ws_articles`. * 
 FROM  `ws_articles` 
 INNER JOIN  `ws_articles_history` ON  `ws_articles`.`id` =  `ws_articles_history`.`article_id` 
 WHERE  `ws_articles_history`.`customer_id` =".$this->ws->getCustomer()->getId()."
-AND ws_articles.`stock`  not like '0'
+AND ws_articles.`stock`  not like '0' and `ws_articles`.`status` = 3
 GROUP BY  `ws_articles`.`id` 
 ORDER BY  `ws_articles_history`.`id` DESC 
 LIMIT 6";
@@ -173,14 +182,18 @@ LIMIT 6";
         wsLog::add($message, 'INFO');
 
         // Send 404 header
-        @header('HTTP/1.0 404 Not Found');
+        header('HTTP/1.0 404 Not Found');
+        header("Location: /404/",TRUE,301); 
+			exit();
         $page = wsActiveRecord::useStatic('Menu')->findByUrl('404');
 
         if ($page) {
             $this->view->cur_menu = $this->cur_menu = $page;
             echo $this->render('pages/static.tpl.php');
-        } else
+        } else{ 
             echo $this->render('pages/404.tpl.php');
+            
+        }
     }
 
     protected function _postAction($content)
@@ -199,19 +212,27 @@ class Translator
     {
 	if($msg){
         $value = wsActiveRecord::useStatic('Dictionary')->findByName(trim($msg))->at(0);
-        if (!$value) {
-            $value = new Dictionary();
-            $value->setName($msg);
-            $value->setTranslation($msg);
-			$value->setTranslationUk($this->translateuk($msg, 'ru', 'uk'));
-            $value->save();
-        }
-		if($_SESSION['lang'] == 'uk')
+        if ($value) {
+           if(Registry::get('lang') == 'uk')
 		{
 			return $value->getTranslationUk();
 		}else{
 			return $value->getTranslation();
 		}
+        }else{
+        $value = new Dictionary();
+            $value->setName($msg);
+            $value->setTranslation($msg);
+            $value->setTranslationUk($this->translateuk($msg, 'ru', 'uk'));
+            $value->save();
+            if(Registry::get('lang') == 'uk')
+		{
+			return $value->getTranslationUk();
+		}else{
+			return $value->getTranslation();
+		}
+        }
+		
 		}
 		return false;
         

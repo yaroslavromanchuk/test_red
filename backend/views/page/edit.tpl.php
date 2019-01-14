@@ -1,38 +1,27 @@
 <img src="<?=SITE_URL.$this->getCurMenu()->getImage()?>" alt="" class="page-img" />
-<h1><?=$this->getCurMenu()->getTitle();?> </h1>
-<?=$this->getCurMenu()->getPageBody();?>
-<?php
-    if($this->errors)
-    {
-    ?>
-    <div id="errormessage"><img src="<?php echo SITE_URL;?>/img/icons/error.png" alt="" width="32" height="32" class="page-img" />
-        <h1>Найдены ошибки:</h1>
+<h1><?=$this->getCurMenu()->getTitle()?></h1>
+<?=$this->getCurMenu()->getPageBody()?>
+<?php if($this->errors){ ?>
+    <div id="errormessage"><img src="<?=SITE_URL?>/img/icons/error.png" alt="" width="32" height="32" class="page-img" />
+        <h2>Найдены ошибки:</h2>
         <ul>
-            <?php
-                foreach($this->errors as $error)
-                {
-                ?>
-                <li><?php echo $error;?></li>
-                <?php
-                }
-            ?>
+            <?php foreach($this->errors as $error){?>
+                <li><?=$error?></li>
+                <?php } ?>
         </ul>
     </div>  
     <?php
     }
-
-    if($this->saved)
-    {
-    ?>    
+    if($this->saved){?>    
     <div id="pagesaved">
-        <img src="<?php echo SITE_URL;?>/img/icons/accept.png" alt="" width="32" height="32" class="page-img" />
+        <img src="<?=SITE_URL?>/img/icons/accept.png" alt="" width="32" height="32" class="page-img" />
         <h1>Данные успешно сохранены</h1>
     </div>
     <?php
     }
 ?>
 
-<form method="post" action="<?php echo $this->path;?>pages/edit/id/<?php echo $this->page->getId();?>/" enctype="multipart/form-data">
+<form method="post" action="<?=$this->path?>pages/edit/id/<?=$this->page->getId()?$this->page->getId().'/':''?>" enctype="multipart/form-data">
     <table id="editpage" cellpadding="5" cellspacing="0">
         <?php
             //if($this->page->getTypeId()==1)
@@ -41,15 +30,15 @@
             <tr>
                 <td class="kolom1">Тип меню</td>
                 <td>
-                    <select name="type_id" onchange="correctMenuTypes(this.value, true);">
+                    <select name="type_id" class="form-control" >
                         <option value="0"></option>
                         <?php foreach($this->menuTypes as $menuType) { 
                                 $sel = ($menuType->getId() == $this->page->getTypeId()) ? 'selected="selected"' : '';
                                 echo '<option value="' . $menuType->getId() . '" '.$sel.'>' . $menuType->getName() . '</option>';
                         } ?> 
                     </select>
-                    <script type="text/javascript">
-                        <!--
+                    <script >
+                       
                         function correctMenuTypes(typeId, clear)
                         {
                             $('select[name=parent_id]').empty();
@@ -58,20 +47,20 @@
                             if (clear)
                                 $('select[name=parent_id]').val(0);
                         }
-                        var gi_select;
-                        jQuery(function($){
+                       var gi_select;
+                       /* $(function(e){
                             gi_select = $('select[name=parent_id]').clone();
                             gi_select.attr('name', 'parent_id_clone');
                             correctMenuTypes('<?=$this->page->getTypeId()?>', false);
-                        });
-                        -->
+                        });*/
+                      
                     </script>
                 </td>
             </tr>
             <tr>
                 <td class="kolom1">Родительская категория</td>
                 <td>
-                    <select name="parent_id">
+                    <select name="parent_id" class="form-control select">
                         <option value="0"></option>
                         <?php foreach($this->roots as $root) { 
                                 $sel = ($root->getId() == $this->page->getParentId()) ? 'selected="selected"' : '';
@@ -85,19 +74,19 @@
         ?>    
         <tr>
             <td class="kolom1">Адрес страницы</td>
-            <td><input name="url" type="text" <?php echo $this->page->getId() ? 'disabled' : '';?> class="formfields" id="paginaid" value="<?php echo $this->page->getUrl();?>" /></td>
+            <td><input name="url" class="form-control" type="text" <?php echo $this->page->getId() ? 'disabled' : '';?> class="formfields" id="paginaid" value="<?php echo $this->page->getUrl();?>" /></td>
         </tr>
         <tr>
             <td class="kolom1">Заголовок страницы</td>
-            <td><input name="name" type="text" class="formfields" id="paginatitle" value="<?php echo $this->page->getName();?>" /></td>
+            <td><input name="name" class="form-control" type="text" class="formfields" id="paginatitle" value="<?php echo $this->page->getName();?>" /></td>
         </tr>
         <tr>
             <td class="kolom1">Заголовок страницы УКР</td>
-            <td><input name="name_uk" type="text" class="formfields" id="paginatitleuk" value="<?php echo $this->page->getNameUk();?>" /></td>
+            <td><input name="name_uk" class="form-control" type="text" class="formfields" id="paginatitleuk" value="<?php echo $this->page->getNameUk();?>" /></td>
         </tr>          
         <tr>
             <td class="kolom1">Содержание страницы</td>
-            <td><textarea name="page_body" rows="10" style="width: 763px;" class="pagetext" id="paginatext"><?php echo $this->page->getPageBody();?></textarea></td>
+            <td><textarea name="page_body"  rows="10" style="width: 763px;" class="pagetext" id="paginatext"><?php echo $this->page->getPageBody();?></textarea></td>
         </tr>
         <tr>
             <td class="kolom1">Содержание страницы УКР</td>
@@ -176,22 +165,60 @@
 	 <?php
             if($this->user->isSuperAdmin())
             {
+                // echo print_r($this->controller);
             ?>
-    <input name="controller" type="text" value="<?php echo $this->page->getController() ? $this->page->getController() : 'page';?>" />
-    <input name="action" type="text" value="<?php echo $this->page->getAction() ? $this->page->getAction() : 'index';?>" />
-    <select name="parent_ids">
-                        <option value="0"></option>
-                        <option value="4">admin</option>
-   	</select>
-    <select name="section">
-    			<?php if($this->page->getSection){echo '<option>'.$this->page->getSection().'</option>';} else{?>
-                        <option value="0"></option>
-                        <option value="2">Магазин</option>
-                        <option value="3">Пользователи</option>
-                        <option value="4">Администрирование</option>
-                        <option value="5">Служебное</option>
-                        <?php } ?>
+   <!-- -->
+   <div class="panel panel-primary">
+       <div class="panel-body">
+   <div class="row">
+   <div class="form-group">
+    <label for="controller" class="col-sm-12 col-md-12 col-lg-2 control-label">Контроллер:</label>
+    <div class="col-sm-12 col-md-12 col-lg-10">
+        <select name="controller" id="controller" class="form-control">
+        <?php if($this->page->getController()){
+                    echo '<option>'.$this->page->getController().'</option>';
+                }else{
+                    foreach ($this->controller as $c) {
+                    ?>
+                     <option value="<?=$c->controller?>"><?=$c->controller?></option>
+                    <?php }
+                    } ?>
     </select>
+    </div>
+  </div>
+   <div class="form-group">
+    <label for="action" class="col-sm-12 col-md-12 col-lg-2 control-label">Метод:</label>
+    <div class="col-sm-12 col-md-12 col-lg-10">
+	<input name="action" id="action" class="form-control" type="text" value="<?php echo $this->page->getAction() ? $this->page->getAction() : 'index';?>" />
+    </div>
+  </div>
+   <div class="form-group">
+    <label for="parameter" class="col-sm-12 col-md-12 col-lg-2 control-label">get параметр:</label>
+    <div class="col-sm-12 col-md-12 col-lg-10">
+	 <input name="parameter" id="parameter" class="form-control" type="text" value="<?php echo $this->page->getParameter() ? $this->page->getParameter() : '';?>" />
+    </div>
+  </div>
+  <! <div class="form-group">
+    <label for="section" class="col-sm-12 col-md-12 col-lg-2 control-label">Секция:</label>
+    <div class="col-sm-12 col-md-12 col-lg-10">
+	<select name="section" id="section" class="form-control">
+            
+    		<?php if($this->page->getSection()){
+                    echo '<option value="'.$this->page->getSection().'">'.$this->page->getSection().'</option>';
+                    
+                } else{
+                    echo '<option value="0"></option>';
+    foreach ($this->section as $s) { ?>
+        <option value="<?=$s->id?>"><?=$s->getName()?></option>
+   <?php  }
+   } ?>
+    </select>
+    </div>
+   </div>
+   
+       </div>
+         </div>
+        </div>
     <?php } ?>
     <p>
         <input type="submit" class="buttonps" name="savepage" id="savepage" value="Сохранить страницу" />
@@ -199,8 +226,8 @@
 </form>
 
 
-<script type="text/javascript" src="<?=SITE_URL.$this->files;?>scripts/tiny_mce/tiny_mce.js"></script>     
-<script type="text/javascript"> 
+<script  src="<?=$this->files?>scripts/tiny_mce/tiny_mce.js"></script>     
+<script > 
     tinyMCE.init({
         // General options
         mode : "exact",
@@ -227,7 +254,7 @@
 
         // Example word content CSS (should be your site CSS) this one removes paragraph margins
         content_css : "<?=SITE_URL?>/standard.css?<?=rand(1,10000)?>",
-        external_link_list_url : "<?php echo SITE_URL;?>/admin/pages/tinymce_list/",
+        external_link_list_url : "<?=SITE_URL?>/admin/pages/tinymce_list/",
         extended_valid_elements : "b,u,i,iframe[name|src|framespacing|border|frameborder|scrolling|title|height|width],object[declare|classid|codebase|data|type|codetype|archive|standby|height|width|usemap|name|tabindex|align|border|hspace|vspace],div[*],p[*]",
         external_image_list_url : "<?=SITE_URL?>/admin/pages/tinymce_imagelist/"
 

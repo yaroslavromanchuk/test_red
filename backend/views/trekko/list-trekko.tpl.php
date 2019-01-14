@@ -1,34 +1,16 @@
-<img src="<?php echo SITE_URL;?><?php echo $this->getCurMenu()->getImage();?>" alt="" width="32" class="page-img"
-     height="32"/>
-<h1><?php echo $this->getCurMenu()->getTitle();?></h1>
-	<?php
- $mas_stat = array(
- '0' =>'Новый',
-            '9' => 'Собран',
-            '13' => 'В процессе доставки',
-            '15' => 'Собран 2',
-			'16' => 'Собран 3'
-        );
-		?>
-<?php  echo $this->message;?>
+<div class="sl-page-title">
+          <h5><?=$this->getCurMenu()->getTitle()?></h5>
+          <p>...</p>
+        </div>
 <input hidden type="text" id="em" name="em"  value="">
-<p style="margin-left:20px;"><a onclick="chekAll(); return false;" href="#">Отметить/Снять все</a><input type="button" name="save" id="save" class="button" style="margin-left: 20px;" value="Создать"><input type="button" name="print" id="print" class="button" value="Печать" style="margin-left: 20px;"></p>
-<script type="text/javascript">
-    var clik_ok = 0;
-    function chekAll() {
-        if (!clik_ok) {
-            $('.cheker').attr('checked', true);
-            clik_ok = 1;
-        } else {
-            $('.cheker').attr('checked', false);
-            clik_ok = 0;
-        }
-
-        return false;
-    }
-</script>
-<table id="productss" cellpadding="4" cellspacing="0" style="width:900px;margin-left:20px;" >
+<div class="card pd-20 pd-sm-40">
+    <div class="card-body">
+        <table id="productss" class="table table-hover table-bordered"  >
+            <thead>
     <tr>
+        <th><label class="ckbox" data-tooltip="tooltip" title="Выделить все заказы">
+                <input onchange="chekAll();" class="chekAll" type="checkbox"/><span></span></label>
+        </th>
 	<th>Действие</th>
 		<th>Заказ</th>
 		<th>Статус</th>
@@ -37,45 +19,74 @@
         <th>Время доставки</th>
 		<th>Оплата</th>
     </tr>
+            </thead>
+            <tbody>
     <?php
 	$count = 0;
 	if($this->order_trekko){
-                      $row = 'row1';
+            $row = 'row1';
     foreach ($this->order_trekko as $or)
     {
 	$count ++;
         $row = ($row == 'row2') ? 'row1' : 'row2';
         ?>
-             <tr class="<?php echo $row;?>">
-				<td><input type="checkbox" class="order-item cheker" id="<?=$or->id;?>" name="<?=$or->id;?>"/><a href="/admin/trekko/edit/<?=$or->id;?>/" target="_blank" ><img src="/img/icons/edit-small.png" alt="Редактировать" width="24" height="24"></a></td>
-				 
-				 <td><?php  echo $or->id;?></td>
-				<td><?php  echo $mas_stat[$or->status];?></td>
-                
-                 <td><?php  echo $or->date_create;?></td>
-				 <td><?php  echo $or->delivery_date;?></td>
-				  <td><?php  echo $or->delivery_interval;?></td>
-				  <td><?=$or->getPaymentMethod()->getName();?></td>
+             <tr class="<?=$row?>">
+		<td>
+                     <label class="ckbox">
+                         <input type="checkbox" class="order-item cheker" id="<?=$or->id?>" name="item_<?=$or->id?>"/><span></span>
+                     </label>
+                </td>
+                <td>
+                    <a href="/admin/trekko/edit/<?=$or->id;?>/" target="_blank" >
+                        <img src="/img/icons/edit-small.png" alt="Редактировать" width="24" height="24">
+                    </a>
+                </td> 
+		<td><?=$or->id?></td>
+		<td><?=$or->getStat()->getName()?></td>
+                <td><?=$or->date_create?></td>
+		<td><?=$or->delivery_date?></td>
+		<td><?=$or->delivery_interval?></td>
+		<td><?=$or->getPaymentMethod()->getName()?></td>
             </tr>
         <?php } 
 		}
 		?>
+            </tbody>
 </table>
-<?php echo 'Всего записей: '. $count; ?>
-<table align="center" style="display:none;" id="resultat">
+    </div>
+<div class="card-footer">
+    
+    <p style="margin-left:20px;">
+        <span><?='Всего записей: '.$count?></span>
+        <div class="btn-group" role="group" aria-label="Basic example">
+  <button type="button" class="btn btn-secondary" id="print" name="print">Печать реестра</button>
+  <button type="button" class="btn btn-secondary" id="save" name="save"  >Создать заявку</button>
+</div>
+
+</p>
+</div>
+
+    
+    
+</div><!--card-->
+<table  style="display:none;" id="resultat" class="table table-hover table-bordered" >
 <tr><th>Создано</th><th>Ошибки</th></tr>
 <tr><td id="ok" style="color:green;font-weight: bold;"></td><td id="off" style="color:red;font-weight: bold;"></td></tr>
 </table>
-<div id="mess" ><span id="mess_span" style="font-size:16px;color:red;"></span></div>
-<script type="text/javascript">
-    $(document).ready(function () {
 
-	    });
-
+<script >
+function chekAll() {
+		if($('.chekAll').is(":checked")){
+		$('.cheker').prop('checked', true);
+		}else{
+		$('.cheker').prop('checked', false);
+		}
+            return false;
+        }
         $('#save').click(function () {
 		$('#resultat').fadeOut(500);
-		ord = '';
-                id = '';
+		var ord = '';
+               var  id = '';
             if ($('.order-item:checked').val()) {
 				
                 i = 0;
@@ -138,9 +149,8 @@
 		
 			$('#print').click(function () {
 			 if ($('.order-item:checked').val()) {
-				ord = '';
-                id = '';
-                i = 0;
+		var ord = '';
+              var   i = 0;
                 jQuery.each($('.order-item:checked'), function () {
                     if (i != 0) {
 						ord+= ',' + $(this).attr('id');
@@ -154,26 +164,26 @@
 	
 			});
 			
-				function mailGo(id){
-				var ff = false;
-		$.ajax({
+	function mailGo(id){
+				
+                    $.ajax({
 			type: "GET",
 			url: '/admin/exelkurer/',
 			dataType: 'json',
 			data: '&id='+id+'&flag=1',
-			success: function( data ) {
-			if(data)window.open("/admin/trekko/prints/"+id, '_blank');
+			success: function( data ){
+			if(data){
+                            window.open("/admin/trekko/prints/"+id, '_blank');
+                        }
 			//console.log(data);
 			},
-			error: function( e ) {
+			error: function(e) {
 			$('#popup').html('Что-то пошло нетак! Заказ не добавлен, внесите изменения и попробуйте снова!');
-					fopen();
+				
+                            fopen();
 			}
 		});
-	return ff;
+	return false;
 		
 		}
-
-		//window.onbeforeunload = function() {return "Данные не сохранены. Точно перейти?";};
-
 </script>

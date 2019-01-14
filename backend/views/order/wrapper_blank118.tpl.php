@@ -3,8 +3,9 @@
 <head>
     <title>Бланк Укрпочта</title>
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>
+    <meta name="robot" content="no-index,no-follow"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<link rel="stylesheet" href="/admin_files/views/order/blank178.css" type="text/css" >
+    <link rel="stylesheet" href="/backend/views/order/blank178.css" type="text/css" >
 </head>
 
 <body onload="//window.print();">

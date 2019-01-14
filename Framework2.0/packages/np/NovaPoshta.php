@@ -15,7 +15,7 @@ class NovaPoshta{
 	 * @var string $key
 	 * @see https://my.novaposhta.ua/settings/index#apikeys
 	 */
-	protected $key = '2c28a9c1a5878cb01c8f9c440e827a61';
+	protected $key = '1e594a002b9860276775916cdc07c9a6';
 	
 	/**
 	 * @var bool $throwErrors Throw exceptions when in response is error
@@ -228,8 +228,11 @@ CURLOPT_HTTPHEADER => array('Content-Type: '.($this->format == 'xml' ? 'text/xml
 $result = curl_exec($curl);
 $err = curl_error($curl);
 curl_close($curl);
-if($err) return $this->prepare($err);
-return $this->prepare($result);
+if($err) { 
+	return $this->prepare($err);
+}else{
+	return $this->prepare($result);
+}
 
 		} else {
     		$result = file_get_contents($url, null, stream_context_create(array(
@@ -345,6 +348,7 @@ return $this->prepare($result);
 		));
 		return $city['data'][0]['Description'];
 	}
+        
 	function getWarehouses1($cityRef, $findByString = '') {
 		return $this->request('Address', 'getWarehouses', array(
 			'CityRef' => $cityRef,
@@ -383,7 +387,7 @@ return $this->prepare($result);
 	 * @return mixed
 	 */
 	function findNearestWarehouse($searchStringArray) {
-	    $searchStringArray = (array) $searchStringArray;
+	    $searchStringArray = (array)$searchStringArray;
 		return $this->request('Address', 'findNearestWarehouse', array(
 			'SearchStringArray' => $searchStringArray,
 		));
@@ -660,7 +664,7 @@ return $this->prepare($result);
 		
 		return $this->request('Counterparty', 'getCounterparties', $params);
 	}
-	//íîâûé êîíòàêò
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	function newContactPerson($LastName='', $FirstName='', $MiddleName='', $Phone=''){
 	return $this->model('ContactPerson')->save(array(
 	'CounterpartyRef' => 'ea1b5c6e-3875-11e6-a54a-005056801333',
@@ -670,7 +674,7 @@ return $this->prepare($result);
 	'Phone' =>$Phone,
 	));
 	}
-	//ðåäàêòèðîâàòü êîíòàêò
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	function updateContactPerson($ref, $LastName='', $FirstName='', $MiddleName='', $Phone=''){
 	return $this->model('ContactPerson')->update(array(
 	'CounterpartyRef' => 'ea1b5c6e-3875-11e6-a54a-005056801333',
@@ -949,6 +953,16 @@ return $this->prepare($result);
 		// Creating new Internet Document
 		return $this->model('InternetDocument')->save($paramsInternetDocument);
 	}
+        /**
+         * 
+         * @param type $ref uuid Ð¿Ð¾ÑÑ‹Ð»ÐºÐ¸
+         * @return type
+         */
+        public function getDeleteDocument($ref = ''){
+            $param = ['DocumentRefs'=> $ref];
+            
+            return $this->model('InternetDocument')->delete($param);
+        }
 
 	/**
 	 * Get only link on internet document for printing
@@ -1004,16 +1018,41 @@ return $this->prepare($result);
 		// If needs data
 		return $this->request('InternetDocument', 'printMarkings', array('DocumentRefs' => $documentRefs, 'Type' => $type));
 	}
-	//ñîçäàòü íîâûé ðååñòð  $documentRefs - ìàññèâ ðåôîâ íàêëàäíûõ
-	function newRegistr($documentRefs) {
+	//ÑÐ¾Ð·Ð´Ð°Ñ‚ÑŒ Ð½Ð¾Ð²Ñ‹Ð¹ Ñ€ÐµÐµÑÑ‚Ñ€  $documentRefs - Ð¼Ð°ÑÑÐ¸Ð² Ñ€ÐµÑ„Ð¾Ð² Ð½Ð°ÐºÐ»Ð°Ð´Ð½Ñ‹Ñ…
+	function newRegistr($documentRefs, $ref = '') {
+            if($ref !=''){ 
+                 return $this->request('ScanSheet', 'insertDocuments', array('DocumentRefs' => $documentRefs, 'Ref'=>$ref));
+            }else{
 	  return $this->request('ScanSheet', 'insertDocuments', array('DocumentRefs' => $documentRefs));
+            }
 	}
-	// ïîëó÷èòü äàííûå ïî îäíîìó ðååñòðó $Ref - ðåô ðååñòðà
-	function getRegistr($Ref) {
+	// Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð´Ð°Ð½Ð½Ñ‹Ðµ Ð¿Ð¾ Ð¾Ð´Ð½Ð¾Ð¼Ñƒ Ñ€ÐµÐµÑÑ‚Ñ€Ñƒ $Ref - Ñ€ÐµÑ„ Ñ€ÐµÐµÑÑ‚Ñ€Ð°
+	function getRegistr($Ref) { 
 	  return $this->request('ScanSheet', 'getScanSheet', array('Ref' => $Ref));
 	}
-	//ïîëó÷èòü ñïèñîê ñîçäàíûõ ðååñòðîâ
+	//Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÑÐ¿Ð¸ÑÐ¾Ðº ÑÐ¾Ð·Ð´Ð°Ð½Ñ‹Ñ… Ñ€ÐµÐµÑÑ‚Ñ€Ð¾Ð²
 	function getScanSheetList(){
 	 return $this->request('ScanSheet', 'getScanSheetList');
+	}
+        
+        /** Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ ÑÐºÑÐ¿Ñ€ÐµÑÑ-Ð½Ð°ÐºÐ»Ð°Ð´Ð½Ñ‹Ðµ Ð¸Ð· Ñ€ÐµÐµÑÑ‚Ñ€Ð°
+         * $DocumentRefs - ÑÐ¿Ð¸ÑÐ¾Ðº Ñ€ÐµÑ„Ð¾Ð² Ð½Ð°ÐºÐ»Ð°Ð´Ð½Ñ‹Ñ… ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ðµ Ð½ÑƒÐ¶Ð½Ð¾ ÑƒÐ´Ð°Ð»Ð¸Ñ‚ÑŒ Ñ Ñ€ÐµÐµÑÑ‚Ñ€Ð°
+         * $ref - Ñ€ÐµÐµÑÑ‚Ñ€Ð°
+         */
+
+	function getremoveDocuments($DocumentRefs, $ref = '') { 
+             if($ref !=''){ 
+	  return $this->request('ScanSheet', 'removeDocuments', array('DocumentRefs' => $DocumentRefs, 'Ref'=>$ref));
+             }else{
+                  return $this->request('ScanSheet', 'removeDocuments', array('DocumentRefs' => $DocumentRefs));
+             }
+	}
+        /**
+         * Ð£Ð´Ð°Ð»Ð¸Ñ‚ÑŒ (Ñ€Ð°ÑÑ„Ð¾Ñ€Ð¼Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ) Ñ€ÐµÐµÑÑ‚Ñ€ Ð¾Ñ‚Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ð¹
+         * @param type $Ref - Ñ€ÐµÐµÑÑ‚Ñ€Ð°
+         * @return type
+         */
+        function deleteScanSheet($Ref) { 
+	  return $this->request('ScanSheet', 'deleteScanSheet', array('ScanSheetRefs' => $Ref));
 	}
 }

@@ -54,7 +54,7 @@ $param = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery('SELECT DIST
 <p class="brand"><span><?=$this->article->getBrand();?></span></p>
 <hr style="margin-bottom:  5px;">
 
-	<?php if($option->value){
+	<?php if($option->value and $option->type == 'final'){
 $price = $this->article->getPerc(100, 1);
 $procent = ($this->article->getFirstPrice() - $price['price'])/$this->article->getFirstPrice()*100;
 
@@ -87,7 +87,7 @@ if($old_price > 0){ ?>
     color: white;
     font-size: 12px;
     display: inline-block;
-    font-weight: normal;">- <?=$this->article->getUcenka()?> %</span><br>
+    font-weight: normal;">- <?=$this->article->getUcenka()?$this->article->getUcenka():(int)((1-($this->article->price/$old_price))*100)?> %</span><br>
 	<span class="price-old"><?=trim($this->article->showPrice($old_price));?>&nbsp;<span style="font-size:14px;">грн</span>
 	</span>
 	<?php } ?>

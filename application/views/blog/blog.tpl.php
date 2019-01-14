@@ -1,7 +1,7 @@
 <link type="text/css" href="/css/findex.css?v=1" rel="stylesheet"/>
 <?php
 $text_trans_blog = explode(',', $this->trans->get('Недавнее,Ваше Имя,Подписаться,Смотреть')); 
-if(Registry::get('device') == 'computer' or (@$_COOKIE['mobil'] and $_COOKIE['mobil'] == 10)){ 
+if(Registry::get('device') == 'computer' or ($_COOKIE['mobil'] and $_COOKIE['mobil'] == 10)){ 
 $desctop = true;
 }else{
 $desctop = false;
@@ -24,8 +24,8 @@ $desctop = false;
 		<?php } ?>
 				</ul>
 			</div>
-<div class="col-md-12 col-lg-8 col-xl-8">
-<div class="col-xs-12 col-md-12 col-xl-12 text-center m">
+<div class="col-md-12 col-lg-8 col-xl-8 px-3 ">
+<div class="col-xs-12 col-md-12 col-xl-12 text-center m bg-white py-1">
 <div class="btn-group" role="group" aria-label="Basic example">
 <?php
 		foreach ($this->blog_cat as $value) { ?>
@@ -38,9 +38,9 @@ $desctop = false;
 		p img{display:none;}
 		.media img{max-width:500px;
 		width:100%;}
-		</style>
+		</style> 
 <?php foreach ($this->blog as $value) { ?>
-		<div class="col-md-12  m-1 p-2 bg-white">
+		<div class="col-md-12   p-3  bg-white">
 		<h2 style="font-size: 2rem;"><a href="<?=$value->getPath(); ?>"><?=$value->getPostName();?></a></h2> 
 		<div class="row">
 		<div class="col-md-12 m-2">

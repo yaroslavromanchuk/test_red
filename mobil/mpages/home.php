@@ -1,13 +1,25 @@
 <!--новый банер-->
 <div class="row">
 	<div class="slider-baner col-md-12 col-xl-12 px-0" >
-     <?php   foreach ($this->block6 as $block) { ?>
-			<div class="item" style="text-align:center;"  >
+            <div id="moby_slider" class="carousel slide" data-ride="carousel" data-keyboard="true">
+  <div class="carousel-inner">
+           <?php $i=0;  foreach ($this->block6 as $block) { ?>
+			<div class="carousel-item <?=$i==0?'active':''?>"  >
 				<a class="img" href="<?=$block->getUrl()?>">
-					<img  class="w-100" src="<?=$block->getImage()?>" alt="<?=$block->getName()?>" onclick="dataLayer.push({'event': 'banner'});" />
+					<img  class="d-block w-100" src="<?=$block->getImage()?>" alt="<?=$block->getName()?>" onclick="dataLayer.push({'event': 'banner'});" />
 				</a>
 			</div>
-<?php }?>
+<?php $i++; }?>
+  </div>
+  <a class="carousel-control-prev" href="#moby_slider" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#moby_slider" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div>
 	</div>
 </div>
 <!--/ новый банер-->
@@ -23,22 +35,16 @@ $cats = wsActiveRecord::useStatic('Shopcategories')->findAll(array('active'=>1, 
 		foreach($cats as $c){
 		if($i == 2 or $i == 4 or $i == 6 or $i == 8) echo '</div><div class="row">';
 		?>
-			<div class="col-xs-12" style="width:50%;">
-				<a class="category" href="<?php if($c->id==106 ||$c->id==146 ||$c->id==12 || $c->id==248 || $c->id==11){echo $c->getPath();}else if($c->id==267){ echo '/category/id/';}else{echo'?page=m_g&id='.$c->id;} ?>">
-					<div class="category-logo" style="background-image: url('<?php echo $c->getLogo();?>');" > </div>
-					<p class="category-header"><?=$c->getName();?></p>
+			<div class="col-xs-12 w-50">
+                            <a class="category" href="<?=$c->getPath()?>">
+					<div class="category-logo" style="background-image: url('<?=$c->getLogo()?>');" > </div>
+					<p class="category-header"><?=$c->getName()?></p>
 				</a>
 			</div>
 	<?php $i++; } ?>
 	</div>
 	</div>
 </div>
-</div>
-<script>
-$(document).ready(function(){
-   $('.slider-baner').slick({ accessibility: true, adaptiveHeight: true, arrows: false, autoplay: true, autoplaySpeed: 3000, draggable: true, easing: 'fade', fade: true, speed: 1000, dots: true });
-});
-</script>
 <script>
     window.rnt=window.rnt||function(){(rnt.q=rnt.q||[]).push(arguments)};
     rnt('add_event', {advId: 20676});

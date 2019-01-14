@@ -1,5 +1,5 @@
 <?php 
-if(@$this->totalPages){
+if($this->totalPages){
  $url = explode('?', $_SERVER['REQUEST_URI']);
     if (count($url) == 2) {
         $ur = $url[0];
@@ -51,4 +51,7 @@ $text.='<nav aria-label="..." style="text-align:  center;">
 echo $text;
 echo '<p style="font-size:  100%;text-align:  center;margin:  auto;">Страниц: '.$this->totalPages.', записей: '.$this->count.' </p>';
 }
-?>
+
+
+
+

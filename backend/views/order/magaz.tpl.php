@@ -5,9 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>
 	<meta name="robot" content="no-index,no-follow"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<script src="<?=$this->files?>scripts/jquery.js" type="text/javascript" charset="utf-8"></script>
+<script src="<?=$this->files?>scripts/jquery.js"  charset="utf-8"></script>
 </head> 
-<style type="text/css">
+<style>
 	body {font-size: 10px;font-family:  verdana;}
     .tt_border_bottom {border-bottom: solid 2px #000;}
     .fnt_size_1 {font-size: 14px;}
@@ -27,17 +27,17 @@
             <table border="0" cellpadding="0" cellspacing="0" width="100%">
                 <tr>
 					 <td align="left" valign="top">
-                        <img src="/img/_new_logo.png" style="padding-bottom: 5px;" alt=""/>
+                        <img src="/img/logo/RED_Logo_RGB.png" style="padding-bottom: 5px;width: 100px;" alt=""/>
                     </td>
                     <td align="left" valign="top" style="padding-top: 5px;">
-        <span style="color: #FA0000; font-size: 14px; font-style: italic; font-family: Verdana,Tahoma,Arial; letter-spacing: -1px;">
+        <span style="color: #FA0000; font-size: 14px; font-style: italic;  letter-spacing: -1px;">
             Большие бренды - маленькие цены!
         </span><br>
 		<span>(044) 224-40-00 | (063) 809-35-29 | (067) 406-90-80</span>
                     </td>
 					<td style="text-align:center;">
 					<strong>Интернет-магазин «RED.UA»</strong><br>
-					 http://www.red.ua<br>
+					 https://www.red.ua<br>
 					  <strong>E-mail: market@red.ua</strong>
                     </td>
                 </tr>
@@ -45,8 +45,9 @@
         </td>
     </tr>
     <tr>
-        <td colspan="10" align="center" class="fnt_size_3">
-            <br/>
+        <td colspan="2" rowspan="2"><img src="/images/barcodeimage.php?text=<?=$this->order->getId()?>" alt="Barcode Image" /></td>
+        <td colspan="6" align="center" class="fnt_size_3">
+            
             <strong>Товарный чек
                 № <?=$this->order->getId()?>
 				<?php
@@ -70,11 +71,13 @@
 						}
 				?></strong>
         </td>
+        <td colspan="2"></td>
     </tr>
     <tr>
-        <td colspan="10" align="center" class="fnt_size_1">
+        <td colspan="6" align="center" class="fnt_size_1">
             <strong>от <?=$this->date_today?> года</strong>
         </td>
+        <td colspan="2"></td>
     </tr>
     <tr>
         <td colspan="10">
@@ -101,7 +104,8 @@
                 <b>Удачных покупок!</b>
             </p>
         </td>
-		<td colspan="3"><p  class="qr<?=$this->order->getId()?>"></p></td>
+	<td colspan="3"><p  class="qr<?=$this->order->getId()?>"></p>
+        </td>
     </tr>
     <!-- TOVAR TITLES-->
     <tr >
@@ -141,9 +145,8 @@
     <?php
     $i = 1;
     $c = $this->getOrder()->getSkuCount();
-    $total_price = 0;
-    $to_pay = 0;
-    $to_pay_minus = 0.00;
+   // $total_price = 0;
+
 	
 	$price_real = 0;
 	$t_real_price = 0;
@@ -160,7 +163,7 @@
 	
 		$price_show = $article_rec->getPerc($this->order->getAllAmount());//вычисление цены и скидка на товар
 		
-			$sum_skudka += $price_show['minus']/$article_rec->getCount(); //сумируется общая скидка
+			//$sum_skudka += $price_show['minus']/$article_rec->getCount(); //сумируется общая скидка
 			
 				$skid_show = round((1 - (($price_show['price']/$article_rec->getCount())/ $price_real)) * 100);//вычисление процента скидки по товару
 					
@@ -215,20 +218,17 @@ echo $skid_show ? '<span '.$st.'>'.$skid_show.' %</span>' : '';
         $i++;
 		}
     }
-	
-	if($this->getOrder()->getBonus() > 0){ $bonus = true; }else{ $bonus = false; }
-	
-    $to_pay = $this->getOrder()->calculateOrderPrice2(true, true, true, $bonus); //общая сумма к оплате
-	
-	$to_pay_minus = $sum_skudka;//общая скидка
 
+    //$to_pay = $this->getOrder()->calculateOrderPrice2(true, true); //общая сумма к оплате
+   $to_pay = Number::formatFloat($this->order->amount, 2);
+   $t_minus = $t_real_price - $this->getOrder()->getAmount();
     $kop = round(($to_pay - toFixed($to_pay)) * 100, 0);
     ?>
     <tr>
         <td colspan="2" width="125" style="border: 2px solid #000000; border-top: none; text-align: center;"><b>Заполняет касcир</b></td>
         <td colspan="2"></td>
         <td colspan="4" align="right">
-            <strong>Всего:</strong>
+            <strong>Всего: </strong>
         </td>
         <td class="border_left border_right" align="right" colspan="2">
             <strong><?=Number::formatFloat($t_real_price, 2)?></strong>
@@ -256,17 +256,16 @@ echo $skid_show ? '<span '.$st.'>'.$skid_show.' %</span>' : '';
 		<td colspan="2" style=" border: 2px solid #000000; border-top: none;"><b>Дата:</b></td>
 			<td colspan="2">**</td>
 			<td colspan="4" align="right"><i>Сумма общей скидки</i></td>
-			<td class="border_all border_right" align="right" colspan="2"><i><?=Number::formatFloat($to_pay_minus, 2)?></i></td>
+			<td class="border_all border_right" align="right" colspan="2"><i><?=Number::formatFloat($t_minus, 2)?></i></td>
 	</tr>
 <?php
-$min_sum_bonus = Config::findByCode('min_sum_bonus')->getValue();
-		if($this->getOrder()->getBonus() > 0 and $to_pay >= $min_sum_bonus){?>
+		if($this->getOrder()->getBonus() > 0 and $to_pay >= Config::findByCode('min_sum_bonus')->getValue()){ ?>
 		<tr>
             <td colspan="2" style=" border: 2px solid #000000; border-top: none;"></td>
 			<td colspan="2"></td>
 			<td colspan="4" align="right"><i>Бонусная скидка</i></td>
             <td class="border_all border_right" align="right" colspan="2">
-                <i><?php echo Number::formatFloat($this->getOrder()->getBonus(), 2) ?></i>
+                <i><?=Number::formatFloat($this->getOrder()->getBonus(), 2)?></i>
             </td>
         </tr>
 		<?php } ?>
@@ -277,22 +276,16 @@ $min_sum_bonus = Config::findByCode('min_sum_bonus')->getValue();
 				<i>Стоимость с учетом скидок</i>
 			</td>
 			<td class="border_all border_right" align="right" colspan="2">
-				<i>
-				<?php
-		if($this->getOrder()->getDeliveryCost() > 0 or $this->getOrder()->getDeposit() > 0) {
-		echo $this->getOrder()->calculateOrderPrice2(false, true, false, $bonus);
-		}else{ echo $to_pay;}
-		?>
-		</i>
+                            <i><?=$to_pay?></i>
 			</td>
 		</tr>
-    <?php if ($this->getOrder()->getDeposit() > 0) {?>
+    <?php if ($this->order->deposit > 0) { ?>
         <tr>
             <td colspan="2" style=" border: 2px solid #000000; border-top: none;"></td>
             <td colspan="2"></td>
             <td colspan="4" align="right"><i>Депозит</i></td>
             <td class="border_all border_right" align="right" colspan="2">
-                <i><?php echo Number::formatFloat($this->getOrder()->getDeposit(), 2)?></i>
+                <i><?php echo Number::formatFloat($this->order->deposit, 2)?></i>
             </td>
         </tr>
     <?php } ?>
@@ -316,7 +309,7 @@ $min_sum_bonus = Config::findByCode('min_sum_bonus')->getValue();
                     $sum = explode(',', $to_pay);
                     echo $sum[0];
                     ?> грн.
-                    <?php echo @$sum[1] ? @$sum[1] : '00'?> коп.
+                    <?php echo $sum[1] ? $sum[1] : '00'?> коп.
                     (<?php  echo Plural::currency(Number::formatFloat($to_pay, 2), $kop);?>)</strong></i>
             <br/><br/>
         </td>
@@ -364,7 +357,7 @@ $min_sum_bonus = Config::findByCode('min_sum_bonus')->getValue();
             <table border="0" cellpadding="0" cellspacing="0" width="100%">
                 <tr>
 					 <td align="left" valign="top">
-                        <img src="/img/_new_logo.png" style="padding-bottom: 5px;" alt=""/>
+                        <img src="/img/logo/RED_Logo_RGB.png" style="padding-bottom: 5px;width: 100px;" alt=""/>
                     </td>
                     <td align="left" valign="top" style="padding-top: 5px;">
         <span style="color: #FA0000; font-size: 14px; font-style: italic; font-family: Verdana,Tahoma,Arial; letter-spacing: -1px;">
@@ -422,7 +415,7 @@ foreach ($this->getOrder()->getArticles() as $main_key => $article_rec) {
 	<td colspan="3" class="border">
 	<b><?=$article_rec->getTitle() . ', <br>' . wsActiveRecord::useStatic('Size')->findById($article_rec->getSize())->getSize() . ', ' . wsActiveRecord::useStatic('Shoparticlescolor')->findById($article_rec->getColor())->getName();?></b>
 	</td>
-	<td class="border" align="center" style="font-size: 12px;">
+	<td class="border" align="center" >
 	<?php if($article_rec->getCount()) {?>
 				<img src="/images/barcodeimage.php?text=<?=$article_rec->getCode()?>" alt="Barcode Image" />
 				<br><?=$article_rec->getCode()?>
@@ -442,7 +435,8 @@ foreach ($this->getOrder()->getArticles() as $main_key => $article_rec) {
 	?>
 	<tr><td colspan="10"  style="text-align:center"><p style="line-height: 2;">
 	<i>На основании вышеупомянутого и Закона Украины "Про защиту прав потребителея" от 12.05.1991 г. №1023-ХII, прошу:</i></p>
-	<p>Возместить денежные средства за приобретенный товар в размере __________ грн., ________коп. ________________________________________________________</p><figcaption style="margin-top: -10px;font-size: 12px;"></i>(сумма цифрами и прописью)</i></figcaption>
+	<p>Возместить денежные средства за приобретенный товар в размере __________ грн., ________коп. ________________________________________________________</p>
+        <figcaption style="margin-top: -10px;"></i>(сумма цифрами и прописью)</i></figcaption>
 	</td></tr>
 	<tr><td  colspan="10"  style="text-align:left">
 	<b>Выберите вариант возмещения:</b>
@@ -450,8 +444,14 @@ foreach ($this->getOrder()->getArticles() as $main_key => $article_rec) {
 	<tr><td colspan="2"  style="text-align:center">
 	☐<br>☐</td>
 	<td colspan="8"  style="text-align:left">
-	на депозит<br>
-	почтовым переводом по адресу ___________________________________________________
+            <b>на депозит</b> - внутренний счет в аккаунте на сайте red.ua<br>
+	<b>почтовый перевод Укрпочтой</b> - адрес по которому я хочу получить перевод:</td>
+            </tr>
+        <tr>
+            <td colspan="10"><br>
+        *Индекс________, *город______________, *ул.________________, дом_____, кв.______<br><br>
+        * - Поля обязательные для заполнения при возврате почтовым переводом.<br>
+        <b>Отсутствие корректно заполненых данных не гарантирует своевременную отправку почтового перевода!</b>
 	</td></tr>
 	<tr><td colspan="10"  style="text-align:left">
 	К заявлению прилогаются необходимые для возврата денежных средств документы:<br>
@@ -461,10 +461,10 @@ foreach ($this->getOrder()->getArticles() as $main_key => $article_rec) {
 	<tr><td colspan="5"  style="text-align:left">
 	"____" ____________ <?=date("Y")?>.г
 	</td>
-	<td colspan="2" style="text-align:center"><p>_____________ </p><figcaption style="margin-top: -10px;font-size: 12px;"></i>(подпись)</i></figcaption>
+	<td colspan="2" style="text-align:center"><p>_____________ </p><figcaption style="margin-top: -10px;"></i>(подпись)</i></figcaption>
 	<td colspan="3" style="text-align:center"><p>
 	(_________________)</p>
-	<figcaption style="margin-top: -10px;font-size: 12px;"></i>(ФИО)</i></figcaption>
+	<figcaption style="margin-top: -10px;"></i>(ФИО)</i></figcaption>
 	</td></tr>
 	</table>
 	<div style='page-break-after: always;'></div>

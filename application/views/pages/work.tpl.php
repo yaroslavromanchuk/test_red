@@ -1,11 +1,9 @@
-<h1><?=$this->getCurMenu()->getName()?></h1>
 <div class="row mx-auto">
-<div class="col-xl-12" style="    background: white;
-    padding: 30px;">
+<div class="col-xl-12" style="    background: white; padding: 30px;">
 <?=$this->getCurMenu()->getPageBody()?>
 </div>
  </div>
- <script type="text/javascript" src="https://rabota.ua/export/context/company.js"></script>
+ <script src="https://rabota.ua/export/context/company.js"></script>
 <!--
 <h1><strong>Анкета на работу:</strong></h1>
 
@@ -162,7 +160,8 @@
 </form>-->
 
 
-<script type="text/javascript">
+<script >
+    /*
 function uroven1(){
 $('.red').removeClass('red');
 if($("select#works").val()== 0){
@@ -287,5 +286,5 @@ $('#b8').show();
 $('#f8').show();
 }
 }
-
+*/
 </script>

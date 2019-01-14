@@ -29,8 +29,7 @@ class Orm_Statement extends Zend_Db_Select
     		$this->_db = $adapter;
         /*$this->_adapter = $adapter;
         $this->_parts = self::$_partsInit;*/
-		if(Registry::isRegistered('SQLLogger'))
-			$this->sqllog = Registry::get('SQLLogger');
+		if(Registry::isRegistered('SQLLogger')){$this->sqllog = Registry::get('SQLLogger');}
         $this->_class_name = $class_name;
     }
     

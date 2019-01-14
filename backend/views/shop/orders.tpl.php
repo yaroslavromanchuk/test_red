@@ -10,38 +10,38 @@
 
 	 <div class="form-group">
     <label for="order" class="ct-110 control-label">№ заказа:</label>
-    <div class="col-xs-6">
-	<input type="text" class="form-control input" value="<?=$_GET['order']?>" name="order" id="order" placeholder="Введите №"/>
+    <div class="col-xs-8">
+	<input type="text" class="form-control input" onkeyup="var yratext=/['%']/; if(yratext.test(this.value)) this.value=''" value="<?=$_GET['order']?>" name="order" id="order" placeholder="Введите №"/>
     </div>
   </div>
    <div class="form-group">
     <label for="customer_id" class="ct-110 control-label">ID клиента:</label>
-    <div class="col-xs-6">
+    <div class="col-xs-8">
 	<input type="text" class="form-control input" value="<?=$_GET['customer_id']?>" name="customer_id" id="customer_id" placeholder="Введите ID"/>
     </div>
   </div>
   <div class="form-group">
     <label for="phone" class="ct-110 control-label">Телефон:</label>
-    <div class="col-xs-6">
+    <div class="col-xs-8">
 	<input type="text" class="form-control input" value="<?=$_GET['phone']?>" name="phone" id="phone" placeholder="Введите Телефон"/>
     </div>
   </div>
   <div class="form-group">
     <label for="email" class="ct-110 control-label">Email:</label>
-    <div class="col-xs-6">
+    <div class="col-xs-8">
 	<input type="email" class="form-control input" value="<?=$_GET['email']?>" name="email" id="email" placeholder="Введите Еmail"/>
     </div>
   </div>
    <div class="form-group">
     <label for="uname" class="ct-110 control-label">Имя:</label>
-    <div class="col-xs-6">
+    <div class="col-xs-8">
 	<input type="text" class="form-control input" value="<?=$_GET['uname']?>" name="uname" id="uname" placeholder="Введите Имя"/>
     </div>
   </div>
   <div class="form-group">
     <label for="delivery" class="ct-110 control-label">Доставка:</label>
-    <div class="col-xs-6">
-	 <select name="delivery" class="form-control input" id="delivery" >
+    <div class="col-xs-8">
+	 <select name="delivery" class="form-control input select2" id="delivery" >
 				<option value="">Все</option>
 				<?php foreach (wsActiveRecord::useStatic('DeliveryType')->findAll(array('active'=> 1), array('sort'=>'ASC')) as $d) { ?>
 				 <option value="<?=$d->id?>" <?php if(isset($_GET['delivery']) and $_GET['delivery'] == $d->id ) echo 'selected="selected"'; ?> ><?=$d->name;?></option>
@@ -55,8 +55,8 @@
   </div>
   <div class="form-group">
     <label for="status" class="ct-110 control-label">Статус:</label>
-    <div class="col-xs-6">
-	 <select name="status"  id="status" class="form-control input">
+    <div class="col-xs-8">
+	 <select name="status"  id="status" class="form-control input select2">
 				<option value="999">Все</option>
 				<?php foreach ($this->order_status as $key => $item) { ?>
                 <option value="<?=$key;?>" <?php if(isset($_GET['status']) and $_GET['status'] == $key ) echo 'selected="selected"'; ?> ><?=$item;?></option>
@@ -64,9 +64,21 @@
 			</select>
     </div>
   </div>
+    <div class="form-group">
+    <label for="status" class="ct-110 control-label">Ответственный:</label>
+    <div class="col-xs-8">
+	 <select name="admin"  id="admin" class="form-control input select2" data-placeholder="Выберите админа" >
+		   <option label="Выберите админа"></option>		
+             <option value="0" >Все</option>
+				<?php foreach (wsActiveRecord::useStatic('Customer')->findAll(array('customer_type_id'=> 5)) as $key => $item) { ?>
+                <option value="<?=$item->id?>" <?php if(isset($_GET['admin']) and $_GET['admin'] == $item->id ) echo 'selected="selected"'; ?> ><?=$item->first_name?></option>
+            <?php } ?>
+			</select>
+    </div>
+  </div>
      <div class="form-group">
     <label for="nakladna" class="ct-110 control-label">Накладная:</label>
-    <div class="col-xs-6">
+    <div class="col-xs-8">
 	<input type="text" class="form-control input" value="<?=$_GET['nakladna']?>" name="nakladna" id="nakladna" placeholder="№"/>
     </div>
 	<div id="view_serch" class="r-s" onclick="view_block(this);return false;" data-placement="top"  data-tooltip="tooltip" title="Показать детали"></div>
@@ -74,21 +86,21 @@
   <div id="view_block" class="s-b">
    <div class="form-group">
     <label for="create_from" class="ct-110 control-label">Дата создания:</label>
-    <div class="col-xs-6">
+    <div class="col-xs-8">
 	<input type="date"   value="<?=$_GET['create_from']?>" class="form-control input " name="create_from"  id="create_from" placeholder="от" size="9" />
 	<input type="date"  value="<?=$_GET['create_to']?>" class="form-control input " name="create_to" placeholder="до" size="9" />
     </div>
   </div>
    <div class="form-group">
     <label for="go_from" class="ct-110 control-label">Дата отправки:</label>
-    <div class="col-xs-6">
+    <div class="col-xs-8">
 	<input type="date"   value="<?=$_GET['go_from']?>" class="form-control input " name="go_from"  id="go_from" placeholder="от" size="9" />
 	<input type="date"  value="<?=$_GET['go_to']?>" class="form-control input " name="go_to" placeholder="до" size="9" />
     </div>
   </div>
  <div class="form-group">
     <label for="price" class="ct-110 control-label">Цена:</label>
-    <div class="col-xs-6">
+    <div class="col-xs-8">
 	<input type="text" class="form-control input" value="<?=$_GET['price']?>" name="price" id="price" placeholder="+- 3 грн"/>
     </div>
   </div>
@@ -137,9 +149,9 @@
   <div class="panel-body" style="padding: 10px;">
    <label for="order_status_all">Массовое изменение статуса:</label><br>
     <select name="order_status_all" id='order_status_all' class="form-control input" >
-        <option>Выберите статус</option>
+        <option value="">Выберите статус</option>
         <?php foreach ($this->order_status as $key => $item) { ?>
-                <option value="<?=$key;?>"><?=$item;?></option>
+                <option value="<?=$key?>"><?=$item?></option>
             <?php } ?>
     </select>
 	<button class="btn btn-small btn-default" id="all_status" type="button" ><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Изменить</button>
@@ -157,22 +169,21 @@ $(".s-b").slideDown();
 }
 }
     $(document).ready(function () {
-        $('#all_status').click(function () {
-            if ($('#order_status_all option:selected').val() != '') {
+        $('#all_status').click(function () {    
+            if ($('#order_status_all option:selected').val() !== '') {
                 if ($('.order-item:checked').val()) {
-                    id = '';
-                    i = 0;
+                   var arr = [];
                     jQuery.each($('.order-item:checked'), function () {
-                        if (i != 0) {
-                            id += ',' + $(this).attr('name').substr(5);
-                        } else {
-                            id += $(this).attr('name').substr(5);
-                        }
-                        i++;
+                        arr.push($(this).attr('name').substr(5));
                     });
-                    window.location = '/admin/allstatus/id/' + id + '/status/' + $('#order_status_all option:selected').val();
-
+                    var id = arr.join(',');
+                  //console.log(id);
+                   window.location = '/admin/allstatus/id/' + id + '/status/' + $('#order_status_all option:selected').val()+'/';
+                }else{
+                    alert('Выберите заказы!');
                 }
+            }else{
+                alert('Выберите статус для изменения!');
             }
         });
     });
@@ -193,34 +204,29 @@ $(".s-b").slideDown();
 	$('#all').change(function () {
 	if ($('.order-item:checked').val()) {
 	$('.all-error').removeClass('in');
-                id = '';
-                i = 0;
+               var arr = [];
                 jQuery.each($('.order-item:checked'), function () {
-                    if (i != 0) {
-                        id += ',' + $(this).attr('name').substr(5);
-                    } else {
-                        id += $(this).attr('name').substr(5);
-                    }
-                    i++;
+                   arr.push($(this).attr('name').substr(5));
                 });
+                 var id = arr.join(',');
 			   switch(this.value) {
-			    case '1' : 
-				window.location = '/admin/allarticles/id/' + id;
+                                case '1' : 
+				window.location = '/admin/allarticles/id/' + id+'/';
 					break;
 				case '2' : 
-				window.location = '/admin/allarticlesExcel/id/' + id;
+				window.location = '/admin/allarticlesExcel/id/' + id+'/';
 					break;
 				case '3' : 
-				window.location = '/admin/nowapochtaexel/id/' + id;
+				window.location = '/admin/nowapochtaexel/id/' + id+'/';
 					break;
 				case '4' : 
-				window.location = '/admin/exelkurer/id/' + id;
+				window.location = '/admin/exelkurer/id/' + id+'/';
 					break;
 				case '5' : 
-				window.location = '/admin/exeltoarticles/id/' + id;
+				window.location = '/admin/exelarticles/id/' + id+'/';
 					break;
-				//default :
-				//	alert('Неизвестное значение: ' + this.value);	
+				default :
+					alert('Неизвестное значение: ' + this.value);	
 			   }  
             }else{
 			$('.all-error').toggleClass('in');
@@ -246,6 +252,7 @@ $(".s-b").slideDown();
         });
     });
 </script>
+<?php if(!$this->user->isPointIssueAdmin()){ ?>
 <div class="panel panel-default" style="margin-bottom:5px;">
   <div class="panel-body" style="padding: 10px;">
 <label>Действия над заказами:</label><br>
@@ -254,6 +261,7 @@ $(".s-b").slideDown();
 <span class="form-group  fade complect-error" style="color: #ce0000;"><i class="glyphicon glyphicon-arrow-left" aria-hidden="true"></i> Выберите заказы</span>
 </div>
 </div>
+<?php } ?>
 <script>
     function NowaMail(id, object) {
         $.post('/admin/nowamail/', {id: id}, function (data) {
@@ -273,7 +281,7 @@ $(".s-b").slideDown();
                     }
                     i++;
                 });
-                window.location = '/admin/ordercomplect/id/' + id;
+                window.location = '/admin/ordercomplect/id/' + id+'/';
 
             }else{
 			$('.complect-error').toggleClass('in'); 
@@ -291,7 +299,7 @@ $(".s-b").slideDown();
                     }
                     i++;
                 });
-                window.location = '/admin/orderuncomplect/id/' + id;
+                window.location = '/admin/orderuncomplect/id/' + id+'/';
 
             }else{
 			$('.complect-error').toggleClass('in'); 
@@ -342,7 +350,7 @@ $(".s-b").slideDown();
                     }
                     i++;
                 });
-				window.open ( '/admin/masgenerateorder/ids/' + id + '/type/' + $('#masrintordertype').val(), '_blank');
+				window.open ( '/admin/masgenerateorder/ids/' + id + '/type/' + $('#masrintordertype').val()+'/', '_blank');
 
             }else{
 			$('.masrintordertype-error').toggleClass('in'); 
@@ -361,7 +369,7 @@ $(".s-b").slideDown();
                     }
                     i++;
                 });
-				window.open ( '/admin/masgeneratenakl/ids/' + id + '/type/' + $('#masrintordertype').val(), '_blank');
+				window.open ( '/admin/masgeneratenakl/ids/' + id + '/type/' + $('#masrintordertype').val()+'/', '_blank');
 
             }else{
 			$('.masrintordertype-error').toggleClass('in'); 
@@ -425,13 +433,13 @@ $(".s-b").slideDown();
                     });
 		  switch(this.value) {
 			    case '1' : 
-				 window.open ( '/admin/masgenerateblank/ids/' + id , '_blank');
+				 window.open ( '/admin/masgenerateblank/ids/' + id+'/' , '_blank');
 					break;
 				case '2' : 
-				window.open ( '/admin/masgeneratechek/ids/' + id , '_blank');
+				window.open ( '/admin/masgeneratechek/ids/' + id+'/' , '_blank');
 					break;
 				case '3' : 
-				window.open ( '/admin/masgenerateblank_test/ids/' + id , '_blank');
+				window.open ( '/admin/masgenerateblank_test/ids/' + id+'/' , '_blank');
 					break;
 				//default :
 				//	alert('Неизвестное значение: ' + this.value);	
@@ -512,7 +520,7 @@ $("#ttn").focus();
                     }
                     i++;
                 });
-                window.open ( '/admin/masgenerateblank/ids/' + id , '_blank');
+                window.open ( '/admin/masgenerateblank/ids/' + id+'/' , '_blank');
 
             }
         });
@@ -560,7 +568,7 @@ $.get('/admin/novapochta/ukr/'+x+'/metod/ukr/',
 }
 //получение информации по посылке trekko
 function k_tracking(x) {
-$.get('/admin/trekko/metod/status/id/'+x,
+$.get('/admin/trekko/metod/status/id/'+x+'/',
 		function (data) {
 		if(data){
 		console.log(data);
@@ -570,8 +578,24 @@ $.get('/admin/trekko/metod/status/id/'+x,
 		return false;
 }
     </script>
-	<div class="row">
-    <table cellspacing="0" cellpadding="4" id="orders" class="table  table-hover">
+<div class="row">
+    <?php $item_page = $_COOKIE['item_page']?$_COOKIE['item_page']:40; ?>
+    <nav aria-label="..." style="text-align:  center;">
+<ul class="pagination" style="margin: 2px auto">
+    <li <?php if($item_page == 40){echo 'class="active"';  } ?>><a href="#" <?php if($item_page != 40){ echo 'disabled'; ?> onclick="set_item_onPage(40);"  <?php } ?> ><span >40</span></a></li>
+    <li <?php if($item_page == 60){echo 'class="active"'; } ?>><a href="#" <?php if($item_page != 60){echo 'disabled'; ?> onclick="set_item_onPage(60);"  <?php  } ?> ><span>60</span></a></li>
+    <li <?php if($item_page == 80){echo 'class="active"'; } ?>><a href="#" <?php if($item_page != 80){echo 'disabled'; ?> onclick="set_item_onPage(80);"  <?php  } ?> ><span>80</span></a></li>
+</ul>
+    </nav>
+
+<script>
+    function set_item_onPage(e){
+        document.cookie = "item_page =" + e;
+location.reload();
+    }
+</script>
+    <table  id="orders" class="table  table-hover">
+        <thead>
         <tr>
 		<th><label class="ckbox" data-tooltip="tooltip" title="Выделить все заказы"><input onchange="chekAll();" class="chekAll" type="checkbox"/><span></span></label></th>
             <th></th>
@@ -587,9 +611,13 @@ $.get('/admin/trekko/metod/status/id/'+x,
             <th>Статус/ТТН</th>
 			<th>Пометка</th>
         </tr>
+        </thead>
+        <tbody>
         <?php $row = 'row2'; foreach ($this->getOrders() as $order) {
+            $admin = [24148=>'Сергей', 36213=> 'Юра', 37075=>'Андрей'];
+            
             $row = ($row == 'row2') ? 'row1' : 'row2';
-            $order_owner = new Customer($order->getCustomerId());
+            $order_owner =  $order->customer; //new Customer($order->getCustomerId());
             ?><?php if($order->getIsUnitedly() != 1){ ?>
             <tr class="<?=$row?>" >
                 <td>
@@ -601,11 +629,26 @@ $.get('/admin/trekko/metod/status/id/'+x,
               <?php if(true){ ?>
 			  <i class="icon ion-clock bleak tx-30 pd-5 history" alt="История" data-id="<?=$order->getId()?>" data-placement="left" title="Смотреть историю заказа"  data-tooltip="tooltip" ></i>
 
-			<?php  }else{ ?><a target="_blank" href="/admin/orderhistory/id/<?=$order->getId();?>">
+			<?php  }else{ ?><a target="_blank" href="/admin/orderhistory/id/<?=$order->getId();?>/">
                <img alt="История" src="/img/icons/histori.png" data-placement="left"  data-tooltip="tooltip" class="img_return" title="Смотреть историю заказа" ></a><?php }?>
-               <?php } ?>
+               <?php }
+               if($this->admin_rights['535']['right'] == 1 and $order->delivery_type_id == 4 and !$order->nakladna){ ?>
+                   
+                <a target="_blank" href="/admin/ukrpost/new-shipment/id/<?=$order->getId();?>/">
+                 <i class="icon n ion-ios-briefcase-outline bleak tx-30 pd-5 " alt="Посылка" data-id="<?=$order->getId()?>" data-placement="left" title="Оформить посылку"  data-tooltip="tooltip" ></i>
+                </a> 
+           <?php    }elseif($this->admin_rights['535']['right'] == 1 and ($order->delivery_type_id == 8 or  $order->delivery_type_id == 16) and !$order->nakladna){ ?>
+                <a target="_blank" href="/admin/novapochta/new/id/<?=$order->getId();?>/">
+                 <i class="icon n ion-ios-briefcase-outline bleak tx-30 pd-5 " alt="Посылка" data-id="<?=$order->getId()?>" data-placement="left" title="Оформить посылку"  data-tooltip="tooltip" ></i>
+                </a> 
+        <?php   }
+               ?>
                 </td>
-                <td><?=$order->getStat()->getName()?>
+                <td>
+                 <?php if($order->admin){?>
+                    <span style="font-size: 12px;color: red;">(<?=$admin[$order->admin]?>)</span><br>
+                <?php } ?>   
+        <?=$order->getStat()->getName()?>
                     <?php if ($order->getComlpect()) { ?>
                         Совмещенный заказ
                     <?php } ?>
@@ -617,7 +660,7 @@ $.get('/admin/trekko/metod/status/id/'+x,
                     <?php }
 ?>
                 </td>
-                <td><?=$order->getId();?><?php if ($order->getOldid()) echo ' / '.$order->getOldid(); ?></td>
+                <td><?=$order->getId()?><?php if ($order->getOldid()) echo ' / '.$order->getOldid(); ?></td>
                 <td style="width: 105px;"><?=date("d-m-Y H:i", strtotime($order->getDateCreate()));?></td>
                 <td><?php echo $order->getName() . ' ' . $order->getMiddleName(); ?><span class="help-block">id: <?=$order->getCustomerId()?></span></td>
                 <td><?php echo $order->getArticlesCount(); ?></td>
@@ -712,7 +755,7 @@ echo '<i class="icon ion-ios-close red tx-25 pd-5 history_pay_status" data-place
 				 <?php
 				 
 	if ($order_owner->getAdminComents()){ echo '<div class="pometka adm" data-placement="right"  data-tooltip="tooltip" title="'.$order_owner->admin_coments.'" style="background: #ff0000;"></div>';}
-	if($order->getDeposit() > 0) echo '<div class="pometka dep" data-placement="right"  data-tooltip="tooltip" title="Использован депозит" style="background: #00a600;"></div>';
+	if($order->getDeposit() > 0) echo '<div class="pometka dep" data-placement="right"  data-tooltip="tooltip" title="Использован депозит '.$order->getDeposit().' грн." style="background: #00a600;"></div>';
 	if($order->getKuponPrice() > 0 and $order->getKupon()) echo '<div class="pometka kup" data-placement="right"  data-tooltip="tooltip" title="Присутствует штрихкод: '.$order->getKupon().'" style="background: #aeb200;"></div>';
 	if($order->getBonus() > 0)  echo '<div class="pometka bon" data-placement="right"  data-tooltip="tooltip" title="Присутствует бонус '.$order->getBonus().' грн." style="background: #41befc;"></div>';
 	if($order->getArticlesEvent()) echo '<div class="pometka event" data-placement="right"  data-tooltip="tooltip" title="Присутствует дополнительная скидка" style="background: #41befc;"></div>';
@@ -736,18 +779,18 @@ if(/*$this->user->id == 8005*/ true){ ?>
 <?php } ?>
 
         <?php } ?>
-
+        </tbody>
     </table>
 	</div>
 <script>
 $('.history').click(function (e) {
 var id = e.target.attributes.getNamedItem("data-id").value;
-$.get('/admin/orderhistory/id/'+id+'/m/1',function (data) {fopen('История изменения заказа №'+id, data);});	
+$.get('/admin/orderhistory/id/'+id+'/m/1/',function (data) {fopen('История изменения заказа №'+id, data);});	
 });
 
 $('.history_pay_status').click(function (e) {
 var id = e.target.attributes.getNamedItem("data-id").value;
-$.get('/admin/historypaystatus/id/'+id,function (data) {fopen('История изменения статуса оплаты №'+id, data);});	
+$.get('/admin/historypaystatus/id/'+id+'/',function (data) {fopen('История изменения статуса оплаты №'+id, data);});	
 });
 function OrderEmail(id) {
 var form ='<div class="form-group"><label for="recipient-name" class="col-form-label">Тема:</label><input type="text" class="form-control" id="email_subject"></div><div class="form-group"><label for="message-text" class="col-form-label">Сообщение:</label><textarea class="form-control" id="mesageemail"></textarea></div>';
@@ -797,4 +840,4 @@ return false;
 	  }
     });
 </script>
-<?php } else echo 'Нет записей'; ?>
+<?php } else { echo 'Нет записей'; }?>

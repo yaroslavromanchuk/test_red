@@ -8,7 +8,7 @@
 		}
 
 		public function getPath() {
-			return "http://www.red.ua/event/activ/id/".substr(strtotime($this->getCtime()),3).'_'.$this->getId();
+			return "https://www.red.ua/event/activ/id/".substr(strtotime($this->getCtime()),3).'_'.$this->getId();
 		}
 
 		public function getCustomersCount() {

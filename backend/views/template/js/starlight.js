@@ -1,10 +1,4 @@
-/*!
- * Starlight v2.0.0 (https://themepixels.me/starlight)
- * Copyright 2017-2018 ThemePixels
- * Licensed under ThemeForest License
- */
-
- 'use strict';
+ //'use strict';
 
  $(document).ready(function(){
 
@@ -153,11 +147,12 @@
 
   // highlight syntax highlighter
   $('pre code').each(function(i, block) {
-    hljs.highlightBlock(block);
+    this.highlightBlock(block);
   });
 
   // Initialize tooltip
-  $('[data-toggle="tooltip"]').tooltip();
+  $("[data-tooltip='tooltip']").tooltip(); 
+
 
   // Initialize popover
   $('[data-popover-color="default"]').popover();
@@ -170,10 +165,27 @@
         //the 'is' for buttons that trigger popups
         //the 'has' for icons within a button that triggers a popup
         if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
-            (($(this).popover('hide').data('bs.popover')||{}).inState||{}).click = false  // fix for BS 3.3.6
+            (($(this).popover('hide').data('bs.popover')||{}).inState||{}).click = false;  // fix for BS 3.3.6
         }
 
     });
   });
+   $('.datatable1').DataTable({
+          //responsive: true,
+          language: {
+            searchPlaceholder: 'Поиск в таблице...',
+            sSearch: '',
+            lengthMenu: '_MENU_ записей/страница',
+			processing: "Выполняется обработка...",
+			info:       "Записи с _START_ по _END_ из _TOTAL_ ",
+			sInfoFiltered: '(найдено _TOTAL_ из _MAX_ записей)',
+			paginate: {
+            first:      "Первая",
+            previous:   "Придведущая",
+            next:       "Следующая",
+            last:       "Последняя"
+        },
+          }
+        });
 
 });

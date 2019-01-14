@@ -10,4 +10,4 @@ class wsCountry extends wsActiveRecord
 		return wsActiveRecord::useStatic(self::$_country_class)->findFirst(array('default'=>1));
 	}
 }
-?>
+

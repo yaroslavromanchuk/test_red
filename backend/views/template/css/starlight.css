@@ -102,7 +102,9 @@ html {
   -ms-overflow-style: scrollbar;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
-
+.simple_overlay{
+display:none;
+}
 *,
 *::before,
 *::after {
@@ -10538,7 +10540,7 @@ table.dataTable.no-footer {
   position: static;
   width: auto;
   height: auto;
-  padding: 40px;
+  padding: 20px;
 }
 .wizard > .content > .body input.parsley-error {
   border-color: #DC3545;

@@ -55,14 +55,38 @@ if($this->order){ ?>
 $i=1;
 $razom = 0;
 $raz_dop = 0;
+$or = [];
+foreach ($this->order as $r) {
+    $ord = new Shoporders($r->order_id);
+    if($ord->id){
+        if(array_key_exists($ord->customer_id, $or)){
+            $or[$ord->customer_id]['ammount'] = $or[$ord->customer_id]['ammount']+$r->amount;
+        $or[$ord->customer_id]['dop'] = $or[$ord->customer_id]['dop'] + $r->dop_suma;
+        }else{
+        $or[$ord->customer_id]['ammount'] = $r->amount;
+        $or[$ord->customer_id]['dop'] = $r->dop_suma;
+$adr ='';
+if($ord->index) {$adr.=$ord->index;}
+if($ord->city) {$adr.=',  г. '.$ord->city;}
+if($ord->street) {$adr.=',  ул. '.$ord->street;}
+if($ord->house) {$adr.=',  д. '.$ord->house;}
+if($ord->flat) {$adr.=',  кв. '.$ord->flat;}
 
-foreach($this->order as $r){
+$or[$ord->customer_id]['adr'] = $adr;
+$or[$ord->customer_id]['name'] = $ord->getName().' '.$ord->getMiddleName();
+$or[$ord->customer_id]['phone'] = $ord->getTelephone();
+        }
+        
+        
+    }
+   
+}
+//echo print_r($or);
+foreach ($or as $key => $value) {
 
-
-$ord = new Shoporders($r->order_id);
-$ammount = $r->amount+$r->dop_suma;
-$razom+=$ammount;
-$per = 0;
+        $ammount = $value['ammount']+$value['dop'];
+        $razom+=$ammount;
+        $per = 0;
 if($ammount <= 2000){
 $per = round($ammount - ($ammount*0.97), 2);
 }elseif(2000 < $ammount and $ammount <= 3000){
@@ -70,29 +94,24 @@ $per = round($ammount - ($ammount*0.99), 2);
 }elseif(3000 < $ammount){
 $per = round($ammount - ($ammount*0.992),2);
 }
-if($per < 15) $per = 15;
+if($per < 15) {$per = 15;}
  $raz_dop +=$per;
- ?>
+  ?>
 <tr >
 <td style="text-align:center;"><?=$i?></td>
-<?php
-$adr ='';
-if($ord->index) $adr.=$ord->index;
-if($ord->city) $adr.=',  г. '.$ord->city;
-if($ord->street) $adr.=',  ул. '.$ord->street;
-if($ord->house) $adr.=',  д. '.$ord->house;
-if($ord->flat) $adr.=',  кв. '.$ord->flat;
- ?>
-<td><?=$adr?></td>
-<td><?=$ord->getName().' '.$ord->getMiddleName()?></td>
+<td><?=$value['adr']?></td>
+<td><?=$value['name']?></td>
 <td style="text-align:center;"><?=$ammount?></td>
-<td style="text-align:center;"><?=$ord->getTelephone()?></td>
+<td style="text-align:center;"><?=$value['phone']?></td>
 <td style="text-align:center;"><?=$per?></td>
 <td></td>
 <td></td>
 </tr>
 
-<?php $i++; } ?>
+<?php
+$i++;
+}
+ ?>
 </table>
 <table style="width:100%;font-weight: 600;margin-top: 30px;">
 <tr><td  style="text-align:right;"></td><td  style="text-align:right; padding-right: 45%;">Разом: <?=$razom?></td></tr>

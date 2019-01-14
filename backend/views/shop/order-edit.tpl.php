@@ -1,9 +1,21 @@
-<div style="width: 260px;margin:auto;" class="row">
-<i class=" ion-calendar tx-30 pd-5" style="float:left;"></i><p style="font-size: 20px;float: left;padding: 5px;margin: 0 5px;">Заказ <span id="get_order_id"><?=$this->getOrder()->getId();?></span></p>
-<i class="icon ion-settings bleak tx-30 pd-5 view_detaly" data-placement="bottom"  data-tooltip="tooltip"  data-original-title="Показать детали"></i>
+<div class="row panel panel-primary" style="background-color: #ffffff78;">
+<div class="col-xl-12 text-center panel-heading " >
+    <div class="panel-title">
+        <div class="view_detaly" style="cursor: pointer;display: inline-flex;" data-placement="bottom"  data-tooltip="tooltip"  data-original-title="Показать детали" >
+    <div class="d-flex" style="display: inline-flex;">
+<i class=" ion-calendar tx-30 pd-5" style="float:left;"></i>
+<p style="font-size: 20px;color: white;padding: 5px;margin: 0 5px;">Заказ <span id="get_order_id"><?=$this->getOrder()->getId()?></span> <?=$this->order->stat->name?></p>
+    </div>
+    <div class="d-flex" style="display: inline-flex;">
+<i class="icon ion-settings white tx-30 pd-5 " ></i>
+    </div>
+        </div>
 <?php if ($this->user->isSuperAdmin()) { ?>
-<i class="icon ion-clock bleak tx-30 pd-5 history" alt="История" data-id="<?=$this->getOrder()->getId();?>" data-placement="bottom" title="" data-tooltip="tooltip" data-original-title="Смотреть историю заказа"></i>
-    <?php } ?>
+    <div class="d-flex" style="display: inline-flex;">
+<i class="icon ion-clock white tx-30 pd-5 history" alt="История" data-id="<?=$this->getOrder()->getId()?>" data-placement="bottom" title="" data-tooltip="tooltip" data-original-title="Смотреть историю заказа"></i>
+  </div> <?php } ?>
+    </div>
+
 <script>
   $(document).ready(function () {
         $('.view_detaly').click(function () {
@@ -16,107 +28,112 @@
 		});
 </script>
 </div>
-<?php if (@$this->errordell) { ?>
+<?php if ($this->errordell) { ?>
     <div id="errormessage"><img src="<?=SITE_URL;?>/img/icons/error.png" alt=""   class="page-img"/>
         <h1>Ошибки при удалении товара:</h1>
-        <p><?=$this->errordell;?></p>
+        <p><?=$this->errordell?></p>
     </div>
 <?php } ?>
 
-<div style=" width: 100%;    display: none;text-align: center;" class="detaly_order">
-<div style="display:inline-block; width:59%;margin-right: 1%;" >
-<p style="text-align:center;"><strong>Информация о покупателе</strong></p>
+<div style="display: none;" class="detaly_order row panel-body  pd-2">
+<div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+<div class="panel panel-info">
+<div class="panel-heading"><h3 class="panel-title">Информация о покупателе</h3></div>
+<div class="panel-body">
 <form method="POST" action="" id="user_info" class="form-horizontal">
-<table cellpadding="4" cellspacing="0" id="order-client" align="center">
+    <table  id="order-client" class="table">
 <?php
-//echo date("Y-m-d H:i:s", strtotime("now +2 days"));
-$order_owner = new Customer($this->getOrder()->getCustomerId());
-if ($order_owner->getAdminComents()) { ?>
+if($this->user->id == 8005){
+
+    
+}
+//$order_owner = new Customer($this->getOrder()->getCustomerId());
+if ($this->getOrder()->customer->getAdminComents()) { ?>
     <tr>
-        <td class="column-data">Комментарий админа</td>
-        <td style="color:red;"><?php echo $order_owner->getAdminComents(); ?></td>
+        <td  >Комментарий админа</td>
+        <td style="color:red;"><?=$this->order->customer->getAdminComents()?></td>
     </tr>
 <?php } ?>
 <tr>
-    <td class="column-data">ИД</td>
+    <td  >ИД</td>
     <td><b><?php echo $this->getOrder()->getCustomerId();?></b> <?php echo '   (Общая сумма заказов: <b>' . Shoparticles::showPrice($this->total_amount) . ' грн</b>)' ?></td>
 </tr>
 <tr>
-    <td class="column-data">Имя</td>
+    <td  >Имя</td>
     <td><input name="name" class="form-control input"  value="<?php echo ($this->getOrder()->getName() ? $this->getOrder()->getName() : "")?>"></td>
 </tr>
 <tr>
-    <td class="column-data">Фамилия</td>
+    <td  >Фамилия</td>
     <td><input name="middle_name" class="form-control input"  value="<?php echo ($this->getOrder()->getMiddleName() ? $this->getOrder()->getMiddleName() : "")?>"></td>
 </tr>
 
 <tr>
-    <td class="column-data">Адрес</td>
+    <td  >Адрес</td>
     <td><input name="address" class="form-control input"  value="<?php echo $this->getOrder()->getAddress() ? $this->getOrder()->getAddress() : ""; ?>"></td>
 </tr>
 <tr>
-    <td class="column-data">Город</td>
+    <td  >Город</td>
     <td><input name="city" class="form-control input"  value="<?php echo $this->getOrder()->getCity() ? $this->getOrder()->getCity() : ""; ?>"></td>
 </tr>
 <tr>
-    <td class="column-data">Область</td>
+    <td  >Область</td>
     <td><input name="obl" class="form-control input"  value="<?php echo $this->getOrder()->getObl() ? $this->getOrder()->getObl() : ""; ?>"></td>
 </tr>
 <tr>
-    <td class="column-data">Район</td>
+    <td  >Район</td>
     <td><input name="rayon" class="form-control input"  value="<?php echo $this->getOrder()->getRayon() ? $this->getOrder()->getRayon() : ""; ?>"></td>
 </tr>
 <tr>
-    <td class="column-data">Индекс</td>
+    <td  >Индекс</td>
     <td><input name="index" class="form-control input"  value="<?php echo $this->getOrder()->getIndex() ? $this->getOrder()->getIndex() : ""; ?>"></td>
 </tr>
 <tr>
-    <td class="column-data">Улица</td>
+    <td  >Улица</td>
     <td><input name="street"  class="form-control input" value="<?php echo $this->getOrder()->getStreet() ? $this->getOrder()->getStreet() : ""; ?>"></td>
 </tr>
 <tr>
-    <td class="column-data">Дом</td>
+    <td  >Дом</td>
     <td><input name="house" class="form-control input"  value="<?php echo $this->getOrder()->getHouse() ? $this->getOrder()->getHouse() : ""; ?>"></td>
 </tr>
 <tr>
-    <td class="column-data">Квартира</td>
+    <td  >Квартира</td>
     <td><input name="flat" class="form-control input"  value="<?php echo $this->getOrder()->getFlat() ? $this->getOrder()->getFlat() : ""; ?>"></td>
 </tr>
 <tr>
-    <td class="column-data">Склад</td>
+    <td  >Склад</td>
     <td><input name="sklad" class="form-control input"  value="<?php echo $this->getOrder()->getSklad() ? $this->getOrder()->getSklad() : ""; ?>"></td>
 </tr>
 <tr>
-    <td class="column-data">Телефон</td>
+    <td  >Телефон</td>
     <td><input name="telephone" class="form-control input"  value="<?php echo $this->getOrder()->getTelephone() ? $this->getOrder()->getTelephone() : ""; ?>"></td>
 </tr>
 <tr>
-    <td class="column-data">E-mail</td>
+    <td  >E-mail</td>
     <td><input name="email" class="form-control input"  value="<?php echo $this->getOrder()->getEmail() ? $this->getOrder()->getEmail() : ""; ?>" type="email"></td>
 </tr>
 <tr id="d_d"  <?php echo $this->getOrder()->getDeliveryTypeId() != 9 ? 'style="display:none;"': ''?>>
-    <td class="column-data">Дата доставки</td>
+    <td  >Дата доставки</td>
     <td><input name="delivery_date" class="form-control input"  value="<?php if($this->getOrder()->getDeliveryDate()) echo date('Y-m-d', strtotime($this->getOrder()->getDeliveryDate()))?>" type="date" ></td>
 </tr>
 <tr id="t_d" <?php echo $this->getOrder()->getDeliveryTypeId() != 9 ? 'style="display:none;"': ''?>>
-    <td class="column-data">Время доставки</td>
+    <td  >Время доставки</td>
     <td><input name="delivery_interval" class="form-control input"  value="<?php echo $this->getOrder()->getDeliveryInterval() ? $this->getOrder()->getDeliveryInterval() : ""; ?>" type="text" ></td>
 </tr>
 <tr>
-    <td class="column-data">Комментарий</td>
+    <td  >Комментарий</td>
     <td><?php echo trim($this->getOrder()->getComments()) ? '<div style="border:1px dashed #666; min-height: 18px;padding: 2px;background: #ffff33;">'.htmlspecialchars($this->getOrder()->getComments()).'</div>' : "отсутствует"; ?></td>
 </tr>
 <tr>
-    <td class="column-data">Способ доставки</td>
+    <td  >Способ доставки</td>
     <td>
         <select name="delivery_type_id" class="form-control input"  id="delivery_type">
          <?php foreach (wsActiveRecord::useStatic('DeliveryType')->findAll(array('active'=>1), array('sort'=>'ASC')) as $method) { ?>
          <option value="<?=$method->getId()?>" <?php if ($method->getId() == $this->getOrder()->getDeliveryTypeId()) echo 'selected="selected"'?>><?=$method->getName()?></option><?php } ?>
         </select>
-		</td>
+</td>
 </tr>
 <tr>
-    <td class="column-data">Способ оплаты</td>
+    <td  >Способ оплаты</td>
     <td>
         <select name="payment_method_id" class="form-control input"  id="payment_method">
             <?php foreach (wsActiveRecord::useStatic('DeliveryPayment')->findAll(array('delivery_id'=>$this->getOrder()->getDeliveryTypeId())) as $method) {
@@ -127,6 +144,17 @@ if ($order_owner->getAdminComents()) { ?>
 
     </td>
 </tr>
+<?php if(in_array($this->getOrder()->getPaymentMethodId(), [4,6]) ){ ?>
+<tr>
+    <td  >Открыть оплату</td>
+    <td>
+        <label class="ckbox"><input type="checkbox" <?php if($this->order->open_pay == 1){ echo 'checked';} ?>  name="open_pay"><span></span></label>
+
+    </td>
+</tr>
+   
+    
+<?php } ?>
 <script>
 function parseHash(){
 
@@ -152,7 +180,7 @@ if(page != null){
 				//$('#savepage').attr('value', 'Сохраняется...');
 			},
 			type: "POST",
-			url: '/admin/orderinfo/id/'+<?=$this->getOrder()->getId();?>,
+			url: '/admin/orderinfo/id/'+<?=$this->getOrder()->getId()?>,
 			data: $("#user_info").serialize()+'&ajax=1',
 			dataType: 'json',
 			success: function( data ) {
@@ -244,11 +272,11 @@ if(page != null){
 
 <?php  $peresilka = Shoparticles::showPrice($this->getOrder()->getDeliveryCost()); ?>
 <tr>
-    <td class="column-data">Стоимость доставки</td>
-    <td ><span id="dely_cost"><?=$peresilka;?></span> грн</td>
+    <td  >Стоимость доставки</td>
+    <td ><span id="dely_cost"><?=$peresilka?></span> грн</td>
 </tr>
 <tr>
-	<td class="column-data"></td>
+	<td  ></td>
 	<td>
 		<button type="button" class="btn btn-primary"  name="savepage" id="savepage"><i class="glyphicon glyphicon-floppy-saved" aria-hidden="true"></i> Сохранить информацию</button>
 		
@@ -256,7 +284,7 @@ if(page != null){
 	</td>
 </tr>
 <tr>
-    <td class="column-data">Акционная скидка</td>
+    <td  >Акционная скидка</td>
     <td><?php echo $this->getOrder()->getEventSkidka(); ?> % <a href="/admin/editskidkabyorder/id/<?=$this->getOrder()->getId()?>">Изменить/Добавить скидки к товарам</a></td>
 </tr>
 <!--
@@ -273,122 +301,128 @@ if(page != null){
 </table>
 </form>
 </div>
-<div style="width:39%; display:inline-block;float: right;">
-<p style="text-align:center;"><strong>Информация о заказе</strong></p>
+</div>
+    </div>
+    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+<div class="panel panel-warning">
+    <div class="panel-heading">
+        <h3  class="panel-title">Информация о заказе</h3>
+</div>
+    <div class="panel-body">
 <form action="" method="post" class="form-horizontal" style="text-align:left;">
 	<div class="form-group">
-    <label  class="ct-110 control-label">Номер заказа:</label>
+    <label  class="ct-150 control-label">Номер заказа:</label>
     <div class="col-xs-6">
-	<span><?=$this->getOrder()->getId();?></span>
+	<span><?=$this->getOrder()->getId()?></span>
     </div>
   </div>
       <?php if ($this->getOrder()->getComlpect()) { ?>
 	  	<div class="form-group">
-    <label  class="ct-110 control-label">Скомплектовано с:</label>
+    <label  class="ct-150 control-label">Скомплектовано с:</label>
     <div class="col-xs-6">
-	<span><?=$this->getOrder()->getComlpect();?></span>
+	<span><?=$this->getOrder()->getComlpect()?></span>
     </div>
   </div>
     <?php } ?>
   	<div class="form-group">
-    <label  class="ct-110 control-label">Дата:</label>
+    <label  class="ct-150 control-label">Дата:</label>
     <div class="col-xs-6">
-	<span><?php $d = new wsDate($this->getOrder()->getDateCreate()); echo $d->getFormattedDateTime(); ?></span>
+	<span><?php $d = new wsDate($this->getOrder()->getDateCreate()); echo $d->getFormattedDateTime();?></span>
     </div>
   </div>
   <?php if($this->getOrder()->getDeliveryTypeId() == 8 or $this->getOrder()->getDeliveryTypeId() == 16 or $this->getOrder()->getDeliveryTypeId() == 4){ ?>
   	<div class="form-group">
-    <label  class="ct-110 control-label">Накладная №:</label>
+    <label  class="ct-150 control-label">Накладная №:</label>
     <div class="col-xs-6">
 	<input type="text" class="form-control input" name="nakladna" value="<?=$this->getOrder()->getNakladna(); ?>"/>
     </div>
   </div>
 	<?php } ?>
 	  	<div class="form-group">
-    <label  class="ct-110 control-label">Статус:</label>
+    <label  class="ct-150 control-label">Статус:</label>
     <div class="col-xs-6">
 	<select name="order_status" class="form-control input" onChange="this.form.submit(); return false;"  >
 <?php foreach ($this->order_status as $key => $item) { ?>
-		<option value="<?=$key;?>"<?php echo $key == $this->getOrder()->getStatus()?" selected":''; ?>><?=$item?></option>
+		<option value="<?=$key?>"<?php echo $key == $this->getOrder()->getStatus()?" selected":''; ?>><?=$item?></option>
 <?php } ?>
 			</select>
     </div>
   </div>
   <?php if($this->user->isOperatorAdmin() or $this->user->isDeveloperAdmin()){ ?>
     <div class="form-group">
-    <label  class="ct-110 control-label">Скидка:</label>
+    <label  class="ct-150 control-label">Скидка:</label>
     <div class="col-xs-6">
 	<input type="text" name="skidka" class="form-control input"  value="<?=$this->getOrder()->getSkidka()?$this->getOrder()->getSkidka():'';?>">
     </div>%
   </div>
   <?php } ?>
     	<div class="form-group">
-    <label  class="ct-110 control-label">Код купона:</label>
+    <label  class="ct-150 control-label">Код купона:</label>
     <div class="col-xs-6">
-	<input type="text" name="kupon" class="form-control input"  value="<?php echo $this->getOrder()->getKupon()?$this->getOrder()->getKupon():''; ?>" />
+	<input type="text" name="kupon" class="form-control input"  value="<?=$this->getOrder()->getKupon()?$this->getOrder()->getKupon():''?>" />
     </div>
   </div>
     	<div class="form-group">
-    <label  class="ct-110 control-label">Скидка по купону:</label>
+    <label  class="ct-150 control-label">Скидка по купону:</label>
     <div class="col-xs-6">
-	<input type="text" name="kupon_price" class="form-control input"  value="<?php echo $this->getOrder()->getKuponPrice(); ?>"/>
+	<input type="text" name="kupon_price" class="form-control input"  value="<?=$this->getOrder()->getKuponPrice()?>"/>
   </div>
   </div><br>
   <div class="form-group">
     <div class="col-xs-offset-3 col-xs-11">
-      <button type="submit"  class="btn btn-default"><span style="font-weight: bold;font-size: 18px;"><i class="glyphicon glyphicon-floppy-saved" aria-hidden="true"></i> Сохранить</span></button>
+      <button type="submit"  class="btn btn-lg btn-primary"><span style="font-weight: bold;font-size: 18px;"><i class="glyphicon glyphicon-floppy-saved" aria-hidden="true"></i> Сохранить</span></button>
     </div>
   </div>
+  <!--
 <table cellspacing="0" cellpadding="4" id="order-details" style="display:none;">
 
     <?php if ($this->order->getFirst() == 1) { ?>
         <tr>
-            <td class="column-data" colspan="2">Уточнить детали (первый заказ). <a
+            <td   colspan="2">Уточнить детали (первый заказ). <a
                     href="/admin/calling/?order=<?php echo $this->order->getId(); ?>&type=first">Уточнили.</a></td>
         </tr>
     <?php } ?>
     <?php if ($this->order->getFirst() == 2) { ?>
         <tr>
-            <td class="column-data" colspan="2">Детали (первый заказ) уточнили. </td>
+            <td   colspan="2">Детали (первый заказ) уточнили. </td>
         </tr>
     <?php } ?>
     <?php if ($this->order->getFirst()==2 or $this->order->getFirst()==1) { ?>
           <tr>
-              <td class="column-data" colspan="2"><a href="/admin/calling/?order=<?php echo $this->order->getId(); ?>&type=otmena">СМС отмена.</a></td>
+              <td   colspan="2"><a href="/admin/calling/?order=<?php echo $this->order->getId(); ?>&type=otmena">СМС отмена.</a></td>
           </tr>
       <?php } ?>
     <?php if ($this->order->getFirst()==3 ) { ?>
-        <td class="column-data" colspan="2">Отправлена СМС отмена. </td>
+        <td   colspan="2">Отправлена СМС отмена. </td>
     <?php } ?>
     <?php if ($this->order->getCallMy() == 1) { ?>
         <tr>
-            <td class="column-data" colspan="2">Перезвонить для уточнения деталей. <a
+            <td   colspan="2">Перезвонить для уточнения деталей. <a
                     href="/admin/calling/?order=<?=$this->order->getId();?>">Уточнили.</a></td>
         </tr>
     <?php } ?>
     <?php if ($this->order->getCallMy() == 2) { ?>
         <tr>
-            <td class="column-data" colspan="2">Нет необходимости подтверждать заказ по телефону</td>
+            <td   colspan="2">Нет необходимости подтверждать заказ по телефону</td>
         </tr>
     <?php } ?>
-
-
-
-
 	<?php if ($this->getOrder()->getBoxNumber()) { ?>
 	<tr>
-		<td class="column-data">Номер ячейки</td>
+		<td  >Номер ячейки</td>
 		<td>
 			№<input type="text" name="box_number" value="<?php echo $this->getOrder()->getBoxNumber(); ?>"/>
 		</td>
 	</tr>
 <?php } ?>
-</table>
+</table>-->
 </form>
+        </div>
 </div>
+    </div>
 </div>
+    </div>
  <form method="post" action="" class="form-horizontal1">
- <div class="panel panel-primary" style="margin-top:15px;">
+ <div class="panel panel-success" style="margin-top:15px;">
  <div class="panel-heading"><h3 id="555" class="panel-title">Товары в заказе</h3></div>
  <div class="panel-body">
 <?php if($this->getOrder()->getDeposit() > 0) { echo '<p style="padding: 5px;border-radius: 2px;background: #37d011;width: 200px;color: #040404;font-size: 16px;margin: 5px auto;"><b>Присутствует депозит!</b></p>';} ?>
@@ -406,7 +440,7 @@ if(page != null){
  </thead>
  <tbody>
     <?php 
-      $SumOrder = $this->getOrder()->calculateOrderPrice(true, false, true);
+      $SumOrder = $this->getOrder()->calculateOrderPrice(true, false);
 	
 	$t_price = 0.00; $t_option = 0.00;
 	$t_real_price =0.00; $sum_skudka = 0.00;
@@ -427,16 +461,16 @@ if(page != null){
 					</div><br>
 					<?php if($article_rec->getCount() > 0){ ?>
 					<a href="/admin/shop-articles/edit/id/<?=$article->getId();?>" title="Редактировать" data-placement="bottom"  data-tooltip="tooltip" style="display: inline-block;">
-						<img src="<?=SITE_URL;?>/img/icons/edit-small.png" alt="Редактировать" class="img_return"/>
+						<img src="<?=SITE_URL?>/img/icons/edit-small.png" alt="Редактировать" class="img_return"/>
 					</a>
 					<a href="<?=$this->path;?>shop-orders/adelete/id/<?=$article_rec->getId();?>/#flag=<?=$article_rec->getId();?>" onclick="return confirm('Удалить?');" style="display: inline-block;" data-placement="bottom"  data-tooltip="tooltip" data-original-title="Удалить на сайт">
-						<img src="<?=SITE_URL;?>/img/icons/cantremove-small.png" alt="Удалить" class="img_return" />
+						<img src="<?=SITE_URL?>/img/icons/cantremove-small.png" alt="Удалить" class="img_return" />
 					</a>
 					<a href="<?=$this->path;?>shop-orders/adeletenoshop/id/<?=$article_rec->getId();?>/" onclick="return dell(this);" data-original-title="Удалить без возврата на сайт" data-placement="bottom"  data-tooltip="tooltip" style="display: inline-block;">
 				<img src="<?=SITE_URL;?>/img/icons/remove-small.png" alt="Удалить" class="img_return"/>
 				</a>
 				<?php if($this->admin_rights['491']['right'] == 1){ ?>
-	<img src="<?=SITE_URL;?>/img/icons/return.png" alt="Возврат" name="<?=$article_rec->getId();?>"   style="display: inline-block;" title="Возврат" class="img_return" data-placement="bottom"  data-tooltip="tooltip" onclick="return ret(this);"/>
+	<img src="<?=SITE_URL?>/img/icons/return.png" alt="Возврат" name="<?=$article_rec->getId();?>"   style="display: inline-block;" title="Возврат" class="img_return" data-placement="bottom"  data-tooltip="tooltip" onclick="return ret(this);"/>
 					<?php }?>
 				
 					<?php } ?>
@@ -583,7 +617,7 @@ return false;
 <tr>
     <td colspan="4"><strong>Скидка клиента</strong></td>
     <!-- <td class="column-euro"><strong></strong></td> -->
-    <td colspan="2"><strong><?=$order_owner->getDiscont($this->getOrder()->getId())?> %</strong></td>
+    <td colspan="2"><strong><?=$this->getOrder()->customer->getDiscont($this->getOrder()->getId())?> %</strong></td>
 </tr>
 <tr>
     <td colspan="4"><strong>Сумма скидки</strong></td>
@@ -617,8 +651,8 @@ return false;
 
 <tr>
     <td colspan="4"><strong>У пользователя на депозите</strong></td>
-    <td colspan="4"><strong><?=$order_owner->getDeposit()?$order_owner->getDeposit():0?> грн</strong>   
-<?php if($order_owner->getDeposit() and $this->getOrder()->getDeposit() == 0){ ?><a href="/admin/usedeposit/id/<?=$this->getOrder()->getId()?>">Использовать депозит</a> 
+    <td colspan="4"><strong><?=$this->getOrder()->customer->getDeposit()?$this->getOrder()->customer->getDeposit():0?> грн</strong>   
+<?php if($this->getOrder()->customer->getDeposit() and $this->getOrder()->getDeposit() == 0){ ?><a href="/admin/usedeposit/id/<?=$this->getOrder()->getId()?>">Использовать депозит</a> 
 <?php }elseif($this->getOrder()->getDeposit() > 0){ ?><a href="/admin/unusedeposit/id/<?=$this->getOrder()->getId()?>"
            onclick="return confirm('При отмене депозита сума депозита вернется на счет клиента, а сумма заказа изменится. Продолжить ?')">Отменить
             депозит</a><?php } ?>

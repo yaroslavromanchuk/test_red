@@ -13,21 +13,22 @@
 	$blog = 'mobil/mpages/blog.php';
 ?>
 <!DOCTYPE html>
-<html id="html" >
+<html id="html" lang="<?=Registry::get('lang')?>" >
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-	<link rel="shortcut icon" href="mobil/mimages/favicon.ico"/>
+	<link rel="shortcut icon" href="/favicon.ico"/>
 	<title><?=Config::findByCode('home_title')->getValue();?></title>
 	
 	
-	<link  href="/js/slider-fhd/slick.css" rel="stylesheet" type="text/css" />
-	<link href="/js/slider-fhd/slick-theme.css" rel="stylesheet" type="text/css" />
+	<!--<link  href="/js/slider-fhd/slick.css" rel="stylesheet" type="text/css" />
+	<link href="/js/slider-fhd/slick-theme.css" rel="stylesheet" type="text/css" />-->
 	<link rel="stylesheet" type="text/css" href="/css/bs/css/bootstrap.min.css?v=1.0"/>
-		<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.0"/>
-		<link rel="stylesheet" type="text/css" href="/css/common.css?v=1.0"/>
+        <link rel="stylesheet" type="text/css" href="/css/Ionicons/css/ionicons.min.css"/>
+		<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1"/>
+		<link rel="stylesheet" type="text/css" href="/css/common.css?v=1.2"/>
 	
-	<script  src="mobil/mjs/jquery.min.js"></script>
+	<script  src="/mobil/mjs/jquery.min.js"></script>
 	 <script>
         jQuery.browser = {};
         (function () {
@@ -54,7 +55,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5DFS2PQ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
- <?php echo $this->cached_mobi_menu;?>
+ <?=$this->cached_mobi_menu?>
 	<!--главная центр меню-->
 	<div class="container-fluid <?=$page?> ">
 	<?php include $pagePath; ?>
@@ -62,12 +63,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <?php include $blog; ?>	
 <?=$this->cached_mobi_futer?>
 <div align="center" style="padding-top:10px;">
-<input type="button" name="mobi" class="btn btn-secondary btn-sm" onClick="setCooki(10);" value="<?=$this->trans->get('Полная версия сайта');?>">
+<input type="button" name="mobi" class="btn btn-secondary btn-sm" onClick="setCooki(10);" value="<?=$this->trans->get('Полная версия сайта');?>"><br>
 <span  style="    font-size: 10px;    display: inline-block;color: gray;">Раскрутка сайта — <a href="https://aweb.ua/">Aweb.ua</a></span>
 </div>
-	<script  src="mobil/mjs/jquery.mask.js" ></script>
+        </div>
+	<script  src="/mobil/mjs/jquery.mask.js" ></script>
 	<script  src="/css/bs/js/bootstrap.js?v=1.5"></script>
-    <script src="mobil/mjs/common.js"></script>
-<script   src="/js/slider-fhd/slick.min.js" ></script>
+    <script src="/mobil/mjs/common.js"></script>
+<!--<script   src="/js/slider-fhd/slick.min.js" ></script>-->
 </body>
 </html>
