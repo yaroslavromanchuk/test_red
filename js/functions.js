@@ -41,18 +41,16 @@ function getQuickCart(id) {//dobavlenie tovara v korzinu
 	var color = $("input[name='color']:checked").val();
 	var art = $("#artikul").val();
 	var price = $("#price").val();
-	//console.log();
 	if (size > 0 && color > 0) {
 		$.ajax({
 			beforeSend: function () {
 				
 			},
 			type: "POST",
-			url: id,
-			data: '&metod=frame&size=' + size + '&color=' + color + '&artikul=' + art,
+			url: '/addtocard/id/'+id,
+			data: '&size=' + size + '&color=' + color + '&artikul=' + art,
 			dataType: 'json',
 			success: function (data) {
-			//console.log(data);
 				if (data.error != 1) {
 				
 				$('#test').clone()
@@ -85,33 +83,26 @@ function getQuickCart(id) {//dobavlenie tovara v korzinu
 				 width: '10px'
 				}, {
     duration: 500});
-	
-                                $(".error.error_add").html('');
+                                $('#sub_bascet').prop('disabled',true);
+                                
+                                $(".error.error_add .mes").html('');
+                                $(".error.ok_add .mes").html(data.message);
                                 $(".error.ok_add").fadeIn();
-				//$("#message").html('');
 				$("#error").html('');
-				//$('#quik_frame').html('');
 				$('#wait_circle').show();
-				
-				
+
 					$('#span_ok1').addClass("span_ok").html(data.count).show();
 					$('#span_ok').addClass("span_ok").html(data.count).show();
-					//ga('send', 'event', 'Articles', 'tovartobacket');
 					ga('send', 'add', '/virtual/tovartobacket/');
-					//_gaq.push(['tovarTobacket','/virtual/tovartobacket/']);
 					dataLayer.push({'event' : 'articles', 'eventAction': 'add_backet', 'eventLabel' : $("#id_tovar").val(), 'eventValue' : price });
-					//console.log(dataLayer);
-					//console.log(data);
-					//$("#message").html(data.message);
-					//_gaq.push(['_trackEvent', 'articles', 'add_backet']);
-					//ga('send', 'event', 'articles', 'add_backet');
 				} else {
-                                $(".error.ok_add").html('');
+                                    
+                                $(".error.ok_add .mes").html('');
+                                console.log(data.message);
+                                $(".error.error_add .mes").html(data.message);
 				$(".error.error_add").fadeIn();
-					//console.log(data.message);
 				}
-                                
-				//$('#wait_circle').hide();
+
 			},
 			error: function (data) {
 				console.log('error = ' + data);
@@ -119,11 +110,11 @@ function getQuickCart(id) {//dobavlenie tovara v korzinu
 			complete: function () {
 				$('#wait_circle').hide();
 				setTimeout(function () {
-                                    $(".error.ok_add").css({'opacity': '0'});
-                                    $(".error.error_add").css({'opacity': '0'});
-                                    //$("#message").css({'opacity': '0'});
-					//$("#message").fadeOut(500)
-				}, 5000);
+                                   // $(".error.ok_add").css({'opacity': '0'});
+                                   // $(".error.error_add").css({'opacity': '0'});
+                                    $(".error.ok_add").fadeOut(10);
+                                    $(".error.error_add").fadeOut(10);
+				}, 4000);
 			}
 		});
 	}
@@ -158,15 +149,20 @@ function getQuickOrder(id) {//bistriy zakaz open form
 function getQuikArticle(id) {//bistriy prosmotr
 	$.ajax({
 		beforeSend: function () {
-		//$('#view_article').html('');	
+		$('#view_article').html('');
+                $('#id_comment_modal_article').html('');
 		},
 		type: "POST",
-		url: '/product/id/' + id + '/metod/frame/',
+		url: '/quikview/id/' + id + '/metod/frame/',
+                dataType: 'json',
 		success: function (data) {
+                    console.log(data);
+                   console.log(data.title);
+                    $('#id_comment_modal_article').html(data.title);
 			$('#view_article').css({
 				'padding': '0',
 				'height': 'auto'
-			}).append(data);
+			}).html(data.data);
 		},
 		error: function (data) {
                     console.log(data);
@@ -204,29 +200,25 @@ function submitCartValidator(id) {// add korzina s bistrogo prosmotra
 	var size = $("input[name='size']:checked").val();
 	var color = $("input[name='color']:checked").val();
 	var art = $("#artikul").val();
-	if (color == 0 || typeof color == "undefined")
-		$(".error.color").fadeIn();
-	else
-		$(".error.color").html('');
-	if (size == 0 || typeof size == "undefined")
-		$(".error.size").fadeIn();
-	else
-		$(".error.size").html('');
-	if (size > 0 && color > 0) {
+        
+           // if (color == 0 || typeof color == "undefined"){$(".error.color").fadeIn();}else{$(".error.color").html('');}
+           // if (size == 0 || typeof size == "undefined"){$(".error.size").fadeIn();}else{$(".error.size").html('');}
+            
+    if (size > 0 && color > 0) {
 		$.ajax({
 			beforeSend: function () {
 				$("#error").html('');
 				$('#wait_circle').show();
 			},
 			type: "POST",
-			url: id,
-			data: '&metod=frame&size=' + size + '&color=' + color + '&artikul=' + art,
+			url: '/addtocard/id/'+id,
+			data: '&size=' + size + '&color=' + color + '&artikul=' + art,
 			dataType: 'json',
 			success: function (data) {
 				if (data.error != 1) {
 					$('#span_ok1').addClass("span_ok").html(data.count).show();
 					$('#span_ok').addClass("span_ok").html(data.count).show();
-					
+					 $('#add_card').prop('disabled',true);
 				} else {
 					console.log('bs');
 				}
@@ -246,8 +238,19 @@ function submitCartValidator(id) {// add korzina s bistrogo prosmotra
 				}, 2000);
 			}
 		});
-		return true;
-	} else
+		//return true;
+	} else{
+            if (color <= 0 || !color) {
+		$(".error.color").fadeIn();
+	} else {
+		$(".error.color").html('');
+	}
+	if (size <= 0 || !size) {
+		$(".error.size").fadeIn();
+	} else {
+		$(".error.size").html('');
+	}
+        }
 		return false;
 }
 $(document).ready(function () {
@@ -274,16 +277,11 @@ $("#qo").submit(function () {//bistriy zakaz
 				$('#telephone').removeAttr('style');
 			}, 600);
 		} else {
-		//console.log($("form#qo").serialize());
 			$.ajax({
 			beforeSend: function () {
 			$('#hide .modal-body #qo-result').html('<div style="text-align:center;"><img src="/img/loading_trac.png"></div>');
 			$('#qo-result').show();
 			$('#hide .modal-footer').hide();
-//console.log($("form#qo").serialize() + '&size=' + $("input[name='size']:checked").val() + '&color=' + $("input[name='color']:checked").val()+'&artikul='+$('#artikul').val());
-					//$('#hide').hide();
-					//$('#qo-first_step').hide();
-					//$('#qo-load').show();
 				},
 				type: 'POST',
 				url: '/quick-order/&',
@@ -291,7 +289,6 @@ $("#qo").submit(function () {//bistriy zakaz
 				dataType: 'json',
 				success: function (data) {
 				dataLayer.push({'event' : 'quick', 'eventAction' : 'add_quick'});
-				//console.log(data);
 				if(data.result == 'send'){
 				$('#qo-result').hide();
 				$('#hide .modal-body').html(data.message);
@@ -299,12 +296,10 @@ $("#qo").submit(function () {//bistriy zakaz
 				ga('send', 'quick', '/virtual/quick/');
 				ga('send', {hitType: 'event', eventCategory: 'quick',  eventAction: 'add_quick' });
 				}else{
-				er = data.message.error;
-				//console.log(er);
+				var er = data.message.error;
 				t = '';
 				for(var key in er){
 				$('#'+key).addClass('is-invalid');
-				//console.log(er[key]);
 				t+=er[key];
 				
 				}
@@ -330,7 +325,6 @@ $("#qo").submit(function () {//bistriy zakaz
 	$("a.l_box").each(function () { $(this).lightBox(); });
 
 	$("#QuickCartHide, .simple_overlay_back").click(function () {
-		//$('.simple_overlay').hide();
 		$('.simple_overlay_back').hide();
 	});
         
@@ -343,7 +337,9 @@ $("#qo").submit(function () {//bistriy zakaz
 			$(this).parent().addClass("sub-title-click");
 		}
 	});
+        
 	var brand_vis_all = 1;
+        
 	$('#filterButton button').click(function () {
 		$('#filterButton button').removeClass('filterButton_classSelect');
 		$(this).addClass('filterButton_classSelect');
@@ -369,6 +365,7 @@ $("#qo").submit(function () {//bistriy zakaz
 	});
         
 	$('#brand_discription').hide(0);
+        
 	$('#brand_name').hover(function () {
 		$('#brand_discription').fadeIn();
 	}, function () {
@@ -386,23 +383,9 @@ $("#scrolled-socials").hide();
 	// hide #back-top first
 	$("#back-top").hide();
 	// fade in #back-top
+        
 $(function () {
 	$(window).scroll(function () {
-        /*if($("form").is(".form-filter")){
-            if($(this).scrollTop() > 250){
-                $('.filter_fixed').css({
-                    'position':'fixed',
-                    'top':$('.menu-2-box').innerHeight()+$('.top_menu_new').innerHeight(),
-                    'width':$('.filter_fixed').parent().innerWidth()
-                });
-            }else{
-                 $('.filter_fixed').css({
-                    'position':'',
-                    'top':'',
-                    'width':''
-                });
-            }
-        }*/
 			if ($(this).scrollTop() > 100) {
 			$("#scrolled-socials").fadeIn();
 				$('#back-top').fadeIn();
@@ -421,6 +404,7 @@ $('#back-top a').click(function () {
 	});
         
 });
+
 (function() {
 var widgetId = 'a977b0023f4594ba63190bf5ca00d6ba';
 var s = document.createElement('script');
@@ -433,10 +417,6 @@ ss.parentNode.insertBefore(s, ss);}
 )();
 
 function setUk(lang, ses, url) {
-//console.log(ses);
-//console.log(url);
-//console.log(lang);
-//console.log(s);
 if(lang !== ses){
       $.ajax({
          type: "POST",
@@ -455,10 +435,10 @@ if(lang !== ses){
 		}
           return false;
 }
+
 function setCooki(e) {
 document.cookie = "mobil =" + e;
 location.reload();
-         // return false;
 }
 
 

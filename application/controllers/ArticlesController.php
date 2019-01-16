@@ -10,7 +10,7 @@ class ArticlesController extends controllerAbstract
     /**
      * карточка товара
      * для вызова в get нужно создать url /product/id/1
-     * @return представление карточки  товара
+     * @return карточка_товара
      */
     public function articleAction()
 	{
@@ -30,7 +30,7 @@ class ArticlesController extends controllerAbstract
                 
     $this->view->g_url = $article->getPath(); 
 $name = ucfirst($article->getModel()) . ' ' .trim($article->getBrand()).' '.$this->trans->get('color').' '.mb_strtolower($article->getColorName()->getName());
-if($article->sizes->count() == 1){ $name.= ' размер '.$article->sizes[0]->size->size; }   
+if($article->sizes->count() == 1){ $name.= ' размер '.$article->sizes[0]->size->size.' артикул - '.$article->sizes[0]->code; }   
 $title = $name.' '.$this->trans->get('price').' '.$article->getPriceSkidka().'грн. '.Config::findByCode('website_title')->getValue(); 
                 
 		$this->cur_menu->setName($name);
@@ -43,49 +43,6 @@ $title = $name.' '.$this->trans->get('price').' '.$article->getPriceSkidka().'г
                         }else{
                             $this->view->active = 1;
                         }
-                        
-		if ($_POST){
-			$error = self::articlepost($article, $_POST);
-
-			if (count($error) == 0) {
-$change = $article->addToBasket(1, (int)$_POST['size'], (int)$_POST['color'], (isset($_POST['option']) ? (int)$_POST['option'] : 0), 0, (isset($_POST['artikul']) ? $_POST['artikul'] : 0) , $_POST['skidka_block']?$_POST['skidka_block']:0);
-	foreach ($_POST as $key => $value)
-            {
-		$keys = explode('_', $key);
-                
-                if (strcasecmp($keys[0], 'sarticle') == 0 && (int)$value && ($sa = wsActiveRecord::useStatic('Shoparticles')->findById((int)$value)) && $sa->getId())
-                        {
-                            if ($sa->addToBasket(1, (int)$_POST['size'], (int)$_POST['color'], (isset($_POST['soption_' . $keys[1]])
-							? (int)$_POST['soption_' . $keys[1]] : 0), 0, (isset($_POST['artikul'])
-					? $_POST['artikul'] : 0), $_POST['skidka_block']?$_POST['skidka_block']:0)
-						){
-                                                $change = true;}
-                    }
-            }
-		if ($change) {
-				$count = 0;
-				$sum = 0;
-		foreach ($_SESSION['basket'] as $item) {
-                $count += $item['count'];
-                $sum += $item['price'] * $item['count'];
-            }
-			$messeg = "<p style='color:#4bab4c;'>".$this->trans->get('ТОВАР ДОБАВЛЕН В КОРЗИНУ')."!</p>";
-			die(json_encode(array('count'=>$count, 'sum'=>$sum, 'error'=>0, 'message'=>$messeg)));
-					$this->basket = $this->view->basket = $_SESSION['basket'];
-					$this->view->ok = true;
-                                        if ($_POST['metod'] != 'frame'){
-                                            $this->_redirect('/basket/');
-                                        
-                                        } else {
-
-						$this->_redirect('/basket/metod/frame/');
-					}
-				}
-			}elseif($this->post->metod == 'frame') {
-				//$this->_redirect('/basket/metod/frame/?color=' . @$_POST['color'] . '&size=' . @$_POST['size']);
-				die(json_encode(array('error'=>1, 'message'=>$error)));
-			}
-		}else{
 			//add view
 			$article->setViews($article->getViews() + 1);
 			$article->save();
@@ -107,19 +64,65 @@ $change = $article->addToBasket(1, (int)$_POST['size'], (int)$_POST['color'], (i
                                 $_SESSION['hist'][] = $article->getId();
                             }
                         }
-		}
+		
 		if (isset($error)) {
 			$this->view->error = $error;
 		}
-
+                // $this->view->title = 'test';
+                 
 		$this->view->shop_item = $article;
 		$this->view->category = $article->getCategory();
 
-		echo $this->render('shop/article.tpl.php');
+		echo $this->render('article/article.tpl.php');
 
                 if ($this->get->metod == 'frame') { die(); }
 
 	}
+        
+         public function quikviewAction() 
+                 {
+             $article = wsActiveRecord::useStatic('Shoparticles')->findById($this->get->getId());
+                    if(!$article->id){
+                        die(json_encode(array('error'=>1, 'message'=>'Непредвиденная ошибка')));
+                        }
+                        $article->setViews($article->getViews() + 1);
+			$article->save();
+                        
+                $this->view->shop_item = $article;
+		$this->view->category = $article->getCategory();
+                $title = ucfirst($article->getModel()) . ' ' .trim($article->getBrand()).' '.$this->trans->get('color').' '.mb_strtolower($article->getColorName()->getName());; 
+                die(json_encode(['title'=>$title, 'data'=>$this->render('article/quik_article.tpl.php')]));
+                }
+        /**
+         * Добавление товара в корзину
+         */
+        public function addtocardAction() {
+            
+            $article = wsActiveRecord::useStatic('Shoparticles')->findById($this->get->getId());
+                    if(!$article->id){
+                        die(json_encode(array('error'=>1, 'message'=>'Непредвиденная ошибка')));
+                        //$this->_redirect('/404/');
+                        }
+            if ($_POST){
+			$error = self::articlepost($article, $_POST);
+
+	if (count($error) == 0) {
+$change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], 0, 0, (isset($_POST['artikul']) ? $_POST['artikul'] : 0));
+
+		if ($change['status']) {
+			$messeg = $this->trans->get('ТОВАР ДОБАВЛЕН В КОРЗИНУ');
+			die(json_encode(array('count'=>$change['count_card'], 'error'=>0, 'message'=>$messeg)));
+                                }else{
+                                    die(json_encode(array('error'=>1, 'message'=>$change['message'])));
+                                }
+			}else{
+				die(json_encode(array('error'=>1, 'message'=>$error)));
+			}
+		}
+            
+            
+             die();
+        }
         
         private function articlepost($article, $post){
             $error = [];
@@ -134,7 +137,7 @@ $change = $article->addToBasket(1, (int)$_POST['size'], (int)$_POST['color'], (i
 
 			foreach ($this->basket as $item) {
 				if ($item['article_id'] == $article->getId() and $item['size'] == $post['size'] and $item['color'] == $post['color']) {
-					$error [] = "Этот товар уже есть в корзине</p>";
+					$error [] = $this->trans->get('error_add_card_article');//"Этот товар уже есть в корзине</p>";
 				}
 			}
                         return $error;

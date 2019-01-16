@@ -219,13 +219,15 @@ ORDER BY  `dat` ASC   ");
                 $cat = new Shopcategories((int)$this->post->cat_prognoz); 
                 if($cat->id == 267){
                   $c = '';//267;  
-                    
+                   $where =" "; 
                 }elseif($cat->getKidsIds()){
                    // print_r($cat->getKidsIds());
                    // echo implode(',', $cat->getKidsIds());
                     $c = implode(',', $cat->getKidsIds());
+                   // $where ="and `ws_balance_category`.id_category in (".$c.") ";
                 }else{
                     $c = $cat->id;
+                   // $where = "and `ws_balance_category`.id_category in (".$c.") ";
                 }
                 $sql = "
 
@@ -237,37 +239,14 @@ FROM  `ws_balance`
 JOIN  `ws_balance_category` ON  `ws_balance`.`id` =  `ws_balance_category`.`id_balance` 
 WHERE DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m-%d' ) >=  '".$from."'
 AND DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m-%d' ) <=  '".$to."'
-     and `ws_balance_category`.id_category in (".$c.")
+     and `ws_balance_category`.id_category in (".$c.") 
 GROUP BY  `nedelya` 
 ORDER BY  `nedelya` ASC 
  ";
                 
-                /**
-                 *   SELECT DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m' ) AS dat, SUM(  `ws_balance_category`.`count` ) AS ctn
-FROM  `ws_balance` 
-JOIN  `ws_balance_category` ON  `ws_balance`.`id` =  `ws_balance_category`.`id_balance` 
-WHERE DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m' ) >= '".$from."' and DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m' ) <= '".$to."'
-    and `ws_balance_category`.id_category in (".$c.")
-GROUP BY  `ws_balance`.`id`
-ORDER BY  `dat` ASC   
-                 */
-                    
-                       // echo $sql;
-              // die();
-                        
+     
             $ok = wsActiveRecord::findByQueryArray($sql);
-            $mass = [];
-            
-            
-            
-           // foreach($ok as $k ){
-           //   $mass[$k->dat][] = $k->dat;
-          //  }
-            
-            
-            
-          //  print_r($mass);
-           // die();
+
               $rr = [];
             foreach($ok as $key => $k){
                 

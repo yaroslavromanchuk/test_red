@@ -1,4 +1,4 @@
-<div class="row logo">  
+<div class="row mx-auto logo">  
 	<div class="col-xs-12 col-sm-10 col-md-3 d-none d-md-block pt-3 pl-3 pr-0 text-center">
         <form method="get" class="form-inline" action="/search/">
 		<div class="w-100">

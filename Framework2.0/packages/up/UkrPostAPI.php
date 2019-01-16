@@ -128,7 +128,8 @@ class UkrPostAPI{
         'description' => (string)$result->description,
         'countryside' => $result->countryside,
         'detailed_info' => $result->detailedInfo,
-        'clients_id' => $externalId
+        'clients_id' => $externalId,
+        'ctime' => date('Y-m-d H:i:s')
     ];
         $adrr = new UkrPostAddress($result->id);
         $adrr->import($adr);
@@ -208,7 +209,8 @@ public function getNewClientAdmin($type = 'INDIVIDUAL', $name = '', $lastName = 
                 'email' => $email,
                 'postId' => $postId,
                 'tin' => $tin,
-                'externalId' => $externalId
+                'externalId' => $externalId,
+            'ctime' => date('Y-m-d H:i:s')
             ];
 	$model = 'clients';
 	$client =  $this->request('POST', $model, $param);
@@ -243,7 +245,8 @@ public function getNewClientAdmin($type = 'INDIVIDUAL', $name = '', $lastName = 
          */   
 	public function getNewClient($lastName = '', $firstName = '', $middleName = '', $phoneNumber = 0, $externalId = '',$postcode = '', $region = '', $city = '', $district = '', $street = '', $houseNumber = '', $apartmentNumber = '', $email = '' ){
              $address = $this->newAddress($postcode, $region, $city, $district, $street, $houseNumber, $apartmentNumber, $externalId);
-    if($address->id){
+    
+             if($address->id){
             
             $param = [
                 'type' => 'INDIVIDUAL',
@@ -272,6 +275,7 @@ public function getNewClientAdmin($type = 'INDIVIDUAL', $name = '', $lastName = 
                  $cl->setPhoneNumber($client->phoneNumber);
                  $cl->setEmail($client->email);
                  $cl->setType($client->type);
+                 $cl->setCtime(date('Y-m-d H:i:s'));
          $cl->save();
           }
           return  $client;
@@ -508,7 +512,8 @@ public function getNewClientAdmin($type = 'INDIVIDUAL', $name = '', $lastName = 
                     'post_pay' => $res->postPay,
                     'post_pay_delivery_price' => $res->postPayDeliveryPrice,
                     'description' => (string)$res->description,
-                    'delivery_date'=> $res->deliveryDate
+                    'delivery_date'=> $res->deliveryDate,
+                  'ctime' => date('Y-m-d H:i:s')
                 ];
                 $s = new UkrPostShipments();
                         $s->import($ss);
@@ -591,7 +596,8 @@ public function getNewClientAdmin($type = 'INDIVIDUAL', $name = '', $lastName = 
                     'post_pay' => $res->postPay,
                     'post_pay_delivery_price' => $res->postPayDeliveryPrice,
                     'description' => (string)$res->description,
-                    'delivery_date'=> $res->deliveryDate
+                    'delivery_date'=> $res->deliveryDate,
+                   'ctime' => date('Y-m-d H:i:s')
                 ];
                 $s = new UkrPostShipments();
                         $s->import($ss);

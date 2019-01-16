@@ -1,6 +1,5 @@
 <?php
-$text = explode(',', $this->trans->get('цвет,размер,количество,цена,всего,продолжить покупки,оформить заказ'));?>
-<?php 
+$text = explode(',', $this->trans->get('цвет,размер,количество,цена,всего,продолжить покупки,оформить заказ'));
 if (isset($this->error)) {
 	echo "<div>";
 	foreach ($this->error as $error) {
@@ -20,7 +19,7 @@ echo '<div class="col-xs-10 col-xs-offset-1">
 
 <form action="<?=wsActiveRecord::useStatic('Menu')->findByUrl('basket')->getPath()?>" method="post" id="basket1" class="cart-table" >
 <div class="row mx-auto">
-<div class="col-md-12">
+<div class="col-12 col-sm-12 col-md-12 col-lg-9 col-xl-9 m-auto">
 <table class="table">
 <thead>
 <tr>
@@ -43,17 +42,7 @@ echo '<div class="col-xs-10 col-xs-offset-1">
 	}elseif(isset($_SESSION['error_cod'])){
 	echo '<tr><td colspan="6"><div class="alert alert-danger">'.$_SESSION['error_cod'].'!</div></td></tr>';
 	}
-	/*if(isset($_GET['kupon']) and $_GET['kupon'] != ''){
-	$today_c = date("Y-m-d H:i:s"); 
-$ok_kupon = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$_GET['kupon'], "ctime <= '".$today_c."' ", " '".$today_c."' <= utime"));
-	if(@$ok_kupon){
-			//$find_count_orders_by_user_codd = 0;//wsActiveRecord::useStatic('Shoporders')->count(array('kupon'=>$_GET['kupon']));
-			$kupon = $_GET['kupon'];
-			}else{
-			echo '<tr><td colspan="6"><div class="alert alert-danger">Вы ввели не действительный промокод!</div></td></tr>';
-			}
-	}*/
-
+        
 	if ($this->ws->getCustomer()->getIsLoggedIn()) {
 		$skidka = $this->ws->getCustomer()->getDiscont(false, 0, true);
 		$event_skidka = EventCustomer::getEventsDiscont($this->ws->getCustomer()->getId());
@@ -83,7 +72,7 @@ $ok_kupon = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$_GET['ku
 			$t_price += $article->getPriceSkidka() * $item['count'];
 			
 		}
-	
+	/*
 	if(false){//каждое третье в подарок за 1 коп.
 	
 	if($article->getCategoryId() == 147 or $article->getCategoryId() == 70){ //платья
@@ -93,9 +82,10 @@ $ok_kupon = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$_GET['ku
 	$mas_akciya_futbolki[$article->getId().'_'.$item['artikul']] = $article->getFirstPrice();
 	}
 	}
-		
+	*/	
 	}
-        $list_id = implode(',', $sp);
+        $list_id = implode(',', $sp);//rontar
+        /*
 		if(false) // часы в подарок при покупке на сумму 1000 грн аксессуаров
                     { 
 		foreach ($this->getBasket() as $key => $item) {
@@ -167,7 +157,9 @@ $ok_kupon = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$_GET['ku
 	//echo '</pre>';
 	
 	}
-	
+	*/
+        
+        
 	$now_orders += $t_price;
 	$sum_order = $t_price;
 	$t_price = 0.00;
@@ -405,15 +397,15 @@ echo $size->count;
 </div>
 
 <div class="row mx-0 my-3">
-<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 text-center my-3">
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 text-center my-3">
 <?php if ($this->get->metod != 'frame') { ?>
-					<a class="btn btn-secondary btn-lg" style="text-transform: uppercase;font-size: 100%;" role="button" href="<?php
+					<a class="btn btn-outline-secondary btn-lg" style="text-transform: uppercase;" role="button" href="<?php
 						echo isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '/'; ?>"><?=$text[5]?>
 					</a>
 <?php } ?>
 </div>
-<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 text-center my-3">
-				<input type="submit" name="tostep2" style="text-transform: uppercase;font-size: 100%;" value="<?=$text[6]?>" class="btn btn-danger btn-lg" >
+<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 co-xl-6 text-center my-3">
+				<input type="submit" name="tostep2" style="text-transform: uppercase;" value="<?=$text[6]?>" class="btn btn-outline-danger btn-lg" >
 			</div>
 		</div>
 	</form>

@@ -26,23 +26,14 @@ $search_word = false;
 }
 		}
 
-
-
 		$category = new Shopcategories($this->get->id);
 		$this->cur_menu->name = $category->getRoutez();
 		$this->view->category = $category;
 		$this->view->finder_category = $this->get->id;
-		//if(/*$this->ws->getCustomer()->isAdmin()*/true){
 		$this->getfilter($search_word, $this->get->id, $this->get->brands, $this->get->colors, $this->get->sizes, $this->get->labels, $this->get->sezons, $this->get->skidka, $this->get->categories, array('price_min'=>$this->get->price_min, 'price_max'=>$this->get->price_max));
-		//}else{
-		//$this->getsearch($search_word, $this->get->id, $this->get->brands, $this->get->colors, $this->get->sises, $this->get->labels, $this->get->sezons, $this->get->skidka, $this->get->categories);
-		//}
-
-		//unset($this->get[3]);
-
-		//d($this->get, false);
 
 	}
+        
 	function getfilter($search_word = '', $category = '', $brands = '', $colors = '', $sizes = '', $labels = '', $sezons = '', $skidka = '', $categories = '', $price = array())
 	{
 		//$addtional = array();
@@ -205,13 +196,12 @@ $search_word = false;
 
 	public function articleokAction()
 	{
-
 		echo $this->render('shop/article-ok.tpl.php');
-
 	}
 
 //2517
-	public function basketAction() {
+	public function basketAction()
+                {
 		if ($this->ws->getCustomer()->isAdmin()) {
 			if (!$this->ws->getCustomer()->hasRight('do_pay')) {
 			die('Нету прав на заказ');
@@ -222,7 +212,7 @@ $search_word = false;
 			$this->_redir('index');
 */
 //		print_r($this->basket);die();
-                if ('delete' == $this->cur_menu->getParameter()) {
+                if('delete' == $this->cur_menu->getParameter()) {
 			$basket = $_SESSION['basket'];
 			if ($basket) {
 				$_SESSION['basket'] = array();
@@ -231,13 +221,9 @@ $search_word = false;
 						$_SESSION['basket'][] = $value;
 				$this->_redir('basket');
 			}
-		}elseif ('change' == $this->cur_menu->getParameter() && $this->get->getCount()) {
+		}elseif('change' == $this->cur_menu->getParameter() && $this->get->getCount()) {
 			if (isset($_SESSION['basket'][(int)$this->get->getPoint()]['count'])) {
 				$count = $this->get->getCount();
-/*
-				if ($count > MAX_COUNT_PER_ARTICLE)
-					$count = MAX_COUNT_PER_ARTICLE;
-*/
 				$_SESSION['basket'][(int)$this->get->getPoint()]['count'] = $count;
 			}
 			$this->_redir('basket');
@@ -250,6 +236,7 @@ $search_word = false;
 		if (isset ($_GET['color']) and !$_GET['color']) {
 			$error [] = $this->trans->get('Выберите цвет');
 		}
+                
 		foreach ($this->basket as $item) {
 			$article = wsActiveRecord::useStatic('Shoparticles')->findById($item['article_id']);
 			if ($item['article_id'] == $article->getId() and $item['size'] == @$_GET['size'] and $item['color'] == @$_GET['color']) {
@@ -283,19 +270,10 @@ $search_word = false;
 					$this->view->kupon = $ok_cod->cod;
 					unset($_SESSION['error_cod']);
 					}
-
-
-					//$_SESSION['error_cod'] = $this->trans->get('Код введен неверно! Повторите ввод кода');
-					//$_SESSION['error_cod'] = $this->trans->get('Этим кодом уже воспользовались. Код можно использовать единоразово')."!";
-
-
 				}else{
 				//unset($_SESSION['kupon']);
 				unset($_SESSION['error_cod']);
 				}
-
-
-
 				//exit запись кода в сесию
 
 		if (count($_POST)) {
@@ -303,8 +281,6 @@ $search_word = false;
 				foreach ($_POST as &$value) {
 					$value = stripslashes(trim($value));
 				}
-
-
 				if ($this->post->deposit == 1) {
 					$_SESSION['deposit'] = $this->ws->getCustomer()->getDeposit();
 				}else{ unset($_SESSION['deposit']);}
@@ -316,11 +292,6 @@ $search_word = false;
 				if (!isset($_SESSION['basket_contacts'])) {
 					$_SESSION['basket_contacts'] = [];
 				}
-
-
-
-
-
 				$this->_redirect('/shop-checkout-step2/');
 			}
 		}
@@ -330,7 +301,6 @@ $search_word = false;
 		//if ($this->get->metod == 'frame') echo $this->render('top.tpl.php');
                 if ($this->get->metod == 'frame'){ echo $this->render('bottom.tpl.php'); die(); }
 		echo $this->render('shop/basket.tpl.php');
-		
 	}
 
 	private function createBasketList($basket = false, $del_cost = 0)
@@ -353,27 +323,22 @@ $code = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery(" SELECT code
         . "FROM ws_articles_sizes "
         . "WHERE id_article = ".$item['article_id']." and id_size = ".$item['size']." and id_color = ".$item['color']." and `count` > 0 ")->at(0)->code;
 
-				$articles[] = [
-					'id' => $article->getId(),
-					'title' => $article->getTitle(),
-					'count' => $item['count'],
-					'option_id' => $item['option_id'],
-					'option_price' => $item['option_price'],
-					'size' => $item['size'],
-					'color' => $item['color'],
-					'artikul' => $code,
-					'category' => $item['category'],
-					'price' => $article->getRealPrice(),
-					'skidka_block' =>$item['skidka_block']?$item['skidka_block']:0
+	$articles[] = [
+			'id' => $article->getId(),
+			'title' => $article->getTitle(),
+			'count' => $item['count'],
+			'option_id' => $item['option_id'],
+			'option_price' => $item['option_price'],
+			'size' => $item['size'],
+			'color' => $item['color'],
+			'artikul' => $code,
+			'category' => $item['category'],
+			'price' => $article->getRealPrice(),
+			'skidka_block' =>$item['skidka_block']?$item['skidka_block']:0
 					];
-
-			//$real_price = 
-
-				$sum += ($item['option_price']>0)?$article->getRealPrice($item['option_price']):$article->getRealPrice()*$item['count'];
+		$sum += ($item['option_price']>0)?$article->getRealPrice($item['option_price']):$article->getRealPrice()*$item['count'];
 			}
 		}
-
-		//$discount = 0; //ceil(($sum + 500)/1000)-1;
 		$_SESSION['order_amount'] = $sum;
 
 		return $articles;
@@ -1859,17 +1824,11 @@ $message = 'Ваш заказ № '.$order->getId().' оформлен. Сумм
 			if (!count($errors)){
 				//____________________________start_add_to_basket____________________________________
 
-			$article = wsActiveRecord::useStatic('Shoparticles')->findById($_POST['id']);
-			$skidka_block = 0;
-			$option_id = 0;
-
-			if($article->getSkidkaBlock()){ $skidka_block = 1; }
-
-//$change = $article->addToBasket(1, (int)$_POST['size'], (int)$_POST['color'], $option_id, 1, (isset($_POST['artikul'])?$_POST['artikul']:0), $skidka_block);
-$change = $article->addToBasket(1, (int)$_POST['size'], (int)$_POST['color'], (isset($_POST['option']) ? (int)$_POST['option'] : 0), 1, (isset($_POST['artikul']) ? $_POST['artikul'] : 0) , $_POST['skidka_block']?$_POST['skidka_block']:0);
+$article = wsActiveRecord::useStatic('Shoparticles')->findById($_POST['id']);
+$change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], (isset($_POST['artikul']) ? $_POST['artikul'] : 0), 1);
 
 
-	if ($change) {
+	if ($change['status']) {
 	$this->basket = $_SESSION['basket'];
 	$this->view->ok = true;
 	}else{

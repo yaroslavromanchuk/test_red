@@ -373,12 +373,47 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
         return $tmp;
     }*/
 
-    public function addToBasket($count, $size, $color, $option_id = 0, $flag = 0, $art, $skidka_block = 0){
+    /**
+     * 
+     * @param type $count - количество товара, поумолчанию = 1
+     * @param type $size - id розмера
+     * @param type $color - id цвета
+     * @param type $option_id - id акции на скидку
+     * @param type $flag -  1 = быстрый заказ, корзина очищается, поумолчанию = 0
+     * @param type $art - артикул товара
+     * @param type $skidka_block - если заблокирован от скидок = 1, поумолчанию = 0
+     * @return boolean
+     */
+    public function addToBasket($size, $color, $art, $flag = 0){
+        $res = [];
+        
+        if (strcasecmp($this->getActive(), 'y') != 0) {
+            $res['status'] = false;
+            $res['message'] = 'Этот товар еще не активен! Попробуйте заказать пожже.';
+            return $res;
+            }
+    $basket = & $_SESSION['basket'];
 
-        if (!$count || strcasecmp($this->getActive(), 'y') != 0) {return false;}
-        $price = $this->getPrice() * $count;
+	if($flag == 1) { $basket = []; } //если 1, очистить корзину, это быстрый заказ
+        
+        $was_added = false;
+        $count_card = 0;
+        foreach ($basket as $key => $item){
+            if (!$was_added && $item['article_id'] == $this->getId() && $item['size'] == $size && $item['color'] == $color) {
+                    //$basket[$key]['count'] += $count;
+                    $was_added = true;
+            $res['status'] = false;
+            $res['message'] = Translator::get('error_add_card_article');
+            }
+            $count_card += $item['count'];
+			}
+                        
+    if (!$was_added) {
+        $price = $this->getPrice();
+        $option_id = 0;
         $option_price = 0;
-                    if($this->getOptions()){
+        
+        if($this->getOptions()){
                     switch ($this->getOptions()->type){
                         case 'final':
                          $option_id = $this->getOptions()->id;
@@ -387,38 +422,28 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
                         case 'dop':
                             $option_id = $this->getOptions()->id;
                             break;
+                        default: $option_id = 0; break;
                     }
                     
                 }
-      
-       
-    $basket = & $_SESSION['basket'];
-
-	if($flag == 1) {$basket = array(); }
-        $was_added = false;
-        foreach ($basket as $key => $item){
-            if (!$was_added && $item['article_id'] == $this->getId() && $item['size'] == $size && $item['color'] == $color && $item['artikul'] == $art) {
-                    $basket[$key]['count'] += $count;
-                    $was_added = true;
-            }
-			}
-        if (!$was_added) {
-            /*			if ($count > MAX_COUNT_PER_ARTICLE)
-                   $count = MAX_COUNT_PER_ARTICLE;*/
-            $basket[] = array(
+            $basket[] = [
                 'article_id' => $this->getId(),
                 'price' => $this->getRealPrice(),
-                'count' => $count,
+                'count' => 1,//$count,
                 'option_id' => $option_id,
                 'option_price' => $option_price,
                 'size' => $size,
                 'color' => $color,
 		'artikul' => $art,
 		'category' =>$this->getCategoryId(),
-		'skidka_block' =>$skidka_block,
-            );
-            $was_added = true;
-        }
+		'skidka_block' =>$this->getSkidkaBlock()
+            ];
+            $res['status'] = true;
+            $res['count_card'] = $count_card+1;
+            return $res;
+       }else{
+           return $res;
+       }
         return true;
     }
 
