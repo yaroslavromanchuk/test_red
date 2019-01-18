@@ -21,7 +21,7 @@ Zend_Loader::registerAutoload();// nujno
 //spl_autoload_register(array('Zend_Loader', 'autoload'));
 
 $timer = new DebugTimer(4);
-Registry::set('SQLLogger', SQLLogger::getInstance());
+//Registry::set('SQLLogger', SQLLogger::getInstance());
 
 header('Content-type: text/html; charset=UTF-8');
 header('Cache-control: private');
@@ -283,7 +283,7 @@ if($website->getCustomer()->getId() == 8005){
 
 		//echo '<pre>';
               //  print_r($this->cur_menu);
-               // print_r($_SESSION);
+             //   print_r($_SESSION);
 	//print_r($_SERVER);
 		//print_r($_REQUEST);
 		//echo count($_SESSION['basket']);

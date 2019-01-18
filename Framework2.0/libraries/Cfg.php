@@ -33,13 +33,15 @@ class Cfg
 
 	public function getValue($name = '')
 	{
-		if(!$name)
-			return $this->getValues();
+		if(!$name){return $this->getValues();}
 
-		if(isset($this->_all_values[$name]))
-			return $this->_all_values[$name];
-		else
-			throw new Exception("Value for config '$name' not found");
+		if(isset($this->_all_values[$name])){
+                    return $this->_all_values[$name];
+                    
+                }else{
+                    throw new Exception("Value for config '$name' not found");
+                    
+                }
 	}
 }
 

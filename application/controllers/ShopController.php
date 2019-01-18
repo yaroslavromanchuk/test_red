@@ -1628,26 +1628,15 @@ $change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], (isse
 				$data = array(
 					'status' => 100,
 					'date_create' => date("Y-m-d H:i:s"),
-					'company' => isset($info['company']) ? $info['company'] : '',
 					'name' => $info['name'],
 					'middle_name' => isset($info['middle_name']) ? $info['middle_name'] : '',
-					//'address' => isset($info['address']) ? $info['address'] : '',
-					'index' => $info['index'],
-					'street' => $info['street'],
-					'house' => $info['house'],
-					'flat' => $info['flat'],
-					'pc' => $info['pc'],
-					'city' => isset($info['city']) ? $info['city'] : '',
-					'obl' => isset($info['obl']) ? $info['obl'] : '',
-					'rayon' => $info['rayon'],
-					'sklad' => $info['sklad'],
 					'telephone' => $phone,
 					'email' => $info['email'],
 					'comments' => isset($info['comments']) ? $info['comments'] : '',
 					'delivery_cost' => 0,
-					'delivery_type_id' => isset($info['delivery_type_id']) ? $info['delivery_type_id'] : '',
-					'payment_method_id' => isset($info['payment_method_id']) ? $info['payment_method_id'] : 1,
-					'amount' => $_SESSION['order_amount'],
+					'delivery_type_id' =>  '',
+					'payment_method_id' =>  1,
+					//'amount' => $_SESSION['order_amount'],
 					'soglas' => 1,
 					'oznak' => 1,
 					//'deposit' => @$_SESSION['deposit'],
@@ -1669,7 +1658,7 @@ $change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], (isse
 				//________________________put order_to_db______________________________________________
 				$this->set_customer($order);
 
-				$order->reCalculate();
+				
                                 
                                 $q=" SELECT * FROM
 							red_events
@@ -1701,7 +1690,7 @@ $change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], (isse
 
 					}
 
-				foreach ($articles as $article) {
+		foreach ($articles as $article) {
 
 		$item = new Shoparticles($article['id']);
 		$itemcs = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $article['id'], 'id_size' => $article['size'], 'id_color' => $article['color']));
@@ -1741,6 +1730,8 @@ $change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], (isse
 					}
 
 				}
+                                
+                               $order->reCalculate(); 
 
 				//____________________send_email_________________
 
@@ -1777,8 +1768,8 @@ $message = 'Ваша заявка № '.$order->getQuickNumber().' прийня�
 			$this->view->id_order = $order->getId();
 			$this->view->summ = $order->calculateOrderPrice(false, true);
 
-				$this->basket = $_SESSION['basket'] = array();
-				$this->basket_articles = $_SESSION['basket_articles'] = array();
+				$this->basket = $_SESSION['basket'] = [];
+				$this->basket_articles = $_SESSION['basket_articles'] = [];
 
 				OrderHistory::newOrder($order->getCustomerId(), $order->getId(), ($order->getAmount()+$order->getDeposit()), $order->getArticlesCount());
 
