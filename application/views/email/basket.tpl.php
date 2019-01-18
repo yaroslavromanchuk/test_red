@@ -1,4 +1,4 @@
-<?=$this->render('email/email.header.tpl.php');?>
+<?=$this->render('email/email.header.tpl.php')?>
 <?php $text = explode(',', $this->trans->get('цвет,размер,количество,цена,всего,продолжить покупки,оформить заказ'));?>
 <style>
 .cart-table{border: 1px solid #8e8e8e; background: white; font-size: 14px; }
@@ -30,12 +30,12 @@
     </p>
 <?php } ?>
 
-<h3 style="color:#E8641B;"><?=$this->trans->get('Список товаров');?>
-    №<?=$this->order->getId();?></h3>
+<h3 style="color:#E8641B;"><?=$this->trans->get('Список товаров')?>
+    №<?=$this->order->getId()?></h3>
 <table width="700"  class="table cart-table">
 <thead>
     <tr>
-<th>Продукт</th><th></th><th><?=$text[3];?></th><th><?=$text[2];?></th><th><?=$text[4];?></th>
+<th>Продукт</th><th></th><th><?=$text[3]?></th><th><?=$text[2]?></th><th><?=$text[4]?></th>
     </tr>
 	</thead>
     <?php 
@@ -44,7 +44,6 @@
 	$total_price = 0.00;
     $to_pay = 0;
     $to_pay_minus = 0.00;
-    $now_orders=0;
     $skidka = 0;
 	
 	$t_real_price = 0.00;
@@ -53,29 +52,17 @@
 	$skid = '';
 
      $order = new Shoporders((int)$this->order->getId());
-	 //$this->view->order = $order;
-
-            $all_orders = wsActiveRecord::useStatic('Shoporderarticles')->findByQuery('
-    SELECT IF(SUM(price*count) IS NULL,0,SUM(price*count)) AS amount
-			        FROM ws_order_articles
-			        JOIN ws_orders ON ws_order_articles.order_id = ws_orders.id
-   WHERE ws_orders.customer_id = ' . $order->getCustomerId() . ' AND ws_orders.status IN (1,3,4,6,8,9,10,11,13,14,15,16) ')->at(0);
-    
-	$now_orders = $all_orders->getAmount();
-
-    $now_orders += $order->getAmount();
 	
-    foreach ($order->getArticles() as $article_or) {
-	
-    $at = new Shoparticles($article_or->getArticleId());
-		
+    foreach ($order->getArticles() as $article_or) {	
    if($article_or->getCount() == 0 ){ $count = 'нет на складе';}else{$count = $article_or->getCount(); }
 	
 	$price_real = (int)$article_or->getOldPrice() ? $article_or->getOldPrice() : $article_or->getPrice();
-		$t_real_price += $price_real * $article_or->getCount();
+	
+        $t_real_price += $price_real * $article_or->getCount();
 	
 	$price = $article_or->getPerc($order->getAllAmount());
-		$sum_skudka += $price['minus'];
+	
+        $sum_skudka += $price['minus'];
 		
 	if($article_or->getCount() > 0){
 	$skid_show = round((1 - (($price['price']/$article_or->getCount()) / $price_real)) * 100);
@@ -84,16 +71,15 @@
         ?>
    <tr>
        <td>
-	   <a href="https://<?=$_SERVER['HTTP_HOST'].$at->getPath()?>" >
+	   <a href="https://<?=$_SERVER['HTTP_HOST'].$article_or->article_db->getPath()?>" >
 	   <img width="100" src="https://<?=$_SERVER['HTTP_HOST'].$article_or->getImagePath('listing'); ?>" alt="<?=htmlspecialchars($article_or->getTitle());?>"/>
 	   </a>
 		</td>
 		
        <td style="text-align:left;">
 	   <b><?=$article_or->getTitle()?></b><br>
-	   <?=$text[0]?>:<?=wsActiveRecord::useStatic('Shoparticlescolor')->findById($article_or->getColor())->getName()?> | <?=$text[1];?>:<?=wsActiveRecord::useStatic('Size')->findById($article_or->getSize())->getSize(); ?>
+           <?=$text[0].':'.$article_or->colors->getName().' | '.$text[1].':'.$article_or->sizes->getSize()?>
 	   </td>
-	   
        <td>		
 	    <?php if($article_or->getCount() > 0) {
 		$p = $price['price']/$article_or->getCount();
@@ -107,7 +93,7 @@
 	   </td>
 	   
        <td>
-	   <?php $t_count += $count; echo $count;?>
+	   <?=$count?>
 	   </td>
 	   
        <td><?=Shoparticles::showPrice($price['price'])?> грн.</td>

@@ -1,11 +1,5 @@
 <script src="/js/desires.js?v=1.4"></script>
-<?php  
-if($this->user->id == 8005){
- //echo print_r($this->getShopItem()->getTop());
-}
-//$c = Skidki::getActivCat($this->getShopItem()->getCategoryId(), $this->getShopItem()->getDopCatId());
-$c = false;//Skidki::getActiv($this->getShopItem()->getId());
- ?>
+
 
 		<!-- Dialog return -->
 	<div class="modal fade comment-form" id="comment-modal_b_ord1" tabindex="-1" role="dialog" aria-labelledby="comment-modal_b_ord1">
@@ -75,7 +69,6 @@ $c = false;//Skidki::getActiv($this->getShopItem()->getId());
 						<div class="clear" style="padding:0;"></div>
 					</div>
 <div>
-						<!--<p><?php //echo $this->trans->get('Цвет');?>:</p>-->
 						<span id="color_return">
 <?php
 							$mass = array();
@@ -88,7 +81,7 @@ $c = false;//Skidki::getActiv($this->getShopItem()->getId());
 							if (count($mass) == 1) {
 									$one_c_r = $kay;
 									echo '<input hidden type="radio" value="' . $kay . '" name="color_return" id="'. $kay . 'color_return" checked="checked">';
-									//echo '<label for="'. $kay . 'color_return" class="lebb"><i>' . $value . '</i></label>';
+									
 								} else {
 									echo '<input hidden type="radio" value="' . $kay . '" name="color_return" id="'. $kay . 'color_return">';
 									echo '<label for="'. $kay . 'color_return" class="lebb"><i>' . $value . '</i></label>';
@@ -108,10 +101,11 @@ $c = false;//Skidki::getActiv($this->getShopItem()->getId());
 <?php
 							}
 							else {
+                                                            $cod = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article'=>$this->getShopItem()->getId(),'id_size'=>$one_z_r,'id_color'=>$one_c_r, 'count = 0'))->getCode();
 							
 ?>
-							<br><span class="sarticle_return"><?php echo $this->trans->get('Артикул');?>:<span class="red"><?=wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article'=>$this->getShopItem()->getId(),'id_size'=>$one_z_r,'id_color'=>$one_c_r, 'count = 0'))->getCode();?></span></span>
-							<input style="display: none;" class="form-control " type="text" name="articul" id="articul" value="<?php echo wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article'=>$this->getShopItem()->getId(),'id_size'=>$one_z_r,'id_color'=>$one_c_r, 'count = 0'))->getCode();?>"/>
+							<br><span class="sarticle_return"><?=$this->trans->get('Артикул')?>:<span class="red"><?=$cod?></span></span>
+							<input style="display: none;" class="form-control " type="text" name="articul" id="articul" value="<?=$cod?>"/>
 
 <?php
 							}
@@ -172,8 +166,7 @@ $c = false;//Skidki::getActiv($this->getShopItem()->getId());
 								<input class="form-control" name="name" id="quik_order-name" required value="<?php
 								if (isset($this->basket_contacts['name']) and $this->basket_contacts['name']) {
 									echo htmlspecialchars($this->basket_contacts['name']);
-								}
-								elseif ($this->ws->getCustomer()->getIsLoggedIn()) {
+								}elseif ($this->ws->getCustomer()->getIsLoggedIn()) {
 									echo $this->ws->getCustomer()->getFirstName();
 								}
 							?>" />
@@ -250,7 +243,7 @@ $rs = 'detail';
 }
 	$label = false;
 	if ($this->getShopItem()->getLabelId()) {
-		$label = $this->getShopItem()->getLabel()->getImage();// wsActiveRecord::useStatic('Shoparticleslabel')->findFirst(array('id' => $this->getShopItem()->getLabelId()))->getImage();
+		$label = $this->getShopItem()->getLabel()->getImage();
 	}
 ?>
 <div class="row article-detail-box p-2 m-0">
@@ -274,25 +267,6 @@ $rs = 'detail';
 <div class="photos  col-xs-12 col-sm-12 col-lg-5 col-xl-4">
 
 <?php
-if(/*$this->getShopItem()->getOptions()*/ false){
-    //echo $this->getShopItem()->getOptions()->value;
-    ?>
-    
-    <div class="article_label_container_2">
-             <div class="article_label_2">
-                 <img src="/storage/label/final_sale_1.png" alt="" style="width:100px;">
-                 <p style="font-size: 95%;
-    font-weight: bold;
-    color: #e20404;
-    transform: rotate(-45deg);
-    position: absolute;
-    top: 20px;
-    left: 10px;
-    padding: 0;
-    margin: 0;"><?='-'.$this->getShopItem()->getOptions()->value.'%';?></p></div>
-         </div> 
- <?php   
-}
 if($label == '/storage/label/final_sale_1.png'){
 	$pr = $this->getShopItem()->getPrice();
         if((float)$this->getShopItem()->getOldPrice()){ $pr  = $this->getShopItem()->getOldPrice();}
@@ -329,26 +303,17 @@ if($label == '/storage/label/final_sale_1.png'){
         </div> 
     </div> 
        <?php } ?>
-<div style="display:none" id="cloud_big_src"><?=$this->getShopItem()->getImagePath(); ?></div>
+<div style="display:none" id="cloud_big_src"><?=$this->getShopItem()->getImagePath()?></div>
 
-<a onclick="$('a.cloud-zoom').css('z-index',1);" href='<?=$this->getShopItem()->getImagePath(); ?>' class='cloud-zoom' id='zoom' >
-    
-	<?php  if($c and false){
-$pr = $this->getShopItem()->getPrice();
-        if((float)$this->getShopItem()->getOldPrice()) { $pr  = $this->getShopItem()->getOldPrice(); }
-	$skid = (1-($this->getShopItem()->getPriceSkidka()/$pr))*100;
-	?>
-	<p class="event_label"><span><?='-'.(int)$skid.'%';?></span></p>
-	<?php } ?>
-        
-<img class="photo-big" id="test" itemprop="image"  src="<?=$this->getShopItem()->getImagePath($rs)?>" alt='<?=htmlspecialchars($this->getShopItem()->getTitle()); ?>' title="<?=htmlspecialchars($this->getShopItem()->getTitle()); ?>" >
+<a onclick="$('a.cloud-zoom').css('z-index',1);" href='<?=$this->getShopItem()->getImagePath()?>' class='cloud-zoom' id='zoom' >
+<img class="photo-big" id="test" itemprop="image"  src="<?=$this->getShopItem()->getImagePath($rs)?>" alt='<?=htmlspecialchars($this->getShopItem()->getTitle())?>' title="<?=htmlspecialchars($this->getShopItem()->getTitle())?>" >
 </a>
 </div>
 	</div>
 <!--/foto-->
 <!-- /text-->
 	<div class="texts col-xs-12 col-sm-12 col-lg-6  col-xl-7 px-0">
-	<div class="model"><?=$this->getShopItem()->getModel();?></div>
+	<div class="model"><?=$this->getShopItem()->getModel()?></div>
 <div class="shop_brand"  itemprop="brand" itemscope itemtype="http://schema.org/Brand">
 <a href="/brands/id/<?=$this->getShopItem()->brand_id?>/<?=$this->getShopItem()->getBrand()?>/"><span itemprop="name"><?=$this->getShopItem()->getBrand()?></span></a>
 </div>
@@ -373,9 +338,9 @@ if($this->getShopItem()->getModelId()){
 </p>
    
 <?php } ?>
-<p class="mb-0">                      <b><?=$this->trans->get('Размер')?>:</b> 
-						
-						<span id="size" class="size">
+<p class="mb-0">
+    <b><?=$this->trans->get('Размер')?>:</b> 
+	<span id="size" class="size">
 <?php
 							$one_z = 0;
 							$one_c = 0;
@@ -833,11 +798,9 @@ if($n){ ?>
 					url: '/page/getarticle/&'+"color_id=" + colorid + '&size_id=' + sizeid + '&article_id=' + <?=$this->getShopItem()->getId()?>,
 					beforeSend: function(){
 					$("#message").fadeOut(300);
-					//$("#message").html('');
 						$('#article').css('opacity', '0.1');
 						$('#wait_circle').show();
 					},
-//					data: "color_id=" + colorid + '&size_id=' + sizeid + '&article_id=' + <?=$this->getShopItem()->getId()?>,
 					success: function (result) {
 						if (result.type === 'error') {
 							$('#article').css('opacity', '1');
@@ -864,7 +827,6 @@ if($n){ ?>
 	function getArticleReturn(sizeid, colorid) {
 		if (sizeid > 0) {
 			if (colorid > 0) {
-				//console.log(sizeid+' '+colorid);
 				$.ajax({
 					type: 'GET',
 					dataType: 'json', 
@@ -873,7 +835,6 @@ if($n){ ?>
 						$('#article').css('opacity', '0.1');
 						$('#wait_circle').show();
 					},
-//					data: "color_id=" + colorid + '&size_id=' + sizeid + '&article_id=' + <?=$this->getShopItem()->getId()?>,
 					success: function (result) {
 						if (result.type === 'error') {
 							$('#article').css('opacity', '1');
@@ -935,7 +896,7 @@ if($n){ ?>
 							checked = '';
 							if (color_id == $(this).attr('id')) checked = 'checked="checked"';
 							options +=	'<input type="radio" value="' + $(this).attr('id') + '" name="color" id="' + $(this).attr('id') + 'color" '+ checked +'><span>'+$(this).attr('title')+'</span>';
-							/*+'<label for="' + $(this).attr('id') + 'color"><i>' + $(this).attr('title') + '</i></label>';*/
+						
 						});
 						$('#color').html(options);
 						$('#article').css('opacity', '1');
@@ -944,7 +905,7 @@ if($n){ ?>
 				},
 				"json"
 			);
-			//console.log($('input[name="color"][value="'+color_id+'"]').val()+color_id);
+			
 		});
 
 		$('#color').on('change', 'input[name="color"]', function() {
@@ -1030,7 +991,7 @@ if($n){ ?>
 				},
 				"json"
 			);
-			//console.log($('input[name="color"][value="'+color_id+'"]').val()+color_id);
+			
 		});
 
 		$('#color_return').on('change', 'input[name="color_return"]', function() {

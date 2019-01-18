@@ -72,6 +72,10 @@ class BabyController extends controllerAbstract
         $this->view->category = $category = new Shopcategories(283);
         FilterController::getFilter($category);  
     }
+    public function pizhamyAction(){
+        $this->view->category = $category = new Shopcategories(336);
+        FilterController::getFilter($category);  
+    }
     
         
     

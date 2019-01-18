@@ -504,7 +504,10 @@ if(@$this->get->id){
 	// $this->pricelistAction();
 	 die();
 	 }
-	 
+         
+	 /**
+          * telegram api ststus order
+          */
 	 public function statusorderAction(){
  
  if((int)$this->get->id){
@@ -523,7 +526,9 @@ if(@$this->get->id){
 	 die();
 	 }
 	 
-	 
+	 /**
+          * telegram api
+          */
 	 public function telegramAction(){
 	 if($this->get->token and $this->get->token == 'red'){
 	 $result='';
@@ -643,7 +648,9 @@ $result='Данные уценки'.PHP_EOL;
 	  
 	 }
 	
-
+/**
+ * 
+ */
     public function getcountAction()
     {
         $article = intval($_GET['article_id']);
@@ -660,9 +667,10 @@ $result='Данные уценки'.PHP_EOL;
             die();
         }
     }
-
-    public
-    function getcolorandsizeAction()
+/**
+ * 
+ */
+    public function getcolorandsizeAction()
     {
         $article = @intval($_GET['article_id']);
         $color = array();
@@ -694,9 +702,10 @@ $result='Данные уценки'.PHP_EOL;
         die();
 
     }
-
-    public
-    function getcolorAction()
+/**
+ * 
+ */
+    public function getcolorAction()
     {
         $article = @intval($_GET['article_id']);
         $size = @intval($_GET['size_id']);
@@ -714,9 +723,10 @@ $result='Данные уценки'.PHP_EOL;
         exit;
 
     }
-
-    public
-    function getsizeAction()
+/**
+ * 
+ */
+    public function getsizeAction()
     {
         $article = @intval($_GET['article_id']);
         $color = @intval($_GET['color_id']);
@@ -733,9 +743,10 @@ $result='Данные уценки'.PHP_EOL;
         exit;
 
     }
-
-    public
-    function getarticleAction()
+/**
+ * 
+ */
+    public function getarticleAction()
     {
         $article = @intval($_GET['article_id']);
         $size = @intval($_GET['size_id']);
@@ -757,8 +768,10 @@ $result='Данные уценки'.PHP_EOL;
         exit;
 
     }
-	public
-    function getcolorreturnAction()
+    /**
+     * 
+     */
+	public function getcolorreturnAction()
     {
         $article = @intval($_GET['article_id']);
         $size = @intval($_GET['size_id']);
@@ -776,9 +789,10 @@ $result='Данные уценки'.PHP_EOL;
         exit;
 
     }
-
-    public
-    function getsizereturnAction()
+    /**
+     * 
+     */
+    public function getsizereturnAction()
     {
         $article = @intval($_GET['article_id']);
         $color = @intval($_GET['color_id']);
@@ -796,9 +810,10 @@ $result='Данные уценки'.PHP_EOL;
 
     }
 	
-	
-	public
-    function getarticlereturnAction()
+	/**
+         * 
+         */
+	public function getarticlereturnAction()
     { 
         $article = @intval($_GET['article_id']);
         $size = @intval($_GET['size_id']);
@@ -820,7 +835,9 @@ $result='Данные уценки'.PHP_EOL;
         exit;
 
     }
-
+/**
+ * 
+ */
     public function getpaymentAction(){
 //		$_GET['delivery'] = Registry::getInstance()->getGet()->getDelivery();
         $delivery = @intval($_GET['delivery']);
@@ -871,7 +888,10 @@ $result='Данные уценки'.PHP_EOL;
         }
         die();
     }
-	//pereschot summu dostavky mistexpres
+    /**
+     * pereschot summu dostavky mistexpres
+     */
+    /*
 	public function recalcmeestCost($id, $cost){
 	wsLog::add('Заказ ' . @$id, 'Сумма ' . @$cost);
 	$price = array();
@@ -899,6 +919,7 @@ $masa =  (float)$or->getMassa();
 	}
 	return $price;
 	}
+        */
 
     public function testAction()
     {
@@ -926,25 +947,14 @@ $masa =  (float)$or->getMassa();
 			
             $this->view->data = $this->post;
             $admin_name = Config::findByCode('admin_name')->getValue();
-            $admin_email = Config::findByCode('admin_email')->getValue();
-			$email = explode(",", $_POST['shop']);
-            $msg = $this->render('email/work.tpl.php');
+            $email = explode(",", $_POST['shop']);
+           // $msg = $this->render('email/work.tpl.php');
             $subject = 'Работа: резюме на вакансию '.$_POST['works'];
-            require_once('nomadmail/nomad_mimemail.inc.php');
-            $mimemail = new nomad_mimemail();
-            $mimemail->debug_status = 'no';
-            $mimemail->set_from($admin_email, $this->post->name);
-            $mimemail->set_to($admin_email, $admin_name);
-            $mimemail->set_charset('UTF-8');
-            $mimemail->set_subject($subject);
-            $mimemail->set_text(make_plain($msg));
-            $mimemail->set_html($msg);
-            //@$mimemail->send();
+
 		if($_POST['works'] == 'Сотрудник внутреннего контроля'){
-            MailerNew::getInstance()->sendToEmail('videooper@red.ua', $admin_name, $subject, $msg);
+                     SendMail::getInstance()->sendEmail('videooper@red.ua', $admin_name, $subject, $this->render('email/work.tpl.php'));
 			}else{
-			MailerNew::getInstance()->sendToEmail($email[0], $admin_name, $subject, $msg);
-			MailerNew::getInstance()->sendToEmail($email[1], $admin_name, $subject, $msg);
+                             SendMail::getInstance()->sendEmail($email[0], $admin_name, $subject, $this->render('email/work.tpl.php'), false, false, false, false, 2, $email[1], $admin_name);
 			}
 
             $this->view->name = $this->post->name;
@@ -954,7 +964,7 @@ $masa =  (float)$or->getMassa();
         }
     }
 	
-	public function questionAction(){
+public function questionAction(){
 	
 	$this->view->faq = wsActiveRecord::useStatic('Faq')->findAll();
 	
@@ -1028,7 +1038,7 @@ $masa =  (float)$or->getMassa();
                     $mas_art[] = mb_convert_encoding($art->getModel(), "windows-1251");
                     $mas_art[] = $info;
                     $mas_art[] = mb_convert_encoding($art->getPrice(), "windows-1251");
-                    $mas_art[] = 'http://www.red.ua' . $art->getPath();
+                    $mas_art[] = 'https://www.red.ua' . $art->getPath();
 
                     fputcsv($fp, $mas_art, ';');
 
@@ -1067,9 +1077,9 @@ $masa =  (float)$or->getMassa();
 
             $this->view->post = $_POST;
             if (!count($errors)) {
-                $admin_email = Config::findByCode('admin_email')->getValue();
+               // $admin_email = Config::findByCode('admin_email')->getValue();
                 $admin_name = Config::findByCode('admin_name')->getValue();
-                $do_not_reply = Config::findByCode('do_not_reply_email')->getValue();
+                //$do_not_reply = Config::findByCode('do_not_reply_email')->getValue();
 				if(@$_POST['comment-type']){
 				 $subject = $_POST['comment-type'];
 				}else{
@@ -1077,38 +1087,11 @@ $masa =  (float)$or->getMassa();
 				}
 
                $this->view->fields = $fields;
-                $msg = $this->render('email/template.tpl.php');
+               // $msg = $this->render('email/template.tpl.php');
 
-                require_once('nomadmail/nomad_mimemail.inc.php');
-                $mimemail = new nomad_mimemail();
-                $mimemail->debug_status = 'no';
-                $mimemail->set_from($do_not_reply, $admin_name);
-                $mimemail->set_to('skidki@red.ua', $admin_name);
-                $mimemail->set_charset('UTF-8');
-                $mimemail->set_subject($subject);
-                $mimemail->set_text(make_plain($msg));
-                $mimemail->set_html($msg);
-
-                //@$mimemail->send();
-                MailerNew::getInstance()->sendToEmail('skidki@red.ua', $admin_name, $subject, $msg);
-			   MailerNew::getInstance()->sendToEmail('php@red.ua', $admin_name, $subject, $msg);
-
-                if (Config::findByCode('notify_customer')->getValue()  and false) {
-                    $msg = $this->render('email/customer.tpl.php');
-                    $mimemail = new nomad_mimemail();
-                    $mimemail->debug_status = 'no';
-                    //$mimemail->set_from('skidki@red.ua', $admin_name);
-					 $mimemail->set_from('php@red.ua', $admin_name);
-                    $mimemail->set_to($_POST['email'], $_POST['name']);
-                    $mimemail->set_charset('UTF-8');
-                    $mimemail->set_subject($subject);
-                    $mimemail->set_text(make_plain($msg));
-                    $mimemail->set_html($msg);
-
-                    //@$mimemail->send();
-                    MailerNew::getInstance()->sendToEmail($_POST['email'], $_POST['name'], $subject, $msg, 1, 'skidki@red.ua');                    
-                }
-
+              //  MailerNew::getInstance()->sendToEmail('skidki@red.ua', $admin_name, $subject, $msg);
+			//   MailerNew::getInstance()->sendToEmail('php@red.ua', $admin_name, $subject, $msg);
+            SendMail::getInstance()->sendEmail('skidki@red.ua', $admin_name, $subject, $this->render('email/template.tpl.php'), false, false, false, false, 2, 'php@red.ua', $admin_name);
 
                 $this->view->name = $_POST['name'];
                 echo $this->render('pages/contacts-ok.tpl.php');
@@ -1126,16 +1109,6 @@ $masa =  (float)$or->getMassa();
 		
 if((isset($_POST['send_reviews']) and isset($_POST['comment-type'])) or isset($_POST['send_onswer']))
 	{
-	//if(preg_match('|^[-А-Яа-яA-Za-z0-9_ &(),.]*$|',$_POST['message'])){
-	
-	
-	$parent_id = $_POST['buf'];
-	$url_id = $_POST['url_id'];
-	$name = $_POST['sender_name'];
-	$url = $_POST['url'];
-	$email = $_POST['sender_email'];
-	$text =  strip_tags($_POST['message']);
-	$date = date("d.m.Y \в\ H:i");
 	if($this->ws->getCustomer()->getIsLoggedIn() and $this->ws->getCustomer()->isAdmin()){
 	$pub = 1;
 	}else{
@@ -1143,15 +1116,15 @@ if((isset($_POST['send_reviews']) and isset($_POST['comment-type'])) or isset($_
 	}
 	
 	$rev = new Reviews();
-	$rev->setParent_id($parent_id);
-	$rev->setUrl_id($url_id);
-	$rev->setName($name);
-	$rev->setUrl($url);
-	$rev->setMail($email);
-	$rev->setText($text);
-	$rev->setDate_add($date);
+	$rev->setParent_id($_POST['buf']);
+	$rev->setUrl_id($_POST['url_id']);
+	$rev->setName($_POST['sender_name']);
+	$rev->setUrl($_POST['url']);
+	$rev->setMail($_POST['sender_email']);
+	$rev->setText(strip_tags($_POST['message']));
+	$rev->setDate_add(date("d.m.Y \в\ H:i"));
 	$rev->setPublic($pub);
-	if(@$_POST['comment-type']) $rev->setFlag($_POST['comment-type']);
+	if(isset($_POST['comment-type'])){$rev->setFlag($_POST['comment-type']);}
 	$rev->save();
 	
 	 header ('Location: /reviews/');
@@ -1162,7 +1135,7 @@ if((isset($_POST['send_reviews']) and isset($_POST['comment-type'])) or isset($_
             if ((int)$this->get->page > 0) {
                 $page = (int)$this->get->page;
             }
-			 $this->view->onpage = $onPage;
+	$this->view->onpage = $onPage;
             $this->view->page = $page;
 			
 $this->view->allcount = wsActiveRecord::useStatic('Reviews')->count(array('public' => 1, 'parent_id' => 0));

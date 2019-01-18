@@ -346,8 +346,8 @@ class Shoporders extends wsActiveRecord
 	$price_2 = round($price_2, 2);
 		
     if ($price_2 != $this->getAmount()){
-		//d($price_2, false);
-		//d((float)$this->getAmount(), false);
+		d($price_2, false);
+		d((float)$this->getAmount(), false);
 	$this->save();
 		}
                 

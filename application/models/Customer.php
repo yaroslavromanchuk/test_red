@@ -243,6 +243,22 @@ class Customer extends wsCustomer
                  
 		return $co['suma'];
     }
+    /**
+     * @getSumOrderNoNew() - сумма заказов с учетом депозита без новыйх
+     * @return float - сумма заказов текущего пользователя (с учетом депозита)
+     */
+	public function getSumOrderNoNew(){
+            return  wsActiveRecord::useStatic('Customer')->findByQuery('
+						SELECT
+							IF(SUM(price*count) IS NULL,0,SUM(price*count)) AS amount
+						FROM
+							ws_order_articles
+							JOIN ws_orders
+							ON ws_order_articles.order_id = ws_orders.id
+						WHERE
+							ws_orders.customer_id = ' . $this->getId() . '
+							AND ws_orders.status IN (1,3,4,6,8,9,10,11,13,14,15,16) ')->at(0)->getAmount();	
+    }
     
     /**
      * @getDateOrderP - дата последнего заказа

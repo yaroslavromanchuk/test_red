@@ -20,7 +20,7 @@ echo '<pre>';
 //$r = $up->newAddress('04080', 'Київська', 'Подільський', 'Київ', 'Нижньоюрківська', '31');// наш адрес
 
 //print_r($up->newAddress('11033'));// вовий адрес
-//print_r($up->getAddress(16439863)); 
+print_r($up->getAddress(19049636)); 
 //
 if(false){
     $adr = [
@@ -84,7 +84,7 @@ if(false){
 //L180005120BNN
 //
 //print_r($up->getNewClient('Романчук','Ярослав','Анатолійович',813285, '0968171330', 8005));
-//print_r($up->getClientExternalId(15972));
+print_r($up->getClientExternalId(34620));
 //print_r($up->getClientAddress('e7059d25-7a15-44fe-bf92-cf7823fe014d'));
 //print_r($up->getClientPhone('0968171330'));
 //print_r($up->getEditClient('5b4260e8-b044-4aad-a750-6f4a26a23389', '', '', '', '', 'ce4e19d6-6a4f-4f1f-a8c4-5b4a1f9cde9a'));
@@ -116,8 +116,8 @@ if(false){
 //[
 
 //print_r($up->getNewShipments('5b4260e8-b044-4aad-a750-6f4a26a23389', '365040', 1000, 24, 24, 15, 1240, '1239.5', 'Zakaz 365040'));
-print_r($up->getListGroups());
-print_r($up->getShipments('ee10ef89-0640-46cd-a588-8597073e4e61'));
+//print_r($up->getListGroups());
+//print_r($up->getShipments('ee10ef89-0640-46cd-a588-8597073e4e61'));
 
 if(false){
       $ss = [
@@ -579,17 +579,19 @@ public function basketcontactsAction(){
 		$dely = wsActiveRecord::useStatic('DeliveryPayment')->findAll(array('delivery_id'=>(int)$id));
 		if($dely){
 		foreach($dely as $d){
+                    if($d->payment->active == 1){
 		$pay[$d->payment_id] = $d->payment->name;
+                    }
 		}
 		}
 		switch($id){
 			case 9: $dop = array('street', 'hous', 'flat');
 				break;
-			case 8: $dop = array('city', 'sklad');
+			case 8: $dop = array('city_np', 'sklad');
 				break;
 			case 3: $dop = array('pobeda');
 				break;
-			case 5: $dop = array('mishuga');
+			case 5: $dop = array('stroyka');
 				break;
 			case 4: $dop = array('index', 'obl', 'rayon', 'city', 'street', 'hous', 'flat');
 				break;

@@ -44,7 +44,7 @@
             $this->email_charset = 'UTF-8';
         }
 
-	public function sendEmail($to_email, $to_name = '', $subject, $msg ='', $uploadfile = false, $filename = false, $from_email = false, $from_name = false, $copy = false, $copy_email = false, $copy_name = false){
+	public function sendEmail($to_email = '', $to_name = '', $subject = '', $msg ='', $uploadfile = false, $filename = false, $from_email = false, $from_name = false, $copy = false, $copy_email = false, $copy_name = false){
 	if(substr(trim($to_email), -2) != 'ru'){
             try{	
 // инициализируем класс

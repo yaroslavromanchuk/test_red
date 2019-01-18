@@ -30,8 +30,12 @@ class ArticlesController extends controllerAbstract
                 
     $this->view->g_url = $article->getPath(); 
 $name = ucfirst($article->getModel()) . ' ' .trim($article->getBrand()).' '.$this->trans->get('color').' '.mb_strtolower($article->getColorName()->getName());
-if($article->sizes->count() == 1){ $name.= ' размер '.$article->sizes[0]->size->size.' артикул - '.$article->sizes[0]->code; }   
-$title = $name.' '.$this->trans->get('price').' '.$article->getPriceSkidka().'грн. '.Config::findByCode('website_title')->getValue(); 
+$title = $name;
+if($article->sizes->count() == 1){
+   $title.= ' размер '.$article->sizes[0]->size->size.' артикул - '.$article->sizes[0]->code; 
+    
+} 
+$title.=' '.$this->trans->get('price').' '.$article->getPriceSkidka().'грн. '.Config::findByCode('website_title')->getValue(); 
                 
 		$this->cur_menu->setName($name);
                 $this->cur_menu->setPageTitle($title);
@@ -68,8 +72,7 @@ $title = $name.' '.$this->trans->get('price').' '.$article->getPriceSkidka().'г
 		if (isset($error)) {
 			$this->view->error = $error;
 		}
-                // $this->view->title = 'test';
-                 
+
 		$this->view->shop_item = $article;
 		$this->view->category = $article->getCategory();
 
@@ -200,13 +203,6 @@ $change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], 0, 0,
        if($this->get->price_min) {$param['price']['min'] = $this->get->price_min;}
        if($this->get->price_max) {$param['price']['max'] = $this->get->price_max;}
 
-            //$prod_on_page = $_COOKIE['items_on_page'];
-                
-               // if (!$prod_on_page){ $prod_on_page = Config::findByCode('products_per_page')->getValue();}
-
-		//$this->view->per_page = $onPage = $prod_on_page;
-		//$page = $this->get->page?(int)$this->get->page:0;
-                
 
                 if($this->get->id){
                     
@@ -220,9 +216,7 @@ $change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], 0, 0,
                     
                       $search_result = [];
                 }
-       // $this->view->price_min = $search_result['parametr']['price_min']?$search_result['parametr']['price_min']:0;
-	//$this->view->price_max = $search_result['parametr']['price_max']?$search_result['parametr']['price_max']:1; 
-        
+
         $this->view->filters = $search_result['parametr'];
         $this->view->result_count = $search_result['count'];
         $this->view->total_pages = $search_result['pages'];

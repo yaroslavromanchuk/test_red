@@ -117,7 +117,7 @@ $.ajax({
               <p>Внесити необходимые данные и нажмите кнопку "Создать".</p>
 <div class="form-layout">
 	<div class="row mg-b-25 border border-dark">
-	<div class="form-group  col-sm-12 col-md-9 col-lg-9 col-xl-9">
+	<div class="form-group  col-sm-12 col-md-12 col-lg-12 col-xl-12">
 			 <label class="form-control-label">Состав: <span class="tx-danger">*</span></label>
       <div class="text_sostav row">
             <?php
@@ -136,13 +136,15 @@ $.ajax({
 			}?>
 			
           </div>
-		 <button type="button" onclick="Add_Sostav();return false;" class="btn btn-info pd-x-20">Создать</button>
+		 
 	</div>
-	<div class="form-group  col-sm-12 col-md-3 col-lg-3 col-xl-3">
-	<div class="align-text-bottom" style="padding-top:100%;">
+	<div class="form-group  col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <button type="button" onclick="Add_Sostav();return false;" class="btn btn-info btn-lg m-2 pd-x-20">Создать</button>
+	<div class="align-text-bottom">
 			 <label class="form-control-label">Состав: <span class="tx-danger">*</span></label>
                   <textarea rows="8" cols="100" class="form-control" id="sostav" name="sostav" required></textarea>
 				  </div>
+            
 	</div>
 	</div>
 	<script>
@@ -174,7 +176,7 @@ console.log(arr_s.sort().reverse());
               <p>Внесити необходимые данные и нажмите кнопку "Создать".</p>
 
 	<div class="row mg-b-25 border border-dark">
-	<div class="form-group  col-sm-12 col-md-9 col-lg-9 col-xl-9">
+	<div class="form-group  col-sm-12 col-md-12 col-lg-12 col-xl-12">
 			 <label class="form-control-label">Описание: <span class="tx-danger">*</span></label>
              <div class="text_opis row">
 
@@ -190,11 +192,12 @@ console.log(arr_s.sort().reverse());
 	<option value="Итальянские размеры.">Итальянские размеры.</option>
                   </select>
 				  </div>
-		 <button type="button" onclick="Add_Opis();return false;" class="btn btn-info pd-x-20" >Создать</button>
+		
 		
 	</div>
-	<div class="form-group  col-sm-12 col-md-3 col-lg-3 col-xl-3">
-	<div class="align-text-bottom" style="padding-top:100%;">
+	<div class="form-group  col-sm-12 col-md-12 col-lg-12 col-xl-12">
+             <button type="button" onclick="Add_Opis();return false;" class="btn btn-info btn-lg m-2 pd-x-20" >Создать</button>
+	<div class="align-text-bottom">
 			 <label class="form-control-label">Описание: <span class="tx-danger">*</span></label>
                   <textarea rows="8" cols="100" class="form-control" id="long_text" name="long_text" required></textarea>
 				  </div>

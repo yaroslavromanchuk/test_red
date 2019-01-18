@@ -1,6 +1,7 @@
 <script  src="/js/call/jquery.mask.js?v=20131212"></script>
 <link rel="stylesheet" href="/js/meest/jquery-ui.css?v=20131212" type="text/css" media="screen">
 <script  src="/js/meest/jquery-ui.js?v=20131212"></script>
+
 <script>$( function(){ $("#telephone").mask("38(999)999-99-99");});</script>
 
 
@@ -465,10 +466,10 @@ if(true){
 				</div>
 			</div>
 		</div>
-<p  class="alert alert-danger k_type w-100" >
+<!--<p  class="alert alert-danger k_type w-100" >
     <span style="font-size:  18px;font-weight:  bold;">Обратите внимание!</span>
     <br>Изменения в режиме работы курьерской доставка. Заказы оформленные с 29.12.2018 по 10.01.2019, будут доставлены с 11.01.2019 года.<br> За дополнительной информацией обращайтесь в Колл.центр (044) 224-40-00
-</p>
+</p>-->
 <p  class="alert alert-danger m_type" >
     <span style="font-size:  18px;font-weight:  bold;">Обратите внимание!</span>
     <br>C 01.06.2018 для получения заказа в пункте самовывоза, его нужно оплатить в полном размере(онлайн при оформлении или в самом пункте самовывоза). За дополнительной информацией обращайтесь в Колл.центр (044) 224-40-00

@@ -10,7 +10,7 @@ class AjaxController extends controllerAbstract
     }
     public function getbasketcountAction(){
         if (!isset($_SESSION['basket']))
-            $_SESSION['basket'] = array();
+            $_SESSION['basket'] = [];
         $this->basket  = $_SESSION['basket'];
         $articles_count = 0;
         $articles_price = 0.0;
@@ -63,43 +63,24 @@ die(json_encode(html_entity_decode($rez)));
     }
 	
 	public function setlangAction(){
-		//echo print_r($this->post);
-		
+
 	if($this->post->lang){
 		
             $_SESSION['lang'] = $this->post->lang; 
-			
-			
+
 			if($this->post->lang == 'uk'){
 				$page = '/uk'.$this->post->ur;
 				
 			}else{
 				$page = substr($this->post->ur, 3);
 			}
-			
-			//header("Refresh: 0; url=$page");
-			//header("Location: $page",TRUE,301);
-			//exit();
-			
-			//$sec = "10";
-			/*
-			if(isset($_COOKIE['lang'])){
-			$_COOKIE['lang'] = $this->post->lang;
-		}else{
-			setcookie('lang', $this->post->lang);
-			}
-			*/
-			//header("Refresh: 0; url=$page");
-        }
-		
-	//if($this->post->lang == 'ua')	
-//echo print_r($this->post->lang);		
+        }		
 	 die($page);
 	return false;
 	}
 	
 	public function getcountarticlescategoryAction(){
-	$arrr = array();
+	$arrr = [];
 	
 	$cats = wsActiveRecord::useStatic('Shopcategories')->findFirst(array('id' => $this->post->cat, 'active' => 1));
 $arr = $cats->getKidsIds();
@@ -117,6 +98,12 @@ $arrr['category'] = $this->post->cat;
 $arrr['ctn'] = $count;
 	die(json_encode($arrr));
 	}
+        
+        public function setorderamountbasketAction() {
+            $_SESSION['total_price'] = $this->post->amount;
+            die();
+            
+        }
 
 
 

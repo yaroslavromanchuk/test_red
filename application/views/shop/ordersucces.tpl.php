@@ -63,7 +63,11 @@ if (isset($_COOKIE["SAuid"]) && isset($_COOKIE["utm_source"]) && $_COOKIE["utm_s
 		</div>
 	</div>
 </form>
-<?php  unset($_SESSION['pay']);?>
+<?php  
+unset($_SESSION['pay']);
+unset($_SESSION['total_price']);
+unset($_SESSION['order_amount']);
+?>
 <script>
 	document.forms.payment_form.submit();
 </script>
@@ -115,6 +119,8 @@ echo $this->trans->get('Ждите смс о прибытии заказа в м
 		
 					//exit register sellaction
 unset($_SESSION['order']);
+unset($_SESSION['total_price']);
+unset($_SESSION['order_amount']);
  } ?>
  
 <p style="margin-top:10px;"><span style="font-size: 13px;"><a href="/pays/" target="_blank"><?=$this->trans->get('Условия/график доставки и оплаты')?></a></span></p>

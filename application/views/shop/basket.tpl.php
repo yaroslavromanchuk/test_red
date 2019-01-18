@@ -27,16 +27,23 @@ echo '<div class="col-xs-10 col-xs-offset-1">
 </tr>
 </thead>
 <?php
-	//$total = 0.0;
-	//$t_count = 0;
-	$t_price = 0.00;
+
+	$sum_order = 0.00;
+        
 	$total_price = 0.00;
+        
 	$to_pay = 0;
+        
 	$to_pay_minus = 0.00;
+        
 	$now_orders = 0;
+        
 	$skidka = 0;
+        
 	$kupon = 0;
+        
 	$event_skidka = 0;
+        
 	if(isset($_SESSION['kupon'])){
 	$kupon = $_SESSION['kupon'];
 	}elseif(isset($_SESSION['error_cod'])){
@@ -46,17 +53,7 @@ echo '<div class="col-xs-10 col-xs-offset-1">
 	if ($this->ws->getCustomer()->getIsLoggedIn()) {
 		$skidka = $this->ws->getCustomer()->getDiscont(false, 0, true);
 		$event_skidka = EventCustomer::getEventsDiscont($this->ws->getCustomer()->getId());
-		$all_orders = wsActiveRecord::useStatic('Shoporderarticles')->findByQuery('
-			SELECT
-				IF(SUM(price*count) IS NULL, 0, SUM(price*count)) amount
-			FROM
-				ws_order_articles
-				JOIN ws_orders
-				ON ws_order_articles.order_id = ws_orders.id
-			WHERE
-				ws_orders.customer_id = '.$this->ws->getCustomer()->getId().'
-				AND ws_orders.status IN (1,3,4,6,8,9,10,11,13,14,15,16)')->at(0);
-		$now_orders = $all_orders->getAmount();
+		$now_orders = $this->ws->getCustomer()->getSumOrderNoNew();
 	}
        // echo $event_skidka;
 	$mas_akciya = [];
@@ -69,7 +66,7 @@ echo '<div class="col-xs-10 col-xs-offset-1">
 	foreach ($this->getBasket() as $key => $item) {
             $sp[] = $item['article_id']; 
 		if (($article = wsActiveRecord::useStatic('Shoparticles')->findById($item['article_id'])) && $article->getId() && $item['count'] > 0) {
-			$t_price += $article->getPriceSkidka() * $item['count'];
+			$sum_order += $article->getPriceSkidka() * $item['count'];
 			
 		}
 	/*
@@ -158,11 +155,7 @@ echo '<div class="col-xs-10 col-xs-offset-1">
 	
 	}
 	*/
-        
-        
-	$now_orders += $t_price;
-	$sum_order = $t_price;
-	$t_price = 0.00;
+
 	foreach ($this->getBasket() as $key => $item){
 		if (($article = wsActiveRecord::useStatic('Shoparticles')->findById($item['article_id'])) && $article->getId() && $item['count'] > 0) {
 		$_SESSION['basket'][$key]['option_price'] = 0;
@@ -170,11 +163,11 @@ echo '<div class="col-xs-10 col-xs-offset-1">
 		$size = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(['id_article' => $article->getId(), 'id_size' => $item['size'], 'id_color' => $item['color']]);
 		
 		if(/*$article->getId().'_'.$size->code == $chasy*/false){
-		$price = $article->getPerc($now_orders, $item['count'], $skidka, 99, $kupon, $sum_order);
+		$price = $article->getPerc(($now_orders+$sum_order), $item['count'], $skidka, 99, $kupon, $sum_order);
 	//	$mes = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">Обратите внимание, в Вашем заказе присутствует акционный товар.</div>';
 		}else{
 		$mes = '';
-		$price = $article->getPerc($now_orders, $item['count'], $skidka, $event_skidka, $kupon, $sum_order);
+		$price = $article->getPerc(($now_orders+$sum_order), $item['count'], $skidka, $event_skidka, $kupon, $sum_order);
 		}
 		
 		if($price['option_id']) {$_SESSION['basket'][$key]['option_id'] = $price['option_id'];}
@@ -214,10 +207,8 @@ echo '<div class="col-xs-10 col-xs-offset-1">
 						$pr = $FirsPrrice; 
 						$skid = '  -'.ceil(100- ((($price['price']/$item['count'])/$pr)*100)).'%';
 						}
-						//if($this->ws->getCustomer()->getId() == 8005) echo $price['minus'];
 						echo '<span style="text-decoration: line-through;color: #666;font-weight: normal;font-size: 11px;">'.$pr.'</span><span style="font-size: 10px;color:red;font-weight: bold;position: relative;top: -5px;"> '.$skid.'</span><br>'.Shoparticles::showPrice($price['price']/$item['count']); ?> грн
 						
-						<?php //if(@$price['skidka']) echo $price['skidka']; ?>
 		</td>
 		<td>
 			
@@ -439,7 +430,7 @@ location.replace("/basket/?kupon="+$('#kupon').val());
         });
 							
 								var real_dep = $('.val_deposit').html();
-								var real_sum = $('.val_sum').html();
+								var real_sum = $('.val_sum').html().replace(/^\s+/g, '');
 								$('.deposit_click').change(function () {
 									if ($(this).prop('checked')) {
 										d = $('.val_deposit').html();
@@ -457,12 +448,32 @@ location.replace("/basket/?kupon="+$('#kupon').val());
 										$('#dop_s').html('(без учета дополнительных скидок и доставки)');
 										$('.val_deposit').html(depos.replace('.', ','));
 										$('.val_sum').html(sum.replace('.', ','));
+                                                                                
+   $.ajax({
+  url: "/ajax/setorderamountbasket/",
+  method: "POST",
+  data: { amount : sum },
+  dataType: "json"
+});
+                                                                                
+                                                                               // var xhr = new XMLHttpRequest();
+                                                                               // xhr.open('GET', 'phones.json', false);
+                                                                                //$.session.set("total_price", sum);
+                                                                                 //sessionStorage['total_price'] = sum;
 
 									} else {
 									$('#dop_s').html('');
 
 										$('.val_deposit').html(real_dep);
 										$('.val_sum').html(real_sum);
+                                                                                $.ajax({
+  url: "/ajax/setorderamountbasket/",
+  method: "POST",
+  data: { amount : real_sum.replace(',','.') },
+  dataType: "json"
+});
+                                                                               //sessionStorage['total_price'] = real_sum;
+                                                                                // $.session.set("total_price", real_sum);
 									}
 								});
 								
