@@ -13,7 +13,29 @@
 
 <div class="col col-sm-12 col-md-12 col-lg-2 col-xl-2 p-1">
      <?php
-    
+     if($this->getCurMenu()->getUrl() == 'desires' and $this->result_count > 0){ ?>
+<div class="card mb-1">
+    <button class="btn btn btn-outline-danger btn-sm p-1 " onclick="clearDes(); return false;">Очистить избранное</button>
+</div>
+    <script>
+        function clearDes(){
+    $.ajax({
+            url:'/ajax/clear/',
+            type:'POST',
+            dataType:'json',
+            //data:'&method=dell&ids='+x,
+            success:function(){
+                location.reload();
+            },
+        error: function(e){
+            console.log(e);
+            
+        }
+        });
+}
+        </script>
+   <?php  
+ }
  if($top = Shoparticlestop::activeTopArticle() and $top->count() > 0){
     // echo print_r($top);
      ?>
@@ -56,6 +78,7 @@
 </div>
 </div>
  <?php }
+
  if(count($this->filters['newcat']) > 0){ 
  ?>
     

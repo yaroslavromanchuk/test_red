@@ -1614,9 +1614,8 @@ $change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], (isse
 				//____________________________end_add_to_basket____________________________________
 
 
-				$articles = $this->createBasketList();
 
-				$_SESSION['basket_articles'] = $articles;
+				$_SESSION['basket_articles'] = $articles = $this->createBasketList();
 
 
 				//________________________start_added_fields____________________________________________
@@ -1653,9 +1652,7 @@ $change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], (isse
 				$lastnq = wsActiveRecord::findByQueryFirstArray('SELECT MAX(quick_number) as quick_number FROM `ws_orders`');
 				$order->setQuickNumber(++$lastnq['quick_number']);
 				$order->save();
-
-
-				//________________________put order_to_db______________________________________________
+                                
 				$this->set_customer($order);
 
 				
@@ -1679,6 +1676,7 @@ $change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], (isse
                                            
                                         $event_skidka_klient = 0;
 					$event_skidka_klient_id = 0;
+                                        
 					if($events){
 					$event_skidka_klient = $events->getDiscont();
 					$event_skidka_klient_id = $events->getEventId();
@@ -1711,7 +1709,7 @@ $change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], (isse
                                                         $data['artikul'] = $article['artikul'];
                                                         $data['event_skidka'] = $event_skidka_klient;
                                                        $data['event_id'] = $event_skidka_klient_id;
-                                                   $a = new Shoporderarticles();     
+                                                $a = new Shoporderarticles();     
                                                 
                                                 $a->import($data);
                                                 
@@ -1759,7 +1757,12 @@ $message = 'Ваша заявка № '.$order->getQuickNumber().' прийня�
 
 				$id = $sms->sendSMS(Config::findByCode('sms_alphaname')->getValue(), $phone, $this->trans->get('Vasha zajavka').' №' . $order->getQuickNumber() .' '.$this->trans->get('prinjata. Ozhidajte zvonok menedzhera'));
 
-				if($sms->hasErrors()){ $res = $sms->getErrors(); }else{ $res = $sms->receiveSMS($id); }
+				if($sms->hasErrors()){
+                                    $res = $sms->getErrors(); 
+                                    
+                                }else{
+                                    $res = $sms->receiveSMS($id);
+                                    }
 					wsLog::add('Quick:'.$order->getQuickNumber().' to SMS: '.$phone.' - '.$res, 'SMS_' . $res);
 				//____________________send_sms__________________
 }

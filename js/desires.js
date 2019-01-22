@@ -22,7 +22,7 @@ function setDesires(x){
 return false;
 }else{
         $.ajax({
-            url:'/desires/',
+            url:'/desires/add/',
             type:'POST',
             dataType:'json',
             data:'&method=dell&ids='+x,

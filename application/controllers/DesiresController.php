@@ -20,8 +20,8 @@ class DesiresController extends controllerAbstract
     
     public function indexAction() {
       // d(Shoparticles::findByIds($this->post->ids), false);
-        if($this->post->method == 'add') { $this->add($this->post->ids);}
-	  if($this->post->method == 'dell') { $this->dell($this->post->ids);}
+        if($this->post->method == 'add') { self::add($this->post->ids);}
+	  if($this->post->method == 'dell') { self::dell($this->post->ids);}
           
 	if($this->ws->getCustomer()->getIsLoggedIn()){
             $sql = 'SELECT `ws_articles`.* FROM `ws_articles` '
@@ -46,9 +46,8 @@ class DesiresController extends controllerAbstract
 	
 	}
         
-        public function add($id = false) 
+        private function add($id = false) 
         {
-           // d(Shoparticles::findByIds($id), false);
             $result = 'error';
                 if($id){
 		$result = 'on';
@@ -79,7 +78,7 @@ class DesiresController extends controllerAbstract
    
         }
         
-        public function dell($id = false) 
+        private function dell($id = false) 
         {
             $result = 'error';
         if($id){
@@ -101,4 +100,5 @@ class DesiresController extends controllerAbstract
         die(json_encode($result));
 	
         }
+       
 }

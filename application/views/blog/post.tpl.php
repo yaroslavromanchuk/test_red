@@ -1,4 +1,5 @@
 <?php
+$text_trans_blog = explode(',', $this->trans->get('Недавнее,Ваше Имя,Подписаться,Смотреть'));
 if(Registry::get('device') == 'computer' or ($_COOKIE['mobil'] and $_COOKIE['mobil'] == 10)){ 
 $desctop = true;
 }else{
@@ -30,13 +31,18 @@ $(".zxz_post p a.im").lightBox({
 
 </script>
 <div class="row mx-0">
-<div class="col-lg-2 col-xl-2 d-none d-lg-block d-xl-block bg-white">
-<?php 
+    <?php 
 		$d = date("Y-m-d H:i:s");
 		$post = Blog::find('Blog',["public"=>1, "ctime < '$d'"], [], [10]);
 		?>
-				<p style="font-weight: bold;text-align: center;margin-top: 5px;"><?=$text_trans_blog[0]?></p>
-				<ul class="list-unstyled">
+
+    <div class="col-xl-2 col-lg-2  d-none d-lg-block d-xl-block">
+    <div class="card">
+        <div class="card-header w-100">
+    <h6 class="title text-uppercase font-weight-bold text-center "><?=$text_trans_blog[0]?></h6>
+  </div>
+        <div class="card-body">
+	<ul class="list-unstyled">
 		<?php foreach ($post as $item) { ?>
 		<li style="list-style-type: none;" class="media my-1">
 		<img src="/storage<?=$item->getImage(); ?>" class="align-self-center mr-3" style="width:35px;">
@@ -48,16 +54,24 @@ $(".zxz_post p a.im").lightBox({
 		</li>
 		<?php } ?>
 				</ul>
-			</div>
+        </div>
+                                </div>
+</div>
+    
 <div class="col-md-12 col-lg-8 col-xl-8 ">
-	<div class="col-xs-12 col-md-12 col-xl-12 text-center m bg-white py-1">
-		<div class="btn-group" role="group" aria-label="Basic example">
-		<?php foreach ($this->blog_cat as $value) { ?>
-			<a href="/blog/?category=<?=$value->getId();?>" class="btn btn-secondary"><?=$value->getName();?></a>
+   <div class="card">
+         <div class="card-header w-100">
+    <h6 class="title text-uppercase font-weight-bold text-center mb-0">
+        <div class="btn-group" role="group" aria-label="Basic example">
+<?php
+		foreach (BlogCategory::getAllCategory() as $value) { ?>
+		<a href="<?=$value->getPath()?>" class="btn btn-secondary"><?=$value->getName()?></a>
 		<?php } ?>
-		</div>
-	</div>
-	<div class="col-md-12 p-3 bg-white ".>
+</div>
+    </h6>
+  </div>
+         <div class="card-body">
+	<div class="col-md-12">
 		
 			<div class="col-md-12 m-2">
 				<span style="color: darkgrey;font-size: 12px;margin-left: 1%;margin-right: 1%;"><?=$this->onepostblog->getUtime();?></span>|
@@ -70,16 +84,27 @@ $(".zxz_post p a.im").lightBox({
             <div class="fb-like" data-href="https://www.red.ua'/blog/id/' .$this->onepostblog->getId();?>" data-layout="button" data-action="like" data-show-faces="true" data-share="true"></div>
 			
 	</div>
+    </div>
+       </div>
+    
+    
 </div>			
-<div class="col-lg-2 col-xl-2 d-none d-lg-block d-xl-block bg-white">
-<p style="font-weight: bold;text-align: center;margin-top: 5px;">FASHION RADIO</p>
-	<div style="text-align: center;">
+<div class="col-lg-2 col-xl-2 d-none d-lg-block d-xl-block">
+    <div class="card">
+         <div class="card-header w-100">
+    <h6 class="title text-uppercase font-weight-bold text-center ">FASHION RADIO</h6>
+  </div>
+        <div class="card-body">
+            	<div>
 	<img src="/images/ofr_btn2.png" style="cursor: pointer; width: 100px;" onclick="window.open('http://ofr.fm/air/','','toolbar=no, location=no, scrollbars=no, resizable=no, top=100, left=100, width=360, height=593'); return false;" >
 	</div>
 	<div style="margin-top:10px;" class="fb-like-box" data-href="https://www.facebook.com/pages/RED-UA/148503625241218" data-width="198"
-                 data-height="400" data-show-faces="true" data-stream="false" data-header="true"></div>
+             data-height="400" data-show-faces="true" data-stream="false" data-header="true">    
+        </div>
 	<iframe id="fr" style="overflow: hidden; height: 100px; width: 198px; border: 0pt none;" src="https://www.youtube.com/subscribe_widget?p=SmartRedShopping"  scrolling="no" frameborder="0"></iframe>
-</div>			
+
+        </div>
+        </div></div>			
 </div>
 <script>
 (function(d, s, id) {

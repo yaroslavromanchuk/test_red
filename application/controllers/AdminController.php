@@ -241,7 +241,7 @@ WHERE DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m-%d' ) >=  '".$from."'
 AND DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m-%d' ) <=  '".$to."'
      and `ws_balance_category`.id_category in (".$c.") 
 GROUP BY  `nedelya` 
-ORDER BY  `nedelya` ASC 
+ORDER BY  `dbeg` ASC 
  ";
                 
      
@@ -276,7 +276,7 @@ WHERE order_history.name LIKE  '%Прийом товара с возврата%'
 							and order_history.`ctime` >=  '" . $sd."'"
                           . "and order_history.`ctime` <= '".$ed."' ");
                   
-                  $rr['x'][] = $k->nedelya;
+                  $rr['x'][] = date("W", strtotime($k->dbeg)).'('.date("d.m", strtotime($k->dbeg)).')';
                  // $mass[$key]['x'] = $k->nedelya;
                   $ost = (int)($k->ctn/((strtotime ($k->dend)-strtotime ($k->dbeg))/(60*60*24)));
                   $rr['ost'][] = $ost;
@@ -15059,10 +15059,11 @@ $end_date = date("Y-m-d", strtotime("+1 days", strtotime($from)));
 	}
 	
 	$not = 2993;
-	if($this->post->not != ''){$not.=$this->post->not;}
+	if($this->post->not != ''){ $not.=$this->post->not; }
+        
 	$kost = wsActiveRecord::useStatic('Shoparticlelog')->findByQuery("SELECT *  FROM  `red_article_log` WHERE customer_id not in(".$not.")  and  type_id = 2 and  `ctime` >=  '".$from."' and `ctime` <= '".$to."'  and `code` IS NOT NULL ORDER BY  `red_article_log`.`id` ASC ");
 	
-	$date = array();
+	$date = [];
 	$i = 0;
 	foreach ($kost as $k) {
 	$add = wsActiveRecord::useStatic('Shoparticlelog')->findByQuery("SELECT *  FROM  `red_article_log` WHERE customer_id != 2993 and  type_id in (3,6) and  `ctime` >  '".$from."' and `ctime` <= '".$to."'  and `code` LIKE  '".$k->getCode()."' ");;
@@ -15072,7 +15073,7 @@ $end_date = date("Y-m-d", strtotime("+1 days", strtotime($from)));
 	$date[$i]['tovar'] = $t['model']."(".$t['brand'].")"; 
 	$date[$i]['model'] = $k->getInfo();
 	$date[$i]['articul'] = $k->getCode();
-	//$date[$i]['admin'] =$c['first_name'].' '.$c['middle_name'];
+	$date[$i]['admin'] =$c['first_name'].' '.$c['middle_name'];
 	$date[$i]['proces'] = $k->getComents();
 	$date[$i]['dell'] = $k->getCount();
 	$date[$i]['ctime'] = date('d-m H:i', strtotime($k->getCtime()));//date('Y-m-d 23:59:59', $to);
@@ -15082,7 +15083,7 @@ $end_date = date("Y-m-d", strtotime("+1 days", strtotime($from)));
 
    die(json_encode(array('send'=>$date)));
 	}
-	echo $this->render('page/controldellarticles.tpl.php');
+	echo $this->render('page/controldellarticles.tpl.php', 'index.php');
 	}
 	
 	public function meestexpressAction(){
@@ -15813,7 +15814,7 @@ die(json_encode(array('status' => 'send', 'from' => $from+$limit,  'saved'=>$i, 
 							
     if(count($errors) > 0) {$this->view->errors = $errors;}	
     
-        echo $this->render('page/revisiya.tpl.php');
+        echo $this->render('page/revisiya.tpl.php', 'index.php');
         
 		}
 							

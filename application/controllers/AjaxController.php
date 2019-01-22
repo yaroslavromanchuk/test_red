@@ -104,6 +104,16 @@ $arrr['ctn'] = $count;
             die();
             
         }
+         public function clearAction(){
+            if($this->ws->getCustomer()->getId()){
+                $_SESSION['desires'] = [];
+                $sql = "DELETE FROM `ws_desires` WHERE `id_customer` = ".$this->ws->getCustomer()->getId();
+                wsActiveRecord::query($sql);
+            }else{
+                $_SESSION['desires'] = [];
+            }
+            die(json_encode('ok'));
+        }
 
 
 

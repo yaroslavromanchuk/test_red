@@ -1,4 +1,5 @@
 <link type="text/css" href="/css/findex.css?v=1" rel="stylesheet"/>
+<link rel="stylesheet" type="text/css" href="/css/stores/fm.revealator.jquery.min.css"/>
 <?php
 $text_trans_blog = explode(',', $this->trans->get('Недавнее,Ваше Имя,Подписаться,Смотреть')); 
 if(Registry::get('device') == 'computer' or ($_COOKIE['mobil'] and $_COOKIE['mobil'] == 10)){ 
@@ -8,11 +9,19 @@ $desctop = false;
 }
  //echo $this->getCurMenu()->getPageBody();
  ?>
-<div class="row mx-0">
-<div class="col-lg-2 col-xl-2 d-none d-lg-block d-xl-block bg-white">
-				<p style="font-weight: bold;text-align: center;margin-top: 5px;"><?=$text_trans_blog[0]?></p>
-				<ul class="list-unstyled">
-		<?php foreach ($this->blog as $item) { ?>
+<div class="row mx-auto">
+<div class="col-xl-2 col-lg-2  d-none d-lg-block d-xl-block p-2">
+    <div class="card">
+        <div class="card-header w-100">
+    <h6 class="title text-uppercase font-weight-bold text-center "><?=$text_trans_blog[0]?></h6>
+  </div>
+        <div class="card-body">
+            <?php 
+		$d = date("Y-m-d H:i:s");
+		$post = Blog::find('Blog',["public"=>1, "ctime < '$d'"], [], [10]);
+		?>
+	<ul class="list-unstyled">
+		<?php foreach ($post as $item) { ?>
 		<li style="list-style-type: none;" class="media my-1">
 		<img src="/storage<?=$item->getImage(); ?>" class="align-self-center mr-3" style="width:35px;">
 		<div class="media-body">
@@ -23,62 +32,110 @@ $desctop = false;
 		</li>
 		<?php } ?>
 				</ul>
-			</div>
-<div class="col-md-12 col-lg-8 col-xl-8 px-3 ">
-<div class="col-xs-12 col-md-12 col-xl-12 text-center m bg-white py-1">
-<div class="btn-group" role="group" aria-label="Basic example">
+        </div>
+                                </div>
+</div>
+<div class="col-md-12 col-xl-8 col-lg-8 p-2">
+     <div class="card">
+         <div class="card-header w-100">
+    <h6 class="title text-uppercase font-weight-bold text-center mb-0">
+        <div class="btn-group" role="group" aria-label="Basic example">
 <?php
-		foreach ($this->blog_cat as $value) { ?>
-		<a href="/blog/?category=<?=$value->getId();?>" class="btn btn-secondary"><?=$value->getName();?></a>
+		foreach (BlogCategory::getAllCategory() as $value) { ?>
+		<a href="<?=$value->getPath()?>" class="btn btn-secondary"><?=$value->getName()?></a>
 		<?php } ?>
 </div>
-</div>
+    </h6>
+  </div>
+         <div class="card-body">
+    <div class="row m-auto">
 		<style>
 		.media p{width:100%;}
 		p img{display:none;}
-		.media img{max-width:500px;
-		width:100%;}
+		.media img{
+                max-width:500px;
+		width:100%;
+                }
 		</style> 
-<?php foreach ($this->blog as $value) { ?>
-		<div class="col-md-12   p-3  bg-white">
-		<h2 style="font-size: 2rem;"><a href="<?=$value->getPath(); ?>"><?=$value->getPostName();?></a></h2> 
-		<div class="row">
-		<div class="col-md-12 m-2">
-				<span style="color: darkgrey;font-size: 12px;margin-left: 1%;margin-right: 1%;"><?=$value->getUtime();?></span>|
-				<span style="color: darkgrey;font-size: 12px;margin-left: 1%;margin-right: 1%;"><?=$value->getAutor();?></span>
-		</div>
-			<div class="col-md-6 media">
+<?php
+$i = 0;
+foreach ($this->blog as $value) { ?>
+                <div class="col-md-12 <?php if($i != 0){ echo ' revealator-zoomin revealator-duration5  revealator-once';}?> ">
+		<div class="row my-4">
+                    <?php if($i % 2 === 0){ ?> 
+                        <div class="col-md-6 media text-right">
 			<a href="<?=$value->getPath()?>">
 			<img src="/storage<?=$value->getImage()?>">
 			</a>
 			</div>
 			<div class="col-md-6">
-			<?=$value->getPreviewPost();?>
-			<a class="btn btn-secondary" href="<?=$value->getPath()?>">
+                            <div>
+                        <span style="color: darkgrey;font-size: 12px;margin-left: 1%;margin-right: 1%;"><?=$value->getUtime();?></span>|
+			<span style="color: darkgrey;font-size: 12px;margin-left: 1%;margin-right: 1%;"><?=$value->getAutor();?></span>
+                        </div>
+                            <h3 style="font-size: 2rem;"><a href="<?=$value->getPath(); ?>"><?=$value->getPostName();?></a></h3>
+                            <div>
+			<span><?=$value->getPreviewPost()?></span>
+			<a class="btn btn btn-outline-dark btn-lg" href="<?=$value->getPath()?>">
 				<?=$text_trans_blog[3]?>
 			</a>
+                        </div>
 			</div>
+                        <?php }else{ ?>
+                    <div class="col-md-6">
+                        <div>
+                        <span style="color: darkgrey;font-size: 12px;margin-left: 1%;margin-right: 1%;"><?=$value->getUtime();?></span>|
+			<span style="color: darkgrey;font-size: 12px;margin-left: 1%;margin-right: 1%;"><?=$value->getAutor();?></span>
+                        </div>
+                        <h3 style="font-size: 2rem;"><a href="<?=$value->getPath(); ?>"><?=$value->getPostName();?></a></h3>
+                         
+			 <div>
+			<span><?=$value->getPreviewPost()?></span>
+			<a class="btn btn btn-outline-dark btn-lg" href="<?=$value->getPath()?>">
+				<?=$text_trans_blog[3]?>
+			</a>
+                        </div>
+			</div>
+                        <div class="col-md-6 media text-right">
+			<a href="<?=$value->getPath()?>">
+			<img src="/storage<?=$value->getImage()?>">
+			</a>
+			</div>
+			
+                   <?php } ?>
+			
 			</div>
 </div>					
-			<?php	} ?>
-
+			<?php $i++;	} ?>
 </div>
-<div class="col-lg-2 col-xl-2 d-none d-lg-block d-xl-block bg-white text-center">
-<p style="font-weight: bold;margin-top: 5px;">FASHION RADIO</p>
-		<div>
+         </div>
+    </div>
+</div>
+<div class="col-lg-2 col-xl-2 d-none d-lg-block d-xl-block  text-center">
+    <div class="card">
+         <div class="card-header w-100">
+    <h6 class="title text-uppercase font-weight-bold text-center ">FASHION RADIO</h6>
+  </div>
+        <div class="card-body">
+            	<div>
 	<img src="/images/ofr_btn2.png" style="cursor: pointer; width: 100px;" onclick="window.open('http://ofr.fm/air/','','toolbar=no, location=no, scrollbars=no, resizable=no, top=100, left=100, width=360, height=593'); return false;" >
 	</div>
 	<div style="margin-top:10px;" class="fb-like-box" data-href="https://www.facebook.com/pages/RED-UA/148503625241218" data-width="198"
-                 data-height="400" data-show-faces="true" data-stream="false" data-header="true"></div>
+             data-height="400" data-show-faces="true" data-stream="false" data-header="true">    
+        </div>
 	<iframe id="fr" style="overflow: hidden; height: 100px; width: 198px; border: 0pt none;" src="https://www.youtube.com/subscribe_widget?p=SmartRedShopping"  scrolling="no" frameborder="0"></iframe>
-</div>
+
+        </div>
+        </div>
+    
+	</div>
 </div>
 
 						<?php 
 
 if ($this->allcount > $this->onpage) {
 ?>
-<div class="row">
+<div class="row m-auto">
 <div class="col-lg-12 text-center">
 	<ul  class="finder_pages">
 		<?php
@@ -144,7 +201,7 @@ echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;
 <?php
 }
 ?>
-
+<script  src="/js/stores/fm.revealator.jquery.min.js?v=1.0"></script>
 <script>
 (function(d, s, id) {
                 var js, fjs = d.getElementsByTagName(s)[0];

@@ -93,7 +93,7 @@ switch($_SESSION['lang']){
 		<link rel="stylesheet" type="text/css" href="/css/bs/css/bootstrap.css?v=1.0"/>
                 <link rel="stylesheet" type="text/css" href="/css/Ionicons/css/ionicons.min.css"/>
                 <link rel="stylesheet" type="text/css" href="/js/select2/css/select2.min.css?v=1.2"/>
-		<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.2.8"/>
+		<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.2.9"/>
                 <?php if(!$desctop){ ?><link rel="stylesheet" type="text/css" href="/css/common.css?v=2.38"/><?php } ?>	
 		<link rel="stylesheet" type="text/css" href="/css/new.css?v=1.0"/>
 		<link rel="stylesheet" type="text/css" href="/css/cloud-zoom.css"/>

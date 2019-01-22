@@ -1,6 +1,8 @@
-<img src="<?=SITE_URL.$this->getCurMenu()->getImage()?>" alt="" class="page-img"/>
-<h1><?php echo $this->getCurMenu()->getTitle(); ?></h1>
-<br>
+
+<div class="row row-sm mg-x-0">
+    <div class="col-sm-12">
+        
+   
 <?php
  $all = wsActiveRecord::useStatic('Revisiya')->count(array('flag' => 0));
  $sql = "SELECT  count(ws_articles_sizes.id) as ctn FROM ws_articles_sizes
@@ -29,42 +31,77 @@ if($this->add_count) {echo 'Загружено : '.$this->add_count;}
 		<br><span>В заказах нашлось <span id="order"></span> товара</span>
 		</div>
     </div>
-
-<div align="center" style="margin-top: 5px;<?php if($all > 0){ echo 'display:none;'; }?>" id="form_pa">
-<form method="POST" action="" enctype="multipart/form-data" class="form-inline">
-<div class="form-group">
-<input type="file" name="exel" class="form-control input" >
-<button type="submit" name="save" id="save" class="btn  btn-default"><i class="glyphicon glyphicon-floppy-open" aria-hidden="true"></i> Открыть</button>
-</div>
+<div class="card pd-30">
+    <h6 class="card-body-title">Форма загрузки результатов ревизии</h6>
+<p>Выберите excel файл. Структура: А-артикул, B-количество</p>
+    <form method="POST" action="" id="form_pa" enctype="multipart/form-data" class="<?php if($all > 0){ echo 'd-none'; }?>">
+    <div class="form-layout">
+        <div class="row mg-b-25">
+		<div class="col-lg-3 mg-t-40 mg-lg-t-0">
+              <label class="custom-file">
+                <input type="file" name="exel" class="custom-file-input">
+                <span class="custom-file-control custom-file-control-primary"></span>
+              </label>
+            </div>
+                    <button class="btn btn-info mg-r-5" name="save" id="save" type="submit">Загрузить</button>
+            </div>
+    </div>    
 </form>
-</div>
-<div class="mailing_start" style="display: none;text-align: center;">
+
+            </div>
+         </div>
+     <div class="col-sm-12">
+         <div class="card pd-30">
+    <h6 class="card-body-title">Сверка</h6>
+<div class="mailing_start" style="display: none;" class="m-auto text-center" >
 	<img src="/images/loader.gif" alt="loading"/> Идёт сверка, подождите...<br/>
-	<div class="progress">
+<div class="progress">
   <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
   </div>
 </div>
 </div>
-<p style="text-align: center;display:none;" id="div_res">
+         
+    <p style="display:none;" class="m-auto text-center" id="div_res">
 <input type="hidden" id="all" name="all" value="<?=$all?>">
 <input type="hidden" id="ostatok" name="ostatok" value="<?=$ostatok?>">
-<label>Для проверки загружено <?=$all?> SKU.</label>
-<input type="button" id="revizor" value="Запустить сверку" class="button" >
-<input type="button" id="dell" value="Очистить базу!" class="button" >
+<label class="font-weight-bold text-primary">Для проверки загружено <?=$all?> SKU.</label><br>
+<button id="revizor" class="btn btn-outline-success" >Запустить сверку</button>
+<button id="dell" class="btn btn-outline-danger" >Очистить базу!</button>
+
 
 </p>
-<p id="ad_del" style="display:none;    text-align: center;"><span style="color: green;">Добавлено <span id="ad"></span> единиц</span><span style="margin-left: 30px;color: red;">Удалено <span id="del"></span> единиц</span><br><input style="" id="stop" class="button" type="button" value="Остановить"></p>
- <table id="products1" cellpadding="4" cellspacing="0" style="text-align: center;display:none;" class="table" align="center">
-    <tr>
+<p id="ad_del" style="display:none;" class="m-auto">
+    <span class="font-weight-bold text-success">Добавлено <span id="ad"></span> единиц</span><br>
+    <span class="font-weight-bold text-danger">Удалено <span id="del"></span> единиц</span>
+    <br>
+    <button id="stop"  class="btn btn-outline-danger" >Остановить!</button>
+</p>
+</div>
+         </div>
+   <div class="col-sm-12"> 
+       <div class="card pd-30">
+    <h6 class="card-body-title">Таблица результатов сверки</h6>
+ <table id="products1" cellpadding="4" cellspacing="0" style="display:none;" class="table text-center m-auto" >
+    
+     <thead>
+         <tr>
         <th>id</th>
         <th>Артикул</th>
-        <th>Количество<br>на сайте</th>
-		<th>Количество<br>в заказах</th>
-        <th>Количество<br>в 1С</th>
-        <th>Действие по<br>сайту</th>
-        <th>Количество<br>изменено</th>
+        <th>На сайте</th>
+	<th>В заказах</th>
+        <th>В 1С</th>
+        <th>Собитие</th>
+        <th>Изменено</th>
     </tr>
+    </thead>
+    <tbody id="products1_body">
+        
+    </tbody>
 	</table>
+ </div>
+        </div>
+</div>
+
  <script>
      $(document).ready(function () {
 	 var stop = false;
@@ -145,7 +182,7 @@ $('#form_pa').hide();
 					for (index = 0; index < res.article.length; ++index) {
 					if(res.article[index]["type"] == 3){ ad += res.article[index]["ct_edit"]; }else{ del += res.article[index]["ct_edit"];}
 					mails = '<tr><td>'+res.article[index]["id_article"] +'</td><td>'+res.article[index]["code"]+'</td><td>'+res.article[index]["count"]+'</td><td>'+res.article[index]["count_r"]+'</td><td>'+res.article[index]["ct_r"]+'</td><td>'+res.article[index]["text"]+'</td><td>'+res.article[index]["ct_edit"]+'</td><tr>'; 
-					$('#products1').append(mails);
+					$('#products1_body').append(mails);
 				}	
 						
 					$('#ad').html(ad);	

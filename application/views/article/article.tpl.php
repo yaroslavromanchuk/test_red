@@ -680,7 +680,7 @@ if($this->ws->getCustomer()->getIsLoggedIn() and wsActiveRecord::useStatic('Desi
 <?php
 			}?>
 			</span>
-                            <?php if($this->getShopItem()->getCountArticles()){
+                            <?php if(true){
 $chek = '';
 $title = $this->trans->get('Добавить в избранное');
 if($this->ws->getCustomer()->getIsLoggedIn() and wsActiveRecord::useStatic('Desires')->count(array('id_customer'=>$this->ws->getCustomer()->getId(), 'id_articles'=>$this->getShopItem()->getId())) > 0 or $this->getCurMenu()->getPath()=='/desires/'){

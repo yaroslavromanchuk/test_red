@@ -16,7 +16,7 @@
 	<link  rel="stylesheet" type="text/css" href="/js/slider-fhd/slick.css?v=1"  />
 	<link  rel="stylesheet" type="text/css" href="/js/slider-fhd/slick-theme.css?v=1" />
     <link rel="stylesheet" type="text/css" href="/css/bs/css/bootstrap.css?v=1.0"/>
-    <link rel="stylesheet" type="text/css" href="/css/style.css?v=2.3"/>
+    <link rel="stylesheet" type="text/css" href="/css/style.css?v=2.3.1"/>
     <link rel="stylesheet" type="text/css" href="/css/new.css?v=1.3"/>
     <!--<link rel="stylesheet" type="text/css" href="/css/stores/fm.revealator.jquery.min.css"/>-->
     

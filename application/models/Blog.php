@@ -17,13 +17,13 @@ class Blog extends wsActiveRecord
     }
 	public function getPath()
     	{
-    		return "/blog/id/" . $this->getId() .'/'.$this->_generateUrl($this->getPostName());
+    		return "/blog/id/" . $this->getId() .'/'.$this->_generateUrl($this->getPostName().'/');
     	    	}
                 
 	public function LikeActive($id_customer, $id_post){
       $sql = "SELECT * FROM ws_blog_like WHERE id_customer = ".$id_customer." AND id_post = ".$id_post;
 		$result=mysql_query($sql);
-		if(mysql_num_rows($result)==0)return false;
+		if(mysql_num_rows($result)==0){return false;}
         return true;
     }
 

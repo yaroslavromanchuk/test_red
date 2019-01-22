@@ -8,9 +8,11 @@ class BlogController extends controllerAbstract
     {
 	$data = [];
 
-	$this->view->blog_cat = wsActiveRecord::useStatic('Blog')->findByQuery('SELECT * FROM `ws_blog_catgories`');
+	//$this->view->blog_cat = wsActiveRecord::useStatic('Blog')->findByQuery('SELECT * FROM `ws_blog_catgories`');
 
+        //die($this->get);
 	 if ((int)$this->get->id) {
+             
             $blog_post = (int)$this->get->id;
             if ($blog_post) {
                 $this->showOnePost($blog_post);
@@ -21,12 +23,22 @@ class BlogController extends controllerAbstract
 
 		$blog_c = (int)$this->get->category;
 		if ($blog_c) {
-                $this->showPostCategory($blog_c);
+                    
+                    $cat = new BlogCategory($blog_c);
+                    $this->category($cat);
+                    //$this->_redirect($cat->getPath());
             } else {
                 $this->_redirect('/blog/');
             }
 		}else{
-                    $this->cur_menu->url = '';
+                    
+                    $this->cur_menu->setName($this->trans->get('blog_name'));
+        $this->cur_menu->setPageTitle($this->trans->get('blog_title'));
+        $this->cur_menu->setMetatagDescription($this->trans->get('blog_description')); 
+                  //  $this->cur_menu->url = '';
+                    
+              
+                    
 		$onPage = 10;
 		$page = 1;
             if ((int)$this->get->page > 0) {
@@ -39,7 +51,8 @@ class BlogController extends controllerAbstract
 		$d = date("Y-m-d H:i:s"); 
 		$data[] = " public = 1 and ctime < '$d' ";
 		$this->view->allcount = wsActiveRecord::useStatic('Blog')->count($data);
-		$this->view->blog = wsActiveRecord::useStatic('Blog')->findAll($data, array(), array($onPage * ($page - 1),$onPage ));
+		$this->view->blog = wsActiveRecord::useStatic('Blog')->findAll($data, [], [$onPage * ($page - 1),$onPage ]);
+                
            echo $this->render('blog/blog.tpl.php');
         }
 			
@@ -47,15 +60,10 @@ class BlogController extends controllerAbstract
         
 
     }
+   
+    
 	public function showOnePost($blog_post) 
     {
-            
-           
-	//$data = [];
-	
-	//$this->view->blog_cat = wsActiveRecord::useStatic('Blog')->findByQuery('SELECT * FROM `ws_blog_catgories`');
-			//$d = date("Y-m-d H:i:s");
-		//$data[] = " public = 1 and ctime < '$d' and id=".$blog_post;
 	$this->view->onepostblog = $post = wsActiveRecord::useStatic('Blog')->findById((int)$blog_post);
         
          $this->cur_menu->setPageTitle($post->getPostName().' - '.$this->cur_menu->getName().' '.$this->trans->get('в интернет магазине RED'));
@@ -65,43 +73,36 @@ class BlogController extends controllerAbstract
         $this->cur_menu->setMetatagDescription($post->getPostName().' - '.$this->trans->get('Блог магазина RED ✓Тренды ✓Луки ✓ Советы по стилю'));//<Н1> 🡒 Блог магазина RED ✓Тренды ✓Луки ✓ Советы по стилю
         
     echo $this->render('blog/post.tpl.php');
-
+ //echo $this->render('blog/blog.tpl.php');
     }
-	public function showPostCategory($blog_c)
-    {
-	$data = array();
-	$d = date("Y-m-d H:i:s");
-		$data[] = " public = 1 and ctime < '$d' and categories LIKE  '%".$blog_c."%'";
-		//$data[] .= 'c.email LIKE "%' . $dt->email . '%"';
-		//array("public"=>1, "categories LIKE  '%".$blog_c."%'")
-	$this->view->blog = wsActiveRecord::useStatic('Blog')->findAll($data);
-    echo $this->render('blog/blog.tpl.php');
-
-    }
-	// для лайков на статью
-	/*public function getlikeokAction(){
-	$id_customer = intval($_GET['id_c']);
-	$id_post = intval($_GET['id_p']);
-	
-      $sql = "SELECT * FROM ws_blog_like WHERE id_customer = ".$id_customer." AND id_post = ".$id_post;
-		$result=mysql_query($sql);
-		if(mysql_num_rows($result)==0){
-		$sql = "INSERT INTO `ws_blog_like`(`id_customer`, `id_post`) VALUES (".$id_customer.", ".$id_post.")";
-		wsActiveRecord::query($sql);
-		$item = new Blog($id_post);
-		$like = $item->getLike();
-		$item->setLike($like+1);
-		$item->save();
-		$result = array('type' => 'success', 'like' => $like+1);
-		//return $like+1;
-		}else{
-		$result = array('type' => 'error');
-		}
-		print json_encode($result);
-        exit;
+    
+    public function category($cat){
+     // $id = (int)$this->get->id;
+     // $cat = new BlogCategory($id);
+      
+        $this->cur_menu->setName($this->trans->get('blog_name').' - '.$cat->getName());
+        $this->cur_menu->setPageTitle($cat->getTitle());
+        $this->cur_menu->setMetatagDescription($cat->getDescription());
+      
+        $onPage = 10;
+		$page = 1;
+            if ((int)$this->get->page > 0) {
+                $this->cur_menu->nofollow = 1;
+                $page = (int)$this->get->page;
+            }
+	$this->view->onpage = $onPage;
+            $this->view->page = $page;
+		
         
-    }*/
-	
+      $data = [];
+	$d = date("Y-m-d H:i:s");
+	$data[] = " public = 1 and ctime < '$d' and categories LIKE  '%".$cat->id."%'";
+        $this->view->allcount = wsActiveRecord::useStatic('Blog')->count($data);
+	$this->view->blog = wsActiveRecord::useStatic('Blog')->findAll($data, [], [$onPage * ($page - 1),$onPage ]);
+    echo $this->render('blog/blog.tpl.php');
+      
+    }
+
 
 	
 }

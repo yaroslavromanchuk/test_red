@@ -44,7 +44,7 @@ class Filter extends wsActiveRecord
                     $meta['footer']['block'] = 'tut';
                 }
 		
-		$t_t = date("Y-m-d H:m:s", strtotime("-8 day"));
+		$t_t = date("Y-m-d H:m:s", strtotime("-5 day"));
 		
         $where = "
                   FROM ws_articles_sizes

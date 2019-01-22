@@ -9,7 +9,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
    <title><?php echo ($this->getCurMenu()->getTitle()) ? $this->getCurMenu()->getTitle() : 'Система Управления Сайтом '.$this->website->getSite()->getName();?></title>
-   <title><?php echo ($this->getCurMenu()->getTitle()) ? $this->getCurMenu()->getTitle() : 'Система Управления Сайтом '.$this->website->getSite()->getName();?></title>
+
 
     <!-- vendor css -->
     <link href="<?=$this->files?>views/template/lib/font-awesome/css/font-awesome.css" rel="stylesheet">
@@ -37,6 +37,14 @@
   </head>
 
   <body >
+      <?php
+      if($this->user->id == 8005){
+          
+         // echo '<pre>';
+         // print_r($this->getCurMenu());
+         // echo '</pre>';
+      }
+      ?>
 	  <?=$this->message;?>
     <!-- ########## START: LEFT PANEL ########## -->
     <div class="sl-logo">
@@ -52,13 +60,11 @@
           <button class="btn"><i class="fa fa-search"></i></button>
         </span><!-- input-group-btn -->
     <!--  </div><!-- input-group -->
-<?php
-$section = AdminSection::find('AdminSection');
-?>
+
       <label class="sidebar-label">Меню навигации</label>
       <div class="sl-sideleft-menu">
-          <?php foreach ($section as $s) { ?>
-            <a href="#" class="sl-menu-link <?php if($this->getCurMenu()->getSection() == $s->id) echo 'active show-sub' ?> ">
+          <?php foreach (AdminSection::find('AdminSection') as $s) { ?>
+            <a href="#" class="sl-menu-link <?php if($this->getCurMenu()->getSection() == $s->id){ echo 'active show-sub';} ?> ">
           <div class="sl-menu-item">
             <?=$s->logo?>
             <span class="menu-item-label"><?=$s->getName()?></span>
@@ -69,7 +75,7 @@ $section = AdminSection::find('AdminSection');
         <?php    foreach (Menu::find('Menu',['active'=>1, 'type_id'=>2, 'section'=>$s->id]) as $m) {
                                 if($this->admin_rights[$m->id]['view']){ ?>
         <li class="nav-item">
-            <a href="<?=$this->path.$m->getUrl()?>/" class="nav-link <?php echo $this->path.$m->getUrl() == $_SERVER['SCRIPT_NAME'] ? 'active' : ''?>" title="<?=$m->getPageIntro()?>">
+            <a href="<?=$this->path.$m->getUrl()?>/" class="nav-link <?=($m->getUrl() == $this->getCurMenu()->getUrl()) ? 'active' : ''?>" title="<?=$m->getPageIntro()?>">
                     <?=$m->getName()?>
             </a>
         </li>
@@ -289,13 +295,13 @@ $section = AdminSection::find('AdminSection');
 	<?php	} ?>
        
       </nav>
-        <div class="sl-pagebody">
-            <div class="sl-page-title">
+    <div class="sl-pagebody">
+        <div class="sl-page-title">
           <h5><?=$this->getCurMenu()->getTitle()?></h5>
           <p><?=$this->getCurMenu()->getPageIntro()?>.</p>
-</div>
-            <?=$this->render($this->middle_template);?>
         </div>
+            <?=$this->render($this->middle_template);?>
+    </div>
 
     </div><!-- sl-mainpanel -->
     <!-- ########## END: MAIN PANEL ########## -->
@@ -370,30 +376,14 @@ $(document).ready(function(){
 				$('#back-top').fadeOut();
 			}
 		});
+                
 		$('#back-top a').click(function () {$('body,html').animate({scrollTop: 0}, 1);return false;}); 	
-/*
-$('#myModalMessage').on('hidden.bs.modal', function (event) { 
-// функции 
-});	*/
+
 });
 
 	
 function show(){return false;}
-/*
-function setUk(l) {
-var s = '<?=$_SESSION['lang']?>';
-if(l.name != s){
-      $.ajax({
-         type: "POST",
-         url: "/ajax/setlang/",
-         data: "&lang="+l.name,
-		// dataType: 'json',
-         success: function(res){document.location.href = "/admin/index/";}
-          });
-		  }
-          return false;
-}
-*/
+
 </script>
   </body>
 </html>

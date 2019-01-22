@@ -272,6 +272,8 @@ class Router {
 			$controller = ucfirst($route[$i]);
 			$action = preg_replace ("/[^a-zA-Z0-9\s]/","",$route[$i+1]);
 		}
+               
+                
                 
 		//if($controller == 'home'){  header("HTTP/1.1 301 Moved Permanently");header("Location: /",TRUE,301); exit();}
 
@@ -294,7 +296,9 @@ class Router {
 		}
 
 		
-		if(!$action){ $action = 'index'; }
+                if(!$action){
+                    $action = 'index'; 
+                }
                     
                     //d($route, false);
                     
