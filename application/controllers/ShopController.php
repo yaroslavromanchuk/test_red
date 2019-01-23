@@ -652,6 +652,7 @@ if($_SESSION['bonus'] and $this->ws->getCustomer()->getBonus() > 0 and $order->g
 	if($order->getDeliveryTypeId() == 8 or $order->getDeliveryTypeId() == 16){
                $new_np = Shopordersmeestexpres::newOrderNp($order->getId(), $info['cityx'], $info['sklad_np']);
                $order->setMeestId($new_np);
+                $order->save();
 	}
 					//exit meestexpres
 //$basket = $order->getArticles()->export();
@@ -829,120 +830,7 @@ if($_SESSION['bonus'] and $this->ws->getCustomer()->getBonus() > 0 and $order->g
 		$this->view->articles = $articles;
 		echo $this->render('shop/basket-step3.tpl.php');
 	}
-/**
- * Присвоение заказу пользователя або регистрация нового
- * @param type $order - заказ
- */
-	private function set_customer($order = null)
-	{
 
-		if (!$this->ws->getCustomer()->getIsLoggedIn()) 
-                    {
-		$allowedChars = 'abcdefghijklmnopqrstuvwxyz'
-			. 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-			. '0123456789';
-		$newPass = '';
-		$allowedCharsLength = strlen($allowedChars);
-		while (strlen($newPass) < 8)
-			$newPass .= $allowedChars[rand(0, $allowedCharsLength - 1)];
-			if (!wsActiveRecord::useStatic('Customer')->findFirst(array('username' => $order->getEmail()))) {
-
-			$em = iconv_substr($order->getEmail(), 0, 4, 'UTF-8');
-				if($em == 'miss'){
-	SendMail::getInstance()->sendEmail('php@red.ua', 'Yaroslav', 'Создан новый акаунт МИСС', 'Email: '.$order->getEmail().'. Заказ: '.$order->Id());
-				}
-
-				$customer = new Customer();
-				if (isset($_SESSION['parent_id']) and $_SESSION['parent_id'] != 0){ $customer->setParentId($_SESSION['parent_id']); }
-                                
-				$customer->setUsername($order->getEmail());
-				$customer->setPassword(md5($newPass));
-				$customer->setCustomerTypeId(1);
-				$customer->setCompanyName($order->getCompany());
-				$customer->setFirstName($order->getName());
-				$customer->setMiddleName($order->getMiddleName());
-				$customer->setEmail($order->getEmail());
-				$customer->setPhone1(Number::clearPhone($order->getTelephone()));
-				$customer->setCity($order->getCity());
-				$customer->setObl($order->getObl());
-				$customer->setAdress($order->getAddress());
-				$customer->setRayon($order->getRayon());
-				$customer->setIndex($order->getIndex());
-				$customer->setStreet($order->getStreet());
-				$customer->setHouse($order->getHouse());
-				$customer->setFlat($order->getFlat());
-				$customer->save();
-
-					$subscriber = new Subscriber();
-					$subscriber->setName($order->getName());
-					$subscriber->setEmail($order->getEmail());
-					$subscriber->setConfirmed(date('Y-m-d H:i:s'));
-					$subscriber->setActive(1);
-					$subscriber->save();
-
-				$order->setCustomerId($customer->getId());
-				$order->save();
-
-				$this->view->login = $order->getEmail();
-				$this->view->pass = $newPass;
-				$subject = 'Создан акаунт';
-				$msg = $this->render('email/new-customer.tpl.php');
-
-				SendMail::getInstance()->sendEmail($order->getEmail(), $order->getName(), $subject, $msg);
-
-				$customer = $this->ws->getCustomer();
-				$res = $customer->loginByEmail($order->getEmail(), $newPass);
-				if (!isset($_SESSION['user_data']))
-					$_SESSION['user_data'] = array();
-				$_SESSION['user_data']['login'] = $order->getEmail();
-				$_SESSION['user_data']['password'] = $newPass;
-				if ($res) {
-					$this->website->updateHashes();
-				}
-			}
-		} else {
-			$order->setCustomerId($this->ws->getCustomer()->getId());
-                        $order->setSkidka($this->ws->getCustomer()->getDiscont());
-                        
-			if (!$this->ws->getCustomer()->getMiddleName()) {
-				$this->ws->getCustomer()->setMiddleName($order->getMiddleName());
-			}
-			if (!$this->ws->getCustomer()->getFirstName()) {
-				$this->ws->getCustomer()->setFirstName($order->getName());
-			}
-			if (!$this->ws->getCustomer()->getPhone1()) {
-				$this->ws->getCustomer()->setPhone1(Number::clearPhone($order->getTelephone()));
-			}
-			if (!$this->ws->getCustomer()->getCity()) {
-				$this->ws->getCustomer()->setCity($order->getCity());
-			}
-			if (!$this->ws->getCustomer()->getAdress()) {
-				$this->ws->getCustomer()->setAdress($order->getAddress());
-			}
-			if (!$this->ws->getCustomer()->getObl()) {
-				$this->ws->getCustomer()->setObl($order->getObl());
-			}
-			if (!$this->ws->getCustomer()->getRayon()) {
-				$this->ws->getCustomer()->setRayon($order->getRayon());
-			}
-			if (!$this->ws->getCustomer()->getStreet()) {
-				$this->ws->getCustomer()->setStreet($order->getStreet());
-			}
-			if (!$this->ws->getCustomer()->getHouse()) {
-				$this->ws->getCustomer()->setHouse($order->getHouse());
-			}
-			if (!$this->ws->getCustomer()->getFlat()) {
-				$this->ws->getCustomer()->setFlat($order->getFlat());
-			}
-			if (!$this->ws->getCustomer()->getIndex()) {
-				$this->ws->getCustomer()->setIndex($order->getIndex());
-			}
-			$this->ws->getCustomer()->save();
-
-			$order->save();
-
-		}
-	}
 //2517
 	public function basketorderAction()
 	{
@@ -1644,13 +1532,14 @@ $change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], (isse
 					'from_quick' => 1
 				);
 				$order->import($data);
-
+                                $order->save();
 
 				//________________________end_added_fields_____________________________________________
 
 
 				$lastnq = wsActiveRecord::findByQueryFirstArray('SELECT MAX(quick_number) as quick_number FROM `ws_orders`');
 				$order->setQuickNumber(++$lastnq['quick_number']);
+                                
 				$order->save();
                                 
 				$this->set_customer($order);
@@ -1734,12 +1623,14 @@ $change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], (isse
 				//____________________send_email_________________
 
 
-				$this->view->articles = $this->createBasketList($order->getArticles()->export());
-				$this->view->basket_contacts = $order;
-				$msg = $this->view->render('email/basket-order-quick.tpl.php');
+				//$this->view->articles = $this->createBasketList($order->getArticles()->export());
+                                
+				//$this->view->basket_contacts = $order;
+				
 				if(!$this->ws->getCustomer()->isBlockEmail()) {
-                                    
-				$subject = $this->trans->get('Принята заявка');
+                                $this->view->order = $order;
+                                $msg = $this->view->render('email/basket-order-quick.tpl.php');
+				$subject = $this->trans->get('Принята заявка').' № '.$order->getQuickNumber();
 
 				SendMail::getInstance()->sendEmail($order->getEmail(), $order->getName(), $subject, $msg);
                                 }
@@ -1786,6 +1677,122 @@ die(json_encode(array('result'=>'send', 'message'=>$this->render('shop/quick-ord
 		}
 
 		exit;
+	}
+        
+        /**
+ * Присвоение заказу пользователя або регистрация нового
+ * @param type $order - заказ
+ */
+	private function set_customer($order = null)
+	{
+
+		if (!$this->ws->getCustomer()->getIsLoggedIn()) 
+                    {
+		$allowedChars = 'abcdefghijklmnopqrstuvwxyz'
+			. 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+			. '0123456789';
+		$newPass = '';
+		$allowedCharsLength = strlen($allowedChars);
+		while (strlen($newPass) < 8)
+			$newPass .= $allowedChars[rand(0, $allowedCharsLength - 1)];
+			if (!wsActiveRecord::useStatic('Customer')->findFirst(array('username' => $order->getEmail()))) {
+
+			$em = iconv_substr($order->getEmail(), 0, 4, 'UTF-8');
+				if($em == 'miss'){
+	SendMail::getInstance()->sendEmail('php@red.ua', 'Yaroslav', 'Создан новый акаунт МИСС', 'Email: '.$order->getEmail().'. Заказ: '.$order->Id());
+				}
+
+				$customer = new Customer();
+				if (isset($_SESSION['parent_id']) and $_SESSION['parent_id'] != 0){ $customer->setParentId($_SESSION['parent_id']); }
+                                
+				$customer->setUsername($order->getEmail());
+				$customer->setPassword(md5($newPass));
+				$customer->setCustomerTypeId(1);
+				$customer->setCompanyName($order->getCompany());
+				$customer->setFirstName($order->getName());
+				$customer->setMiddleName($order->getMiddleName());
+				$customer->setEmail($order->getEmail());
+				$customer->setPhone1(Number::clearPhone($order->getTelephone()));
+				$customer->setCity($order->getCity());
+				$customer->setObl($order->getObl());
+				$customer->setAdress($order->getAddress());
+				$customer->setRayon($order->getRayon());
+				$customer->setIndex($order->getIndex());
+				$customer->setStreet($order->getStreet());
+				$customer->setHouse($order->getHouse());
+				$customer->setFlat($order->getFlat());
+				$customer->save();
+
+					$subscriber = new Subscriber();
+					$subscriber->setName($order->getName());
+					$subscriber->setEmail($order->getEmail());
+					$subscriber->setConfirmed(date('Y-m-d H:i:s'));
+					$subscriber->setActive(1);
+					$subscriber->save();
+
+				$order->setCustomerId($customer->getId());
+				$order->save();
+
+				$this->view->login = $order->getEmail();
+				$this->view->pass = $newPass;
+				$subject = 'Создан акаунт';
+				$msg = $this->render('email/new-customer.tpl.php');
+
+				SendMail::getInstance()->sendEmail($order->getEmail(), $order->getName(), $subject, $msg);
+
+				$customer = $this->ws->getCustomer();
+				$res = $customer->loginByEmail($order->getEmail(), $newPass);
+                                
+				if (!isset($_SESSION['user_data'])){$_SESSION['user_data'] = array();}
+                                
+				$_SESSION['user_data']['login'] = $order->getEmail();
+				$_SESSION['user_data']['password'] = $newPass;
+				if ($res) {
+					$this->website->updateHashes();
+				}
+			}
+		} else {
+			$order->setCustomerId($this->ws->getCustomer()->getId());
+                        $order->setSkidka($this->ws->getCustomer()->getDiscont());
+                        
+			if (!$this->ws->getCustomer()->getMiddleName()) {
+				$this->ws->getCustomer()->setMiddleName($order->getMiddleName());
+			}
+			if (!$this->ws->getCustomer()->getFirstName()) {
+				$this->ws->getCustomer()->setFirstName($order->getName());
+			}
+			if (!$this->ws->getCustomer()->getPhone1()) {
+				$this->ws->getCustomer()->setPhone1(Number::clearPhone($order->getTelephone()));
+			}
+			if (!$this->ws->getCustomer()->getCity()) {
+				$this->ws->getCustomer()->setCity($order->getCity());
+			}
+			if (!$this->ws->getCustomer()->getAdress()) {
+				$this->ws->getCustomer()->setAdress($order->getAddress());
+			}
+			if (!$this->ws->getCustomer()->getObl()) {
+				$this->ws->getCustomer()->setObl($order->getObl());
+			}
+			if (!$this->ws->getCustomer()->getRayon()) {
+				$this->ws->getCustomer()->setRayon($order->getRayon());
+			}
+			if (!$this->ws->getCustomer()->getStreet()) {
+				$this->ws->getCustomer()->setStreet($order->getStreet());
+			}
+			if (!$this->ws->getCustomer()->getHouse()) {
+				$this->ws->getCustomer()->setHouse($order->getHouse());
+			}
+			if (!$this->ws->getCustomer()->getFlat()) {
+				$this->ws->getCustomer()->setFlat($order->getFlat());
+			}
+			if (!$this->ws->getCustomer()->getIndex()) {
+				$this->ws->getCustomer()->setIndex($order->getIndex());
+			}
+			$this->ws->getCustomer()->save();
+
+			$order->save();
+
+		}
 	}
 
 	public function pagetextAction()

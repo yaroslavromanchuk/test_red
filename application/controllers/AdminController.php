@@ -11331,7 +11331,7 @@ LIMIT ".$start." , 50";
 				$aSheet->setCellValue('O1', 'Возвратов больше 5 и 1 в остатке');
 				$aSheet->setCellValue('P1', 'Уценка больше 50% и возвраты больше чем приход');
 				$aSheet->setCellValue('Q1', 'Более 60 дней на сайте и 0 продаж');
-				//$aSheet->setCellValue('R1', 'Дней с посл. заказа');
+				$aSheet->setCellValue('R1', 'Дней с посл. заказа');
 				
                 $boldFont = array('font' => array('bold' => true));
 				
@@ -11385,7 +11385,8 @@ LIMIT ".$start." , 50";
 			 $count = wsActiveRecord::findByQueryArray($s)[0]->allcount;
 			 
 			 $count+=$a->getCount();
-			 
+			 $count = $a->getCount();
+                         
 			 $aSheet->setCellValue('J' . $i, $count);
 			 $aSheet->setCellValue('K' . $i, date('d.m.Y', strtotime($a->getCtime())));
 			 
@@ -11427,15 +11428,16 @@ LIMIT ".$start." , 50";
 					}
 				}
 				 }
-
-			/*	$item_order = strtotime($order->at(0)->dat);
+/*
+				$item_order = strtotime($order->at(0)->dat);
 				if($item_order < time()){
 				$dey_order = (int)(time() - $item_order) / (24 * 60 * 60);
 				}else{
 				$dey_order = 0;
 				}
 				if((int)$dey_order > 1000) $dey_order=0;
-			 $aSheet->setCellValue('R' . $i, (int)$dey_order);*/
+			 $aSheet->setCellValue('R' . $i, (int)$dey_order);
+ *  */
 			 
 			 $i++;
 			 }

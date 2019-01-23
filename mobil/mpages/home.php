@@ -23,6 +23,7 @@
 	</div>
 </div>
 <!--/ новый банер-->
+
 <!--для акции-->
 <?php
 $cats = wsActiveRecord::useStatic('Shopcategories')->findAll(array('active'=>1, 'parent_id'=>0), array(), array('sequence'=>'ASC'));
@@ -45,6 +46,15 @@ $cats = wsActiveRecord::useStatic('Shopcategories')->findAll(array('active'=>1, 
 	</div>
 	</div>
 </div>
+<?php if(/*$this->ws->getCustomer()->getId() == 8005*/ true){ ?>
+<div class="row m-auto1 bg-dark">
+    <div class="col-sm-12 col-md-12 col-lg-2 col-xl-2 text-center p-2">
+        <a href="https://t.me/shop_red_ua" target="_blank" class="text-white">
+            <img class="w-50" src="/img/social_black/telega.png" alt="telegram">
+        </a>
+    </div>
+</div>
+<?php } ?>
 <script>
     window.rnt=window.rnt||function(){(rnt.q=rnt.q||[]).push(arguments)};
     rnt('add_event', {advId: 20676});

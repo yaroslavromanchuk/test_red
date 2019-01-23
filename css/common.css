@@ -172,8 +172,8 @@ div.m_body{width:100%}
 .social-networks .social-network:hover > .social-network-red{opacity:1;}
 .social-networks .social-network-grey{position:absolute;width:40px;height:40px;}
 .social-networks .social-network-red{position:absolute;width:40px;height:40px;background-position:-40px 0;opacity:0;-webkit-transition:opacity 0.2s ease-in-out;-moz-transition:opacity 0.2s ease-in-out;-ms-transition:opacity 0.2s ease-in-out;-o-transition:opacity 0.2s ease-in-out;transition:opacity 0.2s ease-in-out;}
-.social-networks .social-network-vk > .social-network-grey{background-image:url('../mobil/mimages/social/vk.png');}
-.social-networks .social-network-vk > .social-network-red{background-image:url('../mobil/mimages/social/vk.png');}
+.social-networks .social-network-tl > .social-network-grey{background-image:url('../mobil/mimages/social/tl.png');}
+.social-networks .social-network-tl > .social-network-red{background-image:url('../mobil/mimages/social/tl.png');}
 .social-networks .social-network-fb > .social-network-grey{background-image:url('../mobil/mimages/social/fb.png');}
 .social-networks .social-network-fb > .social-network-red{background-image:url('../mobil/mimages/social/fb.png');}
 .social-networks .social-network-ok > .social-network-grey{background-image:url('../mobil/mimages/social/odnoklas.png');}

@@ -94,19 +94,6 @@ $i=0;
 							</a>
 						</td>
 						<?php if($i==4){echo "</tr><tr>";}?>
-						 
-						<!--
-						<td>
-							<?php //echo wsActiveRecord::useStatic('Shoparticlescolor')->findById($item['color'])->getName(); ?>
-						</td>
-						<td>
-							<?php //echo wsActiveRecord::useStatic('Size')->findById($item['size'])->getSize(); ?>
-						</td>
-						<td>
-							<?php //echo Shoparticles::showPrice($article->getPriceSkidka()); ?>
-							грн
-						</td>
-						-->
 					
 <?php
 			

@@ -22,7 +22,11 @@
 			<div class="col-md-12">
 				<hr>
 				<div class="social-networks">
-	    			<a class="social-network social-network-fb" href="http://www.facebook.com/pages/RED-UA/148503625241218?sk=wall" target="_blank">
+                                    <a class="social-network social-network-tl" href="https://t.me/shop_red_ua" target="_blank">
+		    			<div class="social-network-grey"></div>
+		    			<div class="social-network-red"></div>
+	    			</a><!--
+				 --><a class="social-network social-network-fb" href="http://www.facebook.com/pages/RED-UA/148503625241218?sk=wall" target="_blank">
 		    			<div class="social-network-grey"></div>
 		    			<div class="social-network-red"></div>
 	    			</a><!--

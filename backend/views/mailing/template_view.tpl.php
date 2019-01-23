@@ -3,9 +3,10 @@
 	<tr>
 	<td style="border-bottom: 2px solid #e30613;padding:10px;">
 		<span  style="text-align:left;">
-	<a href="https://<?=$dname.$this->getExtraUrl()?>"><img src="https://<?=$dname?>/backend/img/email/logo.png" alt="RED"  style="width:75px;height:30px;"></a>
+	<a href="https://<?=$dname.$this->getExtraUrl()?>"><img src="https://<?=$dname?>/backend/img/email/logo_new.png" alt="RED"  style="height:30px;"></a>
 	</span>
 	<span  style="float: right;text-align:right;">
+             <a href="https://t.me/shop_red_ua"><img src="https://<?=$dname.$this->files?>img/email/teleg.png" alt="facebook"   style="width:30px;padding: 0px 1px;" ></a>
 	<a href="http://www.facebook.com/pages/RED-UA/148503625241218?sk=wall"><img src="https://<?=$dname?>/backend/img/email/fb.png" alt="facebook"   style="width:30px;padding: 0px 1px;" ></a>
 	<a href="http://instagram.com/red_ua"><img src="https://<?=$dname?>/backend/img/email/inst.png" alt="instagramm"  style="width:30px;padding: 0px 1px;"></a>
 	<a href="https://www.youtube.com/user/SmartRedShopping"><img src="https://<?=$dname?>/backend/img/email/youtube.png" alt="youtube" style="width:30px;padding: 0px 1px;"></a>

@@ -7,12 +7,11 @@
 		$date_min = new DateTime("08:50"); // минимальное значение времени
        $date_max = new DateTime("10:00"); // максимальное значение времени
        $date_now = new DateTime();
-if ($date_now >= $date_min && $date_now <= $date_max) {
+if (/*$date_now >= $date_min && $date_now <= $date_max and */true) {
 require_once('cron_init.php');
 $today = date("Y-m-d H:i:s");
 $days = array( 1 => 'Понедельник' , 'Вторник' , 'Среда' , 'Четверг' , 'Пятница' , 'Суббота' , 'Воскресенье' );
 //set_time_limit(600); 
-
 
 
 	
@@ -44,11 +43,11 @@ $array = array(63,281,280,275,276,278,273,279,277,163,274,282,283);
 		}
 		
 		}
-		//if($mess != '')	
+		
 		
 		sendMessageTelegram(404070580, 'zapusk 09-00');//Yarik
 
 }//end if
-//sendMessageTelegram(404070580, 'Старт cron_09_00');
+
 	
 ?>			

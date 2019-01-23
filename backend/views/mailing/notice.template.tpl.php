@@ -21,7 +21,7 @@
            <table border="0" cellpadding="0" cellspacing="0" width="700" align="center" style="background:#fff;border-collapse:collapse;">
 			<tr>
 				<td align="right" colspan="2" style="padding: 10px 10px 0 0;">
-					<a href="http://vk.com/club21090760"><img src="http://<?php echo $dname?>/img/social_black/social_black_vk.png" alt="vkontakte" border="0" width="25" height="25" style="text-decoration:none;"></a>
+					             <a href="https://t.me/shop_red_ua"><img src="https://<?=$dname.$this->files?>img/email/teleg.png" alt="facebook"   style="width:30px;padding: 0px 1px;" ></a>
 					<a href="http://www.facebook.com/pages/RED-UA/148503625241218?sk=wall"><img src="http://<?php echo $dname?>/img/social_black/social_black_fb.png" alt="facebook" border="0" width="25" height="25" style="text-decoration:none;"></a>
 					<a href="http://twitter.com/#!/red_ukraine"><img src="http://<?php echo $dname?>/img/social_black/social_black_tw.png" alt="twitter" border="0" width="25" height="25" style="text-decoration:none;"></a>
 					<a href="http://instagram.com/red_ua"><img src="http://<?php echo $dname?>/img/social_black/social_black_inst.png" alt="instagramm" border="0" width="25" height="25" style="text-decoration:none;"></a>

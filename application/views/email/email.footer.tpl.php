@@ -51,7 +51,6 @@ if(/*$all_news->count() == 2*/false ){ ?>
 <a href="https://<?=$dname?>/pays/" style="color: #878787;text-decoration: none;">Доставка и оплата</a><br>
 <a href="https://<?=$dname?>/returns/" style="color: #878787;text-decoration: none;">Возвраты</a>
 </td>
-
 </tr>
 </table>
 </body>

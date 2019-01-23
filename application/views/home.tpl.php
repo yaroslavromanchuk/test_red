@@ -112,6 +112,19 @@ echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/new_homepage_n
 </div>
 <!--/ новый банер-->
 <?php } ?>
+<?php if(/*$this->ws->getCustomer()->getId() == 8005*/ true){ ?>
+<div class="row m-auto1 bg-dark">
+    <div class="col-sm-12 col-md-12 col-lg-2 col-xl-2 text-center p-2">
+        <a href="https://t.me/shop_red_ua" target="_blank" class="text-white">
+            <img class="w-50" src="/img/social_black/telega.png" alt="telegram">
+        </a>
+    </div>
+    <div class="col-sm-12 col-md-12 col-lg-10 col-xl-10 text-center p-2 align-middle text-white  text-uppercas">
+  Друзья! Теперь вы можете первыми узнавать  о последних новостях и предложениях нашего интернет-магазина  red.ua  в мессенджере Telegram на своём мобильном телефоне.<br>
+  Присоединяйтесь к нашему TELEGRAM-КАНАЛУ – <a href="https://t.me/shop_red_ua" target="_blank" class="text-white">shop_red_ua</a>
+    </div>
+</div>
+<?php } ?>
 <?php if ($this->topproduct->count() > 5) { ?>
 <!--top articles-->
 <div class="row">

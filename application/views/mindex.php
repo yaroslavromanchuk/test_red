@@ -25,8 +25,8 @@
 	<link href="/js/slider-fhd/slick-theme.css" rel="stylesheet" type="text/css" />-->
 	<link rel="stylesheet" type="text/css" href="/css/bs/css/bootstrap.min.css?v=1.0"/>
         <link rel="stylesheet" type="text/css" href="/css/Ionicons/css/ionicons.min.css"/>
-		<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1"/>
-		<link rel="stylesheet" type="text/css" href="/css/common.css?v=1.2"/>
+		<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.3"/>
+		<link rel="stylesheet" type="text/css" href="/css/common.css?v=1.3"/>
 	
 	<script  src="/mobil/mjs/jquery.min.js"></script>
 	 <script>
