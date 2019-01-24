@@ -130,6 +130,16 @@ AND  `ws_articles`.`active` =  'y'";
 			<option value="<?=$c->id?>" <?php if ($this->cur_category and $c->id == $this->cur_category->getId()) echo "selected";?> ><?=$c->getRoutez()?></option>
 	<?php } ?>
 </select> Для скачивания выберите категорию
+<div class="">
+ <div class="mailing_start_19" style="display: none;">Формирование отчета, подождите...<br/>
+	<div class="progress">
+  <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+  </div>
+</div>
+</div>
+ <div class="return_19" style="text-align:center;"></div>
+  <br>
+</div>
 </div>
 </div>
 </div>
@@ -605,7 +615,7 @@ var end = e;
                 dataType: 'json',
                 data: new_data,
                 success: function (res) {
-				console.log(res);
+				//console.log(res);
 				if(!res.exit){
 				var proc = (res.start / res.end) * 100;
 						$(".progress-bar").css('width', Math.round(proc , 2)+'%');

@@ -433,7 +433,7 @@ if($this->orders_year_op){ ?>
         <?php
         // $cat =  ;
          $mas = array();
-		foreach (Shopcategories::find('Shopcategories', ['active'=> 1]) as $cat) {
+		foreach (Shopcategories::find('Shopcategories', ['active'=> 1, 'id not in (106, 267)']) as $cat) {
                     $mas[$cat->getId()] = $cat->getRoutez();
                 }
                 
@@ -1075,6 +1075,8 @@ function prognoz(form){
    chart.series[3].setData(date.ost);
    chart.series[4].setData(date.prod);
    chart.series[5].setData(date.add);
+   chart.series[6].setData(date.sr_pr);
+   chart.series[7].setData(date.sr_ost);
                
           });
 var chart = new  Highcharts.Chart({
@@ -1166,6 +1168,24 @@ title: {
    color: '#ad06a7',
    zIndex: 5,
     data: [5]
+  }
+  ,
+  {
+   type: 'spline',
+   dashStyle: 'Dot',
+   name: 'Мах.Продажи',
+   color: Highcharts.getOptions().colors[2],
+   zIndex: 5,
+    data: [6]
+  }
+  ,
+  {
+   type: 'spline',
+   dashStyle: 'Dot',
+   name: 'Мах.Остатки',
+   color: Highcharts.getOptions().colors[1],
+   zIndex: 5,
+    data: [7]
   }
   ]
 });

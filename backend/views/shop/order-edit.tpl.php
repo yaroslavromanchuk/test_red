@@ -565,6 +565,7 @@ return false;
 					
 					<?php 
 					if($this->user->id == 8005){
+                                          //echo  'tut'.print_r($article_rec->getOrders()->count());
 					//echo count($article_rec->getOptions());
 				//	echo print_r($article_rec->getOptions());
 					}
@@ -585,11 +586,11 @@ return false;
 				</td>
 				<td>
 				<img alt="История" src="/img/icons/histori.png"  data-id="<?=$article->getId()?>"   data-tooltip="tooltip" class="img_return history_article" data-original-title="История изменения товара">
-					<?php if ($article->ArtycleBuyCount() == 0) { ?>
+					<?php if ($art_by = $article_rec->getOrders()->count()) { ?>
+                                <img alt="Покупки" src="/img/icons/shoppingcart.png"  data-id="<?=$article->getId()?>"   data-tooltip="tooltip" class="img_return shoping" data-original-title="Товар покупался <?=$art_by?> раз">
+					<?php } else { ?>
 					<img alt="Покупки" src="/img/icons/shoppingcart.png"  data-id="<?=$article->getId()?>"   data-tooltip="tooltip" class="img_return" data-original-title="Это первый заказ">
 					<span>Всего куплено: 0 шт.</span>
-					<?php } else { ?>
-					<img alt="Покупки" src="/img/icons/shoppingcart.png"  data-id="<?=$article->getId()?>"   data-tooltip="tooltip" class="img_return shoping" data-original-title="Товар покупался <?=$article->ArtycleBuyCount()?> раз">
 					<?php } ?>
 				</td>
 			</tr>
@@ -773,6 +774,7 @@ var id = e.target.attributes.getNamedItem("data-id").value;
 $.get('/admin/articlehistory/id/'+id+'/m/1',function (data) {fopen('История изменения товара', data);});	
 });
 $('.shoping').click(function (e) {
+//var article_id = e.target.attributes.getNamedItem("data-id").value;
 var id = e.target.attributes.getNamedItem("data-id").value;
 $.get('/admin/ordersbyartycle/id/'+id+'/m/1',function (data) {fopen('История покупок товара', data);});	
 });

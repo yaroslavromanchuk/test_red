@@ -219,7 +219,7 @@ ORDER BY  `dat` ASC   ");
                 $cat = new Shopcategories((int)$this->post->cat_prognoz); 
                 if($cat->id == 267){
                   $c = '';//267;  
-                   $where =" "; 
+                  // $where =" "; 
                 }elseif($cat->getKidsIds()){
                    // print_r($cat->getKidsIds());
                    // echo implode(',', $cat->getKidsIds());
@@ -279,15 +279,21 @@ WHERE order_history.name LIKE  '%Прийом товара с возврата%'
                   $rr['x'][] = date("W", strtotime($k->dbeg)).'('.date("d.m", strtotime($k->dbeg)).')';
                  // $mass[$key]['x'] = $k->nedelya;
                   $ost = (int)($k->ctn/((strtotime ($k->dend)-strtotime ($k->dbeg))/(60*60*24)));
-                  $rr['ost'][] = $ost;
+                  $prod = (int)$z['suma'];
+                  $rr['ost'][] = ceil($ost);
                   //$mass[$key]['o'] = (int)($k->ctn/(strtotime ($k->dend)-strtotime ($k->dbeg))/(60*60*24));
-                  $rr['prod'][] = (int)$z['suma'];
+                  $rr['prod'][] = ceil($prod);
                  // $mass[$key]['z'] = (int)$z['suma'];
                   $rr['add'][] = (int)($activ['ctn']+$hist['ctn']);
                   //$mass[$key]['a'] = (int)($activ['ctn']+$hist['ctn']);
-                  $rr['n_0'][] = (int)($ost*0.3);//(int)($cat->norma*0.3);
-                  $rr['n_1'][] = (int)($ost*0.7);;//(int)($cat->norma*0.7);
-                  $rr['n_2'][] = (int)($ost*1.1);//(int)($cat->norma);
+
+                 // $norma = Norma::getNorma(['prod'=>$prod,'ost'=>$ost]);
+                 
+                  $rr['n_0'][] = 1;
+                  
+                  $rr['n_1'][] = 1;
+                  
+                  $rr['n_2'][] = 1;
                  
                 
             }
@@ -296,7 +302,10 @@ WHERE order_history.name LIKE  '%Прийом товара с возврата%'
                 $rr['x'][] = $v['x'];
                 
             }*/
-		    die(json_encode($rr));
+           
+                 die(json_encode(Norma::getNorma($rr)));
+            
+		   
             
             }elseif($this->post->method == "visit"){
                 $res = [];
@@ -7271,7 +7280,11 @@ $text = '
 					<th>Скидка</th>
 			</tr>';
 			 foreach($orders as $or){
-			  if(wsActiveRecord::useStatic('Shoporderarticles')->findFirst(array('order_id' => $or->getId(), 'article_id'=> $or->getArticleId(),  'size'=> $or->getSize(), 'color' => $or->getColor() ))->getCount() == 0){ $st = 'style="background: rgba(255, 10, 10, 0.58);"';}else{
+			  if(wsActiveRecord::useStatic('Shoporderarticles')->findFirst(array('order_id' => $or->getId(), 'article_id'=> $or->getArticleId(),  'size'=> $or->getSize(), 'color' => $or->getColor() ))->getCount() == 0){
+                              
+                             $st = 'style="background: rgba(255, 10, 10, 0.58);"';
+                          
+                          }else{
 			  $st = '';
 			  }
 	$delivery = '';		  
@@ -11385,7 +11398,7 @@ LIMIT ".$start." , 50";
 			 $count = wsActiveRecord::findByQueryArray($s)[0]->allcount;
 			 
 			 $count+=$a->getCount();
-			 $count = $a->getCount();
+			// $count = $a->getCount();
                          
 			 $aSheet->setCellValue('J' . $i, $count);
 			 $aSheet->setCellValue('K' . $i, date('d.m.Y', strtotime($a->getCtime())));
@@ -11428,16 +11441,23 @@ LIMIT ".$start." , 50";
 					}
 				}
 				 }
-/*
-				$item_order = strtotime($order->at(0)->dat);
+
+				//$item_order = strtotime($order->at(0)->dat);
+                                 $item_order = strtotime($a->getDateOrderOst());
 				if($item_order < time()){
-				$dey_order = (int)(time() - $item_order) / (24 * 60 * 60);
+				$dey_order = (int)((time() - $item_order) / (24 * 60 * 60));
 				}else{
 				$dey_order = 0;
 				}
-				if((int)$dey_order > 1000) $dey_order=0;
-			 $aSheet->setCellValue('R' . $i, (int)$dey_order);
- *  */
+                                
+			if((int)$dey_order > 1000) {
+                            $dey_order = 'не заказывался';
+                            
+                        }
+                        
+                                
+			 $aSheet->setCellValue('R' . $i, $dey_order);
+ 
 			 
 			 $i++;
 			 }

@@ -11,10 +11,10 @@ protected $_table = 'ws_stores';
 		}
         public function getAkcii(){
                     //return wsActiveRecord::useStatic('Stores')->findAll(['type' => 'new']);
-                     return wsActiveRecord::useStatic('Stores')->findAll(['type' => 'new', 'active' => 1], [], [0, 5]);
+                     return wsActiveRecord::useStatic('Stores')->findAll(['type' => 'new', 'active' => 1], []);
         }
          public function getInfo(){
-                    return wsActiveRecord::useStatic('Stores')->findAll(['type' => 'info', 'active' => 1], [], [0, 5]);
+                    return wsActiveRecord::useStatic('Stores')->findAll(['type' => 'info', 'active' => 1], []);
         }
         public function getIds($id){
                return wsActiveRecord::useStatic('Stores')->findById($id);

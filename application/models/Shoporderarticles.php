@@ -7,11 +7,11 @@
         protected function _defineRelations()
         {
             $this->_relations = array(
-			'article_db' => array(
-                'type' => 'hasOne',
-                'class' => self::$_shop_articles_class,
-                'field' => 'article_id'),
-           'order' => array(
+		'article_db' => array(
+                    'type' => 'hasOne',
+                    'class' => self::$_shop_articles_class,
+                    'field' => 'article_id'),
+                'order' => array(
                     'type' => 'hasOne',
                     'class' => self::$_shop_orders_class,
                     'field' => 'order_id'),
@@ -19,18 +19,22 @@
                                     'type'=>'hasOne',
                                     'class'=>'Size',
                                     'field'=>'size'), 
-        'colors' => array(
+                'colors' => array(
                                      'type'=>'hasOne',
                                      'class'=>'Shoparticlescolor',
                                      'field'=>'color'), 
 		'option' => array(
-                'type' => 'hasOne',
-                'class' => 'Shoparticlesoption',
-                'field' => 'option_id'),
+                    'type' => 'hasOne',
+                    'class' => 'Shoparticlesoption',
+                    'field' => 'option_id'),
 					 
 					);
         }
-
+        /**
+         * Ссылка на картинку товара в заказе
+         * @param type $type
+         * @return type
+         */
         public function getImagePath($type = 1)
         {
             return $this->getArticleDb()->getImagePath($type);
@@ -54,7 +58,12 @@
             }
         }
 
-		
+		/**
+                 * Прощет стоимости товара с учетом акций
+                 * @param type $all_orders_amount - сумма всех заказов
+                 * @param type $sum_order - сумма текущего заказа
+                 * @return type
+                 */
 	public function getPerc($all_orders_amount, $sum_order = 0)
             {
             /*
@@ -208,7 +217,10 @@
         return $mas;
     }
 	
-
+        /**
+         * Получить артикул товара в заказе
+         * @return string
+         */
         public function  getCode()
         {
             $item = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $this->getArticleId(), 'id_size' => $this->getSize(), 'id_color' => $this->getColor()));
@@ -217,7 +229,10 @@
             }
             return '';
         }
-
+        /**
+         * Остаток товара на складе
+         * @return string
+         */
         public function  getCountNow()
         {
             $item = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $this->getArticleId(), 'id_size' => $this->getSize(), 'id_color' => $this->getColor()));
@@ -234,7 +249,6 @@
          */
 	public function getOptions()
 	{
-	$flag = [];
 	$dat = date('Y-m-d');
 	$sql ="SELECT  `ws_articles_option`. * 
 FROM  `ws_articles_option` 
@@ -248,13 +262,27 @@ OR  `ws_articles_options`.`category_id` = ".$this->article_db->category_id."
 OR  `ws_articles_options`.`brand_id` = ".$this->article_db->brand_id."
 )";
 	$option = wsActiveRecord::findByQueryArray($sql);
-//d($option, false);
 	if (count($option)){
 		return $option;
-	//$flag['price'] = $this->getPrice()*;
 	}
 	return false;
-}
+        }
+        /**
+         * Заказы конкретного размера
+         * @return type
+         */
+        public function getOrders(){
+            
+            $sql="SELECT *"
+                    . " FROM ws_order_articles"
+                    . " WHERE article_id = ".$this->article_id
+                    . " and size = ".$this->size
+                    . " and color = ".$this->color
+                    . " GROUP BY  `order_id` "
+                    . " ORDER BY  `id` DESC ";
+             return  wsActiveRecord::useStatic('Shoporderarticles')->findByQuery($sql);
+        }
+    
 
 
 }

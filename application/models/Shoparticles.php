@@ -140,7 +140,11 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
 				brand $orderbuy ";
         return wsActiveRecord::useStatic('Shoparticles')->findByQuery($q);
     }
-
+    /**
+     * 
+     * @param type $category
+     * @return type
+     */
     static public function getListPrices($category = null)
     {
         $category_text = $category ? ((mb_strpos(mb_strtolower($category->getName()), 'new') !== false)
@@ -164,7 +168,11 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
 
         return wsActiveRecord::useStatic('Shoparticles')->findByQuery($q);
     }
-
+    /**
+     * 
+     * @param type $category
+     * @return type
+     */
     static public function getListColors($category = null)
     {
         $category_text = $category ? ((mb_strpos(mb_strtolower($category->getName()), 'new') !== false)
@@ -181,7 +189,11 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
 		";
         return wsActiveRecord::useStatic('Shoparticlescolor')->findByQuery($q);
     }
-
+    /**
+     * 
+     * @param type $category
+     * @return type
+     */
     static public function getListSizes($category = null)
     {
         $category_text = $category ? ((mb_strpos(mb_strtolower($category->getName()), 'new') !== false)
@@ -198,7 +210,11 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
 		";
         return wsActiveRecord::useStatic('Shoparticlessize')->findByQuery($q);
     }
-
+    /**
+     * 
+     * @param type $articul
+     * @return type
+     */
     static public function getArticlesByArticul($articul = null)
     {
         $q = "SELECT ws_articles.*
@@ -208,7 +224,11 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
 		";
         return wsActiveRecord::useStatic('Shoparticles')->findByQuery($q);
     }
-
+    /**
+     * 
+     * @param type $raw
+     * @return type
+     */
     static public function getSearchPath($raw = array())
     {
         $data = [];
@@ -244,12 +264,17 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
             return '/search/' . implode('/', $data) . '/';
         }
     }
-
+    /**
+     * 
+     * @return type
+     */
     public function findLastSequenceRecord()
     {
         return $this->findFirst(array(), array('sequence' => 'DESC'));
     }
-
+    /**
+     * 
+     */
     public function deleteCurImages()
     {
         $this->unlink_file();
@@ -263,7 +288,9 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
           if (is_file($filename))
               @unlink($filename);*/
     }
-
+/**
+ * 
+ */
     public function deleteCurPdf()
     {
         $filename = INPATH . "files/pdf/" . $this->getPdf();
@@ -272,22 +299,36 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
             unlink($filename);
         }
     }
-
+    /**
+     * 
+     * @return type
+     */
     public function getTitle()
     {
         return $this->getBrand() . ' (' . $this->getModel() . ')';
     }
-
+    /**
+     * 
+     * @param type $price
+     * @return type
+     */
     public function getRealPrice($price = false)
     {
        // $tmp = ($price === false) ? ((($offer = $this->getOffer()) && $offer->getId()) ? $offer->getPrice() : $this->getPrice()) : $price;
 	   $tmp = ($price === false) ?  $this->getPrice() : $price;
         return $tmp;
     }
+    /**
+     * 
+     * @return type
+     */
 	public function getFirstPrice(){
 	return ($this->getOldPrice() > 0)?$this->getOldPrice():$this->getPrice();
 	}
-
+        /**
+         * 
+         * @return type
+         */
     public function getPriceSkidka()//цена товара с доп скидкой
     {
     /*  $s = Skidki::getActiv($this->getId());
@@ -300,14 +341,24 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
 		
 		return $this->getRealPrice();
     }
-
+    /**
+     * 
+     * @param type $price
+     * @return type
+     */
     public function getRealPriceExBTW($price = false)
     {
         $btw = BTW / 100;
         $tmp = ($price === false) ? $this->getRealPrice() : $price;
         return $tmp / (1 + $btw);
     }
-
+    /**
+     * Путь к картинке
+     * @param type $type - розмер картинки:
+     * small_basket - 36*36, homepage - 396*365, listing - 155*155, detail - 360*360, small_preview - 800*600, card_product - 600*600
+     * По умолчинию - оригинал 1500*1500
+     * @return type
+     */
     public function getImagePath($type = 1)
     {
         switch ($type) {
@@ -328,7 +379,10 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
         }
         //return SITE_URL . '/files/i' . $type . '/' . $this->getImage();
     }
-
+    /**
+     * 
+     * @return boolean
+     */
     public function _beforeDelete(){
         $folder = $_SERVER['DOCUMENT_ROOT'] . '/files/org/';
         $name = explode('.', $this->getImage());
@@ -340,17 +394,27 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
         return true;
     }
 
-
+    /**
+     * 
+     * @return type
+     */
     public function getPdfPath(){
         return SITE_URL . '/files/pdf/' . $this->getPdf();
     }
-
+    /**
+     * 
+     * @param type $del
+     * @return type
+     */
     public function getPdfFileSize($del = 1){
         $file = INPATH . '/files/pdf/' . $this->getPdf();
         $size = ($this->getPdf() && file_exists($file)) ? filesize($file) : 0;
         return (int)($size / $del);
     }
-
+    /**
+     * 
+     * @return \Orm_Collection
+     */
     public function getSArticles(){
         $sa = new Orm_Collection();
         if ($this->sug_article_id_1 && ($a = wsActiveRecord::useStatic('Shoparticles')->findById($this->sug_article_id_1)) && $a->getId() && strcasecmp($a->getActive(), 'y') == 0)
@@ -446,30 +510,50 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
        }
         return true;
     }
-
+    /**
+     * 
+     * @return type
+     */
     public function getOffer(){
         $tmp = $this->getOffers();
         if ($tmp && $tmp->count()){return $tmp[0];}
         else
         { return null;}
     }
-
+    /**
+     * 
+     * @param type $price
+     * @return type
+     */
     static public function showPrice($price){
         return number_format((double)$price, 2, ',', '');
     }
-
+    /**
+     * 
+     * @param type $price
+     * @return type
+     */
     static public function showPriceBTW($price){
         $btw = BTW / 100;
         $tmp = ($price * $btw) / (1 + $btw);
         return self::showPrice($tmp);
     }
-
+    /**
+     * 
+     * @param type $price
+     * @return type
+     */
     static public function showPriceExBTW($price){
         $btw = BTW / 100;
         $tmp = $price / (1 + $btw);
         return self::showPrice($tmp);
     }
-
+    /**
+     * 
+     * @param type $type
+     * @param type $filename
+     * @return string
+     */
     public function getSystemPath($type = NULL, $filename = NULL){
         if ($type === NULL)
         {$type = $this->type;}
@@ -490,7 +574,11 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
 
         return $path;
     }
-
+    /**
+     * 
+     * @param type $type
+     * @param type $filename
+     */
     public function unlink_file($type = NULL, $filename = NULL)
             {
         if ($type === NULL)
@@ -514,7 +602,12 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
                 break;
         }
     }
-
+    /**
+     * 
+     * @param type $all_orders_amount
+     * @param type $skidka
+     * @return string
+     */
     public function getProcent($all_orders_amount, $skidka = 0)
             {
         if ($skidka != 0) {
@@ -786,7 +879,10 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
         $this->getCachedHtml(true);
         return true;
     }
-
+    /**
+     * Сколько раз заказівался этот товар
+     * @return type
+     */
     public function ArtycleBuyCount()
     {
         return wsActiveRecord::useStatic('Shoporderarticles')->count(array('article_id' => $this->getId()));
@@ -900,7 +996,12 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
         }
         return $count;
     }
-
+    /**
+     * 
+     * @param type $ids - сассив id товара
+     * @param type $limit - лимит, по умолчанию 15
+     * @return type
+     */
     public static function findByIds($ids = array(),$limit = 15)
             {
         if(count($ids)){
@@ -923,11 +1024,22 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
 
         return array();
     }
+    /**
+     * Количество оставшихся на складе едениц товара
+     * @return type
+     */
 	public function getCountArticles()
                 {
    return wsActiveRecord::useStatic('Shoparticlessize')->findByQuery("SELECT SUM(  `count` ) AS ctn FROM  `ws_articles_sizes` WHERE `id_article` =".$this->getId())->at(0)->getCtn();
 
 	}
+        
+        /**
+         * Декодирование строки
+         * @param type $encoded - строка
+         * @param type $key - ключь для декодирования
+         * @return type
+         */
 	public function decode($encoded, $key)
                 {//расшифровываем
 		$strofsym="qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM=";//Символы, с которых состоит base64-ключ
@@ -938,5 +1050,6 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
 			}
 			return base64_decode($encoded);//Вертаем расшифрованную строку
 			}
+                        
 
 }

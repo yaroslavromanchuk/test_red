@@ -89,11 +89,11 @@ $sum = 0;
 $all_sum = 0;
 $all_count = 0;
 $mes="Уценка ".$today."\r\n";
-
+//AND DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) > DATE_SUB( CURRENT_DATE, INTERVAL 35 DAY )
 ///10
 $sql = "SELECT * FROM `red_site`.`ws_articles` WHERE  `stock` NOT LIKE  '0' AND  `active` =  'y'
 	AND DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) < DATE_SUB( CURRENT_DATE, INTERVAL 21 DAY )
-	AND DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) > DATE_SUB( CURRENT_DATE, INTERVAL 35 DAY )
+	
 	AND `old_price` = 0 AND `ucenka` = 0 and skidka_block != 1";
 $i=0;
 $j = 0;	
