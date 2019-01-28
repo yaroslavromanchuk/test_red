@@ -1532,7 +1532,7 @@ $change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], (isse
 					'from_quick' => 1
 				);
 				$order->import($data);
-                                $order->save();
+                                //$order->save();
 
 				//________________________end_added_fields_____________________________________________
 
@@ -1702,8 +1702,8 @@ die(json_encode(array('result'=>'send', 'message'=>$this->render('shop/quick-ord
 	SendMail::getInstance()->sendEmail('php@red.ua', 'Yaroslav', 'Создан новый акаунт МИСС', 'Email: '.$order->getEmail().'. Заказ: '.$order->Id());
 				}
 
-				$customer = new Customer();
-				if (isset($_SESSION['parent_id']) and $_SESSION['parent_id'] != 0){ $customer->setParentId($_SESSION['parent_id']); }
+	$customer = new Customer();
+	//if (isset($_SESSION['parent_id']) and $_SESSION['parent_id'] != 0){ $customer->setParentId($_SESSION['parent_id']); }
                                 
 				$customer->setUsername($order->getEmail());
 				$customer->setPassword(md5($newPass));

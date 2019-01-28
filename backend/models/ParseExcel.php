@@ -230,9 +230,9 @@ $mas=array('model'=>$aSheet[1][3], 'price' =>$aSheet[1][32], 'min_price'=>$aShee
 
                 $j = 1;
                 $i = 0;
-                $mas =[];
+               // $mas =[];
                foreach ($parametr[0] as $v) {
-                   $mas[$h[$i].$j] = $v;
+                  // $mas[$h[$i].$j] = $v;
                     $aSheet->setCellValue($h[$i].$j, $v);
                     $i++;
                }
@@ -241,15 +241,20 @@ $mas=array('model'=>$aSheet[1][3], 'price' =>$aSheet[1][32], 'min_price'=>$aShee
                 $aSheet->getStyle($h[0].$j.':'.$h[$i].$j)->applyFromArray(array('font' => array('bold' => true)));
                 
                 $j++;
-                $i = 0;
                 
-                foreach ($parametr[1] as $val) {
-                   // foreach ($val as $z) {
+                $i = 0;
+                unset($parametr[0]);
+                
+                foreach ($parametr as $val) {
+                    
+                    foreach ($val as $z) {
                       //   $mas[$h[$i].$j] = $val;
-                         $aSheet->setCellValue($h[$i].$j, $val);
+                         $aSheet->setCellValue($h[$i].$j, $z);
                         $i++;
-                   // }
-                   //  $j++;
+                    }
+                    $i=0;
+                     $j++;
+                     
                 }
  //return $pExcel;
                 require_once("PHPExel/PHPExcel/Writer/Excel5.php");

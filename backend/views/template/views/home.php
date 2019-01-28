@@ -431,17 +431,12 @@ if($this->orders_year_op){ ?>
   </div>
     <div class="form-group">
         <?php
-        // $cat =  ;
-         $mas = array();
-		foreach (Shopcategories::find('Shopcategories', ['active'=> 1, 'id not in (106, 267)']) as $cat) {
+         $mas = [];
+		foreach (Shopcategories::find('Shopcategories', ['active'=> 1, 'id not in (106)']) as $cat) {
                     $mas[$cat->getId()] = $cat->getRoutez();
                 }
-                
-			asort($mas);
-			
-         
-       // Menu::find('Menu',['active'=>1, 'type_id'=>2, 'section'=>$s->id], ['sequence'=>'ASC']);
-        ?>
+                asort($mas);
+?>
         <select name="cat_prognoz" id="cat_prognoz" class="form-control form-control-sm select2" data-placeholder="Выберите категорию товара">
             <option label="Категория"></option>
             <?php foreach ($mas as $key => $value) {
@@ -451,7 +446,8 @@ if($this->orders_year_op){ ?>
                 <?php } } ?>
         </select>
     </div>
-    <button type="submit" class="btn btn-primary btn-sm">Построить</button>
+    <button type="submit" name="toChart" class="btn btn-primary btn-sm">Построить</button>
+    <button type="button" onclick="ToExcel($('#form_prognoz').serialize());" name="toExcel" class="btn btn-primary btn-sm">Скачать</button>
 </form>
                         </div>
                     </div>
@@ -736,7 +732,40 @@ $("#form_prognoz").submit(function(e){
             // analityks($('#from_analitic').val(), $('#to_analitic').val())
     return false;
 });
+function  ToExcel(form){
+    console.log(form);
+    
+      $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+  window.location = '/admin/home/method/balance_to_excel?'+form+'/';
+        $('.modal-backdrop').hide();
+                  $('#foo').detach(); 
+        /*  
+    $.ajax({
+                beforeSend: function(){
+                    $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+                },
+                url: '/admin/home/',
+                type: 'POST',
+                dataType: 'json',
+                data: 'method=balance_to_excel&'+form,
+                success: function (res) {
+				//console.log(res);
+                             //   date = res;
+                                console.log(res);
+                },
+				error: function (res) {
+				console.log(res);
+				}
+            }).done(function(date) {
+                console.log(date);
 
+                $('.modal-backdrop').hide();
+                  $('#foo').detach();
+              });
+              */
+    
+    return false;
+}
 
 $("#form_analitics").submit(function(e){
     analityks($('#from_analitic').val(), $('#to_analitic').val())
@@ -1036,39 +1065,30 @@ console.log(to);
 }
 
 function prognoz(form){
-  var label = [];
+  var cat = $('#cat_prognoz option:selected').text();
   var date =[];
- var i;
-  var cats = [];
- var max = 0;
- var min = 30000;
-  var url = '/admin/home/';
-		var new_data = '&method=prognoz&'+form;
-		//console.log(new_data);
+  var subt = 'Click on point to visit official website';
 		$.ajax({
-                url: url,
+                beforeSend: function(){
+                    $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+                },
+                url: '/admin/home/',
                 type: 'POST',
                 dataType: 'json',
-                data: new_data,
+                data: 'method=prognoz&'+form,
                 success: function (res) {
 				//console.log(res);
                                 date = res;
-                      /*  for(var key in res){
-                        if(res[key]['y'] > max){ max = res[key]['y'];}
-                        if(res[key]['y'] < min){ min = res[key]['y'];}
-                        
-			label.push(res[key]['x']); 
-			date.push(res[key]['y']); 
-                        }*/
+                                console.log(res.otkloneniye);
                 },
 				error: function (res) {
 				console.log(res);
 				}
             }).done(function() {
                 console.log(date);
+    /*           chart.setTitle(null, { text: date.otkloneniye });
                 
-                         chart.xAxis[0].setCategories(date.x);
-                        // chart.yAxis[0].setCategories(date.ost);
+                chart.xAxis[0].setCategories(date.x);
    chart.series[0].setData(date.n_0);  
    chart.series[1].setData(date.n_1);
    chart.series[2].setData(date.n_2);
@@ -1077,19 +1097,24 @@ function prognoz(form){
    chart.series[5].setData(date.add);
    chart.series[6].setData(date.sr_pr);
    chart.series[7].setData(date.sr_ost);
-               
-          });
-var chart = new  Highcharts.Chart({
+   */
+                $('.modal-backdrop').hide();
+                  $('#foo').detach();
+       
+new  Highcharts.Chart({
 title: {
-        text: 'DDMRP'
+        text: cat
             },
+    subtitle: {
+        text: date.otkloneniye
+    },
   chart: {
     renderTo: 'prognoz',
    // zoomType: 'xy'
   },
 
     xAxis: {
-   // categories: date.x,
+    categories: date.x,
     
     labels: {
       rotation: 90
@@ -1124,7 +1149,7 @@ title: {
    marker: {
             enabled: false
         },
-    data: [0]
+    data: date.n_0
   },
   {
    type: 'area',
@@ -1135,7 +1160,7 @@ title: {
    marker: {
             enabled: false
         },
-    data: [1]
+    data: date.n_1
   },
   {
    type: 'area',
@@ -1146,49 +1171,54 @@ title: {
    marker: {
             enabled: false
         },
-    data: [2]
+    data: date.n_2
   },
   {
    type: 'spline',
    name: 'Остатки',
    color: '#000000',
    zIndex: 3,
-    data: [3]
+    data: date.ost
   },
   {
    type: 'spline',
    name: 'Продажи',
    color: '#005cf2',
    zIndex: 4,
-    data: [4]
+    data: date.prod
   },
   {
    type: 'spline',
    name: 'Добавлено',
    color: '#ad06a7',
    zIndex: 5,
-    data: [5]
+    data: date.add
   }
   ,
   {
    type: 'spline',
    dashStyle: 'Dot',
-   name: 'Мах.Продажи',
+   name: 'Сред.Продажи',
    color: Highcharts.getOptions().colors[2],
    zIndex: 5,
-    data: [6]
+    data: date.sr_pr
   }
   ,
   {
    type: 'spline',
    dashStyle: 'Dot',
-   name: 'Мах.Остатки',
+   name: 'Сред.Остатки',
    color: Highcharts.getOptions().colors[1],
    zIndex: 5,
-    data: [7]
+    data: date.sr_ost
   }
   ]
 });
+       
+       
+$('svg .highcharts-menu').append('<div class="highcharts-menu-item" onclick="BuferToExcel('+form.cat_prognoz+','+form.from_prognoz+','+form.to_prognoz+')" style="cursor: pointer; padding: 0.5em 1em; color: rgb(51, 51, 51); background: none; font-size: 11px; transition: background 250ms ease 0s, color 250ms ease 0s;">Download Excel</div>');  
+          });
+
 
                 
           /*      $("#prognoz_div").remove();

@@ -214,99 +214,32 @@ ORDER BY  `dat` ASC   ");
             
             }elseif($this->post->method == "prognoz")
             {
-                $from = date('Y-m-d',strtotime($this->post->from_prognoz));
-                $to = date('Y-m-d', strtotime($this->post->to_prognoz));
-                $cat = new Shopcategories((int)$this->post->cat_prognoz); 
-                if($cat->id == 267){
-                  $c = '';//267;  
-                  // $where =" "; 
-                }elseif($cat->getKidsIds()){
-                   // print_r($cat->getKidsIds());
-                   // echo implode(',', $cat->getKidsIds());
-                    $c = implode(',', $cat->getKidsIds());
-                   // $where ="and `ws_balance_category`.id_category in (".$c.") ";
-                }else{
-                    $c = $cat->id;
-                   // $where = "and `ws_balance_category`.id_category in (".$c.") ";
+                 die(json_encode(Bufer::getNorma($this->post)));
+                 
+            }elseif($this->get->method == 'balance_to_excel'){
+                
+                $res = Bufer::getToExcelNorma($this->get);
+                
+                $p = [];
+                
+                $p[0][0] = 'Категория';
+                $p[0][1] =  'Буфер';
+                
+                $i = 1;
+                
+                foreach(Bufer::prognozExcel($res) as $k => $v){
+                    if($v['prognoz'] != 0){
+                    $p[$i][1] = $v['cat'];
+                    $p[$i][2] = $v['prognoz'];
+                    
+                    $i++;
+                    }
                 }
-                $sql = "
-
-SELECT WEEK(  `ws_balance`.`date` , -1 ) AS nedelya,
-ADDDATE(  `ws_balance`.`date` ,INTERVAL( WEEKDAY(  `ws_balance`.`date` ) ) DAY ) AS dbeg,
-ADDDATE(  `ws_balance`.`date` ,INTERVAL( 6 - WEEKDAY(  `ws_balance`.`date` ) ) DAY ) AS dend,
-SUM(  `ws_balance_category`.`count` ) AS ctn
-FROM  `ws_balance` 
-JOIN  `ws_balance_category` ON  `ws_balance`.`id` =  `ws_balance_category`.`id_balance` 
-WHERE DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m-%d' ) >=  '".$from."'
-AND DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m-%d' ) <=  '".$to."'
-     and `ws_balance_category`.id_category in (".$c.") 
-GROUP BY  `nedelya` 
-ORDER BY  `dbeg` ASC 
- ";
+                $cat =  new Shopcategories((int)$this->get->cat_prognoz);
+                ParseExcel::saveToExcel($cat->getRoutez().'_'.date('d.m.Y',strtotime($this->get->from_prognoz)).'_'.date('d.m.Y', strtotime($this->get->to_prognoz)),$p);
                 
-     
-            $ok = wsActiveRecord::findByQueryArray($sql);
-
-              $rr = [];
-            foreach($ok as $key => $k){
+               // die(json_encode());
                 
-                  $z = wsActiveRecord::findByQueryFirstArray("SELECT  sum(IF(`ws_order_articles`.`count`>0,`ws_order_articles`.`count`,1)) as suma FROM  `ws_order_articles`
-inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
-inner join `ws_articles` on `ws_order_articles`.`article_id` = `ws_articles`.`id`
-WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' )  >= '".$k->dbeg."' 
-    and DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' )  <= '".$k->dend."' 
-AND `ws_orders`.`status` not in(17)
-and `ws_articles`.`category_id` in (".$c.")");
-
-                  $sd = $k->dbeg.' 00:00:00';
-                  $ed = $k->dend.' 23:59:59';
-                  $activ = wsActiveRecord::findByQueryFirstArray(""
-                          . "SELECT SUM(  `count` ) AS ctn FROM  `red_article_log`"
-                          . "inner join `ws_articles` on `red_article_log`.`article_id` = `ws_articles`.`id`"
-                          . " WHERE `red_article_log`.`type_id` = 4"
-                          . " and `ws_articles`.`category_id` in (".$c.")  "
-                          . " AND  `red_article_log`.`ctime` >=  '" . $sd."'"
-                          . "and `red_article_log`.`ctime` <= '".$ed."' ");
-                  $hist = wsActiveRecord::findByQueryFirstArray("
-                      SELECT count(order_history.id) as `ctn`
-                      FROM order_history 
-                      inner join `ws_articles` on order_history.`article_id` = `ws_articles`.`id`
-WHERE order_history.name LIKE  '%Прийом товара с возврата%'
-                                                        and `ws_articles`.`category_id` in (".$c.") 
-							and order_history.`ctime` >=  '" . $sd."'"
-                          . "and order_history.`ctime` <= '".$ed."' ");
-                  
-                  $rr['x'][] = date("W", strtotime($k->dbeg)).'('.date("d.m", strtotime($k->dbeg)).')';
-                 // $mass[$key]['x'] = $k->nedelya;
-                  $ost = (int)($k->ctn/((strtotime ($k->dend)-strtotime ($k->dbeg))/(60*60*24)));
-                  $prod = (int)$z['suma'];
-                  $rr['ost'][] = ceil($ost);
-                  //$mass[$key]['o'] = (int)($k->ctn/(strtotime ($k->dend)-strtotime ($k->dbeg))/(60*60*24));
-                  $rr['prod'][] = ceil($prod);
-                 // $mass[$key]['z'] = (int)$z['suma'];
-                  $rr['add'][] = (int)($activ['ctn']+$hist['ctn']);
-                  //$mass[$key]['a'] = (int)($activ['ctn']+$hist['ctn']);
-
-                 // $norma = Norma::getNorma(['prod'=>$prod,'ost'=>$ost]);
-                 
-                  $rr['n_0'][] = 1;
-                  
-                  $rr['n_1'][] = 1;
-                  
-                  $rr['n_2'][] = 1;
-                 
-                
-            }
-          
-          /*  foreach ($mass as $key => $v) {
-                $rr['x'][] = $v['x'];
-                
-            }*/
-           
-                 die(json_encode(Norma::getNorma($rr)));
-            
-		   
-            
             }elseif($this->post->method == "visit"){
                 $res = [];
                 $ok2 = wsCustomerVisit::findByQueryArray("SELECT COUNT(  `id` ) AS  `visit` , SUM(  `total_number_of_pages` ) AS  `page` , SUM( IF(  `total_number_of_pages` =1, 1, 0 ) ) AS otkaz, DATE_FORMAT(  `ctime` ,  '%d.%m' ) AS  `dat` , DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) AS  `dat_p` 

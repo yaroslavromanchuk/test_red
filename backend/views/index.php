@@ -326,9 +326,9 @@
 		
                 <script src="<?=$this->files?>views/template/lib/summernote/summernote-bs4.min.js"></script>
                 
-<script src="https://code.highcharts.com/highcharts.js"></script>
-
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="<?=$this->files?>views/template/lib/highlightjs/highcharts.js"></script>
+<script src="<?=$this->files?>views/template/lib/highlightjs/exporting.js"></script>
+<script src="<?=$this->files?>views/template/lib/highlightjs/export-data.js?v=1.4"></script>
 	
 	<script src="<?=$this->files?>views/template/js/starlight.js?v=1"></script>
 
