@@ -303,7 +303,7 @@ $("#qo").submit(function () {//bistriy zakaz
 				t+=er[key];
 				
 				}
-				$('#hide .modal-body #qo-result').html(t);
+				$('#hide .modal-body #qo-result').html('<div class="alert alert-danger" role="alert">'+t+'</div>');
 					$('#qo-result').fadeIn(300);
 					$('#hide .modal-footer').show();
 				}	

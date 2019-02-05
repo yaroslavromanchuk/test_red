@@ -685,7 +685,7 @@ public function getNewClientAdmin($type = 'INDIVIDUAL', $name = '', $lastName = 
           */
          public function getSticker100_100Group($shipment_group_uuid = ''){
              //$param = ['size' => 'SIZE_A4'];
-             $param = '&size=SIZE_A4';
+             $param = '';// '&size=SIZE_A4';
              $model = 'shipment-groups/'.$shipment_group_uuid.'/sticker';
              return $this->prints('GET', $model, $param);
          }

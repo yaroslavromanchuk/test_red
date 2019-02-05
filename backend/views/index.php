@@ -28,7 +28,7 @@
          <link href="<?=$this->files?>views/template/lib/summernote/summernote-bs4.css" rel="stylesheet">
           <link href="<?=$this->files?>views/template/lib/SpinKit/spinkit.css?v=1.0" rel="stylesheet">
     <!-- Starlight CSS -->
-	<link rel="stylesheet" href="<?=$this->files?>views/template/css/starlight.css?v=2.1">
+	<link rel="stylesheet" href="<?=$this->files?>views/template/css/starlight.css?v=2.5">
     
 	<script src="<?=$this->files?>views/template/lib/jquery/jquery.js"></script>
     
@@ -71,7 +71,7 @@
 			<i class="menu-item-arrow fa fa-angle-down"></i>
           </div><!-- menu-item -->
         </a><!-- sl-menu-link -->
-        <ul class="sl-menu-sub nav flex-column" >
+        <ul class="sl-menu-sub nav flex-column">
         <?php    foreach (Menu::find('Menu',['active'=>1, 'type_id'=>2, 'section'=>$s->id]) as $m) {
                                 if($this->admin_rights[$m->id]['view']){ ?>
         <li class="nav-item">
@@ -290,17 +290,17 @@
     <div class="sl-mainpanel">
       <nav class="breadcrumb sl-breadcrumb">
         <a class="breadcrumb-item" href="/admin/index/"><?=$this->trans->get('Главная');?></a>
-		<?php if($this->getCurMenu()->getSection()){?>
+		<?php if(/*$this->getCurMenu()->getSection()*/true){ ?>
 		 <span class="breadcrumb-item active"><?=$this->getCurMenu()->getTitle()?></span>
 	<?php	} ?>
        
       </nav>
     <div class="sl-pagebody">
-        <div class="sl-page-title">
+       <!-- <div class="sl-page-title">
           <h5><?=$this->getCurMenu()->getTitle()?></h5>
-          <p><?=$this->getCurMenu()->getPageIntro()?>.</p>
-        </div>
-            <?=$this->render($this->middle_template);?>
+          <p><?=$this->getCurMenu()->getPageIntro()?></p>
+        </div>-->
+            <?=$this->render($this->middle_template)?>
     </div>
 
     </div><!-- sl-mainpanel -->

@@ -259,9 +259,11 @@ foreach($ucenka as $c){ ?>
   
   
 <?php } ?>
-
+<div class="row">
+<div class="panel panel-primary">
+<div class="panel-heading"><h3 class="panel-title">Отчет по бренду за период</h3></div>
+<div class="panel-body">
 <form action="/admin/otchets/type/4/" method="post">
-<h2>Отчет по бренду за период</h2>
     Бренд <select name="brend" class="form-control input">
         <?php foreach (wsActiveRecord::useStatic('Brand')->findAll() as $brand) { ?>
             <option value="<?=$brand->getId()?>"><?=$brand->getName()?></option>
@@ -275,11 +277,15 @@ foreach($ucenka as $c){ ?>
 
     <input type="submit" class="btn btn-small btn-default" value="Скачать"/>
 </form>
-
-<hr>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="panel panel-primary">
+<div class="panel-heading"><h3 class="panel-title">Товары с блоками скидок</h3></div>
+<div class="panel-body">
 <a href="/admin/zgoda">Согласия пользователей</a>
 <form action="/admin/otchets/type/6/" method="post">
-<h2>Товары с блоками скидок</h2>
     <p>
         Дата с: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="order_from"/>
         по: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="order_to"/> <br/>
@@ -288,9 +294,15 @@ foreach($ucenka as $c){ ?>
     </p>
     <input type="submit" class="btn btn-small btn-default" value="Скачать"/>
 </form>
-<hr>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="panel panel-primary">
+<div class="panel-heading"><h3 class="panel-title">Уценка</h3></div>
+<div class="panel-body">
 <form action="/admin/otchets/type/7/" method="post">
-<h2>Уценка</h2>
+<h2></h2>
     <p>
         Дата с: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="order_from"/>
         по: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="order_to"/> <br/>
@@ -298,29 +310,45 @@ foreach($ucenka as $c){ ?>
     </p>
     <input type="submit" class="btn btn-small btn-default" value="Скачать"/>
 </form>
-<hr>
+    </div>
+</div>
+</div>
+<div class="row">
+<div class="panel panel-primary">
+<div class="panel-heading"><h3 class="panel-title">Уценка по каждому товару</h3></div>
+<div class="panel-body">
 <form action="/admin/otchets/type/14/" method="post">
-<h2>Уценка по каждому товару</h2>
     <p>
         Дата с: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="order_from"/>
         по: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="order_to"/> <br/>
     </p>
     <input type="submit" class="btn btn-small btn-default" value="Скачать"/>
 </form>
-<hr>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="panel panel-primary">
+<div class="panel-heading"><h3 class="panel-title">Количество товаров по ключевым категориям</h3></div>
+<div class="panel-body">
 <form action="/admin/otchets/type/9/" method="post">
-<h2>Количество товаров по ключевым категориям</h2>
     <input type="submit" class="btn btn-small btn-default" value="Скачать"/>
 </form>
+</div>
+</div>
+</div>
+
 <!--
 <form action="/admin/otchets/type/10/" method="post">
 <h2>Отчёт по покупонам</h2>
     <input type="submit" value="Скачать"/>
 </form>
 -->
-<hr>
+<div class="row">
+<div class="panel panel-primary">
+<div class="panel-heading"><h3 class="panel-title">Заказы по Городам</h3></div>
+<div class="panel-body">
 <form action="/admin/otchets/type/11/" method="post">
-<h2>Заказы по Городам</h2>
     <p>
         Дата с: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="order_from"/>
         по: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="order_to"/> <br/>
@@ -328,15 +356,21 @@ foreach($ucenka as $c){ ?>
     </p>
     <input type="submit" class="btn btn-small btn-default" value="Скачать"/>
 </form>
-
+</div>
+</div>
+</div>
 <!--
 <form action="/admin/otchets/type/12/" method="post">
 <h2>Заказы по промокоду red2014</h2>
     <input type="submit" value="Скачать"/>
 </form>
 -->
+<div class="row">
+<div class="panel panel-primary">
+<div class="panel-heading"><h3 class="panel-title">Товары в избранном</h3></div>
+<div class="panel-body">
 <form action="/admin/otchets/type/15/" method="post">
-<h2>Товары в избранном</h2><br>
+<h2></h2><br>
 <table>
 <tr>
 <td>
@@ -400,6 +434,9 @@ $mas = wsActiveRecord::findByQueryArray($sql);
 	</tr>
 	</table>
 </form>
+    </div>
+</div>
+</div>
 <script>
  function brends(x){
 document.getElementById('md').disabled = true;
@@ -418,7 +455,7 @@ document.getElementById('md').disabled = true;
 		});
 }
 </script>
-  <div class="row">
+<div class="row">
 <div class="panel panel-primary">
 <div class="panel-heading"><h3 class="panel-title">Отчет по уведомлениях</h3></div>
 <div class="panel-body">

@@ -442,14 +442,16 @@ if(page != null){
     <?php 
       $SumOrder = $this->getOrder()->calculateOrderPrice(true, false);
 	
-	$t_price = 0.00; $t_option = 0.00;
-	$t_real_price =0.00; $sum_skudka = 0.00;
+	$t_price = 0.00;
+        $t_option = 0.00;
+	$t_real_price =0.00;
+        $sum_skudka = 0.00;
 	if ($this->getOrder()->getArticles()->count()) { ?>
         <?php 
         foreach ($this->getOrder()->getArticles() as $main_key => $article_rec) {
-            $article = new Shoparticles($article_rec->getArticleId());
+           // $article = new Shoparticles($article_rec->getArticleId());
             ?>
-			<tr id="<?=$article_rec->getId()?>" <?php if($article->getCategoryId() == 16){ echo 'style="background: rgba(210, 33, 33, 0.43);"';} ?>>
+			<tr id="<?=$article_rec->getId()?>" <?php if($article_rec->article_db->getCategoryId() == 16){ echo 'style="background: rgba(210, 33, 33, 0.43);"';} ?>>
 				<td  colspan="2" class="text-center">
 					<img class="prev w100" rel="#miesart<?=$article_rec->getId(); ?>"
 						 src="<?=$article_rec->getImagePath('listing')?>"
@@ -460,7 +462,7 @@ if(page != null){
 						<img src="<?=$article_rec->getImagePath('detail');?>" alt="<?=htmlspecialchars($article_rec->getTitle());?>" style="max-width:300px;border-radius: 10px;"/>
 					</div><br>
 					<?php if($article_rec->getCount() > 0){ ?>
-					<a href="/admin/shop-articles/edit/id/<?=$article->getId();?>" title="Редактировать" data-placement="bottom"  data-tooltip="tooltip" style="display: inline-block;">
+					<a href="/admin/shop-articles/edit/id/<?=$article_rec->getArticleId();?>" title="Редактировать" data-placement="bottom"  data-tooltip="tooltip" style="display: inline-block;">
 						<img src="<?=SITE_URL?>/img/icons/edit-small.png" alt="Редактировать" class="img_return"/>
 					</a>
 					<a href="<?=$this->path;?>shop-orders/adelete/id/<?=$article_rec->getId();?>/#flag=<?=$article_rec->getId();?>" onclick="return confirm('Удалить?');" style="display: inline-block;" data-placement="bottom"  data-tooltip="tooltip" data-original-title="Удалить на сайт">
@@ -516,9 +518,9 @@ return false;
 }
 </script>
 				<td>
-					<?php echo 'Количество: <b>' . $article_rec->getCount().'</b>'; ?>
+					<?php echo 'Колл.: <b>' . $article_rec->getCount().'</b>'; ?>
 					<br><span style="color: #048;"><?=$article_rec->getCode()?></span>
-					<br><a href="<?=$article->getPath()?>" target="_blank"><?=$article_rec->getTitle()?></a>
+					<br><a href="<?=$article_rec->article_db->getPath()?>" target="_blank"><?=$article_rec->getTitle()?></a>
 					<br><span style="color: #777;"><?=$article_rec->article_db->category->getRoutez()?></span>
 					<br>Наличие:
 					<?php $art = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $article_rec->getArticleId(), 'id_size' => $article_rec->getSize(), 'id_color' => $article_rec->getColor()));
@@ -534,7 +536,7 @@ return false;
 				
 				</td>
 				<td>
-					<input type="hidden" class="hidden" value="<?=$article->getId() ?>">
+					<input type="hidden" class="hidden" value="<?=$article_rec->geArticletId() ?>">
 					<?=$article_rec->sizes->getSize().' / '.$article_rec->colors->getName()?>
 					<input type="hidden" class="hidden"  name="size-<?=$article_rec->getId(); ?>"  value="<?=$article_rec->getSize()?>">
 					<input type="hidden" class="hidden"  name="color-<?=$article_rec->getId(); ?>"  value="<?=$article_rec->getColor()?>">
@@ -585,11 +587,11 @@ return false;
 					
 				</td>
 				<td>
-				<img alt="История" src="/img/icons/histori.png"  data-id="<?=$article->getId()?>"   data-tooltip="tooltip" class="img_return history_article" data-original-title="История изменения товара">
+				<img alt="История" src="/img/icons/histori.png"  data-id="<?=$article_rec->geArticletId()?>"   data-tooltip="tooltip" class="img_return history_article" data-original-title="История изменения товара">
 					<?php if ($art_by = $article_rec->getOrders()->count()) { ?>
-                                <img alt="Покупки" src="/img/icons/shoppingcart.png"  data-id="<?=$article->getId()?>"   data-tooltip="tooltip" class="img_return shoping" data-original-title="Товар покупался <?=$art_by?> раз">
+                                <img alt="Покупки" src="/img/icons/shoppingcart.png"  data-id="<?=$article_rec->geArticletId()?>"   data-tooltip="tooltip" class="img_return shoping" data-original-title="Товар покупался <?=$art_by?> раз">
 					<?php } else { ?>
-					<img alt="Покупки" src="/img/icons/shoppingcart.png"  data-id="<?=$article->getId()?>"   data-tooltip="tooltip" class="img_return" data-original-title="Это первый заказ">
+					<img alt="Покупки" src="/img/icons/shoppingcart.png"  data-id="<?=$article_rec->geArticletId()?>"   data-tooltip="tooltip" class="img_return" data-original-title="Это первый заказ">
 					<span>Всего куплено: 0 шт.</span>
 					<?php } ?>
 				</td>
@@ -731,7 +733,7 @@ if(e.value > 0){
         data_to_post.option_id = e.value;
 		//console.log(data_to_post);
         $.post('<?=$this->path ."shop-orders/"?>', data_to_post, function(data){
-		//console.log(data); 
+		console.log(data); 
 		document.location.reload(true);
 		} ,'json');
 		

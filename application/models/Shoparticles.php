@@ -329,7 +329,7 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
          * 
          * @return type
          */
-    public function getPriceSkidka()//цена товара с доп скидкой
+    public function getPriceSkidka($id = false)//цена товара с доп скидкой
     {
     /*  $s = Skidki::getActiv($this->getId());
 		$z = false;// Skidki::getActivCat($this->getCategoryId());
@@ -338,8 +338,19 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
 		}elseif($s){
             return $this->getRealPrice() * ((100 - $s->getValue()) / 100);
         }*/
+        
+        if($this->getOldPrice() == 0 and $id){
+            $c = wsActiveRecord::useStatic('Customer')->findById((int)$id);
+            if($c->id){
+           return $this->getPrice() * ((100 - $c->getDiscont()) / 100);
+            }
+        }else{
+        
+         return $this->getPrice();
+        }
+        
 		
-		return $this->getRealPrice();
+		//return $this->getRealPrice();
     }
     /**
      * 
@@ -670,6 +681,7 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
 	
             if (!$this->getSkidkaBlock()) {   
                 if($this->getOptions()){
+                    
                     switch ($this->getOptions()->type){
                         
                         case 'final':
@@ -677,16 +689,19 @@ OR  `ws_articles_options`.`brand_id` = $this->brand_id
                          $mas['minus'] = $price * ($this->getOptions()->value/100);
                          $mas['price'] = ($price - $mas['minus']);
                          $mas['option_price'] = $mas['price'];  
-                         $mas['comment'] = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;font-size: 10px;">'.$this->getOptions()->option_text.'</div>';
+                         $mas['comment'] = '<div class="alert alert-success" style="padding: 5px;margin-top: 10px;font-size: 10px;">'.$this->getOptions()->option_text.'</div>';
                             return $mas;
                         case 'dop':
+                            if($sum_order > $this->getOptions()->min_summa){
                             $mas['option_id'] = $this->getOptions()->id; 
                             $dop_ck = $this->getOptions()->value;
-                            $coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;font-size: 10px;">'.$this->getOptions()->option_text.'</div>';
+                            $coment = '<div class="alert alert-success" style="padding: 5px;margin-top: 10px;font-size: 10px;">'.$this->getOptions()->option_text.'</div>';
+                            }
                             break;
                     }
                     
                 }
+                
 		$kod = false;
 		
 	if($kupon !=''){

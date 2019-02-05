@@ -44,7 +44,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- содержымое главной страницы-->
 <?php /*if($this->ws->getCustomer()->isAdmin()){ } */?>
 <?php if($this->ws->getCustomer()->getId() == 8005){
-echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/new_homepage_new/">Реклама</a></div>';
+echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/advertising/">Реклама</a></div>';
 
 }?>
 <section>

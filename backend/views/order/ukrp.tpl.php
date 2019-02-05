@@ -54,7 +54,7 @@ $cod ='%';
         <td colspan="4" align="center" class="fnt_size_3">
             
             <strong>Товарный чек № <?=$this->order->getId()?></strong>
-            <p style="margin: 0px;padding: 0px;    font-size: 14px;">
+            <p style="margin: 0px;padding: 0px;font-size: 14px;">
                 <?php
 		if ($this->order->getComlpect()) {
 			$compl = explode(';', $this->order->getComlpect());
@@ -94,18 +94,18 @@ $cod ='%';
     <tr>
         <td colspan="4">
             <i><strong>Телефон: </strong>
-                <?php echo $this->order->getTelephone()?></i>
+                <?=$this->order->getTelephone()?></i>
             <br/>
         </td>
     </tr>
     <tr>
         <td colspan="4">
                             <?php if ($this->getOrder()->getComments()) { ?>
-								<div class="comm_cli">
+				<div class="comm_cli">
                                 <b>Коментарии клиента :</b>
-                                <?php echo $this->getOrder()->getComments(); ?>
-								<br><br>
-								</div>
+                                <?=$this->getOrder()->getComments()?>
+				<br><br>
+				</div>
                             <?php } ?>
         </td>
     </tr>
@@ -124,9 +124,6 @@ $cod ='%';
     $i = 1;
     $c = $this->getOrder()->getSkuCount();
     $total_price = 0;
-   // $to_pay = 0;
-    //$to_pay_minus = 0.00;
-	
 	$price_real = 0;
 	$t_real_price = 0;
 	$price_show = 0;
@@ -143,17 +140,17 @@ $cod ='%';
 		
 			//$sum_skudka += $price_show['minus']/$article_rec->getCount(); //сумируется общая скидка
 			
-				$skid_show = round((1 - (($price_show['price']/$article_rec->getCount())/ $price_real)) * 100);//вычисление процента скидки по товару
+		$skid_show = round((1 - (($price_show['price']/$article_rec->getCount())/ $price_real)) * 100);//вычисление процента скидки по товару
 			
 if($skid_show == 100){
-$sk = Number::formatFloat(99.99, 2);
-			}else{
-		$sk = Number::formatFloat($skid_show, 2);
+        $sk = Number::formatFloat(99.99, 2);
+		}else{
+	$sk = Number::formatFloat($skid_show, 2);
 		}
 		
 		
 				//$z = chr(10);
-		$cod.=$article_rec->getCode().'/'.$article_rec->getCount().'/'.$sk.'&';
+		$cod.=$article_rec->artikul.'/'.$article_rec->getCount().'/'.$sk.'&';
 		
         ?>
         <tr>
@@ -164,8 +161,8 @@ $sk = Number::formatFloat(99.99, 2);
             </td>
             <td class="border_all <?php echo($i == $c) ? 'tt_border_bottom' : ''?>" align="center">
 				<?php if($article_rec->getCount()) {?>
-				<img src="/images/barcodeimage.php?text=<?=$article_rec->getCode()?>" alt="Barcode Image" />
-				<br><?=$article_rec->getCode()?>
+				<img src="/images/barcodeimage.php?text=<?=$article_rec->artikul?>" alt="Barcode Image" />
+				<br><?=$article_rec->artikul?>
 				<?php } ?>
             </td>
             <td class="border_all <?php echo($i == $c) ? 'tt_border_bottom' : ''?>" align="center">
@@ -258,7 +255,7 @@ echo $skid_show ? '<span '.$st.'>'.$skid_show.' %</span>' : '';
 		<td colspan="6" align="right" class="fnt_size_1">Доставка:</td>
         <td class="border_all border_right" align="right" colspan="2"><?=Number::formatFloat($this->getOrder()->getDeliveryCost(), 2);?></td>
     </tr>
-    <?php if ($this->getOrder()->getDeposit() > 0) {?>
+    <?php if ($this->getOrder()->getDeposit() > 0) { ?>
         <tr>
             <td colspan="6" align="right"><i>Депозит</i></td>
             <td class="border_all border_right" align="right" colspan="2">
@@ -397,9 +394,9 @@ foreach ($this->getOrder()->getArticles() as $main_key => $article_rec) {
 	<b><?=$article_rec->getTitle() . ', <br>' . wsActiveRecord::useStatic('Size')->findById($article_rec->getSize())->getSize() . ', ' . wsActiveRecord::useStatic('Shoparticlescolor')->findById($article_rec->getColor())->getName();?></b>
 	</td>
 	<td class="border" align="center" >
-	<?php if($article_rec->getCount()) {?>
-				<img src="/images/barcodeimage.php?text=<?=$article_rec->getCode()?>" alt="Barcode Image" />
-				<br><?=$article_rec->getCode()?>
+	<?php if($article_rec->getCount()) { ?>
+				<img src="/images/barcodeimage.php?text=<?=$article_rec->artikul?>" alt="Barcode Image" />
+				<br><?=$article_rec->artikul?>
 				<?php } ?>
 				</td>
 	<td class="border" align="center"> ___ шт.</td>
@@ -450,7 +447,7 @@ foreach ($this->getOrder()->getArticles() as $main_key => $article_rec) {
 	</table>
 	<div style='page-break-after: always;'></div>
 	<?php } ?>
-	<script>
+<script>
 $(function(){
  $('.qr<?=$this->order->getId()?>').html($('#qr<?=$this->order->getId()?>').html());
  });

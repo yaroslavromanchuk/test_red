@@ -1063,34 +1063,32 @@ public function questionAction(){
     {
         echo $this->render('pages/razmersetka.tpl.php');
     }
-
+    /**
+     * Форма пожаловаться, поблагодарить
+     * все поля формы тянутся с бд.
+     */
     public function saymailAction()
     {
         if (count($_POST)) {
             //validate first
-            $errors = array();
-            $fields = wsActiveRecord::useStatic('Field')->findAll();
+            $errors = [];
+            $fields = Field::poblagodarit_pojaluvatsa();
             foreach ($fields as $field) {
                 if ($field->getRequired() && !@$_POST[$field->getCode()])
                     $errors[] = $field->getErrorText();
             }
 
             $this->view->post = $_POST;
+            
             if (!count($errors)) {
-               // $admin_email = Config::findByCode('admin_email')->getValue();
                 $admin_name = Config::findByCode('admin_name')->getValue();
-                //$do_not_reply = Config::findByCode('do_not_reply_email')->getValue();
-				if(@$_POST['comment-type']){
+				if($_POST['comment-type']){
 				 $subject = $_POST['comment-type'];
 				}else{
                 $subject = $this->cur_menu->getName();
 				}
 
                $this->view->fields = $fields;
-               // $msg = $this->render('email/template.tpl.php');
-
-              //  MailerNew::getInstance()->sendToEmail('skidki@red.ua', $admin_name, $subject, $msg);
-			//   MailerNew::getInstance()->sendToEmail('php@red.ua', $admin_name, $subject, $msg);
             SendMail::getInstance()->sendEmail('skidki@red.ua', $admin_name, $subject, $this->render('email/template.tpl.php'), false, false, false, false, 2, 'php@red.ua', $admin_name);
 
                 $this->view->name = $_POST['name'];
@@ -1100,9 +1098,11 @@ public function questionAction(){
                 $this->view->errors = $errors;
                 echo $this->render('pages/contacts.tpl.php');
             }
-        } else
-        echo $this->render('pages/contacts2.tpl.php');
+        }else{
+        echo $this->render('pages/contacts.tpl.php');
+        }
     }
+    
 
    public function reviewsAction()
     {
@@ -1139,7 +1139,7 @@ if((isset($_POST['send_reviews']) and isset($_POST['comment-type'])) or isset($_
             $this->view->page = $page;
 			
 $this->view->allcount = wsActiveRecord::useStatic('Reviews')->count(array('public' => 1, 'parent_id' => 0));
-		$coments = wsActiveRecord::useStatic('Reviews')->findByQuery('SELECT  distinct(`id`), `parent_id`, `url_id`, `id_material`, `name`, `url`, `mail`, `text`, `date_add`, `public`, `flag` FROM ws_comment_system where public = 1 and parent_id = 0 order by id DESC LIMIT '.$onPage * ($page - 1).', '.$onPage);
+$coments = wsActiveRecord::useStatic('Reviews')->findByQuery('SELECT  distinct(`id`), `parent_id`, `url_id`, `id_material`, `name`, `url`, `mail`, `text`, `date_add`, `public`, `flag` FROM ws_comment_system where public = 1 and parent_id = 0 order by id DESC LIMIT '.$onPage * ($page - 1).', '.$onPage);
 		
 		$this->view->coments = $coments;
 		

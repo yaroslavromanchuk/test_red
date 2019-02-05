@@ -14,7 +14,6 @@
 	<link rel="shortcut icon" href="/favicon.ico"/>	
 
     <link rel="stylesheet" type="text/css" href="/css/bs/css/bootstrap.css?v=1.0"/>
-   <!-- <link rel="stylesheet" type="text/css" href="/application/views/stores/css/stores.css?v=1.1"/>-->
     <link rel="stylesheet" type="text/css" href="/css/stores/fm.revealator.jquery.min.css"/>
     <link rel="stylesheet" type="text/css" href="/css/style.css?v=14082017"/>
 	<link rel="stylesheet" type="text/css" href="/css/new.css?v=20131227x"/>
@@ -42,15 +41,18 @@ if($this->user->id == 8005){
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 <section>
-<div class="container-fluid">
-<div class="row">
-<div class="col-sm-12 content-box p-0 m-0 text-center" style="display: none;"><?=$this->render('finder/list.fhd.tpl.php')?></div>
-<div class="col-sm-12 content-box-baner p-0 m-0 text-center" ><img src="/img/logo/logo-fhd-red.png" class="my-auto" style="width: 75%"></div>
+<div class="container-fluid p-0">
+<div class="row m-auto">
+<div class="col-sm-12 content-box p-2 m-2 text-center" style="display: none;"><?=$this->render('finder/list.fhd.tpl.php')?></div>
+<div class="col-sm-12 content-box-baner p-0 m-0 text-center" >
+    <img src="/img/logo/logo-fhd-red_new.png" class="my-auto" style="width: 100%">
+</div>
 <div class="col-sm-12 p-0 m-0" id="div_video">
     <video id="video" src="" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"' class="w-100" ></video>
 </div>
             </div>
         </div>
+    <div class="go_to_sit">На сайт</div>>
 </section>
 <script>
     /* <![CDATA[ */
@@ -81,15 +83,15 @@ var i = 0;
 
 $(document).ready(function(){
     //$("body").fadeIn(1000);
-    $('.content-box-baner').fadeOut(1000);
-    $('.content-box').fadeIn(1500);
+    $('.content-box-baner').fadeOut(100);
+    $('.content-box').fadeIn(1000);
  //$("body").css("display", "none");
 
 var video = $("#video");
 video.bind("ended", function() {
 $('#div_video').fadeOut();
 //$(".content-box-baner").html('<img src="/img/logo/logo-fhd-red.png" class="my-auto" style="width: 75%">');
-$(".content-box-baner").fadeIn(1000);
+$(".content-box-baner").fadeIn(100);
 showArticles();
 //$(".content-box").fadeIn(1000); 
 
@@ -107,7 +109,7 @@ function showVideo(i){
 
 //console.log(mas);
 var rand = i;//Math.floor(Math.random() * (7 - 1)) + 1;
-	 $('#video').attr('src', '/img/video/'+rand+'.mp4');
+	 $('#video').attr('src', '/img/video/'+rand+'_1.mp4');
 		$('#video').trigger('play');
 		$(".content-box").fadeOut(); 
                  $(".content-box-baner").fadeOut();

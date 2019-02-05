@@ -448,6 +448,8 @@ if($this->orders_year_op){ ?>
     </div>
     <button type="submit" name="toChart" class="btn btn-primary btn-sm">Построить</button>
     <button type="button" onclick="ToExcel($('#form_prognoz').serialize());" name="toExcel" class="btn btn-primary btn-sm">Скачать</button>
+    <button type="button" onclick="testik($('#form_prognoz').serialize());" name="brandexcel" class="btn btn-primary btn-sm">Скачать бренды</button>
+    
 </form>
                         </div>
                     </div>
@@ -645,7 +647,7 @@ $(".m_a_time").show();
 return false;
 }
 
-$(document).ready(function(){
+(function(){
 
 $('#days').on('shown.bs.modal', function () {
 $('.sparkline_days').html($('.days').text());
@@ -721,6 +723,8 @@ date.setDate(date.getDate() -7);
 var fuldate7 = date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate();*/
 ///analityks('', '');
 
+
+
 });
 /**
  * 
@@ -732,20 +736,21 @@ $("#form_prognoz").submit(function(e){
             // analityks($('#from_analitic').val(), $('#to_analitic').val())
     return false;
 });
+
 function  ToExcel(form){
     console.log(form);
     
-      $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+    //  $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
   window.location = '/admin/home/method/balance_to_excel?'+form+'/';
-        $('.modal-backdrop').hide();
-                  $('#foo').detach(); 
-        /*  
-    $.ajax({
+       // $('.modal-backdrop').hide();
+         //         $('#foo').detach(); 
+         
+  /*  $.ajax({
                 beforeSend: function(){
                     $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
                 },
                 url: '/admin/home/',
-                type: 'POST',
+                type: 'GET',
                 dataType: 'json',
                 data: 'method=balance_to_excel&'+form,
                 success: function (res) {
@@ -763,9 +768,47 @@ function  ToExcel(form){
                   $('#foo').detach();
               });
               */
+              
     
     return false;
-}
+};
+
+
+function testik(form){
+    console.log(form);
+    
+ window.location = '/admin/home/method/balance_brand_to_excel?'+form+'/';
+       // $('.modal-backdrop').hide();
+         //$('#foo').detach(); 
+     /*    
+    $.ajax({
+                beforeSend: function(){
+                    $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+                },
+                url: '/admin/home/',
+                type: 'GET',
+                dataType: 'json',
+                data: 'method=balance_brand_to_excel&'+form,
+                success: function (res) {
+				//console.log(res);
+                             //   date = res;
+                                console.log(res);
+                },
+		error: function (res) {
+				console.log(res);
+				}
+            }).done(function(date) {
+              //  console.log(date);
+
+                $('.modal-backdrop').hide();
+                  $('#foo').detach();
+              });
+             */ 
+              
+    return false;
+};
+
+
 
 $("#form_analitics").submit(function(e){
     analityks($('#from_analitic').val(), $('#to_analitic').val())
@@ -1066,8 +1109,13 @@ console.log(to);
 
 function prognoz(form){
   var cat = $('#cat_prognoz option:selected').text();
+  if(!cat){
+      alert('Выберите категорию');
+      return false;
+      
+  }
   var date =[];
-  var subt = 'Click on point to visit official website';
+  //var subt = 'Click on point to visit official website';
 		$.ajax({
                 beforeSend: function(){
                     $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
@@ -1086,20 +1134,8 @@ function prognoz(form){
 				}
             }).done(function() {
                 console.log(date);
-    /*           chart.setTitle(null, { text: date.otkloneniye });
-                
-                chart.xAxis[0].setCategories(date.x);
-   chart.series[0].setData(date.n_0);  
-   chart.series[1].setData(date.n_1);
-   chart.series[2].setData(date.n_2);
-   chart.series[3].setData(date.ost);
-   chart.series[4].setData(date.prod);
-   chart.series[5].setData(date.add);
-   chart.series[6].setData(date.sr_pr);
-   chart.series[7].setData(date.sr_ost);
-   */
-                $('.modal-backdrop').hide();
-                  $('#foo').detach();
+                    $('.modal-backdrop').hide();
+                    $('#foo').detach();
        
 new  Highcharts.Chart({
 title: {
@@ -1216,32 +1252,9 @@ title: {
 });
        
        
-$('svg .highcharts-menu').append('<div class="highcharts-menu-item" onclick="BuferToExcel('+form.cat_prognoz+','+form.from_prognoz+','+form.to_prognoz+')" style="cursor: pointer; padding: 0.5em 1em; color: rgb(51, 51, 51); background: none; font-size: 11px; transition: background 250ms ease 0s, color 250ms ease 0s;">Download Excel</div>');  
+//$('svg .highcharts-menu').append('<div class="highcharts-menu-item" onclick="BuferToExcel('+form.cat_prognoz+','+form.from_prognoz+','+form.to_prognoz+')" style="cursor: pointer; padding: 0.5em 1em; color: rgb(51, 51, 51); background: none; font-size: 11px; transition: background 250ms ease 0s, color 250ms ease 0s;">Download Excel</div>');  
           });
 
-
-                
-          /*      $("#prognoz_div").remove();
-			$("#prognoz").append('<div id="prognoz_div"></div>');
-                
-               new Morris.Line({
-                   element: 'prognoz_div',
-                   data: date,
-     xkey: 'x',
-    ykeys: ['o', 'z', 'a'],
-    labels: ['Остаток', 'Купили', 'Добавили'],
-    lineColors: ['#000000','#0000FF', '#578c0c'],
-    lineWidth: 1,
-    ymax: 'auto 100',
-    smooth: false,
-   // fillOpacity: 0.5,
-    gridTextSize: 10,
-    hideHover: 'auto',
-    parseTime : false,
-    xLabels: "week",
-    resize: true
-                   
-               }); */
 return false;
 
 }
@@ -1249,7 +1262,6 @@ return false;
 function ostatki(){
   var label = [];
   var date =[];
- var i;
  var max = 0;
  var min = 30000;
   var url = '/admin/home/';
@@ -1261,14 +1273,15 @@ function ostatki(){
                 dataType: 'json',
                 data: new_data,
                 success: function (res) {
-				//console.log(res);
-                        for(var key in res){
-                        if(res[key]['y'] > max){ max = res[key]['y'];}
-                        if(res[key]['y'] < min){ min = res[key]['y'];}
-                        
-			label.push(res[key]['x']); 
-			date.push(res[key]['y']); 
+				///console.log(res);
+                                date = res;
+                        for(var key in res.y){
+                            
+                        if(res.y[key] > max){ max = res.y[key];}
+                        if(res.y[key] < min){ min = res.y[key];}
                         }
+                        min = min - 100;
+                        max = max +100;
                 },
 				error: function (res) {
 				console.log(res);
@@ -1278,11 +1291,12 @@ function ostatki(){
                     ctx4.height= 300;
    new Chart(ctx4, {
     type: 'line',
+    
     data: {
-      labels: label,
+      labels: date.x,
       datasets: [{
-	 // label: '20%',
-        data: date,
+	  label: 'Колл. ', 
+        data: date.y,
         borderColor: '#324463',
         borderWidth: 1,
         fill: false
@@ -1528,15 +1542,11 @@ var label = [];
                                  // date2.push(res[key]['st']);
                                     
                                 }
-   // min = Math.min.apply(null, date2);
-    // max = Math.max.apply(null, date1);
-
                 },
-				error: function (res) {
-				console.log(res);
+		error: function (res) {
+			console.log(res);
 				}
             }).done(function() {
-//return false;
   var ctx4 = $('#views');
   var myChart4 = new Chart(ctx4, {
     type: 'line',
@@ -1617,8 +1627,8 @@ var l = res.length;
 				}
             }).done(function(res) {
 
-			  var ctx4 = document.getElementById('ucenka');
-  var myChart4 = new Chart(ctx4, {
+    var ctx4 = document.getElementById('ucenka');
+    var myChart4 = new Chart(ctx4, {
     type: 'line',
     data: {
       labels: label,
@@ -1691,6 +1701,7 @@ var l = res.length;
 
 
 }
+
 function chartBar4(e){
 var label = [];
   var date =[];
@@ -1764,6 +1775,7 @@ var label = [];
 			});
 
 };
+
 function flotPie2(e){
   var piedata =[];
  var i;
@@ -1810,6 +1822,7 @@ function flotPie2(e){
   }
   });
 }
+
 function flotPie3(e){
   var piedata =[];
  var i;

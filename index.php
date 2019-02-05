@@ -283,7 +283,7 @@ if($website->getCustomer()->getId() == 8005){
 
 		//echo '<pre>';
               //  print_r($this->cur_menu);
-             //   print_r($_SESSION);
+               // print_r($_SESSION);
 	//print_r($_SERVER);
 		//print_r($_REQUEST);
 		//echo count($_SESSION['basket']);

@@ -4,11 +4,7 @@
 	display:none;
 }
 </style>
-	<h1><?php echo $this->getCurMenu()->getName();?></h1>
-	<?php echo $this->getCurMenu()->getPageBody();?>
-
-	<br/>
-    <br/>			
+			
 <?php
 	if($this->errors)
 	{
@@ -29,13 +25,14 @@
 <?php
 	} 
 ?>
-
-<form method="post" action="?" class="contact-form">
+<div class="row m-auto">
+    <div class="col-sm-12 col-md-12 col-lg-8 col-xl-8 m-auto">
+        <form method="post" action="?" class="contact-form w-100 was-validated">
 <input type="text" value="" name="login" class="login_box"/>
-<table>
+<table class="table">
 	<?php
 
-		foreach(wsActiveRecord::useStatic('Field')->findAll() as $field)
+		foreach(Field::poblagodarit_pojaluvatsa() as $field)
 		{
 	?>
         <tr>
@@ -70,10 +67,12 @@
     <tr>
     <td>
     <div class="border-l"></div>
-    <button type="submit" class="search-button"><?php echo $this->trans->get('Отправить');?></button>
+    <button type="submit" class="search-button"><?=$this->trans->get('Отправить')?></button>
     <div class="border-r"></div>
     </td>
     <td></td>
     </tr>
     </table>
 </form>
+    </div>
+</div>

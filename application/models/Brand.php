@@ -4,7 +4,7 @@ class Brand extends wsActiveRecord
 {
     protected $_table = 'red_brands';
     protected $_orderby = array('name' => 'ASC', 'id' => 'ASC');
-protected $_multilang = array('text' => 'text');
+    protected $_multilang = array('text' => 'text');
 
     protected function _defineRelations()
     {
@@ -16,7 +16,7 @@ protected $_multilang = array('text' => 'text');
                 'field_foreign' => 'brand_id',
                 'orderby' => array('ctime' => 'ASC')
             ),
-			'balance' => array(
+		'balance' => array(
                 'type' => 'hasMany',
                 'class' => 'BalanceCategory',
                 'field_foreign' => 'id_brand',
@@ -27,24 +27,36 @@ protected $_multilang = array('text' => 'text');
 
 
     }
+    /**
+     * 
+     * @return type
+     */
     public function getPath()
     	{
     		return "/brands/id/" . $this->getId() .'/'.mb_strtolower($this->_generateUrl($this->name)).'/';
     	    	}
-
+    /**
+    * 
+    * @return type
+    */
     public function getPathFind(){
         return "/all/articles/brands-".mb_strtolower($this->name);
     }
-
+    /**
+     * 
+     * @return type
+     */
     static public function findAllActive()
     {
 
-        $array = array();
+        $array = [];
         $where = 'FROM ws_articles_sizes
 JOIN ws_articles ON ws_articles_sizes.id_article = ws_articles.id
+JOIN red_brands ON ws_articles.brand_id = red_brands.id
 WHERE ws_articles_sizes.count >0
 AND ws_articles.active =  "y"
-AND brand_id >0';
+AND ws_articles.brand_id >0
+and red_brands.hide = 1';
 
         $brands = 'SELECT brand_id, brand, COUNT( DISTINCT (ws_articles.id) ) AS cnt ' . $where;
         $brands = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery($brands . ' GROUP BY brand_id ORDER BY  `cnt` DESC ');
@@ -67,7 +79,11 @@ AND brand_id >0';
         return $array;
 
     }
-
+    /**
+     * 
+     * @param type $limit
+     * @return type
+     */
     public  function findActiveArticles ($limit = 8){
         $query = 'SELECT distinct(ws_articles.id), ws_articles.*,DATE_FORMAT(ws_articles.data_new,"%Y-%m-%d") as orderctime
         FROM ws_articles_sizes
@@ -82,6 +98,14 @@ AND brand_id >0';
         $articles = wsActiveRecord::useStatic('Shoparticles')->findByQuery($query);
 
         return $articles;
+    }
+    /**
+     * Количество товара в остатке по бренду
+     * @return type
+     */
+    public function getCountArticles(){
+        $sql="SELECT sum(stock) as ctn FROM ws_articles WHERE `stock` NOT LIKE  '0' and status = 3 and brand_id=".$this->id;
+        return wsActiveRecord::useStatic('Shoparticles')->findByQuery($sql)->at(0)->ctn;	
     }
 }
 

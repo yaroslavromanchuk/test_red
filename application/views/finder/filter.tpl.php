@@ -7,7 +7,7 @@
      <div class="card">
      <div class="row m-0 content ">
         <?php  if($this->search_word){ ?>
-<div class=" ">
+<div class="d-none">
    <span class="search_result" ><?=$this->search_word?$text_result_trans[0].' : <span class="rez_s">'.$this->search_word.'</span><br>':''?></span>
     <input type="hidden" id="search_word" value="<?=$this->search_word?>" >
 </div>

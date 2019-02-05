@@ -11,8 +11,8 @@ $bool = false;
  if($this->errors) $bool = true;
  ?>
 <form method="post" action="" class="contact-form w-100 was-validated " name="register" id="register">
-<div class="row mx-auto bg-white p-3 ">
-<div class="col-xl-12 p-1 text-center">
+<div class="row mx-auto  p-3 ">
+<div class="col-xl-12 p-2 bg-white text-center">
 <div class="comment-types">
 <div class="comment-type">
 <span class="red">*</span> - Поля, обязательные для заполнения
@@ -89,7 +89,7 @@ $bool = false;
 		</div>
 	</form>
 	
-<script type="text/javascript"> 
+<script> 
 $(document).ready(function() {  
 
 var regVr22 = "<div><img style='margin-bottom:-4px;' src='/img/load.gif' alt='Отправка...' width='16' height='16'><span style='font: 11px Verdana; color:#333; margin-left:6px;'>Данные обрабатываются...</span></div><br>";

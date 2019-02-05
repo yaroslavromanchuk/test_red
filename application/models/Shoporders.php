@@ -102,7 +102,7 @@ class Shoporders extends wsActiveRecord
         $articles = $this->getArticles();
         if ($articles->count()){
             foreach ($articles as $article){
-			if($article->getEventId() and $article->getEventSkidka()) $event = true;
+			if(($article->getEventId() and $article->getEventSkidka()) or($article->getOptionId())) $event = true;
 				}
 				}
         return $event;

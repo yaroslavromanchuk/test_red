@@ -15,398 +15,176 @@ echo '<div class="col-xs-10 col-xs-offset-1">
 			</div>';
 } ?>
 
-<?php if ($this->getBasket()) { ?>
-
-<form action="<?=wsActiveRecord::useStatic('Menu')->findByUrl('basket')->getPath()?>" method="post" id="basket1" class="cart-table" >
-<div class="row mx-auto">
-<div class="col-12 col-sm-12 col-md-12 col-lg-9 col-xl-9 m-auto">
-<table class="table">
-<thead>
-<tr>
-<th>Продукт</th><th></th><th><?=$text[3];?></th><th><?=$text[2];?></th><th><?=$text[4];?></th><th></th>
-</tr>
-</thead>
 <?php
+$list_id_arr = [];
+if ($this->getCard()['article']){ ?>
+<form action="<?=wsActiveRecord::useStatic('Menu')->findByUrl('basket')->getPath()?>" method="post" id="basket1" class="cart-table1" >
+    <div class="row m-auto">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-8 p-1 m-auto">
+            
+                <div class="row m-auto">
+                    <div class="col-sm-12 col-md-12 col-lg-8 col-xl-8 p-1">
+                        <div class="card">
+                            <div class="card-header"><b><?=$this->trans->get('Товары')?></b> <small class="text-muted float-right"><a class="" href="<?=wsActiveRecord::useStatic('Menu')->findByUrl('card-clear')->getPath()?>" onclick="return confirm('<?=$this->trans->get('clear card')?>')" data-tooltip="tooltip" title="Очистить корзину">
+                                        <i class="icon ion-ios-nuclear-outline clear_card"></i>
+				</a></small></div>
+                        <div class="card-body p-1 ">
+                <?php
+                foreach($this->getCard()['article'] as $key => $item){ if($item['count'] > 0){
+                    $list_id_arr[] = $item['id'];
+                    ?>
+                    <div class="card mb-1">
 
-	$sum_order = 0.00;
-        
-	$total_price = 0.00;
-        
-	$to_pay = 0;
-        
-	$to_pay_minus = 0.00;
-        
-	$now_orders = 0;
-        
-	$skidka = 0;
-        
-	$kupon = 0;
-        
-	$event_skidka = 0;
-        
-	if(isset($_SESSION['kupon'])){
-	$kupon = $_SESSION['kupon'];
-	}elseif(isset($_SESSION['error_cod'])){
-	echo '<tr><td colspan="6"><div class="alert alert-danger">'.$_SESSION['error_cod'].'!</div></td></tr>';
-	}
-        
-	if ($this->ws->getCustomer()->getIsLoggedIn()) {
-		$skidka = $this->ws->getCustomer()->getDiscont(false, 0, true);
-		$event_skidka = EventCustomer::getEventsDiscont($this->ws->getCustomer()->getId());
-		$now_orders = $this->ws->getCustomer()->getSumOrderNoNew();
-	}
-       // echo $event_skidka;
-	$mas_akciya = [];
-	$mas_akciya_futbolki = [];
-	$min = [];
-	$aks = [];
-        $sp = [];
-	$a_p = 0;
-	$chasy = '';
-	foreach ($this->getBasket() as $key => $item) {
-            $sp[] = $item['article_id']; 
-		if (($article = wsActiveRecord::useStatic('Shoparticles')->findById($item['article_id'])) && $article->getId() && $item['count'] > 0) {
-			$sum_order += $article->getPriceSkidka() * $item['count'];
-			
-		}
-	/*
-	if(false){//каждое третье в подарок за 1 коп.
-	
-	if($article->getCategoryId() == 147 or $article->getCategoryId() == 70){ //платья
-	$mas_akciya[$article->getId().'_'.$item['artikul']] = $article->getFirstPrice();
-	}
-	if($article->getCategoryId() == 30 and $article->getBrandId() == 1562){ // футболки и топи
-	$mas_akciya_futbolki[$article->getId().'_'.$item['artikul']] = $article->getFirstPrice();
-	}
-	}
-	*/	
-	}
-        $list_id = implode(',', $sp);//rontar
-        /*
-		if(false) // часы в подарок при покупке на сумму 1000 грн аксессуаров
-                    { 
-		foreach ($this->getBasket() as $key => $item) {
-		if (($article = wsActiveRecord::useStatic('Shoparticles')->findById($item['article_id'])) && $article->getId() && $item['count'] > 0) {
-	if(in_array($article->getCategoryId(), array(53,71,251,79,65,114,253,55,117,115,152))){
-	$price = $article->getPerc(($now_orders+$t_price), $item['count'], $skidka, $event_skidka, false, $t_price);
-	$a_p+=$price['price'];
-	}
-	}
-	}
-	
-	
-	if($a_p > 1000){
-	foreach ($this->getBasket() as $key => $item) {
-	if($item['category'] == 154){
-	$chasy = $item['article_id'].'_'.$item['artikul'];
-	}
-	}
-	}elseif($a_p > 0 and $a_p < 1000){
-	$x= 1000 - $a_p;
-	echo '<tr><td colspan="6"><div class="alert alert-info">Сейчас проходит акция - купи аксессуары на сумму 1000 грн. и получи любые часы за 1 копейку. Вы выбрали аксессуары на сумму '.$a_p.' грн. Добавьте аксессуары на сумму '.$x.' грн. - получите часы в подарок. За дополнительной информацией обращайтесь в Колл центр.</div></td></tr>';
-	
-	}
-                }
-	if(false)//каждое третье в подарок за 1 коп.
-            {
-	$resul = count($mas_akciya);
-	if($resul >= 3){
-	//echo $resul;
-	if($resul >=3 and $resul < 6 ){
-	$m1 = array_keys($mas_akciya, min($mas_akciya))[0];
-		$min[] = $m1;
-	}elseif($resul >=6 and $resul < 9){
-	$m1 = array_keys($mas_akciya, min($mas_akciya))[0];
-	$min[] = $m1;
-	 unset($mas_akciya[$m1]);
-	 $m2 = array_keys($mas_akciya, min($mas_akciya))[0];
-	 $min[] = $m2;
-	}elseif($resul >=9 and $resul < 12){
-	$m1 = array_keys($mas_akciya, min($mas_akciya))[0];
-	$min[] = $m1;
-	 unset($mas_akciya[$m1]);
-	 $m2 = array_keys($mas_akciya, min($mas_akciya))[0];
-	 $min[] = $m2;
-	 unset($mas_akciya[$m2]);
-	  $m3 = array_keys($mas_akciya, min($mas_akciya))[0];
-	 $min[] = $m3;
-	
-	}
-	}
-	$fut = count($mas_akciya_futbolki);
-	if($fut >=3){
-	if($fut >=3 and $fut < 6 ){
-	$m1 = array_keys($mas_akciya_futbolki, min($mas_akciya_futbolki))[0];
-		$min[] = $m1;
-	}elseif($fut >=6 and $fut < 9){
-	$m1 = array_keys($mas_akciya_futbolki, min($mas_akciya_futbolki))[0];
-	$min[] = $m1;
-	 unset($mas_akciya_futbolki[$m1]);
-	 $m2 = array_keys($mas_akciya_futbolki, min($mas_akciya_futbolki))[0];
-	 $min[] = $m2;
-	}
-	
-	}
-	//echo '<pre>';
-	//echo print_r($this->getBasket());
-	//echo print_r($mas_akciya);
-	//echo print_r($min);
-	//echo '</pre>';
-	
-	}
-	*/
-
-	foreach ($this->getBasket() as $key => $item){
-		if (($article = wsActiveRecord::useStatic('Shoparticles')->findById($item['article_id'])) && $article->getId() && $item['count'] > 0) {
-		$_SESSION['basket'][$key]['option_price'] = 0;
-		$_SESSION['basket'][$key]['option_id'] = 0;
-		$size = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(['id_article' => $article->getId(), 'id_size' => $item['size'], 'id_color' => $item['color']]);
-		
-		if(/*$article->getId().'_'.$size->code == $chasy*/false){
-		$price = $article->getPerc(($now_orders+$sum_order), $item['count'], $skidka, 99, $kupon, $sum_order);
-	//	$mes = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">Обратите внимание, в Вашем заказе присутствует акционный товар.</div>';
-		}else{
-		$mes = '';
-		$price = $article->getPerc(($now_orders+$sum_order), $item['count'], $skidka, $event_skidka, $kupon, $sum_order);
-		}
-		
-		if($price['option_id']) {$_SESSION['basket'][$key]['option_id'] = $price['option_id'];}
-		
-		if($price['option_price']) {$_SESSION['basket'][$key]['option_price'] = $price['option_price'];}
-		if($price['skidka_block']) {$_SESSION['basket'][$key]['skidka_block'] = $price['skidka_block'];}
-			//echo $price['price'];
-		//echo 	$price['minus'];
-
-			$to_pay += $price['price'];
-			$to_pay_minus += $price['minus'];
-		
-?>
-	<tr>
-		<td>
-			<a href="<?=$article->getPath()?>" class="img_pre" rel="#imgiyem<?=$article->getId()?>">
-				<img src="<?=$article->getImagePath('listing')?>" style="max-width:150px;"  alt="<?=htmlspecialchars($article->getTitle());?>" />
-			</a>
-			<div class="simple_overlay" id="imgiyem<?=$article->getId(); ?>" style="position: fixed;top: 20%;left: 30%">
-                    <img src="<?=$article->getImagePath('detail'); ?>" 
-                         alt="<?=htmlspecialchars($article->getTitle()); ?>"/>
-
+        <div class="row m-0">
+            <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 text-center">
+                <a href="<?=$item['path']?>" class="img_pre" rel="#imgiyem<?=$item['id']?>"><img src="<?=$item['img']?>"  alt="<?=$item['title']?>" /></a>
+                <div class="simple_overlay" id="imgiyem<?=$item['id']?>" style="position: fixed;top: 20%;left: 30%; z-index:100">
+                                    <img src="<?=$item['img_big']?>" alt="<?=$item['title']?>"/>
                 </div>
-		</td>
-		<td class="text-left">
-		<b><?=$article->getTitle()?></b></br>
-		<?=$text[0];?>:<?=$size->color->name?> | <?=$text[1];?>:<?=$size->size->size?>
-		<br><?=$mes;?>	<?php if($price['comment']){ echo $price['comment'];} ?> 
-		</td>
-		<td><?php
-		$FirsPrrice = $article->getFirstPrice();
-		$pr = '';
-						$pric = '';
-						$skid = '';
-
-						if($FirsPrrice != ($price['price']/$item['count'])){
-						$pr = $FirsPrrice; 
-						$skid = '  -'.ceil(100- ((($price['price']/$item['count'])/$pr)*100)).'%';
-						}
-						echo '<span style="text-decoration: line-through;color: #666;font-weight: normal;font-size: 11px;">'.$pr.'</span><span style="font-size: 10px;color:red;font-weight: bold;position: relative;top: -5px;"> '.$skid.'</span><br>'.Shoparticles::showPrice($price['price']/$item['count']); ?> грн
-						
-		</td>
-		<td>
-			
-<?php
-if($size->count){
-if($size->count > 1){
-?>
-<select name="select" class="form-control" style="width: 50%;"
-				onchange="document.location='<?=wsActiveRecord::useStatic('Menu')->findByUrl('shop-checkout-step1-change')->getPath()."point/{$key}/count/"; ?>'+this.value+'/';">
-<?php
-for ($i = 1; $i <= $size->count; $i++){
-    echo ($i != $item['count']) ? "<option value=\"{$i}\">{$i}</option>" : "<option value=\"{$i}\" selected=\"selected\">{$i}</option>";
+            </div>
+                            <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-3 pt-lg-4">
+                                <b><?=$item['title']?></b></br>
+                                <?=$text[0]?>:<?=$item['color']?> | <?=$text[1]?>:<?=$item['size']?>
+                                <br><?=$item['comment']?$item['comment']:''?> 
+                            </div>
+                            <div class="col-4 col-sm-2 col-md-4 col-lg-2 col-xl-2 text-center pt-lg-4">
+                                <?php if($item['first_price'] != $item['price']){ ?>
+                                <span style="text-decoration: line-through;color: #666;font-weight: normal;font-size: 11px;"><?=$item['first_price']?></span><br>
+                                <?php } ?>
+                                <?=$item['skidka']?'<span style="font-size: 10px;color:red;font-weight: bold;position: relative;top: -5px;"> '.$item['skidka'].'</span><br>':''?>
+                                <span class="d-block"><?=Shoparticles::showPrice($item['price'])?> грн</span>
+                  
     
+                            </div>
+                            <div class="col-2 col-sm-2 col-md-3 col-lg-1 col-xl-2 pt-3 pt-lg-5 text-center">
+                <?php
+                if($item['size_count']){
+                if($item['size_count'] > 1){ ?>
+                       <select name="select" class="form-control" 
+				onchange="document.location='<?=wsActiveRecord::useStatic('Menu')->findByUrl('shop-checkout-step1-change')->getPath()."point/{$key}/count/"; ?>'+this.value+'/';">
+                    <?php
+                        for ($i = 1; $i <= $item['size_count']; $i++){
+                                 echo ($i != $item['count']) ? "<option value=\"{$i}\">{$i}</option>" : "<option value=\"{$i}\" selected=\"selected\">{$i}</option>";
     }
 	?>
 		</select>
-<?php	
-}else{
-echo $size->count;
-}
-                }else{
-                    echo 'С этим товаром произошла ошибка. Удалите его с корзины и заново добавьте.';
-                    
-                }
-?>			
-		</td>
-		<td>
-			<div class="price-cart">
-				<p><?=Shoparticles::showPrice($price['price']);?> грн</p>
-			</div>
-		</td>
-		<td>
-		<a class="delete_basket_item" href="<?=wsActiveRecord::useStatic('Menu')->findByUrl('shop-checkout-step1-delete')->getPath()."point/{$key}"; ?>" onclick="return confirm('<?=$this->trans->get('Удалить товар из корзины?'); ?>')" data-tooltip="tooltip" title="Удалить">
-		<i class="glyphicon glyphicon-remove" aria-hidden="true" style="color: red;top: -6px;"></i>
+                <?php }else{ echo $item['count']; }
+                }else{ ?>
+                                <div class="alert alert-danger" style="font-size: 10px;">
+                                    <span>ОШИБКА<br>Сожелеем, но этот товар уже купили.</span>
+                                </div>
+              <?php  }
+                ?>
+                                
+                            </div>
+                            <div class="col-4 col-sm-2 col-md-4 col-lg-2 col-xl-2 pt-3 pt-lg-5 text-center">
+                                 <p><?=Shoparticles::showPrice($item['price']*$item['count']);?> грн</p>
+                            </div>
+                            <div class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center pt-3 pt-lg-5">
+                                <a class="delete_basket_item" href="<?=wsActiveRecord::useStatic('Menu')->findByUrl('shop-checkout-step1-delete')->getPath()."point/{$key}"; ?>" onclick="return confirm('<?=$this->trans->get('Удалить товар из корзины?'); ?>')" data-tooltip="tooltip" title="Удалить">
+		<i class="glyphicon glyphicon-remove" aria-hidden="true" ></i>
 				</a>
-		</td>
-	</tr>
-
-<?php if (in_array($article->getCategoryId(), array(74, 84, 137, 138, 139, 157, 158, 249, 140, 163, 306, 297, 307, 296, 3))) { ?>
-			<tr><td colspan="6" class="t_bord">
+                            </div>
+                            <?php 
+                            if($item['warning']){ ?>
+                            <div class="col-xl-12 m-auto">
 			<div class="alert alert-danger">
 			<span class="attention"><?=$this->trans->get('Будьте внимательны, заказывая этот товар! Бельё не подлежит обмену и возврату'); ?></span><br>
 			<span class="attention"><?=$this->trans->get('Примарка и возврат белья возможены только в пунктах самовывоза после оплаты заказа.'); ?></span>
 				</div>
-				
-			</td></tr>
-<?php 	} ?>
-<?php 	}
-	}
-?>
-</table>
-<table class="table">
-	<?php //для не активных пользователей
-				if(false){
-			//if ($this->ws->getCustomer()->getIsLoggedIn() and $total_price > 350) {
-			if(/*$this->ws->getCustomer()->isNoActive() and $this->ws->getCustomer()->getId() == 8005*/$this->ws->getCustomer()->getIsLoggedIn()){
-			?>
-			<tr>
-			<td class="text-left" colspan="4">
-			<strong>
-			<?php echo $this->trans->get('Код с рассылки'); ?>:
-			</strong>
-			</td>
-			<td class="text-right1" style="text-align: -webkit-center;" >
-			<input type="text" name="kupon" class="form-control" id="kupon" value="<?=@$this->kupon?$this->kupon:''?>" style="width: 150px; " pattern="[A-Za-z0-9]{7}" maxlength="7" placeholder="123f8T1"/>
-			</td>
-			<td class="text-right" >
-			<input type="button" class="btn btn-secondary btn-sm"  name="perschet" id="perschet" onClick="Perschet(); return false;" value="<?=$this->trans->get('Пересчитать')?>">
-			</td>
-			</tr>
-			<?php }
-			}?>
-			<tr>
-				<td class="text-left" colspan="4">
-					<strong>
-					<?=$this->trans->get('Сумма скидки'); ?>:
+                            </div>  
+                           <?php }
+                            ?>
+                        </div>
+                         
+                    </div>
+                <?php } }?>
+                   </div>
+                    <div class="card-footer">
+                        <small class="text-muted"><?=$this->trans->get('tovarov')?> <?=$_SESSION['count_basket']?> шт.</small>
+                    </div>
+                           </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-4 col-xl-4 p-1">
+                        <div class="card ">
+                            <div class="card-header"><b><?=$this->trans->get('Всего')?></b></div>
+                            <div class="card-body p-2">
+                                <?php if ($this->ws->getCustomer()->getDeposit()) { ?>
+                                <div class="row m-2">
+                                    <div class="col-6">
+                                        <strong>
+						<?=$this->trans->get('Ваш депозит')?>:
 					</strong>
-				</td>
-				<td class="text-right" colspan="2" >
-					<strong>
-						<?=Shoparticles::showPrice($to_pay_minus); ?> грн
+                                    </div>
+                                    <div class="col-6">
+                                        <strong class="val_deposit">
+						<?=Shoparticles::showPrice($this->ws->getCustomer()->getDeposit())?></strong><strong> грн
 					</strong>
-				</td>
-			</tr>
-			<?php if ($this->ws->getCustomer()->getBonus()) { ?>
-			<tr>
-			<td class="text-left" colspan="4">
-					<strong>
-						<?=$this->trans->get('Ваши бонусы'); ?>:
-					</strong>
-				</td>
-				<td></td>
-			<td  class="text-right" >
-					<strong class="val_bonus">
-						<?=$this->ws->getCustomer()->getBonus()?> грн
-					</strong>
-					<div class="b_l" style="display: inline-flex;">
-					<label class="ckbox" for="ck_bonus" >
-						<input type="checkbox" name="bonus" id="ck_bonus" class="bonus_click" value="1"  <?php
-							if ($this->ws->getCustomer()->getBonus() <= 0) { echo 'disabled="disabled"';}?>/>
-							<span> <?=$this->trans->get('Использовать бонус')?></span>
-							</label>
-							</div>
-				</td>
-			</tr>					
-			<?php }?>
-			<?php if ($this->ws->getCustomer()->getDeposit()) { ?>
-			<tr>
-			<td class="text-left" colspan="4">
-					<strong>
-						<?=$this->trans->get('Ваш депозит'); ?>:
-					</strong>
-				</td>
-			<td class="text-right" colspan="2" >
-					<strong class="val_deposit">
-						<?=Shoparticles::showPrice($this->ws->getCustomer()->getDeposit()); ?></strong><strong> грн
-					</strong>
-				</td>
-			</tr>
-			<tr>
-			<td class="text-left" colspan="4">
-					<strong>
+                                    </div>
+                                </div>
+                                <div class="row m-2">
+                                    <div class="col-6">
+                                        <strong>
 						<?=$this->trans->get('Использовать депозит'); ?>:
 					</strong>
-				</td>
-				<td class="text-right" colspan="2">
-						<input type="checkbox" name="deposit" class="deposit_click" value="1" style="margin: 0;vertical-align: middle;" <?php
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="checkbox" name="deposit" class="deposit_click m-0" value="1" style="vertical-align: middle;" <?php
 							if ($this->ws->getCustomer()->getDeposit() <= 0) { echo 'disabled="disabled"';}?>/>
-				</td>
-			</tr>
-									
+                                    </div>
+                                </div>					
 			<?php }?>
-			<tr>
-			<td class="text-left" colspan="4">
-					<strong>
-					<?php echo $this->trans->get('Всего к оплате'); ?>:</br><span  id="dop_s" style="font-size:10px; color:#9d9a9a;"></span>
-					</strong>
-				</td>
-				<td class="text-right" colspan="2">
-				<strong>
-						<span class="val_sum">
-<?php
-							$_SESSION['total_price']  = $to_pay;
-							echo Shoparticles::showPrice($to_pay);
-?>
-						</span>
-						грн
-					</strong>
-				</td>
-			</tr>
-			
-			<!-- для ввода кода на получение скидки -->
-			
-			<?php if(false){ //
-			//echo $sum_order;
-			//if (!$this->ws->getCustomer()->getIsLoggedIn() and $to_pay > 500) {$this->ws->getCustomer()->getId() == 8005
-			?>
-			<tr>
-			<td class="text-left" colspan="4">
-			<strong>
-			<?=$this->trans->get('Код на скидку')?>:</br><span style="font-size:10px; color:red;">(<?=$this->trans->get('если он есть')?>)</span>
-			</strong>
-			</td>
-			<td class="text-right" colspan="2">
-			<input type="text" class="form-control" name="kupon" style="height: 25px; padding: 5px 5px;" id="kupon" value="<?php if(@$_GET['kupon']) echo $_GET['kupon']; ?>"  pattern="[A-Za-z0-9]{13}" maxlength="13" placeholder="123f8T1z"/></br>
-			<input type="button" class="btn btn-default" style="padding: 5px 5px;font-size: 12px;margin-top: -15px;" name="perschet" id="perschet" onClick="Perschet(); return false;" value="<?=$this->trans->get('Пересчитать')?>">
-			</td>
-			</tr>
-			<?php } ?> 
-				<!-- //для ввода кода на получение скидки -->
-			
-			
-				<!-- //для не активных пользователей -->	
-			
-		</table>
-</div>
-</div>
-
-<div class="row mx-0 my-3">
-<div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 text-center my-3">
-<?php if ($this->get->metod != 'frame') { ?>
-					<a class="btn btn-outline-secondary btn-lg" style="text-transform: uppercase;" role="button" href="<?php
+                                <div class="row m-2">
+                                <div class="col-6"><b><?=$this->trans->get('Сумма скидки')?>:</b></div>
+                                <div class="col-6"><b><?=Shoparticles::showPrice($this->card['total_price_minus'])?> грн.</b></div>
+                            </div>
+                            <div class="row m-2">
+                                <div class="col-6"><b><?=$this->trans->get('Всего к оплате')?>:</b></div>
+                                <div class="col-6"><b class="val_sum"><?=Shoparticles::showPrice($this->card['total_price'])?> грн.</b></div>
+                                <div class="col-12" id="dop_s"></div>
+                            </div>
+                            
+                            </div>
+                            <div class="card-footer">
+                                <div class="row">
+                                <div class="col-12 text-center"><input type="submit" name="tostep2" style="text-transform: uppercase;" value="<?=$text[6]?>" class="btn btn-outline-danger btn-lg" ></div>
+                                <?php if ($this->get->metod != 'frame') { ?>
+                                 <div class="col-12 text-center mt-2">
+                                     <a class="btn btn-outline-secondary " style="text-transform: uppercase;" role="button" href="<?php
 						echo isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '/'; ?>"><?=$text[5]?>
-					</a>
-<?php } ?>
-</div>
-<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 co-xl-6 text-center my-3">
-				<input type="submit" name="tostep2" style="text-transform: uppercase;" value="<?=$text[6]?>" class="btn btn-outline-danger btn-lg" >
-			</div>
-		</div>
+                                    </a>
+                                 </div>
+                                <?php } ?>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            
+            </div>
+        </div>
 	</form>
 
 <?php
-}else {
-	echo "<p>" . $this->trans->get('Корзина пуста') . "</p>";
-}
-echo $this->getCurMenu()->getPageBody();
+}else { ?>
+<div class="row m-auto">
+    <div class="col-12 text-center">
+        <div class="card">
+            <div class="card-body">
+    <h3><?=$this->trans->get('Корзина пуста')?></h3>
+    <a class="btn btn-outline-secondary btn-lg mt-3 " style="text-transform: uppercase;" role="button" href="/new/all/"><?=$text[5]?>
+                                    </a>
+  </div>
+        </div>
+        
+    </div>
+</div>
+	
+<?php }
+$list_id = implode(',', $list_id_arr);
 ?>
+
 <div class="row m-auto"><?=$this->render('/pages/sliders/basket.php')?></div>
 
 <script>
@@ -428,7 +206,7 @@ location.replace("/basket/?kupon="+$('#kupon').val());
 		console.log('-');
 		$(this).parent().find('div.simple_overlay').hide();
         });
-							
+							});
 								var real_dep = $('.val_deposit').html();
 								var real_sum = $('.val_sum').html().replace(/^\s+/g, '');
 								$('.deposit_click').change(function () {
@@ -476,13 +254,13 @@ location.replace("/basket/?kupon="+$('#kupon').val());
                                                                                 // $.session.set("total_price", real_sum);
 									}
 								});
-								
-								$('.bonus_click').change(function () {
-								var real_bonus = $('.val_bonus').html();
-								var real_sum = $('.val_sum').html();
-								
+	var real_bonus = $('.val_bonus').html();
+	var real_sum = $('.val_sum').html();
+													
+	$('.bonus_click').change(function () {
+			
 									//if (prop('checked'))
-									if($(this).is(":checked")){
+		if($(this).is(":checked")){
 										d = $('.val_bonus').html();
 										d = d.replace(',', ".");
 										d = parseFloat(d);
@@ -499,44 +277,22 @@ location.replace("/basket/?kupon="+$('#kupon').val());
 										//$('.val_bonus').html(depos.replace('.', ','));
 										$('.val_sum').html(sum.replace('.', ','));
 
-									}else{
-									$('#dop_s').html('');
-											s = $('.val_sum').html();
-										s = s.replace(',', ".");
-										s = parseFloat(s);
-										d = $('.val_bonus').html();
-										d = d.replace(',', ".");
-										d = parseFloat(d);
+		}else{
+			$('#dop_s').html('');
+			var s = $('.val_sum').html();
+			s = s.replace(',', ".");
+			s = parseFloat(s);
+			var d = $('.val_bonus').html();
+			d = d.replace(',' , ".");
+			d = parseFloat(d);
 										
-										//$('.val_bonus').html(d);
-										var sd =(s+d);
-										sd = sd.toString();
-										console.log(sd);
-										sd = sd.replace('.', ",");
-										$('.val_sum').html(sd);
-									}
-									console.log(real_sum);
-								});
-								
-<?php
-								if (isset($_SESSION['deposit']) and false) {
-?>
-									d = $('.val_deposit').html();
-									d = d.replace(',', ".");
-									d = parseFloat(d);
-									s = $('.val_sum').html();
-									s = s.replace(',', ".");
-									s = parseFloat(s);
-									depos = d - s;
-									if (depos < 0) depos = 0;
-									sum = s - d;
-									if (sum < 0) sum = 0;
-									depos = depos.toFixed(2);
-									sum = sum.toFixed(2);
-									$('.val_deposit').html(depos.replace('.', ','));
-									$('.val_sum').html(sum.replace('.', ','));
-<?php
-								}
-?>
-							});
+			var sd =(s+d);
+			sd = sd.toString();
+			//console.log(sd);
+			sd = sd.replace('.', ",");
+			$('.val_sum').html(sd);
+		}
+			//console.log(real_sum);
+	});
+							
 						</script>

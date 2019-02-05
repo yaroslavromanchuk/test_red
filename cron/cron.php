@@ -145,6 +145,7 @@ $i++;
 $j+=$koll;
 }else{
 $a->setLabelid(20);
+$a->setSkidkaBlock(1);
 $a->save();
 }
 }
@@ -176,6 +177,7 @@ $i++;
 $j+=$koll;
 }else{
 $a->setLabelid(30);
+$a->setSkidkaBlock(1);
 $a->save();
 }
 }
@@ -207,6 +209,7 @@ $i++;
 $j+=$koll;
 }else{
 $a->setLabelid(40);
+$a->setSkidkaBlock(1);
 $a->save();
 }
 }
@@ -238,6 +241,7 @@ $i++;
 $j+=$koll;
 }else{
 $a->setLabelid(50);
+$a->setSkidkaBlock(1);
 $a->save();
 }
 }
@@ -268,6 +272,7 @@ $i++;
 $j+=$koll;
 }else{
 $a->setLabelid(60);
+$a->setSkidkaBlock(1);
 $a->save();
 }
 }

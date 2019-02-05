@@ -93,7 +93,7 @@ switch($_SESSION['lang']){
 		<link rel="stylesheet" type="text/css" href="/css/bs/css/bootstrap.css?v=1.0"/>
                 <link rel="stylesheet" type="text/css" href="/css/Ionicons/css/ionicons.min.css"/>
                 <link rel="stylesheet" type="text/css" href="/js/select2/css/select2.min.css?v=1.2"/>
-		<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.2.9"/>
+		<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.3.5"/>
                 <?php if(!$desctop){ ?><link rel="stylesheet" type="text/css" href="/css/common.css?v=2.40"/><?php } ?>	
 		<link rel="stylesheet" type="text/css" href="/css/new.css?v=1.0"/>
 		<link rel="stylesheet" type="text/css" href="/css/cloud-zoom.css"/>
@@ -138,9 +138,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 	//echo $this->getCurMenu()->getPath();
 	//echo $this->getCurMenu()->getTitle();
 	
-         //  echo '<pre>';
+         // echo '<pre>';
           // print_r($this->transla);
-			// print_r($this->getCurMenu());
+			 //print_r($this->getCurMenu()->article);
 			// print_r($this->meta);
 			//echo print_r($this->getCategory()->getParent(1)->getTitle());
 			//echo '</pre>';
@@ -250,7 +250,7 @@ rnt('add_audience', {audienceId: '20676_254951d7-6d13-4ea2-a507-747c9e6fe802'});
  
 <script  src="/js/filter.js?v=5.5"></script>
 <script   src="/js/jquery.liFixar.js"></script>
-    <script src="/js/functions.js?v=3.9.17"></script>
+    <script src="/js/functions.js?v=3.9.22"></script>
     <script   src="/js/cloud-zoom.1.0.2.js"></script>
     <script  src="/js/jquery.cycle.all.js?v=3.0.3"></script>
     <script  src="/js/jquery.lightbox-0.5.js"></script>

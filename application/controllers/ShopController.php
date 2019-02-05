@@ -22,12 +22,6 @@ class ShopController extends controllerAbstract
  */
 	public function basketAction()
                 {
-		if ($this->ws->getCustomer()->isAdmin()) {
-			if (!$this->ws->getCustomer()->hasRight('do_pay')) {
-			die('Нету прав на заказ');
-			}
-		}
-
                 if('delete' == $this->cur_menu->getParameter()) {
 			$basket = $_SESSION['basket'];
 			if ($basket) {
@@ -43,26 +37,95 @@ class ShopController extends controllerAbstract
 				$_SESSION['basket'][(int)$this->get->getPoint()]['count'] = $count;
 			}
 			$this->_redir('basket');
+		}elseif('clear' == $this->cur_menu->getParameter()) {
+			$_SESSION['basket'] = [];
+			$this->_redir('basket');
+		}
+		$error = [];
+                
+                if (count($_POST)) {
+			if (isset($_POST['tostep2'])) {
+				foreach ($_POST as &$value) {
+					$value = stripslashes(trim($value));
+				}
+				if ($this->post->deposit == 1) {
+					$_SESSION['deposit'] = $this->ws->getCustomer()->getDeposit();
+				}else{ unset($_SESSION['deposit']);}
+                                
+				if ($this->post->bonus == 1) {
+					$_SESSION['bonus'] = $this->ws->getCustomer()->getBonus();
+				}else {unset($_SESSION['bonus']);}
+
+				if (!isset($_SESSION['basket_contacts'])) {
+					$_SESSION['basket_contacts'] = [];
+				}
+				$this->_redirect('/shop-checkout-step2/');
+			}
 		}
                 
-		$error = [];
+                if(/*$this->ws->getCustomer()->getId() == 8005*/ true){
+                    
+                $card = [];
+                $card_article = [];
+                $total_price = 0;
+                $total_price_minus = 0;
+                $sum_order = Card::getSumCard($this->ws->getCustomer()->getId());
+                $_SESSION['or_sum'] = $sum_order;
+    foreach($this->basket as $key => $item){
+        if (($article = wsActiveRecord::useStatic('Shoparticles')->findById($item['article_id'])) && $article->getId() && $item['count'] > 0) {
+        $_SESSION['basket'][$key]['option_price'] = 0;
+	$_SESSION['basket'][$key]['option_id'] = 0;
+        $_SESSION['basket'][$key]['skidka_block'] = 0;
+        
+               $card_article[$key] = Card::getArticles($article, $item, $this->ws->getCustomer(), $sum_order);
+               
+        if($card_article[$key]['option_id']){ $_SESSION['basket'][$key]['option_id'] = $card_article[$key]['option_id'];}
+        if($card_article[$key]['option_price']){ $_SESSION['basket'][$key]['option_price'] = $card_article[$key]['option_price'];}
+        if($card_article[$key]['skidka_block']){ $_SESSION['basket'][$key]['skidka_block'] = $card_article[$key]['skidka_block'];}
+                
+               $total_price += ($card_article[$key]['price']*$card_article[$key]['count']);
+               $total_price_minus += $card_article[$key]['minus'];
+        }
+                    
+    }
+    //if(count($card_article)){
+                $card['article'] = $card_article;
+                $card['total_price'] = $_SESSION['total_price']  = $total_price;
+		$card['total_price_minus'] = $total_price_minus;
+  //  }
+
+                $this->view->card = $card;
+                echo $this->render('shop/basket.tpl.php');
+                
+                }else{
+                if (isset($error)) {
+			$this->view->error = $error;
+		}
+		echo $this->render('shop/basket_1.tpl.php');
+                }
+                
+                
+                
+                
+                /* 
 		if (isset ($_GET['size']) and !$_GET['size']) {
 			$error [] = $this->trans->get('Выберите размер');
 		}
 		if (isset ($_GET['color']) and !$_GET['color']) {
 			$error [] = $this->trans->get('Выберите цвет');
 		}
-                
+               
 		foreach ($this->basket as $item) {
 			$article = wsActiveRecord::useStatic('Shoparticles')->findById($item['article_id']);
 			if ($item['article_id'] == $article->getId() and $item['size'] == @$_GET['size'] and $item['color'] == @$_GET['color']) {
 				$error [] = $this->trans->get('Вы уже заказали')." " . $article->getBrand() . " " . $article->getModel() . ".".$this->trans->get(' Можете изменить количество').".";
 			}
 		}
+                */
 		
 		// запись кода в сесию
-		if($this->get->kupon){
-					$today_c = date("Y-m-d H:i:s");
+		/*if($this->get->kupon){
+			$today_c = date("Y-m-d H:i:s");
 			$ok_cod = wsActiveRecord::useStatic('Other')->findFirst(array("cod like '".$this->get->kupon."'", "ctime <= '".$today_c."' ", " '".$today_c."' <= utime"));
 
 			$find_count_orders_by_user_cod = true;
@@ -90,33 +153,10 @@ class ShopController extends controllerAbstract
 				//unset($_SESSION['kupon']);
 				unset($_SESSION['error_cod']);
 				}
+                                */
 				//exit запись кода в сесию
 
-		if (count($_POST)) {
-			if (isset($_POST['tostep2'])) {
-				foreach ($_POST as &$value) {
-					$value = stripslashes(trim($value));
-				}
-				if ($this->post->deposit == 1) {
-					$_SESSION['deposit'] = $this->ws->getCustomer()->getDeposit();
-				}else{ unset($_SESSION['deposit']);}
-                                
-				if ($this->post->bonus == 1) {
-					$_SESSION['bonus'] = $this->ws->getCustomer()->getBonus();
-				}else {unset($_SESSION['bonus']);}
-
-				if (!isset($_SESSION['basket_contacts'])) {
-					$_SESSION['basket_contacts'] = [];
-				}
-				$this->_redirect('/shop-checkout-step2/');
-			}
-		}
-		if (isset($error)) {
-			$this->view->error = $error;
-		}
-		//if ($this->get->metod == 'frame') echo $this->render('top.tpl.php');
-                if ($this->get->metod == 'frame'){ echo $this->render('bottom.tpl.php'); die(); }
-		echo $this->render('shop/basket.tpl.php');
+		
 	}
 /**
  * 
@@ -136,10 +176,10 @@ class ShopController extends controllerAbstract
 		//$sum = 0;
 		foreach ($basket as $item) {
 		if (($article = wsActiveRecord::useStatic('Shoparticles')->findById($item['article_id'])) && $article->getId()) {
-$code = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery(" SELECT code "
+/*$code = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery(" SELECT code "
         . "FROM ws_articles_sizes "
         . "WHERE id_article = ".$item['article_id']." and id_size = ".$item['size']." and id_color = ".$item['color']." and `count` > 0 ")->at(0)->code;
-
+*/
 	$articles[] = [
 			'id' => $article->getId(),
 			'title' => $article->getTitle(),
@@ -148,7 +188,7 @@ $code = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery(" SELECT code
 			'option_price' => $item['option_price'],
 			'size' => $item['size'],
 			'color' => $item['color'],
-			'artikul' => $code,
+			'artikul' => $item['artikul'],
 			'category' => $item['category'],
 			'price' => $article->getRealPrice(),
 			'skidka_block' =>$item['skidka_block']?$item['skidka_block']:0
@@ -1402,7 +1442,7 @@ $message = 'Ваш заказ № '.$order->getId().' оформлен. Сумм
 			$error_email = 0;
 			if (!$this->ws->getCustomer()->getIsLoggedIn() and wsActiveRecord::useStatic('Customer')->findByEmail($info['email'])->count() != 0) {
 				$error_email = 1;
-				$errors['error']['email'] = $this->trans->get('Такой email уже используется.<br /> Поменяйте email или зайдите как зарегистрированный пользователь').'.';
+				$errors['error']['email'] = $this->trans->get('Такой email уже используется.<br /> Поменяйте email или зайдите как зарегистрированный пользователь').'.<br>';
 			}
 			$tel = Number::clearPhone(trim($info['telephone']));
 			$tel = preg_replace('/[^0-9]/', '', $info['telephone']);
@@ -1488,23 +1528,14 @@ $message = 'Ваш заказ № '.$order->getId().' оформлен. Сумм
 			if (!count($errors)){
 				//____________________________start_add_to_basket____________________________________
 
-$article = wsActiveRecord::useStatic('Shoparticles')->findById($_POST['id']);
-$change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], (isset($_POST['artikul']) ? $_POST['artikul'] : 0), 1);
+$item = wsActiveRecord::useStatic('Shoparticles')->findById((int)$_POST['id']);
+$itemcs = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(['id_article' => $item->getId(), 'id_size' => (int)$_POST['size'], 'id_color' => (int)$_POST['color']]);             
 
-
-	if ($change['status']) {
-	$this->basket = $_SESSION['basket'];
-	$this->view->ok = true;
-	}else{
-	die(json_encode(array('result'=>'error', 'message'=>$errors['error']['error_articles']='Ошибка с товаром, попробуйте еще раз.')));
-	}
-
-				//____________________________end_add_to_basket____________________________________
-
-
-
-				$_SESSION['basket_articles'] = $articles = $this->createBasketList();
-
+if($item->id and $itemcs->id){
+    $this->view->ok = true;
+}else{
+    die(json_encode(array('result'=>'error', 'message'=>$errors['error']['error_articles']='Ошибка с товаром, попробуйте еще раз.')));
+}
 
 				//________________________start_added_fields____________________________________________
 
@@ -1517,6 +1548,15 @@ $change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], (isse
 					'date_create' => date("Y-m-d H:i:s"),
 					'name' => $info['name'],
 					'middle_name' => isset($info['middle_name']) ? $info['middle_name'] : '',
+                                        'index' => @$info['index'],
+					'street' => @$info['street'],
+					'house' => @$info['house'],
+					'flat' => @$info['flat'],
+					'pc' => @$info['pc'],
+					'city' => isset($info['city']) ? $info['city'] : '',
+					'obl' => isset($info['obl']) ? $info['obl'] : '',
+					'rayon' => @$info['rayon'],
+					'sklad' => @$info['sklad'],
 					'telephone' => $phone,
 					'email' => $info['email'],
 					'comments' => isset($info['comments']) ? $info['comments'] : '',
@@ -1532,7 +1572,6 @@ $change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], (isse
 					'from_quick' => 1
 				);
 				$order->import($data);
-                                //$order->save();
 
 				//________________________end_added_fields_____________________________________________
 
@@ -1544,6 +1583,8 @@ $change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], (isse
                                 
 				$this->set_customer($order);
 
+                                
+                                
 				
                                 
                                 $q=" SELECT * FROM
@@ -1576,57 +1617,60 @@ $change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], (isse
 						}
 
 					}
+                                        
 
-		foreach ($articles as $article) {
+$option_id = 0;
+$option_price =0;
 
-		$item = new Shoparticles($article['id']);
-		$itemcs = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $article['id'], 'id_size' => $article['size'], 'id_color' => $article['color']));
+if($option = $item->getOptions()){
+                    switch ($option->type){
+                        case 'final':
+                         $option_id = $option->id;
+                         $option_price = $item->price - ($item->price * ($option->value/100));  
+                           break;
+                        case 'dop':
+                             if($item->price > $option->getOptions()->min_summa){
+                            $option_id = $option->id;
+                             }
+                            break;
+                        default: $option_id = 0; break;
+                    }
+                    
+                }
+$article = [
+    'order_id' => $order->getId(),
+    'article_id' => $item->getId(),
+    'title' => $item->getTitle(),
+    'count' => 1,
+    'price' => $item->getPrice(),
+    'old_price' =>$item->getOldPrice(),
+    'option_id' => $option_id,
+    'option_price' => $option_price,
+    'size' => $itemcs->id_size,
+    'color' => $itemcs->id_color,
+    'artikul' => $itemcs->code,
+    'skidka_block' => $item->skidka_block,
+    'event_skidka' => $event_skidka_klient,
+    'event_id' => $event_skidka_klient_id
+];
 
-					if ($itemcs->getCount() > 0) {
-						$item->setStock($item->getStock() - $article['count']);
-						$item->save();
-
-						$itemcs->setCount($itemcs->getCount() - $article['count']);
-						$itemcs->save();
-                                                
-						
-                                                $data = $article;
-                                                    unset($data['id']);
-                                                        $data['order_id'] = $order->getId();
-							$data['article_id'] = $article['id'];
-                                                        $data['old_price'] = $item->getOldPrice();
-                                                        $data['artikul'] = $article['artikul'];
-                                                        $data['event_skidka'] = $event_skidka_klient;
-                                                       $data['event_id'] = $event_skidka_klient_id;
-                                                $a = new Shoporderarticles();     
-                                                
-                                                $a->import($data);
-                                                
-						$a->save();
-					} else {
-						$article['count'] = 0;
-						$article['title'] = $article['title'] . ' (нет на складе)';
-						$a = new Shoporderarticles();
-						$a->setOrderId($order->getId());
-						$data = $article;
-						$data['article_id'] = $data['id'];
-						unset($data['id']);
-						$a->import($data);
-						
-						$a->save();
-					}
-
-				}
-                                
-                               $order->reCalculate(); 
+$a = new Shoporderarticles();    
+	if ($itemcs->getCount() > 0) {
+		$item->setStock($item->getStock() - 1);
+		$item->save();
+    $itemcs->setCount($itemcs->getCount() - 1);
+    $itemcs->save(); 
+		}else{
+		$article['count'] = 0;
+		$article['title'] = $article['title'] . ' (нет на складе)';			
+	}
+        
+    $a->import($article);
+    $a->save(); 
+                               
+    $order->reCalculate(); 
 
 				//____________________send_email_________________
-
-
-				//$this->view->articles = $this->createBasketList($order->getArticles()->export());
-                                
-				//$this->view->basket_contacts = $order;
-				
 				if(!$this->ws->getCustomer()->isBlockEmail()) {
                                 $this->view->order = $order;
                                 $msg = $this->view->render('email/basket-order-quick.tpl.php');
@@ -1654,18 +1698,14 @@ $message = 'Ваша заявка № '.$order->getQuickNumber().' прийня�
                                 }else{
                                     $res = $sms->receiveSMS($id);
                                     }
-					wsLog::add('Quick:'.$order->getQuickNumber().' to SMS: '.$phone.' - '.$res, 'SMS_' . $res);
+		wsLog::add('Quick:'.$order->getQuickNumber().' to SMS: '.$phone.' - '.$res, 'SMS_' . $res);
 				//____________________send_sms__________________
 }
 
 
 			$this->view->id_order = $order->getId();
 			$this->view->summ = $order->calculateOrderPrice(false, true);
-
-				$this->basket = $_SESSION['basket'] = [];
-				$this->basket_articles = $_SESSION['basket_articles'] = [];
-
-				OrderHistory::newOrder($order->getCustomerId(), $order->getId(), ($order->getAmount()+$order->getDeposit()), $order->getArticlesCount());
+		OrderHistory::newOrder($order->getCustomerId(), $order->getId(), ($order->getAmount()+$order->getDeposit()), $order->getArticlesCount());
 
 die(json_encode(array('result'=>'send', 'message'=>$this->render('shop/quick-order-result.php'))));
 
@@ -1693,22 +1733,24 @@ die(json_encode(array('result'=>'send', 'message'=>$this->render('shop/quick-ord
 			. '0123456789';
 		$newPass = '';
 		$allowedCharsLength = strlen($allowedChars);
+                
 		while (strlen($newPass) < 8)
 			$newPass .= $allowedChars[rand(0, $allowedCharsLength - 1)];
-			if (!wsActiveRecord::useStatic('Customer')->findFirst(array('username' => $order->getEmail()))) {
+                
+		if (!wsActiveRecord::useStatic('Customer')->findFirst(array('username' => $order->getEmail()))) {
 
-			$em = iconv_substr($order->getEmail(), 0, 4, 'UTF-8');
+			/*$em = iconv_substr($order->getEmail(), 0, 4, 'UTF-8');
 				if($em == 'miss'){
 	SendMail::getInstance()->sendEmail('php@red.ua', 'Yaroslav', 'Создан новый акаунт МИСС', 'Email: '.$order->getEmail().'. Заказ: '.$order->Id());
-				}
+				}*/
 
 	$customer = new Customer();
-	//if (isset($_SESSION['parent_id']) and $_SESSION['parent_id'] != 0){ $customer->setParentId($_SESSION['parent_id']); }
+	if (isset($_SESSION['parent_id']) and $_SESSION['parent_id'] != 0){ $customer->setParentId($_SESSION['parent_id']); }
                                 
 				$customer->setUsername($order->getEmail());
 				$customer->setPassword(md5($newPass));
 				$customer->setCustomerTypeId(1);
-				$customer->setCompanyName($order->getCompany());
+				//$customer->setCompanyName($order->getCompany());
 				$customer->setFirstName($order->getName());
 				$customer->setMiddleName($order->getMiddleName());
 				$customer->setEmail($order->getEmail());
@@ -1722,16 +1764,15 @@ die(json_encode(array('result'=>'send', 'message'=>$this->render('shop/quick-ord
 				$customer->setHouse($order->getHouse());
 				$customer->setFlat($order->getFlat());
 				$customer->save();
-
-					$subscriber = new Subscriber();
+				$order->setCustomerId($customer->getId());
+				$rez = $order->save();
+                                
+                                $subscriber = new Subscriber();
 					$subscriber->setName($order->getName());
 					$subscriber->setEmail($order->getEmail());
 					$subscriber->setConfirmed(date('Y-m-d H:i:s'));
 					$subscriber->setActive(1);
 					$subscriber->save();
-
-				$order->setCustomerId($customer->getId());
-				$order->save();
 
 				$this->view->login = $order->getEmail();
 				$this->view->pass = $newPass;
@@ -1743,7 +1784,7 @@ die(json_encode(array('result'=>'send', 'message'=>$this->render('shop/quick-ord
 				$customer = $this->ws->getCustomer();
 				$res = $customer->loginByEmail($order->getEmail(), $newPass);
                                 
-				if (!isset($_SESSION['user_data'])){$_SESSION['user_data'] = array();}
+				if (!isset($_SESSION['user_data'])){$_SESSION['user_data'] = [];}
                                 
 				$_SESSION['user_data']['login'] = $order->getEmail();
 				$_SESSION['user_data']['password'] = $newPass;
@@ -1831,7 +1872,7 @@ die(json_encode(array('result'=>'send', 'message'=>$this->render('shop/quick-ord
             }
 
 	require_once('np/NovaPoshta.php');
-	$np = new NovaPoshta('1e594a002b9860276775916cdc07c9a6', $lang, true, 'curl');
+	$np = new NovaPoshta('1e594a002b9860276775916cdc07c9a6', $lang, true);
 
 
    $wh = $np->getWarehouses($this->post->warehouses);

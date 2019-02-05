@@ -31,10 +31,10 @@
 	
 	$t_real_price = 0.00;
 	$price_real = 0.00;
-	$sum_skudka = 0.00;
+	//$sum_skudka = 0.00;
 	$skid = '';
 
-     $order = new Shoporders((int)$this->order->getId());
+     $order = $this->order;
 	
     foreach ($order->getArticles() as $article_or) {	
    if($article_or->getCount() == 0 ){ $count = 'нет на складе';}else{$count = $article_or->getCount(); }
@@ -45,7 +45,7 @@
 	
 	$price = $article_or->getPerc($order->getAllAmount());
 	
-        $sum_skudka += $price['minus'];
+        //$sum_skudka += $price['minus'];
 		
 	if($article_or->getCount() > 0){
 	$skid_show = round((1 - (($price['price']/$article_or->getCount()) / $price_real)) * 100);
@@ -84,10 +84,6 @@
 <?php } ?>
 	</table>
 <table width="700"  class="table cart-table">
-	<tr>
-        <td style="text-align:left;" colspan="3"><?=$this->trans->get('Сумма скидки')?>:</td>
-        <td style="text-align:right;" colspan="2"><?=Shoparticles::showPrice($sum_skudka)?> грн.</td>
-	</tr>
 	<tr>
         <td style="text-align:left;" colspan="3"><strong><?=$this->trans->get('Всего к оплате')?>:</strong></td>
         <td style="text-align:right;" colspan="2"><strong><?=Number::formatFloat($order->getAmount(), 2)?> грн.</strong></td>

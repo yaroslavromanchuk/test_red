@@ -5,18 +5,18 @@
 	$getBrands = $this->getBrands();
 	$path = $this->path;
 ?>
-	<img src="<?php echo SITE_URL;?><?php echo $getImage;?>" alt="" class="page-img"/>
+	<img src="<?=$getImage?>" alt="" class="page-img"/>
 	<h1><?php echo $getTitle;?></h1>
 	<hr/>
 <?php
-	echo $getPageBody;
+	//echo $getPageBody;
 ?>
 	<p>
 		<img height="24" width="24" alt="new" src="/img/icons/edit-small.png">
 		<a href="/admin/brand/edit/">Добавить бренд</a>
 	</p>
 
-	<table id="pageslist" cellpadding="2" cellspacing="0">
+        <table id="pageslist" cellpadding="2" cellspacing="0" class="table dataTable">
 		<tr>
 			<th  colspan="2">Действия</th>
 			<th class="c-projecttitle">Изображение</th>

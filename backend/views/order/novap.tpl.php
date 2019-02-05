@@ -159,7 +159,7 @@ $sk = Number::formatFloat(99.99, 2);
 		}
 		
 				//$z = chr(10);
-		$cod.=$article_rec->getCode().'/'.$article_rec->getCount().'/'.$sk.'&';
+		$cod.=$article_rec->artikul.'/'.$article_rec->getCount().'/'.$sk.'&';
 		
         ?>
         <tr>
@@ -170,8 +170,8 @@ $sk = Number::formatFloat(99.99, 2);
             </td>
             <td class="border_all <?php echo($i == $c) ? 'tt_border_bottom' : ''?>" align="center">
 				<?php if($article_rec->getCount()) {?>
-				<img src="/images/barcodeimage.php?text=<?=$article_rec->getCode()?>" alt="Barcode Image" />
-				<br><?=$article_rec->getCode()?>
+				<img src="/images/barcodeimage.php?text=<?=$article_rec->artikul?>" alt="Barcode Image" />
+				<br><?=$article_rec->artikul?>
 				<?php } ?>
             </td>
             <td class="border_all <?php echo($i == $c) ? 'tt_border_bottom' : ''?>" align="center">
@@ -411,8 +411,8 @@ foreach ($this->getOrder()->getArticles() as $main_key => $article_rec) {
 	</td>
 	<td class="border" align="center">
 	<?php if($article_rec->getCount()) {?>
-				<img src="/images/barcodeimage.php?text=<?=$article_rec->getCode()?>" alt="Barcode Image" />
-				<br><?=$article_rec->getCode()?>
+				<img src="/images/barcodeimage.php?text=<?=$article_rec->artikul?>" alt="Barcode Image" />
+				<br><?=$article_rec->artikul?>
 				<?php } ?>
 				</td>
 	<td class="border" align="center"> ___ шт.</td>

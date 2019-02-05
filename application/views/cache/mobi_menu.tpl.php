@@ -67,8 +67,8 @@ $(".logo-grey").toggleClass("red");
     </a>	
 </div>
 		</nav>
-		<?php if(Config::findByCode('new_grafik')->getValue()){
-                    echo '<p style="padding: 1px 5px;text-align:  center;color:  red;margin-bottom: 0px;">'.Config::findByCode('new_grafik')->getValue().'</p>';
+<?php if(Config::findByCode('new_grafik')->getValue()){
+    echo '<p style="padding: 1px 5px;text-align:  center;color:  red;margin-bottom: 0px;">'.Config::findByCode('new_grafik')->getValue().'</p>';
  } ?>
 <div class="back" style="z-index: 53;height: 42px;width: 100%;position: fixed;top: 52px;padding: 5px 0;background: #f1f1f1;">
     <div style="position: fixed;left: 10px;">
@@ -76,19 +76,14 @@ $(".logo-grey").toggleClass("red");
      <img src='/mobil/mimages/back.png' alt="Обратно" style="width: 30px;">  <?=$this->trans->get('Назад');?>  
 </a>
 	</div>
-    <!--
-<div  style="position: fixed;right: 10px; <?php if(false) { echo 'display:none;'; } ?>">
-	<a  onclick="hideShowDiv();" style="font-size: 16px;color: #707070;">  <?=$this->trans->get('Фильтры');?>   <img src='/mobil/mimages/filter.png' alt="Фильтры" style="
-    width: 25px;
-"></a>
-</div>-->
-    
+  <?php if(true){ ?>  
     <button class="navbar-toggler  float-right mx-1" style="    color: #6c757d;" type="button" data-toggle="modal" data-target="#mobi_filter" onclick="hideShowDiv();">
     <span><i class="icon ion-ios-funnel" style="font-size: 25px;"></i></span>
   </button>
     <button class="navbar-toggler float-right mx-1" style="    color: #6c757d;" type="button" data-toggle="modal"  data-target="#mobi_filter_cat">
     <span><i class="icon ion-md-list" style="font-size: 25px;"></i></span>
   </button>
+    <?php } ?>
 </div>
 <div id="none" class="modal fade open s_h left" style="background: #0000006b;top:52px;">
 <div class="collapse kat_menu_m navbar-collapse s_h left p-2" id="navbar-main" style="position: relative;">

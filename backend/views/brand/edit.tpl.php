@@ -14,30 +14,42 @@
 <?php } ?>   
     
 <div class="card card pd-20 pd-sm-40">
-    <h6 class="card-body-title"><?=$this->getCurMenu()->getTitle()?></h6>
-
    <form method="POST" action="<?=$this->path?>brand/edit/id/<?=(int)$this->sub->getId()?>/" enctype="multipart/form-data" >
   <div class="card-body">
       <div class="row">
-          <div class="col-lg-4">
+          <div class="col-lg-3">
     <div class="form-group inline">
     <label class="sr-only1" for="paginatitle" >Название</label>
     <input name="name" type="text" class="form-control" id="paginatitle" required="" value="<?=$this->sub->getName()?>"/>
   </div>
     </div>
-          <div class="col-lg-4">
+          <div class="col-lg-3">
     <div class="form-group inline">
     <label class="sr-only1" for="country_brand" >Страна бренда</label>
    <input name="country_brand" type="text" class="form-control" id="country_brand" required=""
                        value="<?=$this->sub->getCountryBrand()?>"/>
   </div>
           </div>
-          <div class="col-lg-4">
+                       <div class="col-lg-3">
+    <div class="form-group inline">
+    <label class="sr-only1" for="top" >Грейд</label>
+    <select class="form-control select2" name="greyd" id="greyd" data-placeholder="Грейд" >
+                            <option label="Грейд"></option>
+                            <option value="1" <?php if($this->sub->greyd == 1){?>selected <?php } ?> >1</option>
+                            <option value="2" <?php if($this->sub->greyd == 2){?>selected <?php } ?>>2</option>
+                            <option value="3" <?php if($this->sub->greyd == 3){?>selected <?php } ?>>3</option>
+                            <option value="4" <?php if($this->sub->greyd == 4){?>selected <?php } ?>>4</option>
+                            <option value="5" <?php if($this->sub->greyd == 5){?>selected <?php } ?>>5</option>
+                            </select>
+  </div>
+      </div>
+          <div class="col-lg-3">
     <div class="form-group inline">
     <label class="sr-only1" for="top" >На главной</label>
    <input name="top" type="checkbox" id="top"  <?php if($this->sub->getTop()){?>checked="checked" <?php } ?>  value="1"/>
   </div>
       </div>
+   
     </div>
       <div class="row">
           <div class="col-lg-12">

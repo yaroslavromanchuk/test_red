@@ -8920,8 +8920,8 @@ margin-left: 0px;
   margin-right: -10px;
 }
 .row-sm > div {
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 .row-xs {
@@ -12384,11 +12384,11 @@ textarea.parsley-success:focus {
 }
 
 .sl-pagebody {
-  padding: 20px;
+  padding: 0px;
 }
 @media (min-width: 576px) {
   .sl-pagebody {
-    padding: 25px;
+    padding: 20px;
   }
 }
 

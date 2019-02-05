@@ -110,7 +110,7 @@ $title.=' '.$this->trans->get('price').' '.$article->getPriceSkidka().'грн. '
 			$error = self::articlepost($article, $_POST);
 
 	if (count($error) == 0) {
-$change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], 0, 0, (isset($_POST['artikul']) ? $_POST['artikul'] : 0));
+$change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], isset($_POST['artikul'])?$_POST['artikul']:0);
 
 		if ($change['status']) {
 			$messeg = $this->trans->get('ТОВАР ДОБАВЛЕН В КОРЗИНУ');

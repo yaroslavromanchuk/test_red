@@ -3,9 +3,9 @@
 <link rel="stylesheet" type="text/css" href="/application/views/reviews/css/modal-contact-form.css" />
 <?php $text_trans_reviews = explode(',', $this->trans->get('Введите Имя,Введите сообщение,Введите Email,Оставить отзыв,Ваш отзыв принят,Смотреть ответы,Ответить,Ваш ответ принят,Отправить')); ?>	
 <form name="form_reviews" method="post" action="/reviews/" onsubmit="return validate_form();">		
-<div id="div-0"  class="row bg-white m-0">
+<div id="div-0"  class="row  m-auto">
 
-<div class=" col-xl-12 py-2">
+<div class=" col-xl-8 py-2 m-auto">
 <div class="comment-types" id="comment-type">
 <div id="mes" style="font-size: 14px;font-family: sans-serif;font-weight: 600;color: red;"></div>
 								<div class="comment-type ">
@@ -22,7 +22,7 @@
 								</div>
 							</div>
 </div>
-<div class="col-sm-12 col-lg-12 col-xl-2 p-1 m-0 <?php if ($this->ws->getCustomer()->getIsLoggedIn()) echo 'd-none';?>">
+<div class="col-sm-12 col-lg-1 col-xl-1 p-1 m-auto <?php if ($this->ws->getCustomer()->getIsLoggedIn()) echo 'd-none';?>">
 <input type="hidden" name="pid" id="pid" value="0">
 			<input type="hidden"  name="buf" id="buf" value="0">
 			<input type="hidden" name="url_id" value="<?php echo $_SERVER['SERVER_NAME'];?>"/>
@@ -38,11 +38,11 @@
 				
 				<?php } ?>
 </div>
-<div class="col-sm-12 col-lg-12  <?php if($this->ws->getCustomer()->getIsLoggedIn()){ echo "col-xl-12";}else{ echo "col-xl-9";} ?> p-1 m-0">
+<div class="col-sm-12 col-lg-7  <?php if($this->ws->getCustomer()->getIsLoggedIn()){ echo "col-xl-8";}else{ echo "col-xl-8";} ?> p-1 m-auto">
 <div id="mes_t" style="font-size: 14px;font-family: sans-serif;font-weight: 600;color: red;"></div>
 <textarea name="message" id="message" class="mess_text form-control" maxlength="1000" placeholder="* <?=$text_trans_reviews[1]?>"  ></textarea>
 </div>
-<div class="col-xl-12 p-1 m-0 text-center">
+<div class="col-xl-8 p-1 m-auto text-center">
 <input type="submit" name="send_reviews" value="<?=$text_trans_reviews[3]?>" class="btn btn-danger">
 </div>
 </div>
@@ -161,6 +161,7 @@ var d = $(id).attr('name');
 </script>
 
 	<section class="ac-container">
+            <div class="row m-auto">
             <?php
             foreach ($this->coments as $coment) {
 			$id=$coment["id"];
@@ -169,7 +170,8 @@ $subcomments = wsActiveRecord::useStatic('Reviews')->findByQuery($subcomments);
 $res = mysql_query('SELECT count(id) FROM ws_comment_system WHERE parent_id = '.$id.' AND public = 1'); 
 $row = mysql_fetch_row($res);
 ?>
-	<div id="comment-<?=$coment["id"]?>"  class=" row bg-white p-2 mx-0 my-2" >		
+                <div class="col-xl-8 m-auto p-3">
+	<div id="comment-<?=$coment["id"]?>"  class=" row bg-white p-2 m-auto my-2" >		
 		
 	<input id="ac-<?=$coment["id"]?>" name="accordion-1" type="checkbox" class="inp"/>
 	<img style="width: 30px;height:30px;" class="mr-2" src="/img/reviews/<?=$coment["flag"];?>.png" />
@@ -221,7 +223,7 @@ function hide_show(id, i)
 ?>
 <div class="clear"></div>
 </article>
-<div id="div-<?php echo $coment["id"]?>"  class="add_f1 bg-white m-1" style="display:none;">
+<div id="div-<?php echo $coment["id"]?>"  class=" col-xl-12 m-auto add_f1 bg-white" style="display:none;">
 <form name="form_reviews_<?=$coment["id"]?>" method="post" action="/reviews/" onsubmit="return validate_form_otv(this);">
 <table style="width: 100%;" class="add_forma">
 <tr>
@@ -270,8 +272,10 @@ function hide_show(id, i)
 </div>
 <!--<hr style="margin-top: 10px;
     margin-bottom: 10px;"> -->
+</div>
             <?php 
 			} ?>
+</div>
 
 </section>
 

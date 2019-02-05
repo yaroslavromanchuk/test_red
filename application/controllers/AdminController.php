@@ -156,759 +156,46 @@ $this->view->days = array('Mon'=>'Понедельник', 'Tue'=>'Вторни�
          * url = /home/
          */
 	public function homeAction(){
-	$result = [];
-	 $r_ok = [];
-	$type="";
-        
-	if($this->post->method == "ucenka_2")
+	if($this->post->method)
             {
-	$sql = "SELECT  `ws_articles`.`ucenka` , SUM(  `ws_articles_sizes`.`count` ) AS ctn
-FROM  `ws_articles` 
-INNER JOIN  `ws_articles_sizes` ON  `ws_articles`.`id` =  `ws_articles_sizes`.`id_article` 
-WHERE  `ws_articles_sizes`.`count` > 0
-and `ws_articles`.status  = 3
-GROUP BY  `ws_articles`.`ucenka` ";
-$ucenka = wsActiveRecord::findByQueryArray($sql);
-$s = 0;
-foreach($ucenka as $c){
-$result[$c->ucenka] = $c->ctn;
-$s+=$c->ctn;
-}
-$result['sum'] = $s;
-
-	
-	die(json_encode($result));
-	
-	}elseif($this->post->method == "ucenka")
-            {
-$sql="SELECT DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) AS dat
-FROM  `ucenka_history` 
-WHERE DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) >  '2018-06-05'
-GROUP BY DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) 
-ORDER BY  `dat` ASC ";
-$mas = array();
-$i=0;
-foreach(wsActiveRecord::findByQueryArray($sql) as $c){
-$sql = "SELECT  `proc` , SUM(  `koll` ) AS ctn FROM   `ucenka_history` WHERE  DATE_FORMAT( `ctime` ,  '%Y-%m-%d' ) =  '".$c->dat."' GROUP BY  `proc` ";
-$mas[$i]['x'] = $c->dat;
-foreach(wsActiveRecord::findByQueryArray($sql) as $t){
-$mas[$i][$t->proc] = $t->ctn?$t->ctn:0;
-}
-$i++;
-}
-die(json_encode($mas));
-	}elseif($this->post->method == "ostatki")
-            {
-            $ok = wsActiveRecord::findByQueryArray("
-                SELECT DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m-%d' ) AS dat, SUM(  `ws_balance_category`.`count` ) AS ctn
-FROM  `ws_balance` 
-JOIN  `ws_balance_category` ON  `ws_balance`.`id` =  `ws_balance_category`.`id_balance` 
-WHERE DATE_FORMAT(  `ws_balance`.`date` ,  '%Y%m%d' ) >= DATE_SUB( CURRENT_DATE, INTERVAL 30 
-DAY ) 
-GROUP BY  `ws_balance`.`id` 
-ORDER BY  `dat` ASC   ");
-		   foreach($ok as $k){
-		    $r_ok[] = array('x'=> $k->dat, 'y' =>(int)$k->ctn, $type => 0 );
-		   }
-		    die(json_encode($r_ok));
-            
-            }elseif($this->post->method == "prognoz")
-            {
-                 die(json_encode(Bufer::getNorma($this->post)));
-                 
-            }elseif($this->get->method == 'balance_to_excel'){
-                
-                $res = Bufer::getToExcelNorma($this->get);
-                
-                $p = [];
-                
-                $p[0][0] = 'Категория';
-                $p[0][1] =  'Буфер';
-                
-                $i = 1;
-                
-                foreach(Bufer::prognozExcel($res) as $k => $v){
-                    if($v['prognoz'] != 0){
-                    $p[$i][1] = $v['cat'];
-                    $p[$i][2] = $v['prognoz'];
-                    
-                    $i++;
-                    }
-                }
-                $cat =  new Shopcategories((int)$this->get->cat_prognoz);
-                ParseExcel::saveToExcel($cat->getRoutez().'_'.date('d.m.Y',strtotime($this->get->from_prognoz)).'_'.date('d.m.Y', strtotime($this->get->to_prognoz)),$p);
-                
-               // die(json_encode());
-                
-            }elseif($this->post->method == "visit"){
-                $res = [];
-                $ok2 = wsCustomerVisit::findByQueryArray("SELECT COUNT(  `id` ) AS  `visit` , SUM(  `total_number_of_pages` ) AS  `page` , SUM( IF(  `total_number_of_pages` =1, 1, 0 ) ) AS otkaz, DATE_FORMAT(  `ctime` ,  '%d.%m' ) AS  `dat` , DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) AS  `dat_p` 
-FROM  `ws_visits` 
-WHERE (customer_id NOT IN(1,2993,7341,7668,24150,26187,34608,34655,35971,36149,36431,37449,8005,24148,29397,36213,37075,22844,23029,27804,36399,37183,37307,22832,33929,20336,37484) OR  `customer_id` IS NULL
-)
-GROUP BY DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' )");
-                foreach ($ok2 as $key => $value) {
-                    $res[$value->dat]['visit'] = $value->visit; 
-                    $res[$value->dat]['page'] = $value->page; 
-                    $res[$value->dat]['glubina'] = round(($value->page/$value->visit), 2); 
-                    $res[$value->dat]['otkaz'] = round((($value->otkaz/$value->page)*100), 2);
-                   // $dat = date('Y-m-d', strtotime($value->dat.'.2018'))$value->dat.
-                $s_z =    OrderHistory::findByQueryFirstArray("SELECT count(`order_id`) as `ctn` FROM  `order_history` WHERE  `name` LIKE  '%Заказ оформлен%' and DATE_FORMAT(`ctime` ,  '%Y-%m-%d' ) = '$value->dat_p' ")['ctn'];
-                $res[$value->dat]['konvers'] = round((($s_z/$value->visit)*100) , 2);
-                }
-                
-                die(json_encode($res));
-            }elseif($this->post->method == "konversiya"){
-                  $res =  $this->googleanalitics($this->post->from, $this->post->to);
-                
-                die(json_encode($res));
+                die(json_encode(HomeAnalitics::sendPost($this->post)));
+            }elseif($this->get->method){
+            $res = HomeAnalitics::sendGet($this->get);
+            ParseExcel::saveToExcel($res['name'],$res['paremetr']);
+            exit();
             }
-            elseif($this->post->method == "delivery" and $this->post->type)
-                {
-                switch ($this->post->type) {
-                    case '35' :
-                        $ok = wsActiveRecord::findByQueryArray("
-SELECT `id` , COUNT(  `id` ) AS ctn, 
-DATE_FORMAT(  `date_create` ,  '%a %d.%m' ) AS  `date` , 
-AVG( TIMEDIFF(  `order_go` ,  `date_create` ) ) / ( 24 *60 *60 ) AS time
-FROM  `ws_orders` 
-WHERE  `order_go` !=  '0000-00-00 00:00:00'
-AND  `delivery_type_id` 
-IN ( 3, 5 ) 
-AND  `date_create` <=  '".date("Y-m-d 23:59:59", strtotime($this->post->to))."'
-AND  `date_create` >=  '".date("Y-m-d 00:00:00", strtotime($this->post->from))."'
-GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) 
-ORDER BY  `ws_orders`.`id` ASC  ");
-			die(json_encode($ok));
-                        break;
-                    case '4' :
-                        $ok = wsActiveRecord::findByQueryArray("
-SELECT `id` , COUNT(  `id` ) AS ctn, 
-DATE_FORMAT(  `date_create` ,  '%a %d.%m' ) AS  `date` , 
-AVG( TIMEDIFF(  `order_go` ,  `date_create` ) ) / ( 24 *60 *60 ) AS time
-FROM  `ws_orders` 
-WHERE  `order_go` !=  '0000-00-00 00:00:00'
-AND  `delivery_type_id` =4
-AND  `date_create` <=  '".date("Y-m-d 23:59:59", strtotime($this->post->to))."'
-AND  `date_create` >=  '".date("Y-m-d 00:00:00", strtotime($this->post->from))."'
-GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) 
-ORDER BY  `ws_orders`.`id` ASC  ");
-			die(json_encode($ok));
-                        break;
-                    case '816' :
-                        $ok = wsActiveRecord::findByQueryArray("
-SELECT `id` , COUNT(  `id` ) AS ctn, 
-DATE_FORMAT(  `date_create` ,  '%a %d.%m' ) AS  `date` , 
-AVG( TIMEDIFF(  `order_go` ,  `date_create` ) ) / ( 24 *60 *60 ) AS time
-FROM  `ws_orders` 
-WHERE  `order_go` !=  '0000-00-00 00:00:00'
-AND  `delivery_type_id` 
-IN ( 8, 16 ) 
-AND  `date_create` <=  '".date("Y-m-d 23:59:59", strtotime($this->post->to))."'
-AND  `date_create` >=  '".date("Y-m-d 00:00:00", strtotime($this->post->from))."'
-GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) 
-ORDER BY  `ws_orders`.`id` ASC  ");
-			die(json_encode($ok));
-                        break;
-                    case '9' :
-                        $ok = wsActiveRecord::findByQueryArray("
-SELECT `id` , COUNT(  `id` ) AS ctn, 
-DATE_FORMAT(  `date_create` ,  '%a %d.%m' ) AS  `date` , 
-AVG( TIMEDIFF(  `order_go` ,  `date_create` ) ) / ( 24 *60 *60 ) AS time
-FROM  `ws_orders` 
-WHERE  `order_go` !=  '0000-00-00 00:00:00'
-AND  `delivery_type_id` = 9
-AND  `date_create` <=  '".date("Y-m-d 23:59:59", strtotime($this->post->to))."'
-AND  `date_create` >=  '".date("Y-m-d 00:00:00", strtotime($this->post->from))."'
-GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) 
-ORDER BY  `ws_orders`.`id` ASC  ");
-			die(json_encode($ok));
-                        break;
-        default:
-             $ok_m = wsActiveRecord::findByQueryArray("
-SELECT `id` , COUNT(  `id` ) AS ctn, 
-DATE_FORMAT(  `date_create` ,  '%a %d.%m' ) AS  `date` , 
-AVG( TIMEDIFF(  `order_go` ,  `date_create` ) ) / ( 24 *60 *60 ) AS time
-FROM  `ws_orders` 
-WHERE  `order_go` !=  '0000-00-00 00:00:00'
-AND  `delivery_type_id` 
-IN ( 3, 5 ) 
-AND  `date_create` <=  '".date("Y-m-d 23:59:59", strtotime($this->post->to))."'
-AND  `date_create` >=  '".date("Y-m-d 00:00:00", strtotime($this->post->from))."'
-GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) 
-ORDER BY  `ws_orders`.`id` ASC  ");
-             $ok_up = wsActiveRecord::findByQueryArray("
-SELECT `id` , COUNT(  `id` ) AS ctn, 
-DATE_FORMAT(  `date_create` ,  '%a %d.%m' ) AS  `date` , 
-AVG( TIMEDIFF(  `order_go` ,  `date_create` ) ) / ( 24 *60 *60 ) AS time
-FROM  `ws_orders` 
-WHERE  `order_go` !=  '0000-00-00 00:00:00'
-AND  `delivery_type_id` =4
-AND  `date_create` <=  '".date("Y-m-d 23:59:59", strtotime($this->post->to))."'
-AND  `date_create` >=  '".date("Y-m-d 00:00:00", strtotime($this->post->from))."'
-GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) 
-ORDER BY  `ws_orders`.`id` ASC  ");
-             $ok_np = wsActiveRecord::findByQueryArray("
-SELECT `id` , COUNT(  `id` ) AS ctn, 
-DATE_FORMAT(  `date_create` ,  '%a %d.%m' ) AS  `date` , 
-AVG( TIMEDIFF(  `order_go` ,  `date_create` ) ) / ( 24 *60 *60 ) AS time
-FROM  `ws_orders` 
-WHERE  `order_go` !=  '0000-00-00 00:00:00'
-AND  `delivery_type_id` 
-IN ( 8, 16 ) 
-AND  `date_create` <=  '".date("Y-m-d 23:59:59", strtotime($this->post->to))."'
-AND  `date_create` >=  '".date("Y-m-d 00:00:00", strtotime($this->post->from))."'
-GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) 
-ORDER BY  `ws_orders`.`id` ASC  ");
-              $ok_k = wsActiveRecord::findByQueryArray("
-SELECT `id` , COUNT(  `id` ) AS ctn, 
-DATE_FORMAT(  `date_create` ,  '%a %d.%m' ) AS  `date` , 
-AVG( TIMEDIFF(  `order_go` ,  `date_create` ) ) / ( 24 *60 *60 ) AS time
-FROM  `ws_orders` 
-WHERE  `order_go` !=  '0000-00-00 00:00:00'
-AND  `delivery_type_id` = 9
-AND  `date_create` <=  '".date("Y-m-d 23:59:59", strtotime($this->post->to))."'
-AND  `date_create` >=  '".date("Y-m-d 00:00:00", strtotime($this->post->from))."'
-GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) 
-ORDER BY  `ws_orders`.`id` ASC  ");
-            
-            die(json_encode(['m'=>$ok_m, 'up'=>$ok_up, 'np'=>$ok_np, 'k'=>$ok_k]));
-            
-                }
-                
-                die();
-            }
-            elseif($this->post->method == "shop" and $this->post->type)
-            {
-	$type = $this->post->type;
-	switch ($type) {
-	case 'h_a' ://
-$ok = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) AS dat, sum(IF(`ws_order_articles`.`count` =0, 1,`ws_order_articles`.`count`)) as suma FROM  `ws_order_articles`
-inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
-WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m%d' ) = DATE_FORMAT( NOW( ) ,  '%Y%m%d' ) 
-
-GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d %H' ) 
-ORDER BY  `dat` ASC ");
-$pay = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) AS dat, sum(`ws_order_articles`.`count`) as suma FROM  `ws_order_articles`
-inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
-WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m%d' ) = DATE_FORMAT( NOW( ) ,  '%Y%m%d' ) 
-AND `ws_orders`.`status` = 8
-GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d %H' ) 
-ORDER BY  `dat` ASC ");
-
-$ret = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) AS dat, count(`ws_order_articles`.`id`) as suma FROM  `ws_order_articles`
-inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
-WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m%d' ) = DATE_FORMAT( NOW( ) ,  '%Y%m%d' ) 
-AND `ws_orders`.`status`  in(2,7,15)
-GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d %H' ) 
-ORDER BY  `dat` ASC ");
-
-$p = array();
-$re = array();
-foreach($pay as $r){
-$p[(int)$r->dat] = $r->suma;
-}
-foreach($ret as $r){
-$re[(int)$r->dat] = $r->suma;
-}
-			foreach($ok as $k){
-		   $r_ok[] = array('x'=> $k->dat.':00', 'y' =>(int)$k->suma, $type => 0, 'pay'=>$p[(int)$k->dat] ? $p[(int)$k->dat] : 0, 'ret'=>$re[(int)$k->dat] ? $re[(int)$k->dat] : 0 );
-		   }
-		   
-			die(json_encode($r_ok));
-			case 'n_d_a' :
-$ok = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) AS dat, sum(IF(`ws_order_articles`.`count`>0,`ws_order_articles`.`count`,1)) as suma FROM  `ws_order_articles`
-inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
-WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m%d' ) >= DATE_SUB( CURRENT_DATE, INTERVAL 6 DAY ) 
-AND `ws_orders`.`status` not in(17)
-GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) 
-ORDER BY  `dat` ASC ");
-$pay = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) AS dat, sum(`ws_order_articles`.`count`) as suma FROM  `ws_order_articles`
-inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
-WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m%d' ) >= DATE_SUB( CURRENT_DATE, INTERVAL 6 DAY )
-AND `ws_orders`.`status` = 8
-GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) 
-ORDER BY  `dat` ASC ");
-
-$ret = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) AS dat, count(`ws_order_articles`.`id`) as suma FROM  `ws_order_articles`
-inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
-WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m%d' ) >= DATE_SUB( CURRENT_DATE, INTERVAL 6 DAY ) 
-AND `ws_orders`.`status`  in(2,7)
-GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) 
-ORDER BY  `dat` ASC ");
-
-$p = array();
-$re = array();
-foreach($pay as $r){
-$p[$r->dat] = $r->suma;
-}
-foreach($ret as $r){
-$re[$r->dat] = $r->suma;
-}
-			foreach($ok as $k){
-		   $r_ok[] = array('x'=> $k->dat, 'y' =>(int)$k->suma, $type => 0, 'pay'=>$p[$k->dat] ? $p[$k->dat] : 0, 'ret'=>$re[$k->dat] ? $re[$k->dat] : 0 );
-		   }
-		   
-			die(json_encode($r_ok));
-        case 'n_h_a':
-            $ok = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) AS dat, sum(IF(`ws_order_articles`.`count`>0,`ws_order_articles`.`count`,1)) as suma FROM  `ws_order_articles`
-inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
-WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m%d' ) >= DATE_SUB( CURRENT_DATE, INTERVAL 6 DAY ) 
-AND `ws_orders`.`delivery_type_id` in(3,5)
-AND `ws_orders`.`status` not in(17)
-GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) 
-ORDER BY  `dat` ASC ");
-$pay = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) AS dat, sum(`ws_order_articles`.`count`) as suma FROM  `ws_order_articles`
-inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
-WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m%d' ) >= DATE_SUB( CURRENT_DATE, INTERVAL 6 DAY )
-AND `ws_orders`.`delivery_type_id` in(3,5)
-AND `ws_orders`.`status` = 8
-GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) 
-ORDER BY  `dat` ASC ");
-
-$ret = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) AS dat, count(`ws_order_articles`.`id`) as suma FROM  `ws_order_articles`
-inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
-WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m%d' ) >= DATE_SUB( CURRENT_DATE, INTERVAL 6 DAY ) 
-AND `ws_orders`.`delivery_type_id` in(3,5)
-AND `ws_orders`.`status`  in(2,7)
-GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) 
-ORDER BY  `dat` ASC ");
-
-$p = array();
-$re = array();
-foreach($pay as $r){
-$p[$r->dat] = $r->suma;
-}
-foreach($ret as $r){
-$re[$r->dat] = $r->suma;
-}
-			foreach($ok as $k){
-		   $r_ok[] = array('x'=> $k->dat.':00', 'y' =>(int)$k->suma, $type => 0, 'pay'=>$p[$k->dat] ? $p[$k->dat] : 0, 'ret'=>$re[$k->dat] ? $re[$k->dat] : 0 );
-		   }
-            
-            die(json_encode($r_ok));
-                        
-			case 'm_d_a' :
-$ok = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) AS dat, sum(IF(`ws_order_articles`.`count`>0,`ws_order_articles`.`count`,1)) as suma FROM  `ws_order_articles`
-inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
-WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m' ) = DATE_FORMAT( NOW( ) ,  '%Y%m' ) 
-AND `ws_orders`.`delivery_type_id` in(3,5)
-AND `ws_orders`.`status` not in(17)
-GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) 
-ORDER BY  `dat` ASC ");
-$pay = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) AS dat, sum(`ws_order_articles`.`count`) as suma FROM  `ws_order_articles`
-inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
-WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m' ) = DATE_FORMAT( NOW( ) ,  '%Y%m' ) 
-AND `ws_orders`.`delivery_type_id` in(3,5)
-AND `ws_orders`.`status` = 8
-GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) 
-ORDER BY  `dat` ASC ");
-
-$ret = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) AS dat, count(`ws_order_articles`.`id`) as suma FROM  `ws_order_articles`
-inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
-WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m' ) = DATE_FORMAT( NOW( ) ,  '%Y%m' ) 
-AND `ws_orders`.`delivery_type_id` in(3,5)
-AND `ws_orders`.`status`  in(2,7)
-GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' ) 
-ORDER BY  `dat` ASC ");
-
-$p = array();
-$re = array();
-foreach($pay as $r){
-$p[$r->dat] = $r->suma;
-}
-foreach($ret as $r){
-$re[$r->dat] = $r->suma;
-}
-			foreach($ok as $k){
-		   $r_ok[] = array('x'=> $k->dat, 'y' =>(int)$k->suma, $type => 0, 'pay'=>$p[$k->dat] ? $p[$k->dat] : 0, 'ret'=>$re[$k->dat] ? $re[$k->dat] : 0 );
-		   }
-		   
-			die(json_encode($r_ok));
-        case 'm_h_a':
-            $ok = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) AS dat, sum(IF(`ws_order_articles`.`count`>0,`ws_order_articles`.`count`,1)) as suma FROM  `ws_order_articles`
-inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
-WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m' ) = DATE_FORMAT( NOW( ) ,  '%Y%m' ) 
-AND `ws_orders`.`delivery_type_id` in(3,5)
-AND `ws_orders`.`status` not in(17)
-GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) 
-ORDER BY  `dat` ASC ");
-$pay = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) AS dat, sum(`ws_order_articles`.`count`) as suma FROM  `ws_order_articles`
-inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
-WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m' ) = DATE_FORMAT( NOW( ) ,  '%Y%m' ) 
-AND `ws_orders`.`delivery_type_id` in(3,5)
-AND `ws_orders`.`status` = 8
-GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) 
-ORDER BY  `dat` ASC ");
-
-$ret = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) AS dat, count(`ws_order_articles`.`id`) as suma FROM  `ws_order_articles`
-inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
-WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y%m' ) = DATE_FORMAT( NOW( ) ,  '%Y%m' ) 
-AND `ws_orders`.`delivery_type_id` in(3,5)
-AND `ws_orders`.`status`  in(2,7)
-GROUP BY DATE_FORMAT(  `ws_orders`.`date_create` ,  '%H' ) 
-ORDER BY  `dat` ASC ");
-
-$p = array();
-$re = array();
-foreach($pay as $r){
-$p[$r->dat] = $r->suma;
-}
-foreach($ret as $r){
-$re[$r->dat] = $r->suma;
-}
-			foreach($ok as $k){
-		   $r_ok[] = array('x'=> $k->dat.':00', 'y' =>(int)$k->suma, $type => 0, 'pay'=>$p[$k->dat] ? $p[$k->dat] : 0, 'ret'=>$re[$k->dat] ? $re[$k->dat] : 0 );
-		   }
-		   
-			die(json_encode($r_ok));
-	default : 
- 
- 
-			die(json_encode($r_ok));
-	}
-	}elseif($this->post->method == "order" and $this->post->type){
-	$type = $this->post->type;
-	switch ($type) {
-            case 'h' : 
-			$ok = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `date_create` ,  '%H' ) AS dat, COUNT(  `id` ) AS ctn FROM  `ws_orders` WHERE DATE_FORMAT(  `date_create` ,  '%Y%m%d' ) = DATE_FORMAT( NOW( ) ,  '%Y%m%d' ) AND status NOT IN (5,7,17) GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d %H' ) ORDER BY  `dat` ASC ");
-		   foreach($ok as $k){
-		   $r_ok[] = array('x'=> $k->dat.':00', 'y' =>(int)$k->ctn, $type => 0 );
-		   }
-		    die(json_encode($r_ok));
-            case 'm_h' : 
-			$ok = 	wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `date_create` ,  '%H' ) AS dat, COUNT(  `id` ) AS ctn
-FROM  `ws_orders` 
-WHERE DATE_FORMAT(  `date_create` ,  '%Y%m' ) = DATE_FORMAT( NOW( ) ,  '%Y%m' ) 
-AND status NOT IN (5,7,17)
-GROUP BY DATE_FORMAT(  `date_create` ,  '%H' ) 
-ORDER BY  `dat` ASC ");
-		   foreach($ok as $k){
-		    $r_ok[] = array('x'=> $k->dat.':00', 'y' =>(int)$k->ctn, $type => 0 );
-		   }
-		    die(json_encode($r_ok));
-			 case 'm_d' : 
-			$ok = 	wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) AS dat, COUNT(  `id` ) AS ctn
-FROM  `ws_orders` 
-WHERE DATE_FORMAT(  `date_create` ,  '%Y%m' ) = DATE_FORMAT( NOW( ) ,  '%Y%m' ) 
-AND status NOT IN (5,7,17)
-GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) 
-ORDER BY  `dat` ASC ");
-		   foreach($ok as $k){
-		    $r_ok[] = array('x'=> $k->dat, 'y' =>(int)$k->ctn, $type => 0 );
-		   }
-		    die(json_encode($r_ok));
-			case 'n_h' :
-			$ok = 	wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `date_create` ,  '%H' ) AS dat, COUNT(  `id` ) AS ctn
-FROM  `ws_orders` 
-WHERE DATE_FORMAT(  `date_create` ,  '%Y%m%d' ) >= DATE_SUB( CURRENT_DATE, INTERVAL 6 
-DAY ) 
-AND status NOT IN (5,7,17)
-GROUP BY DATE_FORMAT(  `date_create` ,  '%H' ) 
-ORDER BY  `dat` ASC ");
-		
-		   foreach($ok as $k){
-		    $r_ok[] = array('x'=> $k->dat.':00', 'y' =>(int)$k->ctn, $type => 0 );
-		   }
-			 die(json_encode($r_ok));
-			 case 'n_d' :
-			$ok = 	wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) AS dat, COUNT(  `id` ) AS ctn
-FROM  `ws_orders` 
-WHERE DATE_FORMAT(  `date_create` ,  '%Y%m%d' ) >= DATE_SUB( CURRENT_DATE, INTERVAL 6 
-DAY ) 
-AND status NOT IN (5,7,17)
-GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) 
-ORDER BY  `dat` ASC ");
-		   foreach($ok as $k){
-		    $r_ok[] = array('x'=> $k->dat, 'y' =>(int)$k->ctn, $type => 0 );
-		   }
-			 die(json_encode($r_ok));
-		case 'dely':
-		$days_arr_dely = array();
-	$days_dely = wsActiveRecord::findByQueryArray("SELECT COUNT(  `ws_orders`.`id` ) AS ctn,  `ws_orders`.`delivery_type_id` 
-FROM  `ws_orders` 
-WHERE  STATUS IN ( 100, 9, 15,16 ) 
-AND  `ws_orders`.`delivery_type_id` !=0 and `ws_orders`.`delivery_type_id` !=12
-GROUP BY  `ws_orders`.`delivery_type_id` 
-ORDER BY  `ctn` ASC");
-$mas = array(3=>'Победа', 4=>'Укр.Почта', 5=>'Строителей', 8=>'НП:ОО', 9=>'Курьер', 16=>'НП:НП');
-	foreach($days_dely as $d){
-	$days_arr_dely['name'][] = $mas[$d->delivery_type_id];
-	$days_arr_dely['koll'][] = (int)$d->ctn;
-}
-	die(json_encode($days_arr_dely));
-	case 'status':
-	$days_arr_status = array();
-	$days_status = wsActiveRecord::findByQueryArray("SELECT COUNT(  `ws_orders`.`id` ) AS ctn,  `ws_orders`.`status` 
-FROM  `ws_orders` 
-WHERE `ws_orders`.`status` IN (100,1,9,15,16) and `ws_orders`.`from_quick` != 1
-GROUP BY  `ws_orders`.`status` 
-ORDER BY  `ws_orders`.`status` ASC");
-        
-$mas = array(100=>'Новый', 1=>'В процесе', 2=>'Отменён', 8=>'Оплачен', 9=>'Собран', 10=>'Продлён клиентом', 12=>'Ждёт возврат', 15=>'Собран 2', 16=>'Собран 3' );
-$color = array(0=>'#4c4fd2',1=>'#d7da5c',2=>'#677489',8=>'#5B93D3',9=>'#37da3d', 15=>'#37c2da', 16=>'#dac037');
-	foreach($days_status as $d){
-	$days_arr_status[] = array('label'=>$mas[$d->status], data=>array(1,(int)$d->ctn), 'color'=>$color[$d->status]);
-}
-	
-	die(json_encode($days_arr_status));
-	case 'quick':
-	//$quick_arr = array();
-	$quick = wsActiveRecord::findByQueryArray("SELECT  `status` , COUNT(  `id` ) AS  `ctn` 
-FROM  `ws_orders` 
-WHERE  `from_quick` = 1
-AND  `status` != 17 
-AND  `quick` = 1
-AND DATE_FORMAT(  `date_create` ,  '%Y%m%d' ) > DATE_SUB( CURRENT_DATE, INTERVAL 6 DAY ) 
-GROUP BY  `status` ");
-            
-$mas = array(100=>'Новый', 1=>'В процесе', 2=>'Отменён', 8=>'Оплачен', 9=>'Собран', 10=>'Продлён клиентом', 12=>'Ждёт возврат', 15=>'Собран 2', 16=>'Собран 3' );
-$color = array(0=>'#4c4fd2',1=>'#d7da5c',2=>'#677489',8=>'#5B93D3',9=>'#37da3d', 15=>'#37c2da', 16=>'#dac037');
-	foreach($quick as $d){
-	$days_arr_status[] = array('label'=>$mas[$d->status], data=>array(1,(int)$d->ctn), 'color'=>$color[$d->status]);
-}
-	
-	die(json_encode($days_arr_status));
-            default : 
-			$ok = "SELECT DATE_FORMAT(  `date_create` ,  '%Y-%m-%d %H' ) AS dat, COUNT(  `id` ) AS ctn
-FROM  `ws_orders` 
-WHERE DATE_FORMAT(  `date_create` ,  '%Y%m%d' ) = DATE_FORMAT( NOW( ) ,  '%Y%m%d' ) 
-AND status NOT IN (5,7,17) 
-GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d %H' ) 
-ORDER BY  `dat` ASC ";
-			
-		   
-		   foreach(wsActiveRecord::findByQueryArray($ok) as $k){
-		    $r_ok[] = array('x'=> $k->dat, 'y' =>(int)$k->ctn, $type => 0 );
-		   }
-		    die(json_encode($r_ok));
-		   }
-		  
-		   }	
-                   
-           /**
-            * оформленные заказы
-            */        
-	  $days_arr = [];
-          $week_arr =[];
-          $month_arr = [];
-          $year_arr = [];
-          
-	$days = wsActiveRecord::findByQueryArray(""
-        . "SELECT DATE_FORMAT(  `ctime` ,  '%H' ) AS dat, SUM(  `sum_order` ) AS money "
-        . "FROM  `order_history`  "
-        . "WHERE DATE_FORMAT(  `ctime` ,  '%Y%m%d' ) = DATE_FORMAT( NOW( ) ,  '%Y%m%d' ) "
-        . "AND `name` LIKE  'Заказ оформлен'"
-        . "GROUP BY DATE_FORMAT(  `ctime` ,  '%Y-%m-%d %H' ) "
-        . "ORDER BY  `dat` ASC ");
-        $s = 0;
-	foreach($days as $d){
-            $s += $d->money;
-	$days_arr['koll'][] = $d->money;
-}
-$days_arr['summa'] = $s;
-	
-	$week = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ctime` ,  '%d' ) AS dat, SUM(  `sum_order` ) AS money
-FROM   `order_history` 
-WHERE  DATE_FORMAT(  `ctime` ,  '%Y%m%d' ) >= DATE_SUB( CURRENT_DATE, INTERVAL 6 DAY ) 
-AND `name` LIKE  'Заказ оформлен' 
-GROUP BY DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) 
-ORDER BY  `dat` ASC ");
- $s = 0;
-	foreach($week as $d){
-            $s += $d->money;
-	$week_arr['koll'][] = $d->money;
-}
-$week_arr['summa'] = $s;
-
-$month = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) AS dat, SUM(  `sum_order` ) AS money
-FROM   `order_history` 
-WHERE DATE_FORMAT(  `ctime` ,  '%Y%m' ) = DATE_FORMAT( NOW( ) ,  '%Y%m' ) 
-AND `name` LIKE  'Заказ оформлен'
-GROUP BY DATE_FORMAT(  `ctime` ,  '%Y-%m-%d' ) 
-ORDER BY  `dat` ASC ");
-        $s = 0;
-	foreach($month as $d){
-            $s += $d->money;
-	$month_arr['koll'][] = $d->money;
-}
-$month_arr['summa'] = $s;
-
-$year = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `ctime` ,  '%Y-%m' ) AS dat, SUM(  `sum_order` ) AS money
-FROM  `order_history`  
-WHERE DATE_FORMAT(  `ctime` ,  '%Y' ) = DATE_FORMAT( NOW( ) ,  '%Y' ) 
-AND `name` LIKE  'Заказ оформлен'
-GROUP BY DATE_FORMAT(  `ctime` ,  '%Y-%m' ) 
-ORDER BY  `dat` ASC ");
-        $s = 0;
-	foreach($year as $d){
-            $s += $d->money;
-	$year_arr['koll'][] = $d->money;
-}
-$year_arr['summa'] = $s;
-
-$this->view->orders_days = $days_arr;   
-	$this->view->orders_week = $week_arr;
-	$this->view->orders_month = $month_arr;
-	$this->view->orders_year = $year_arr;
-        
-        /**
-         * оплеченые заказы
-         */
-$days_arr_op = [];       
-$week_arr_op = [];
-$month_arr_op = [];
-$year_arr_op = [];
-
-$days_op = wsActiveRecord::findByQueryArray(""
-        . "SELECT DATE_FORMAT(  `admin_pay_time` ,  '%H' ) AS dat,  SUM(  `amount` ) AS money, SUM(  `deposit` ) AS deposit "
-        . "FROM  `ws_orders`  "
-        . "WHERE DATE_FORMAT(  `admin_pay_time` ,  '%Y%m%d' ) = DATE_FORMAT( NOW( ) ,  '%Y%m%d' ) "
-        . " AND status IN (8,14) "
-        . "GROUP BY DATE_FORMAT(  `admin_pay_time` ,  '%Y-%m-%d %H' ) "
-        . "ORDER BY  `dat` ASC ");
-
-foreach($days_op as $d){
-	$days_arr_op['am'][$d->dat] = $d->money;
-	$days_arr_op['dep'][$d->dat] = $d->deposit;
-	$days_arr_op['koll'][] = $d->deposit+$d->money;
-}
-
-$week_op = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `admin_pay_time` ,  '%d' ) AS dat, SUM(  `amount` ) AS money, SUM(  `deposit` ) AS deposit
-FROM  `ws_orders` 
-WHERE DATE_FORMAT(  `admin_pay_time` ,  '%Y%m%d' ) >= DATE_SUB( CURRENT_DATE, INTERVAL 6 
-DAY ) 
-AND status IN (8,14) 
-GROUP BY DATE_FORMAT(  `admin_pay_time` ,  '%Y-%m-%d' ) 
-ORDER BY  `dat` ASC ");
-	foreach($week_op as $d){
-	$week_arr_op['am'][$d->dat] = $d->money;
-	$week_arr_op['dep'][$d->dat] = $d->deposit;
-	$week_arr_op['koll'][] = $d->deposit+$d->money;
-}
-
-$month_op = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `admin_pay_time` ,  '%Y-%m-%d' ) AS dat, SUM(  `amount` ) AS money, SUM(  `deposit` ) AS deposit
-FROM  `ws_orders` 
-WHERE DATE_FORMAT(  `admin_pay_time` ,  '%Y%m' ) = DATE_FORMAT( NOW( ) ,  '%Y%m' ) 
-AND status IN (8,14) 
-GROUP BY DATE_FORMAT(  `admin_pay_time` ,  '%Y-%m-%d' ) 
-ORDER BY  `dat` ASC ");
-	foreach($month_op as $d){
-	$month_arr_op['am'][$d->dat] = $d->money;
-	$month_arr_op['dep'][$d->dat] = $d->deposit;
-	$month_arr_op['koll'][] = $d->deposit+$d->money;
-}
-
-$year_op = wsActiveRecord::findByQueryArray("SELECT DATE_FORMAT(  `admin_pay_time` ,  '%Y-%m' ) AS dat, SUM(  `amount` ) AS money, SUM(  `deposit` ) AS deposit
-FROM  `ws_orders` 
-WHERE DATE_FORMAT(  `admin_pay_time` ,  '%Y' ) = DATE_FORMAT( NOW( ) ,  '%Y' ) 
-AND status IN (8,14) 
-GROUP BY DATE_FORMAT(  `admin_pay_time` ,  '%Y-%m' ) 
-ORDER BY  `dat` ASC ");
-	foreach($year_op as $d){
-	$year_arr_op['am'][$d->dat] = $d->money;
-	$year_arr_op['dep'][$d->dat] = $d->deposit;
-	$year_arr_op['koll'][] = $d->deposit+$d->money;
-}
-$this->view->orders_days_op = $days_arr_op;   
-	$this->view->orders_week_op = $week_arr_op;
-	$this->view->orders_month_op = $month_arr_op;
-	$this->view->orders_year_op = $year_arr_op;
-
-
-$koment = wsActiveRecord::findByQueryArray("
-    SELECT `ws_orders`.* 
-    FROM  `ws_orders` 
-    WHERE  `ws_orders`.`status` = 100
-    AND  `id` NOT IN (
-        SELECT  `ws_order_remarks`.`order_id` 
-        FROM  `ws_order_remarks`
-                    )
-    AND  `customer_id` NOT IN (
-            SELECT  `id` 
-            FROM  `ws_customers` 
-            WHERE  `customer_type_id` >1
-                                )
-    AND  `comments` !=  ''
-    ORDER BY  `ws_orders`.`date_create` ASC");
-
-$this->view->orders_koment = $koment;  
-
-$ok = wsActiveRecord::findByQueryArray("
-    SELECT DATE_FORMAT(  `date_create` ,  '%d.%m' ) AS dat, count(`id`) as `ctn`, SUM(  `amount`+ `deposit`) AS `summ`, id
-    FROM  `ws_orders` 
-    WHERE DATE_FORMAT(  `date_create` ,  '%Y%m%d' ) >= DATE_SUB( CURRENT_DATE, INTERVAL 30 DAY ) 
-AND status != 17 
-GROUP BY DATE_FORMAT(  `date_create` ,  '%Y-%m-%d' ) 
-ORDER BY  `id` ASC ");
-$m = [];
-foreach ($ok as $value) {
-    $m['label'][] = (int)($value->summ/$value->ctn);
-    $m['date'][] = $value->dat;
-}
-$this->view->chek = $m; 
-
-
-	
-	
-	   
-	
+         //оформленные заказы за сегодня
+        $res_create_order =  HomeAnalitics::createOrder();
+        $this->view->orders_days = $res_create_order['days'];   
+	$this->view->orders_week = $res_create_order['week']; 
+	$this->view->orders_month = $res_create_order['month']; 
+	$this->view->orders_year = $res_create_order['year']; 
+        //оплаченные заказы за сегодня
+        $res_payment_order =  HomeAnalitics::paymentOrder();
+        $this->view->orders_days_op = $res_payment_order['days'];   
+	$this->view->orders_week_op = $res_payment_order['week'];
+	$this->view->orders_month_op = $res_payment_order['month'];
+	$this->view->orders_year_op = $res_payment_order['year'];
+        //не обработанные коментарии
+        $this->view->orders_koment =  HomeAnalitics::comment();
+        //средний чек за последние 30 дней
+        $this->view->chek = HomeAnalitics::chek();
 
 	echo $this->render('/template/views/home.php', 'index.php');
 	
 	}
+        
         /**
          * Google analitics - получение аналитики через апі
          * @param type $from - дата от: (2018-12-01)
          * @param type $to - дата до: (2018-12-31)
          * @return string
          */
-        
-    public function googleanalitics($from = '', $to = ''){
-       // return $from;
-        if($from == ''){$from = date('Y-m-d'); }
-        if($to == ''){$to = date('Y-m-d'); }
-       // $from = (string)"'".$from."'";
-       // $to  = (string)"'".$to."'";
-        require_once('Google/HelloAnalytics.php');
-        
-        $analytics = initializeAnalytics();
-        
-        $results = $analytics->data_ga->get('ga:57394917', $from, $to, 'ga:sessions, ga:users , ga:newUsers, ga:bounceRate,  ga:pageviews, ga:pageviewsPerSession');
-        
-        if (count($results->getRows()) > 0) {
-    // Get the entry for the first entry in the first row.
-    $res = $results->getRows()[0];
-    $text['sessions'] = $res[0];
-    $text['users'] = $res[1];
-    $text['newUsers'] = $res[2];
-    $text['otkaz'] = round($res[3], 2);
-    $text['pageviews'] = $res[4];
-    $text['pageviewsPerSession'] = round($res[5], 2);
-    $sql = "SELECT count(`order_id`) as `ctn` FROM  `order_history` WHERE  `name` LIKE  '%Заказ оформлен%' and DATE_FORMAT(`ctime` ,  '%Y-%m-%d' ) >= '$from'  and  DATE_FORMAT(`ctime` ,  '%Y-%m-%d' ) <= '$to' ";
-   // var_dump($sql, false);
-    $k = OrderHistory::findByQueryFirstArray($sql)['ctn'];
- $text['konvers'] = round(($k/$res[0])*100, 2);
- 
- 
- $now =  strtotime($from); // текущее время (метка времени)
-$your_date = strtotime($to); // какая-то дата в строке (1 января 2017 года)
-$datediff = $your_date - $now; // получим разность дат (в секундах)
-$text['dney'] = floor($datediff / (60 * 60 * 24))+1;
-    $result = $text;
-    //echo print_r($result);
-    //$sessions = $rows[0][0];
-  } else {
-    $result = "No results found.\n";
-  }
-        return $result;
-    }    
-    public function staticAction()
-    {
-	
-        echo $this->render('static.tpl.php');
-		
-    }
+        public function staticAction()
+            {
+                echo $this->render('static.tpl.php');
+            }
+
 
     public function sloganAction()
     {
@@ -4998,13 +4285,19 @@ return;
         }
 		if($this->post->addskidka == 'add_sk' and $this->post->id){
 		 $order_art = new Shoporderarticles((int)$this->post->id);
-		 $order_art->setOptionId((int)$this->post->option_id);
-		 $summ = $order_art->getPrice()*Shoparticlesoption::getProcSkidka((int)$this->post->option_id);
+		
+                 $opt = new Shoparticlesoption((int)$this->post->option_id);
+                 $order_art->setOptionId($opt->id);
+                 if($opt->type == 'final'){
+                     $summ = $order_art->getPrice()*(1-($pt->value/100));//Shoparticlesoption::getProcSkidka((int)$this->post->option_id);
 		 $order_art->setOptionPrice($summ);
+                 }else{
+                    $order_art->setOptionPrice(0); 
+                 }
 		 $order_art->save();
 		 
 		// $this->_redir('shop-orders/edit/id/' . $this->get->getId());
-		die($summ);
+		die(true);
 		}
 		
         if ($_POST and isset($_POST['Toevoegen']) and isset($_POST['article_id']) and isset($_POST['size_id']) and isset($_POST['color_id'])) {
@@ -7833,7 +7126,18 @@ if(isValidEmailNew($this->view->email) and isValidEmailRu($this->view->email)){
     //-------Brands
     public function brandsAction()
     {
-        $this->view->brands = wsActiveRecord::useStatic('Brand')->findAll([], ['name' => 'ASC']);
+        if($this->post->method == "set_greyd"){
+            $param = [];
+            $param['greyd'] = (int)$this->post->greyd;
+            if($this->post->dell){
+                $param['hide'] = 0;
+            }
+          $res = Brands::BrandEdit($this->post->id, $param);
+            die($res);
+        }
+             $this->view->brands = Brands::getAllBrands(100);
+      
+       
         echo $this->render('brand/list.tpl.php', 'index.php');
         //echo $this->render('/template/views/home.php', 'index.php');
     }
@@ -7847,13 +7151,14 @@ if(isValidEmailNew($this->view->email) and isValidEmailRu($this->view->email)){
             if (count($_POST)) {
                 foreach ($_POST as &$value){$value = stripslashes($value);}
                 
-                $errors = array();
+                $errors = [];
 
                 if (!$_POST['name']){ $errors[] = $this->trans->get('Please fill name');}
                 
-                $sub->setTop(0);
-                $sub->import($_POST);
+                
                 if (!count($errors)) {
+                    $sub->setTop(0);
+                $sub->import($_POST);
                     if ($_FILES['image']) {
                         require_once('upload/class.upload.php');
                         $handle = new upload($_FILES['image'], 'ru_RU');
@@ -7864,7 +7169,7 @@ if(isValidEmailNew($this->view->email) and isValidEmailRu($this->view->email)){
                                 if ($handle->processed) {
                                     if ($sub->getImage())
                                         unlink($sub->getImage());
-                                    $sub->setImage($folder . $handle->file_dst_name);
+                                    $sub->setImage($folder.$handle->file_dst_name);
                                     $handle->clean();
                                 }
                             }
@@ -8669,6 +7974,8 @@ UcenkaHistory::newUcenka($this->user->getId(), $art->getId(), $s_p, $art->getPri
     {
 	 
       if ($this->get->type) {
+          
+          
 	 
         if ($this->get->type == 1) {
                 ini_set('memory_limit', '1024M');
@@ -8786,8 +8093,7 @@ ws_orders.date_create <= "2016-03-02 23:59:59"';
                // header("Content-type: application/x-msexcel");
                 $objWriter->save('php://output');
 
-            }
-        if ($this->get->type == 2) {
+            }elseif ($this->get->type == 2) { // zakazy za peryod
                 ini_set('memory_limit', '1024M');
                 $from = strtotime($_POST['order_from']);
                 $to = strtotime($_POST['order_to']);
@@ -8973,8 +8279,7 @@ AND  `ws_articles`.`active` =  'y'
 
                 $objWriter->save('php://output');
 
-            }
-		if ($this->get->type == 3) {
+            }elseif ($this->get->type == 3) {
             if (isset($_GET['day'])) {
                 $order_status = explode(',', $this->trans->get('new,processing,canceled,ready_shop,ready_post'));
                 $to = strtotime($_GET['day']);
@@ -9181,8 +8486,7 @@ AND  `ws_articles`.`active` =  'y'
 
                // header("Content-type: application/x-msexcel");
             }
-        }
-        if ($this->get->type == 4) {
+        }elseif ($this->get->type == 4) {
 
                 ini_set('memory_limit', '1024M');
 				
@@ -9480,8 +8784,7 @@ AND  `ws_articles`.`active` =  'y'
                 //header("Content-type: application/x-msexcel");
 
 
-            }     
-        if ($this->get->type == 5){
+            }elseif ($this->get->type == 5){
 		
 		if($this->post->method == 'list_brand'){
 		
@@ -9991,8 +9294,7 @@ die(json_encode(array('start'=>(int)$i, 'end'=>(int)$this->post->end, 'proc'=>(i
 
             //header("Content-type: application/x-msexcel");
 
-        }
-		if ($this->get->type == 8) {
+        }elseif ($this->get->type == 8) {
 			if(@$_POST['cat']){
 $cats = wsActiveRecord::useStatic('Shopcategories')->findFirst(array('id' => (int)$_POST['cat'], 'active' => 1));
 $arr = $cats->getKidsIds();
@@ -10182,82 +9484,11 @@ AND ws_articles.category_id in(". $cat.") ";
                 //header("Content-type: application/x-msexcel");
 
 
-            }
-        if ($this->get->type == 9) {
+            }elseif ($this->get->type == 9) {
+                
+            Report::toExcel($this->get);
 
-            ini_set('memory_limit', '1024M');
-
-            $q1 = "SELECT t1.id, t1.parent_id, t1.name, SUM( t3.stock ) AS 'ostatok'
-				FROM  `ws_categories` t1
-				RIGHT JOIN  `ws_articles` t3 ON t1.id = t3.category_id
-				GROUP BY t1.id 
-				ORDER BY  t1.name ASC";
-
-            $artucles = wsActiveRecord::useStatic('Shopcategories')->findByQuery($q1);
-
-            require_once('PHPExel/PHPExcel.php');
-            $kount = 1;
-            $filename = 'otchet_tov_group_' . date("Y-m-d_H:i:s") . '.xls';
-            $pExcel = new PHPExcel();
-            $pExcel->setActiveSheetIndex(0);
-            $aSheet = $pExcel->getActiveSheet();
-            $aSheet->setTitle('Товары по группам');
-            $aSheet->getColumnDimension('A')->setWidth(45);
-            $aSheet->getColumnDimension('B')->setWidth(10);
-            $aSheet->getColumnDimension('C')->setWidth(10);
-            $aSheet->getColumnDimension('D')->setWidth(10);
-
-            $aSheet->setCellValue('A1', 'Категория');
-            $aSheet->setCellValue('B1', 'Приход');
-            $aSheet->setCellValue('C1', 'Расход');
-            $aSheet->setCellValue('D1', 'Остаток');
-
-            $i = 2;
-
-            $mascat = array();
-            foreach ($artucles as $cat) {
-                $mascat[$cat->getRoutez()] = $cat;
-            }
-            ksort($mascat);
-
-            foreach ($mascat as $val => $article) {
-                $q_in = "SELECT SUM( t4.`count` ) as rashod
-						FROM  `ws_categories` t1
-						RIGHT JOIN  `ws_categories` t2 ON t1.id = t2.parent_id
-						RIGHT JOIN  `ws_articles` t3 ON t2.id = t3.category_id
-						INNER JOIN `ws_order_articles` t4 ON t3.id = t4.article_id
-						WHERE t2.`id` =" . $article->getId() . "
-						GROUP BY t2.id";
-                $rashod = wsActiveRecord::useStatic('Shoporderarticles')->findByQuery($q_in);
-//if (!(@$rashod[0]->getRashod())) var_dump(@$rashod[0]);
-
-                $rasho = (@$rashod[0]) ? $rashod[0]->getRashod() : 0;
-
-
-                $aSheet->setCellValue('A' . $i, $val);
-                $aSheet->setCellValue('B' . $i, $article->getOstatok() + $rasho);
-                $aSheet->setCellValue('C' . $i, $rasho);
-                $aSheet->setCellValue('D' . $i, $article->getOstatok());
-                ++$i;
-            }
-
-
-            require_once("PHPExel/PHPExcel/Writer/Excel5.php");
-            $objWriter = new PHPExcel_Writer_Excel5($pExcel);
-
-            header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-            header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
-            header("Cache-Control: no-cache, must-revalidate");
-            header("Pragma: no-cache");
-            header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
-
-            $objWriter->save('php://output');
-
-           // header("Content-type: application/x-msexcel");
-
-
-        }
-        if ($this->get->type == 10) {
+        }elseif ($this->get->type == 10) {
 
             ini_set('memory_limit', '1024M');
 
@@ -10333,8 +9564,7 @@ AND ws_articles.category_id in(". $cat.") ";
            // header("Content-type: application/x-msexcel");
 
 
-        }
-        if ($this->get->type == 11) {
+        }elseif ($this->get->type == 11) {
             ini_set('memory_limit', '1024M');
             $from = strtotime($_POST['order_from']);
             $to = strtotime($_POST['order_to']);
@@ -10431,8 +9661,7 @@ AND ws_articles.category_id in(". $cat.") ";
            // header("Content-type: application/x-msexcel");
 
             $objWriter->save('php://output');
-        }
-        if ($this->get->type == 12) {
+        }elseif ($this->get->type == 12) {
             ini_set('memory_limit', '1024M');
 
             $customers = wsActiveRecord::useStatic('Customer')->findAll(array('drawing' => 'red2014'));
@@ -10509,8 +9738,7 @@ AND ws_articles.category_id in(". $cat.") ";
             //header("Content-type: application/x-msexcel");
 
             $objWriter->save('php://output');
-        }
-		if ($this->get->type == 13) {
+        }elseif ($this->get->type == 13) {
 
                 ini_set('memory_limit', '1024M');
 
@@ -10666,8 +9894,7 @@ WHERE `ws_order_articles`.`article_id` = ' . $article->getIdArticle();
                // header("Content-type: application/x-msexcel");
 
 
-            }
-		if ($this->get->type == 14) {
+            }elseif ($this->get->type == 14) {
             ini_set('memory_limit', '1024M');
             $to = strtotime($_POST['order_to']);
             $from = strtotime($_POST['order_from']);
@@ -10735,8 +9962,7 @@ WHERE `ws_order_articles`.`article_id` = ' . $article->getIdArticle();
 
             $objWriter->save('php://output');
 
-        }	
-		if ($this->get->type == 15) { 
+        }elseif ($this->get->type == 15) { 
             ini_set('memory_limit', '1024M');
 			$sql = "SELECT  `as`.`code` ,  `d`.`id_articles` ,  `a`.`brand` , `a`.`brand_id`,  `a`.`model`, `a`.`price` 
 		FROM  `ws_desires` AS  `d` 
@@ -10843,8 +10069,7 @@ foreach ($mas_kup as $m) {
 
             $objWriter->save('php://output');
 			
-			}
-		if ($this->get->type == 16) { 
+			}elseif ($this->get->type == 16) { 
             ini_set('memory_limit', '1024M');
 			$name = '';
 			if($_POST['category'] == 0){
@@ -10958,8 +10183,7 @@ foreach ($mas_kup as $m) {
 
             $objWriter->save('php://output');
 			
-			}
-		if ($this->get->type == 17) { 
+			}elseif ($this->get->type == 17) { 
 		// die(json_encode(array('start'=>$this->post->start, 'end'=>$this->post->end, 'exit'=>'fak')));
 		$start = $this->post->start;
            ini_set('memory_limit', '2048M');
@@ -11108,8 +10332,7 @@ die(json_encode(array('start'=>(int)$this->post->start+=10, 'end'=>(int)$this->p
                 $objWriter->save('php://output');
 
 			
-			}
-if ($this->get->type == 18) {
+			}elseif ($this->get->type == 18) {
 if($this->post->ucenka_data){
 $data = date('Y-m-d', strtotime($this->post->ucenka_data));
 $sql = "SELECT  `ws_articles`. * ,  `ucenka_history`.`koll` , ((`ucenka_history`.`old_price` -  `ucenka_history`.`new_price`) *`ucenka_history`.`koll`) AS  `potera` 
@@ -11177,8 +10400,7 @@ require_once('PHPExel/PHPExcel.php');
             $objWriter->save('php://output');
 }
 
-}
-		if ($this->get->type == 19) { //отчет по товарам и остатку
+}elseif ($this->get->type == 19) { //отчет по товарам и остатку
 		 
 		$start = (int)$this->post->start;
 $cats = wsActiveRecord::useStatic('Shopcategories')->findFirst(array('id' =>(int)$this->post->cat, 'active' => 1));
@@ -11421,8 +10643,7 @@ die(json_encode(array('start'=>(int)$this->post->start+=50, 'end'=>(int)$this->p
                 $objWriter->save('php://output');
 
 			
-			}
-        if ($this->get->type == 20) {
+			}elseif ($this->get->type == 20) {
 		
  ini_set('memory_limit', '2048M');
 	set_time_limit(2800);
@@ -11535,9 +10756,7 @@ $q = "SELECT SUM(  `red_article_log`.`count` ) AS ctn
 
              
 		   die('ok');
-        }
-		
-		if ($this->get->type == 21) { //отчет по пользователям
+        }elseif ($this->get->type == 21) { //отчет по пользователям
 		
 		 set_time_limit(1200);
 		 ini_set('memory_limit', '2048M');
@@ -11682,8 +10901,7 @@ die(json_encode(array('start'=>(int)$this->post->start+=100, 'end'=>(int)$this->
                 $objWriter->save('php://output');
 
 			
-			}
-			if($this->get->type == 22){
+			}elseif($this->get->type == 22){
 			set_time_limit(1200);
 		 ini_set('memory_limit', '2048M');
 			$id = $this->get->id;
@@ -11773,9 +10991,7 @@ ORDER BY  `ws_customers`.`id` DESC";
                 header("Pragma: no-cache");
                 header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
                 $objWriter->save('php://output');
-			}
-			
-		if ($this->get->type == 'getbrends') { 
+			}elseif ($this->get->type == 'getbrends') { 
 		 $id = $this->get->id;
 		 $sql = "SELECT  `as`.`code` ,  `d`.`id_articles` ,  `a`.`brand` ,  `a`.`brand_id` ,  `a`.`model` ,  `a`.`price` 
 FROM  `ws_desires` AS  `d` 
@@ -11797,8 +11013,7 @@ $text = 'Модель <select name="model">
          }
 		$text .='</select>';
 die($text);		
-		 }
-		if ($this->get->type == 'getmodels') { 
+		 }elseif ($this->get->type == 'getmodels') { 
 		 $name = $this->get->name;
 		 $sql = "SELECT  `as`.`code` ,  `d`.`id_articles` ,  `a`.`brand` ,  `a`.`brand_id` ,  `a`.`model` ,  `a`.`price` 
 FROM  `ws_desires` AS  `d` 
@@ -17808,6 +17023,9 @@ public function articlemodelsAction()
             }
         }
 
-
+                public function fileeditAction(){
+                    
+                     echo $this->render('template/views/fileedit/file_list.php', 'index.php');
+                }
 
 }
