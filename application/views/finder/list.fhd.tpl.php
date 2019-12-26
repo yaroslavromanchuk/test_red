@@ -11,45 +11,15 @@
         FROM ws_articles
         WHERE  ws_articles.active = "y"
         AND ws_articles.stock not like "0" 
-		AND ws_articles.category_id = '.$b.'
-        
+	AND ws_articles.category_id = '.$b.'
         and ws_articles.status = 3
         ORDER BY RAND()  LIMIT 0, 8 ');
             if($arr->count() == 8){
             ?>
-	<div class="item row p-3 m-auto">
+	<div class="item row pt-3 px-5 pb-5 m-auto">
             <?php
-            foreach($arr as $article){ ?>
-            
-    <div class="article-item-fhd1 col-sm-12 col-md-6 col-lg-3 col-xl-3 float-left p-2 mb-5 <?=$article->id?>" >
-        <div class="bg-white p-1 text-center d-inline-block">
-    <a href="<?=$article->getPath()?>" class="img">
-        <img src="<?=$article->getImagePath('detail')?>"  class="m-auto" style="height:  100%; max-height: 430px; " alt="<?=htmlspecialchars($article->getTitle())?>">
-	</a>
-            <p style="padding: 5px;text-align: left;margin: 2px;">
-                <span  class="name" style="    text-transform: uppercase;font-size: 16px;" ><?=$article->getModel()?></span> -  <span class="brand" style="color: #828181;text-transform: uppercase;" ><?=$article->getBrand()?></span>
-            </p>
-    <p class="price" style="font-size: 18px;
-    color: #000000;
-    font-weight: bold;
-    margin-bottom: 10px;
-    padding: 0px 5px;
-    text-align: right">
-        <?php $pric = Number::formatFloat($article->getPriceSkidka(), 2); $pric = explode(',', $pric); echo $pric[0];?>
-	<span style="font-size:11px;vertical-align: text-top;margin-left: -4px;"><?php echo (int)$pric[1] ? ','.$pric[1] : ''; //копейки ?></span>&nbsp;грн
-	<?php if((float)$article->getOldPrice()){ ?>
-	<span class="price-old" style="text-decoration: line-through;
-    color: #e40413;
-    font-weight: normal;
-    font-size: 14px;
-    margin-right: 5px;
-    display: inline-block;"><?=$article->showPrice($article->getOldPrice())?>грн</span>
-	<?php } ?>
-	</p>
-        </div>
-</div>
-
-          <?php  
+            foreach($arr as $article){
+                echo $article->getItemBlockGlobusCachedHtml(); 
         }
 ?>		
 </div>
@@ -66,12 +36,14 @@ arrows: true,
 prevArrow: '<img src="#"  style="background-image:url(/img/slider/p-n-b.png);" data-role="none" class="slick-prev-next prev" aria-label="Previous" tabindex="0" role="button">',
 nextArrow: '<img src="#" style="background-image:url(/img/slider/p-n-b.png);"  data-role="none" class="slick-prev-next next" aria-label="Next" tabindex="0" role="button">',
 autoplay: true,
-autoplaySpeed: 5000,
+autoplaySpeed: 3000,
 draggable: true,
-easing: 'ease',
+easing: 'linear',
 fade: true,
-speed: 1000,
-dots: true,
+speed: 500,
+dots: false,
+pauseOnHover: true,
+
 }
    );
 
@@ -83,7 +55,7 @@ i = 1;
 i++;
 }
 
-  console.log('Осуществлён переход к '+currentSlide+'слайду'+i);
+  console.log('Осуществлён переход к '+currentSlide+' слайду '+i);
   showVideo(i);
   
 		//$('#video').trigger('play');

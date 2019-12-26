@@ -235,6 +235,10 @@ background-color: #f00032;
   .sk-cube-grid .sk-cube9 {
     -webkit-animation-delay: 0.2s;
             animation-delay: 0.2s; }
+  .list-group-item{
+          padding: 0.25rem 1.25rem;
+          font-size: 12px;
+  }
 
 @-webkit-keyframes sk-cubeGridScaleDelay {
   0%, 70%, 100% {

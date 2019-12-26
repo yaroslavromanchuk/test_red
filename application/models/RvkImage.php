@@ -29,8 +29,17 @@ class RvkImage {
 	}
 
 	/**
-	 * Copy and resize image
-	 */
+         * 
+         * @param type $old_filename
+         * @param type $new_filename
+         * @param type $new_width = false
+         * @param type $new_height = false
+         * @param type $crop = false
+         * @param type $fill = false
+         * @param type $fill_color = [255,255,255]
+         * @param type $watermark = false
+         * @return boolean
+         */
 	public function copy($old_filename, $new_filename, $new_width = FALSE, $new_height = FALSE, $crop = FALSE, $fill = FALSE, $fill_color = array(255, 255 ,255), $watermark = false)
 	{
 		$result = FALSE;

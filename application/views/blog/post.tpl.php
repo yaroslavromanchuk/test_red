@@ -81,7 +81,7 @@ $(".zxz_post p a.im").lightBox({
 				<?=$this->onepostblog->getContentPost()?>
 			</div>
             <br>
-            <div class="fb-like" data-href="https://www.red.ua'/blog/id/' .$this->onepostblog->getId();?>" data-layout="button" data-action="like" data-show-faces="true" data-share="true"></div>
+            <div class="fb-like" data-href="https://www.red.ua'/blog/id/' .<?=$this->onepostblog->getId()?>/" data-layout="button" data-action="like" data-show-faces="true" data-share="true"></div>
 			
 	</div>
     </div>

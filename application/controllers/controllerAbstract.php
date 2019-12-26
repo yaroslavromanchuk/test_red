@@ -11,8 +11,8 @@ abstract class controllerAbstract extends Controller
         $this->ws = $this->website = Registry::get('website');
         $this->view->user = $this->ws->getCustomer();
 
-
-        if (strtotime($this->ws->getCustomer()->machine_last_visit->getCtime()) < (time() - (24 * 60 * 60))) {
+if(!$this->ws->getCustomer()->isAdmin()){
+        if (strtotime($this->ws->getCustomer()->machine_last_visit->getCtime()) < (time() - 86400)){
             $this->ws->getCustomer()->logout();
             $this->ws->updateHashes();
 $str = ((isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], $_SERVER['HTTP_HOST']) !== false) ? $_SERVER['HTTP_REFERER'] :  $_SERVER['REQUEST_URI']);// заменить $_SERVER['REQUEST_URI'] на '/'
@@ -32,11 +32,10 @@ $str = ((isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], $_S
             
             if (isset($_GET['redirect'])){
             $str = $_GET['redirect'];
-            
-            }else{
-            $this->_redirect($str);
             }
+            $this->_redirect($str);
         }
+    }
 
         $this->message = Registry::get('message');
         $this->view->trans = $this->trans = new Translator();
@@ -45,77 +44,48 @@ $str = ((isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], $_S
         $this->view->message = $this->message;
         $this->view->get = $this->get;
         $this->view->post = $this->post;
-
+        
+        $this->view->css = []; // массив css файлов для корректного отображения страницы
+        $this->view->scripts = []; // массив js файлов для работы страницы
 		
         Registry::set('View', $this->view);
 		
         $this->_global_template = 'site.tpl.php';
 
 
-        if (!isset($_SESSION['basket'])){$_SESSION['basket'] = [];}
-        $this->basket = $this->view->basket = $_SESSION['basket'];
+        if (!isset($_SESSION['basket'])){ $_SESSION['basket'] = []; }
+        $this->view->basket = $this->basket = $_SESSION['basket'];
 
-        if (!isset($_SESSION['basket_contacts'])){$_SESSION['basket_contacts'] = [];}
-        $this->basket_contacts = $this->view->basket_contacts = $_SESSION['basket_contacts'];
+        if (!isset($_SESSION['basket_contacts'])){ $_SESSION['basket_contacts'] = []; }
+        $this->view->basket_contacts = $this->basket_contacts = $_SESSION['basket_contacts'];
 
         if (!isset($_SESSION['basket_articles'])){$_SESSION['basket_articles'] = [];}
         
-        $this->basket_articles = $this->view->basket_articles = $_SESSION['basket_articles'];
+        $this->view->basket_articles = $this->basket_articles = $_SESSION['basket_articles'];
 
-     ////   if (!isset($_SESSION['basket_options']))
-          //  $_SESSION['basket_options'] = array();
-       // $this->basket_options = $this->view->basket_options = $_SESSION['basket_options'];
-		
-		$this->view->text_trans  = explode(',', $this->trans->get('Товаров на странице,Быстрый просмотр,Цвета,Размеры'));
+	$this->view->text_trans  = explode(',', $this->trans->get('Товаров на странице,Быстрый просмотр,Цвета,Размеры'));
 		  //push
-	//	 $this->view->puch = $this->view->render('/cache/puch.tpl.php');
-		 
-		$sql = '
-		SELECT  brand, count(ws_articles.id) as cnt, red_brands.logo, brand_id
-		FROM ws_articles_sizes
-		inner JOIN ws_articles ON ws_articles_sizes.id_article = ws_articles.id
-		inner JOIN red_brands ON red_brands.id = ws_articles.brand_id
-		WHERE ws_articles_sizes.count > 0 AND ws_articles.active = "y" AND brand_id > 0
-		GROUP BY brand_id
-		ORDER BY cnt DESC
-		LIMIT 20
-		';
-		$this->view->cached_brands = wsActiveRecord::useStatic('Shoparticles')->findByQuery($sql);
 	
+//	 $this->view->puch = $this->view->render('/cache/puch.tpl.php');
+		 
+		
         //menus_caching
         $cache = Registry::get('cache');
 	$cache->setEnabled(true);
-                $lang = Registry::get('lang');//$_COOKIE['lang']?$_COOKIE['lang']:$_SESSION['lang'];
-		//socsety
-	/*	$cache_name = 'socsety_'.$_SESSION['lang'];
-        $socsety = @$cache->load($cache_name);
-       if ( !$socsety ) { //если сломалось пищещь сюда TRUE 
-            $socsety = $this->view->render('/cache/soc.tpl.php');
-            @$cache->save($socsety, $cache_name, array($cache_name), false);
-        }
-        $this->view->socsety = $socsety;
-		*/
-		if(Registry::get('device') == 'computer' or ($_COOKIE['mobil'] and $_COOKIE['mobil'] == 10)){ 
-		$this->view->cached_top_menu = $this->view->render('/cache/top_menu.tpl.php');
-		//new_year
-		/*$cache_name = 'new_year_fon';
-        $new_year = $cache->load($cache_name);
-       if (!$new_year) { //если сломалось пищещь сюда TRUE 
-            $new_year = $this->view->render('/pages/fon.new.year.php');
-            $cache->save($new_year, $cache_name, array($cache_name), false);
-        }
-        $this->view->cached_new_year = $new_year;
-		*/
+        $lang = Registry::get('lang');
+		
+	if(Registry::get('device') == 'computer' or (isset($_COOKIE['mobil']) and $_COOKIE['mobil'] == 10)){ 
+            $this->view->cached_top_menu = $this->view->render('/cache/top_menu.tpl.php');
 		//top menu 2
-        $cache_name = 'topcategories_3_'.$lang;
-      $topcategories = $cache->load($cache_name);// меню навигации
+            $cache_name = 'topcategories_3_'.$lang;
+            $topcategories = $cache->load($cache_name);// меню навигации
         if (!$topcategories) { //если сломалось пищещь сюда TRUE // верхнее меню
             $topcategories = $this->view->render('/cache/topcategories.tpl.php');
-            $cache->save($topcategories, $cache_name, array($cache_name), false);
+            $cache->save($topcategories, $cache_name, [$cache_name], false);
         }
-		//$topcategories = $this->view->render('/cache/topcategories.tpl.php');
         $this->view->cached_topcategories = $topcategories;
-		 //bottom menu
+	
+        //bottom menu
         $cache_name = 'footer_'.$lang;
         $bottom_menu = $cache->load($cache_name);
         if (!$bottom_menu) { //если сломалось пищещь сюда TRUE
@@ -123,35 +93,18 @@ $str = ((isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], $_S
             $cache->save($bottom_menu, $cache_name, array($cache_name), false);
         }
         $this->view->cached_bottom_menu = $bottom_menu;
-		}else{
-		 $this->view->cached_mobi_menu = $this->view->render('/cache/mobi_menu.tpl.php');
-		 		//mobi_futer
-		$cache_name = 'mobi_futer_'.$lang;
+	}else{
+            $this->view->cached_mobi_menu = $this->view->render('/cache/mobi_menu.tpl.php');
+	//mobi_futer
+	$cache_name = 'mobi_futer_'.$lang;
         $mobi_futer = $cache->load($cache_name);
-        if (!$mobi_futer) { //если сломалось пищещь сюда TRUE
+        if (!$mobi_futer){ //если сломалось пищещь сюда TRUE
             $mobi_futer = $this->view->render('/cache/mobi_futer.tpl.php');
             $cache->save($mobi_futer, $cache_name, array($cache_name), false);
         }
-        $this->view->cached_mobi_futer = $mobi_futer;
-		}
-		
-		
-if($this->ws->getCustomer()->getId()){ 
-		$sql = "SELECT  `ws_articles`. * 
-FROM  `ws_articles` 
-INNER JOIN  `ws_articles_history` ON  `ws_articles`.`id` =  `ws_articles_history`.`article_id` 
-WHERE  `ws_articles_history`.`customer_id` =".$this->ws->getCustomer()->getId()."
-AND ws_articles.`stock`  not like '0' and `ws_articles`.`status` = 3
-GROUP BY  `ws_articles`.`id` 
-ORDER BY  `ws_articles_history`.`id` DESC 
-LIMIT 6";
-			$this->view->history = wsActiveRecord::useStatic('Shoparticles')->findByQuery($sql);
-		}
-		
+        $this->view->cached_bottom_menu = $mobi_futer;
+	}
         //define('BTW', 0);
-        //define('MAX_COUNT_PER_ARTICLE', 100);
-        //define('DELIVERY_COST', Config::findByCode('delivery_cost')->getValue());
-        //var_dump(DELIVERY_COST);die;
         return;
     }
 
@@ -159,7 +112,6 @@ LIMIT 6";
     {
         // Render default site template
         echo $this->render();
-
         return;
     }
 
@@ -182,9 +134,10 @@ LIMIT 6";
         wsLog::add($message, 'INFO');
 
         // Send 404 header
-        header('HTTP/1.0 404 Not Found');
-        header("Location: /404/",TRUE,301); 
-			exit();
+        header("HTTP/1.0 404 Not Found");
+         
+      //  header("Location: /404/",TRUE,301);  
+			//exit();
         $page = wsActiveRecord::useStatic('Menu')->findByUrl('404');
 
         if ($page) {
@@ -201,9 +154,6 @@ LIMIT 6";
         $this->view->setContent($content);
         return $this->view->render($this->_global_template);
     }
-	
-		
-
 }
 
 class Translator
@@ -296,16 +246,11 @@ public function translateru($str, $lang_from = 'uk', $lang_to='ru') {
   curl_close($handle);  
   if($responseCode == 200) {  
 		return $responseDecoded['data']['translations'][0]['translatedText'];
- 
     } else {  
        // echo 'Source: ' . $text . '<br>';  
        return false;
 	    //  echo 'Fetching translation failed! Server response code:' . $responseCode . '<br>';  
         //echo 'Error description: ' . $responseDecoded['error']['errors'][0]['message'];  
     }
-}
-	
-	
-	
-	
+}	
 }

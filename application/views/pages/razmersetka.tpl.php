@@ -1,3 +1,11 @@
+ <a href="#"  class="rozmerSetka1" onclick="
+     $('.popap_blok').css('width',$(document).width()).css('height',$(document).height()).show();
+	$('.mask').css('width',$(document).width()).css('height',$(document).height()).css({'opacity':'0.7'}).show();
+	$('#rozmerSetka1').css('left',($(document).width()-$('#rozmerSetka1').width())/2);
+	$('#rozmerSetka1').toggle('slow', function() {});
+        return false;">
+     (<?=$this->trans->get('размерная сетка')?>)
+ </a>
 <div class="popap_blok">
 	<div class="mask" onclick="$(this).hide(); $('#rozmerSetka1').toggle('slow', function() {}); $('.popap_blok').hide();"></div>
 	<div class="simple_overlay" style="width: auto; z-index:99999; left: 5%;border-radius: 5px;background: #d4d4d4;" id="rozmerSetka1">

@@ -89,8 +89,7 @@ class xlsStream
             if (preg_match("/^w|x/", $this->mode))
             {
                 // write an Excel stream header
-                $str = pack(str_repeat($this->bin[$this->endian], 6), 0x809, 0x8, 0x0, 0x10,
- 0x0, 0x0);
+                $str = pack(str_repeat($this->bin[$this->endian], 6), 0x809, 0x8, 0x0, 0x10, 0x0, 0x0);
                 fwrite($this->fp, $str);
                 $opened_path = $this->xlsfilename;
                 $this->position = strlen($str);
@@ -237,4 +236,3 @@ $col, 0x0, $l);
 
 stream_wrapper_register("xlsfile", "xlsStream")
     or die("Failed to register protocol: xlsfile");
-?>

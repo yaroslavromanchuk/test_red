@@ -9,11 +9,10 @@
 	</div>
 </div>
 </div>
-<?php
-	echo '<ul class="row articles-row p-2">';
-	foreach($this->articles as $article) {
-		$article->getSpecNakl();
+<ul class="row articles-row p-5">
+	<?php foreach($this->articles as $article) {
 		echo $article->getSmallBlockCachedHtml();
 	}
-	echo '</ul>';
-?>
+        ?>
+	</ul>
+

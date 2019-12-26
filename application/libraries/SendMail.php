@@ -1,12 +1,8 @@
 <?php
  class SendMail{
-		static private $instance = null;
-		private $view;
-        private $admin_email;
-        private $admin_name;
+	static private $instance = null;
         private $email_charset;
-		private $mailer;
-		private $admin_email_pass;
+	private $mailer;
 	
 	 static public function getInstance()
         {
@@ -43,11 +39,25 @@
 			$this->subscribe_pass = Config::findByCode('subscribe_pass')->getValue();
             $this->email_charset = 'UTF-8';
         }
-
-	public function sendEmail($to_email = '', $to_name = '', $subject = '', $msg ='', $uploadfile = false, $filename = false, $from_email = false, $from_name = false, $copy = false, $copy_email = false, $copy_name = false){
+        /**
+         * Отправка письма с market@red.ua
+         * @param type $to_email = '' - email получателя
+         * @param type $to_name = '' - имя получателя
+         * @param type $subject = '' - тема письма
+         * @param type $msg = '' - содержимое письма
+         * @param type $uploadfile = '' - путь к вложенному файлу
+         * @param type $filename = '' - имя вложенного файла
+         * @param type $from_email = false - email отправителя
+         * @param type $from_name = false - имя отправителя
+         * @param type $copy = false - (0-нет, 1- видимая, 2- скрытая)
+         * @param type $copy_email = false - email получателя копии
+         * @param type $copy_name = false - имя получателя копии
+         * @return boolean
+         */
+	public function sendEmail($to_email = '', $to_name = '', $subject = '', $msg ='', $uploadfile = '', $filename = '', $from_email = false, $from_name = false, $copy = false, $copy_email = false, $copy_name = false){
 	if(substr(trim($to_email), -2) != 'ru'){
-            try{	
-// инициализируем класс
+        
+        // инициализируем класс
 //$this->mailer = new PHPMailer(true);
 $this->mailer->IsHTML(true);
 //$mailer->AddReplyTo('notforall@red.ua', 'Департаменту оплаты');
@@ -60,7 +70,9 @@ $msg = iconv('UTF-8', $this->email_charset, trim($msg));
 //$this->mailer->Subject = $subject;
 $this->mailer->Subject = "=?UTF-8?B?" . base64_encode($subject) . "?=\r\n";
 // настройка класса для отправки почты
-if($uploadfile and $filename) $this->mailer->addAttachment($uploadfile, $filename);
+if($uploadfile and $filename){ $this->mailer->addAttachment($uploadfile, $filename);}
+            try{	
+
 if($to_email and $this->isValidEmailNew($to_email)){
 // Добавляем адрес в список получателей
 $this->mailer->AddAddress($to_email, $to_name);
@@ -77,18 +89,15 @@ if ($from_email) {$this->mailer->From = $from_email;}
 // Задаем тело письма
 $this->mailer->Body = $msg;
 //$this->mailer->send();
-
-if(!$this->mailer->send()){
+if(!@$this->mailer->Send()){
 $res = 'Не могу отослать письмо!'.$this->mailer->ErrorInfo;
-  //return 'Не могу отослать письмо!';
 }else{
 $res = 'Письмо отослано!';
-  //return 'Письмо отослано!';
 }
-
 $this->mailer->ClearAddresses();
 $this->mailer->ClearAttachments();
 $this->mailer->IsHTML(false);
+
   wsLog::add('Email notification "' . $res . '" sent to: ' . $to_email , 'Email');
  // return true;
 }catch (phpmailerException $e) {
@@ -102,8 +111,24 @@ return true;
         
         return false;
 	}
-	
-public function sendSubEmail($to_email, $to_name = '', $subject, $msg ='', $uploadfile = '', $filename = '', $from_email = '', $from_name = '', $copy = false, $copy_email = '', $copy_name = ''){
+        
+        
+/**
+         * Отправка рассылки c notforall@red.ua
+         * @param type $to_email = '' - email получателя
+         * @param type $to_name = '' - имя получателя
+         * @param type $subject = '' - тема письма
+         * @param type $msg = '' - содержимое письма
+         * @param type $uploadfile = '' - путь к вложенному файлу
+         * @param type $filename = '' - имя вложенного файла
+         * @param type $from_email = false - email отправителя
+         * @param type $from_name = false - имя отправителя
+         * @param type $copy = false - (0-нет, 1- видимая, 2- скрытая)
+         * @param type $copy_email = false - email получателя копии
+         * @param type $copy_name = false - имя получателя копии
+         * @return boolean
+         */	
+public function sendSubEmail($to_email, $to_name = '', $subject, $msg ='', $uploadfile = '', $filename = '', $from_email = false, $from_name = false, $copy = false, $copy_email = '', $copy_name = ''){
 		
 		try{
 // инициализируем класс

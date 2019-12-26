@@ -8,7 +8,7 @@ $c = false;//Skidki::getActiv($this->getShopItem()->getId());
  ?>
 
 		<!-- !Comment modal -->
-	<div class="modal fade comment-form" id="comment-modal_b_ord" tabindex="-1" role="dialog" aria-labelledby="comment-modal_b_ord">
+	<!--<div class="modal fade comment-form" id="comment-modal_b_ord" tabindex="-1" role="dialog" aria-labelledby="comment-modal_b_ord">
 		<div class="modal-dialog" role="document" id="f_order">
 	    	<div class="modal-content modal-md"> 
 				<form id="qo"  method="post" class="disabled-while-empty" name="qo">
@@ -84,39 +84,27 @@ $c = false;//Skidki::getActiv($this->getShopItem()->getId());
 	    	</div>
 	  	</div>
 
-	</div>	
+	</div>	-->
 	<!-- End Comment modal -->
 <?php
+
 $Headers = get_headers('https://www.red.ua'.$this->getShopItem()->getImagePath('card_product'));
 if(strpos($Headers[0], '200')) {
 $rs = 'card_product';
 }else{
 $rs = 'detail';
 }
+//$rs = 'detail';
 	$label = false;
 	if ($this->getShopItem()->getLabelId()) {
 		$label = $this->getShopItem()->getLabel()->getImage();// wsActiveRecord::useStatic('Shoparticleslabel')->findFirst(array('id' => $this->getShopItem()->getLabelId()))->getImage();
 	}
 ?>
 <div class="row article-detail-box p-2 m-0">
-<?php if (count($this->getShopItem()->getImages()) > 0) { ?>
-<div class="photo_min col-xs-12  col-lg-3 col-xl-3">
-<a href='<?=$this->getShopItem()->getImagePath()?>' class="cloud-zoom-gallery" title="<?=htmlspecialchars($this->getShopItem()->getTitle())?>" data-rel="useZoom: 'zoom', smallImage: '<?=$this->getShopItem()->getImagePath($rs)?>'">						
-    <div class="for_cloud_big_src" style="display:none"><?=$this->getShopItem()->getImagePath();?></div>
-    <img src="<?=$this->getShopItem()->getImagePath('listing');?>" alt="<?=htmlspecialchars($this->getShopItem()->getTitle())?>" class="photo-small" style="max-width: 100%;" onmouseover="$(this).parent().click()"/>
-</a>
-<?php foreach ($this->getShopItem()->getImages() as $image) { ?>
-<a href='<?=$image->getImagePath()?>' class='cloud-zoom-gallery  <?=((int)$image->getColorId() > 0)?' color_click_'.$image->getColorId():''?>' title="<?=$image->getTitle()?>"  data-rel="useZoom: 'zoom', smallImage: '<?=$image->getImagePath($rs)?>'" 
->
-<div class="for_cloud_big_src" style="display:none"><?=$image->getImagePath();?></div>
-<img src="<?=$image->getImagePath('listing')?>" alt="<?=$image->getTitle()?>" class="photo-small" style="max-width: 100%;"   onmouseover="$(this).parent().click()" />
-</a>
-<?php } ?>
-</div>
-<?php } ?>
+
 
 <!--foto-->
-<div class="photos  col-xs-12 col-sm-12 col-lg-9 col-xl-9">
+<div class="photos  col-xs-12 col-sm-12 col-lg-12 col-xl-12">
 
 <?php
 if($label == '/storage/label/final_sale_1.png'){
@@ -141,11 +129,15 @@ if($label == '/storage/label/final_sale_1.png'){
 	<?php
 	} ?> 
     <div class="">  
- <?php if ($label) { ?>
+ <?php if ($label and false) { ?>
     <div class="article_label_container_left"><div class="article_label"><img alt="label" src="<?=$label?>" style="width: 100%"/></div></div>
         <?php } ?>
      <?php
-     
+     if($this->getShopItem()->label_id){ ?>
+         <span class="sale-icon">
+                    <?=$this->getShopItem()->label->name?$this->getShopItem()->label->name:''?>
+                </span>
+    <?php }
    $option =  $this->getShopItem()->getOptions();
     if($option->value){
         ?>
@@ -159,10 +151,32 @@ if($label == '/storage/label/final_sale_1.png'){
 
 <a onclick="$('a.cloud-zoom').css('z-index',1);" href='<?=$this->getShopItem()->getImagePath(); ?>' class='cloud-zoom' id='zoom' >
 
-<img class="photo-big" id="test" itemprop="image"  src="<?=$this->getShopItem()->getImagePath($rs)?>" alt='<?=htmlspecialchars($this->getShopItem()->getTitle()); ?>' title="<?=htmlspecialchars($this->getShopItem()->getTitle()); ?>" >
+<img class="photo-big" style="    margin: auto;border: 0; box-shadow: 0 0 0 0;" id="test" itemprop="image"  src="<?=$this->getShopItem()->getImagePath($rs)?>" alt='<?=htmlspecialchars($this->getShopItem()->getTitle()); ?>' title="<?=htmlspecialchars($this->getShopItem()->getTitle()); ?>" >
 </a>
 </div>
 	</div>
+<?php if (count($this->getShopItem()->getImages()) > 0) { ?>
+<div class="photo_min col-xs-12  col-lg-12 col-xl-12 ">
+    <div class="row p-2">
+        <div class="col-xs-12  col-lg-2 col-xl-2">
+<a href='<?=$this->getShopItem()->getImagePath()?>' class="cloud-zoom-gallery" title="<?=htmlspecialchars($this->getShopItem()->getTitle())?>" data-rel="useZoom: 'zoom', smallImage: '<?=$this->getShopItem()->getImagePath($rs)?>'">						
+    <div class="for_cloud_big_src" style="display:none"><?=$this->getShopItem()->getImagePath();?></div>
+    <img src="<?=$this->getShopItem()->getImagePath('listing');?>" alt="<?=htmlspecialchars($this->getShopItem()->getTitle())?>" class="photo-small" style="max-width: 100%;" onmouseover="$(this).parent().click()"/>
+</a>
+            </div>
+<?php foreach ($this->getShopItem()->getImages() as $image) { ?>
+        <div class="col-xs-12  col-lg-2 col-xl-2">
+<a href='<?=$image->getImagePath()?>' class='cloud-zoom-gallery  <?=((int)$image->getColorId() > 0)?' color_click_'.$image->getColorId():''?>' title="<?=$image->getTitle()?>"  data-rel="useZoom: 'zoom', smallImage: '<?=$image->getImagePath($rs)?>'" 
+>
+<div class="for_cloud_big_src" style="display:none"><?=$image->getImagePath();?></div>
+<img src="<?=$image->getImagePath('listing')?>" alt="<?=$image->getTitle()?>" class="photo-small" style="max-width: 100%;"   onmouseover="$(this).parent().click()" />
+</a>
+            </div>
+<?php } ?>
+            
+        </div>
+</div>
+<?php } ?>
 <!--/foto-->
 <!-- /text-->
 	<div class="texts col-xs-12 col-sm-12 col-lg-12  col-xl-12 px-0">
@@ -225,17 +239,6 @@ if($this->getShopItem()->getModelId()){
 							<span><?=$this->trans->get('Выберите размер'); ?></span>
 						</span>
                                                    
- <a href="#"  class="rozmerSetka1" onclick="
-     $('.popap_blok').css('width',$(document).width()).css('height',$(document).height()).show();
-	$('.mask').css('width',$(document).width()).css('height',$(document).height()).css({'opacity':'0.7'}).show();
-	$('#rozmerSetka1').css('left',($(document).width()-$('#rozmerSetka1').width())/2);
-	$('#rozmerSetka1').toggle('slow', function() {});
-        return false;">
-     (<?=$this->trans->get('размерная сетка')?>)
- </a>
-<?php if ($this->getShopItem()->category->getSizeType() > 0 and $this->getShopItem()->getSizeType() != 100) {
-	echo $this->render('/pages/razmersetka.tpl.php'); 
-} ?>
           </p>
 <p class="mb-0"> 
 <b><?=$this->trans->get('Цвет')?>:</b>
@@ -546,11 +549,7 @@ if($this->ws->getCustomer()->getIsLoggedIn() and wsActiveRecord::useStatic('Desi
 		<?php if ($this->getShopItem()->getSostav()) { ?> <div id="tabs-2" class="tab-pane fade"><p><?=$this->getShopItem()->getSostav()?></p></div> <?php } ?>
 		<?php if ($this->getShopItem()->getSootRozmer()) { ?> 
 		<div id="tabs-3" class="tab-pane fade"><p><?=$this->getShopItem()->getSootRozmer()?></p><br>
-		<a href="#"  class="rozmerSetka1"  style="color: red;"
-								onclick="$('.popap_blok').css('width',$(document).width()).css('height',$(document).height()).show();
-								$('.mask').css('width',$(document).width()).css('height',$(document).height()).show();
-								$('#rozmerSetka1').css('left',($(document).width()-$('#rozmerSetka1').width())/2);
-								$('#rozmerSetka1').toggle('slow', function() {}); return false;">(<?=$this->trans->get('соответствие размеров')?>)</a>
+	
 								 </div>
 								<?php }?>
 	<div id="tabs-4" class="tab-pane fade">
@@ -576,14 +575,13 @@ if($this->ws->getCustomer()->getIsLoggedIn() and wsActiveRecord::useStatic('Desi
 				$.ajax({
 					type: 'GET',
 					dataType: 'json',
-					url: '/page/getarticle/&'+"color_id=" + colorid + '&size_id=' + sizeid + '&article_id=' + <?=$this->getShopItem()->getId()?>,
+					url: '/page/getarticle/&'+"color_id=" + colorid + '&size_id=' + sizeid + '&article_id=' + <?=$this->getShopItem()->getId()?>+'/',
 					beforeSend: function(){
 					$("#message").fadeOut(300);
 					//$("#message").html('');
 						$('#article').css('opacity', '0.1');
 						$('#wait_circle').show();
 					},
-//					data: "color_id=" + colorid + '&size_id=' + sizeid + '&article_id=' + <?=$this->getShopItem()->getId()?>,
 					success: function (result) {
 						if (result.type === 'error') {
 							$('#article').css('opacity', '1');
@@ -608,7 +606,7 @@ if($this->ws->getCustomer()->getIsLoggedIn() and wsActiveRecord::useStatic('Desi
 	}
 	$(document).ready(function () {
 		$(".tab-content").tab();
-	$(".phone_form").mask("38(999)999-99-99");
+	//$(".phone_form").mask("38(999)999-99-99");
 	
 		$('a.cloud-zoom').lightBox({fixedNavigation: true,overlayOpacity: 0.6});
 	
@@ -626,10 +624,10 @@ if($this->ws->getCustomer()->getIsLoggedIn() and wsActiveRecord::useStatic('Desi
 			$('#color').html('загрузка...');
 			$('#article').css('opacity', '0.5');
 			$('#wait_circle').show();
-			var url = '/page/getcolor/&'+"size_id=" + size_id + '&article_id=' + <?=$this->getShopItem()->getId()?>;
+			var url = '/page/getcolor/&'+"size_id=" + size_id + '&article_id=' + <?=$this->getShopItem()->getId()?>+'/';
 			$.get(
 				url,
-				"size_id=" + size_id + '&article_id=' + <?=$this->getShopItem()->getId()?>,
+				"size_id=" + size_id + '&article_id=' + <?=$this->getShopItem()->getId()?>+'/',
 				function (result) {
 					if (result.type == 'error') {
 						alert('error');
@@ -669,10 +667,10 @@ if($this->ws->getCustomer()->getIsLoggedIn() and wsActiveRecord::useStatic('Desi
 			$('#article').css('opacity', '0.5');
 			$('#size').html('загрузка...');
 			$('#wait_circle').show();
-			var url = '/page/getsize/&'+"color_id=" + color_id + '&article_id=' + <?=$this->getShopItem()->getId()?>;
+			var url = '/page/getsize/&'+"color_id=" + color_id + '&article_id=' + <?=$this->getShopItem()->getId()?>+'/';
 			$.get(
 				url,
-				"color_id=" + color_id + '&article_id=' + <?=$this->getShopItem()->getId()?>,
+				"color_id=" + color_id + '&article_id=' + <?=$this->getShopItem()->getId()?>+'/',
 				function (result) {
 					if (result.type == 'error') {
 						alert('error');

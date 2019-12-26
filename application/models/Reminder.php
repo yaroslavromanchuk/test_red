@@ -19,4 +19,3 @@ protected $_table = 'ws_articles_reminder_admin';
 		
 		}
 }
-?>

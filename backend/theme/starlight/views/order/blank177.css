@@ -1,0 +1,123 @@
+html, body {
+	width: 794px;
+	font-size: 11px;
+	margin: 0;
+}
+.main_image {
+	background: url("/img/blank_117.jpg") no-repeat;
+	background-size: auto 100%;
+	height: 559px;
+	position: relative;
+	border-bottom: 1px dashed;
+	margin-top: 5px;
+}
+.main_image div {
+	position: absolute;
+	line-height: 15px;
+}
+.address {
+	top: 262px;
+	left: 25px;
+	text-indent: 155px;
+	width: 360px;
+}
+.phone {
+	top: 292px;
+	/*left: 25px;*/
+	text-indent: 25px;
+	width: 360px;
+}
+.phone2 {
+	top: 510px;
+	/*left: 25px;*/
+	text-indent: 25px;
+	width: 360px;
+}
+.phone3 {
+	top: 387px;
+	left: 340px;
+	text-indent: 77px;
+	width: 360px;
+}
+.address2 {
+	top: 481px;
+	text-indent: 153px;
+	width: 360px;
+	left: 25px;
+}
+.address3 {
+top: 356px;
+left: 411px;
+text-indent: 77px;
+width: 360px;
+}
+.amount_text {
+	top: 201px;
+	left: 80px;
+}
+.amount_text2 {
+	top: 227px;
+	left: 80px;
+}
+.amount_text3 {
+top: 181px;
+left: 528px;
+}
+.amount_num {
+top: 443px;
+left: 125px;
+}
+.amount_num2 {
+top: 443px;
+left: 305px;
+}
+.doz {
+top: 181px;
+left: 424px;
+width: 35px;
+text-align: center;
+}
+.poslez {
+top: 181px;
+left: 485px;
+}
+.galochka {
+font-family: arial;
+font-size: 17px;
+top: 368px;
+left: 173px;
+}
+.name {
+top: 248px;
+left: 168px;
+}
+.name2 {
+top: 464px;
+left: 177px;
+}
+.name3 {
+top: 320px;
+left: 501px;
+}
+.return {
+top: 325px;
+left: 8px;
+text-indent: 158px;
+width: 360px;
+}
+.return2 {
+top: 225px;
+left: 557px;
+}
+.rahunok {
+top: 277px;
+left: 465px;
+}
+.fon_ukr{
+	background: url("/img/blank_fon_117.jpg") no-repeat;
+	background-size: auto 100%;
+	height: 559px;
+	position: relative;
+	border-bottom: 1px dashed;
+	margin-top: 5px;
+}

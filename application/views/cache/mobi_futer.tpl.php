@@ -1,8 +1,8 @@
-<script async  src="/js/common.js?v=1.1"></script>
+  <script src="/mobil/mjs/common.js"></script>
 <footer>
 		<div class="w-100 mx-auto text-center ">
 				<a href="#" data-evaluation="rss" data-toggle="modal" data-target="#subscribe"  class="btn btn-light" style="background-color: #d3d3d399;font-size: 100%;">
-					<img style="margin-top: -7px;width: 20px;margin-right: 10px;"src="/mobil/mimages/rss_email.png" alt="Главная"/>
+					<img style="margin-top: -7px;width: 20px;margin-right: 10px;" class="catalog_img" data-src="/mobil/mimages/rss_email.png" alt="Главная"/>
 					<span><?=$this->trans->get('Подписаться на обновления');?></span>
 				</a>
 		</div>

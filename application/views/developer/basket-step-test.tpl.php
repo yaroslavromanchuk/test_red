@@ -71,7 +71,7 @@ echo '</div>';
     </div>
 </div>
    </div> 
-<form method="post" action="" class="contact-form m-auto mb-sm-5 mb-md-5 mb-xl-2 mb-5 " name="basket_contacts"  data-parsley-validate >
+<form method="post" action="/developer/basketcontacts/" class="contact-form m-auto mb-sm-5 mb-md-5 mb-xl-2 mb-5 " name="basket_contacts" id="basket_contacts"  data-parsley-validate >
 <div class="row m-auto bg-white p-0 " >
 <div  class="col-md-12 col-lg-10 col-xl-10 m-auto p-lg-5 p-md-2 " >
     <div id="wizard"  >
@@ -264,9 +264,11 @@ echo '</div>';
 			<script src="/lib/perfect-scrollbar/js/perfect-scrollbar.jquery.js"></script>
 				<script src="/lib/highlightjs/highlight.pack.js"></script>
                                 <script src="/lib/parsleyjs/parsley.js?v=1.7"></script>
-				<script src="/lib/jquery.steps/jquery.steps.js"></script>
-						
+				<script src="/lib/jquery.steps/jquery.steps.js?v=1"></script>
+                                
+	<script  src="/js/np/np_api.js?v=1.3.1"></script>					
 <script>
+    
 window.Parsley.setLocale('ru');
 function loadDopFile(e){
 console.log(e.value);
@@ -503,13 +505,16 @@ $(function(){
               }
 			   // Step 2 form validation
               if(currentIndex === 2) {
-			/// var sost = $('#sostav').parsley();
+             // var formData = $('#basket_contacts').serialize(); // Gets the data from the form fields
+                //    $.post('path_to/form_handler_file', formData);
+                    
+		$("#basket_contacts").submit();	/// var sost = $('#sostav').parsley();
 			// if(sost.isValid()) {
              //    return true;
              //   } else {
 			//	sost.validate();
 			//	}
-
+           // return true;
               }
 		
             // Always allow step back to the previous step even if the current step is not valid.
@@ -517,8 +522,7 @@ $(function(){
 			return true; 
 			}
           }
-        });//end steps
-        
+        });//end steps         
         $('#street').autocomplete({
 	source: '/shop/getmistcity/?what=street',
 			minLength: 3,
@@ -530,47 +534,68 @@ $(function(){
 			select: function (event, ui) {
 			$('#s_k').fadeOut(300);
 			}
-				});
+	});
                                 
-                                var uidnp = $('#city_np').val();
-	$('#city_np').autocomplete({
-			source: '/shop/novapochta/?what=citynpochta&term=' + uidnp,
-			minLength: 2,
-			maxHeight: 200,
-			deferRequestBy: 100,
-			search: function( event, ui ) {
-			$('#cityx').val('');
-			},
-			select: function (event, ui) {
-				if (ui.item == null) {
-					$('#cityx').val('');
-				} else {
-					$('#cityx').val(ui.item.id);
-					myNP(ui.item.id);
+   // var uidnp = $('#city_np').val();
+   $( "#city_np" ).autocomplete({
+     minLength: 2,
+    maxHeight: 100,
+    deferRequestBy: 100,
+      source: function(request, response){
+           var lang = "<?=Registry::get('lang')?>";
+         if(lang == 'uk'){ lang  = 'ua';}
+        // организуем кроссдоменный запрос 
+                let np = new NP('1e594a002b9860276775916cdc07c9a6', lang);
+                    var respons = np.getCities(0, request.term);
+                    
+                    if(respons.success){
+                        response($.map(respons.data, function(item){
+              return{
+                label: item.DescriptionRu,
+                value: item.DescriptionRu,
+                id: item.Ref
+              }
+            }));
+                    }else{
+                        console.log(respons);
+                    }
+      },
+    select: function (event, ui) {
+            if (ui.item == null) {
+		$('#cityx').val('');
+            } else {
+		$('#cityx').val(ui.item.id);
+		myNP(ui.item.id);
 	
-				}
-			}
-		});
+	}
+            }
+    });                             
 });//exit ready
-
-			
-		function myNP (x) {
-        $.ajax({
-                url: '/shop/novapochta/',
-                type: 'POST',
-                dataType: 'json',
-                data: 'warehouses='+x+'&metod=getframe_np',
-                success: function (data) {
-                    console.log(data);
-                    $('#sklad').html('<option label="Способ оплаты..."></option>'+data);
-                   // $('#k_np_g').fadeOut(1);
-                  //  $('#sklad_np_leb').fadeOut(1);
+	
+    function myNP (x) {
+     var lang = "<?=Registry::get('lang')?>";
+         if(lang == 'uk'){ lang  = 'ua';}
+         let np = new NP('1e594a002b9860276775916cdc07c9a6', lang);
+        var response = np.getWarehouses(x, 0);
+                   
+                    if(response.success){
+    var text = '';
+    for(var k in response.data){
+        if(lang == "ru"){
+        text+='<option data-id ="'+response.data[k].Ref+'" value="'+response.data[k].DescriptionRu+'">'+response.data[k].DescriptionRu+'</option>';
+    }else{
+        text+='<option data-id ="'+response.data[k].Ref+'" value="'+response.data[k].Description+'">'+response.data[k].Description+'</option>';
+    }
+    }
+    }else{
+        text += '<option data-id ="'+response.data[k].Ref+'" value="'+response.data[k].Description+'">'+response.data[k].Description+'</option>';
+        return response.errors;
+    }
+     console.log(response);
+     $('#sklad').html(text);
+                    $('#k_np_g').fadeOut(1);
+                    $('#sklad_np_leb').fadeOut(1);
                     $('#sklad').fadeIn(10);
-                },
-                error: function (e){
-                    console.log(e);
-                }
-        });
 		return false;
 }		
 </script>

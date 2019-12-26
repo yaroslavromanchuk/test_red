@@ -30,4 +30,3 @@ class ReviewsXML extends DOMDocument {
 	
 	
 	}
-?>

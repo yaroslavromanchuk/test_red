@@ -1,12 +1,41 @@
 <?php
 
 class HomeController extends controllerAbstract {
+    
+      public function init() {
+        parent::init();
+        $this->view->css = [
+            '/js/slider-fhd/slick.css',
+            //'/js/slider-fhd/slick-theme.css?v=1',
+            '/css/bs/css/bootstrap.min.css',
+            '/css/style_new.css',
+            //'/css/new.css?v=1.3',
+            '/css/home/home.css',
+          //  '/css/stores/fm.revealator.jquery.min.css'
+        ];
+        $this->view->scripts = [
+            '/js/slider-fhd/slick.min.js',
+            '/js/stores/fm.revealator.jquery.min.js',
+            '/css/bs/js/bootstrap.min.js',
+        ];
+    if(Registry::get('device') == 'computer'){
+	$this->_global_template = 'home.tpl.php';
+    }else{
+        if(isset($_COOKIE['mobil']) and $_COOKIE['mobil'] == 10){
+            $this->_global_template = 'home.tpl.php';
+        }else{
+            $this->_global_template = 'mindex.php';
+	}
+    }
+    
+                    }
 
 	public function indexAction() {
+            
 		if(!$this->cur_menu) {
-			$this->cur_menu = wsActiveRecord::useStatic(self::$_menu_class)->findByUrl('homepage')->at(0);
-			$this->view->cur_menu = $this->cur_menu;
+			$this->view->cur_menu = $this->cur_menu = wsActiveRecord::useStatic(self::$_menu_class)->findByUrl('homepage')->at(0);
 		}
+                
         $today = date("Y-m-d H:i:s"); 
 			$sq = "SELECT distinct(block), `red_home_blocks`.* from `red_home_blocks` where block in(1,2,4,5) and date <= '$today' ORDER BY  `red_home_blocks`.`sequence` ASC ";
 		$this->view->homeblock = wsActiveRecord::useStatic('HomeBlock')->findByQuery($sq);
@@ -16,10 +45,18 @@ class HomeController extends controllerAbstract {
 		//blog
 		$this->view->blog = wsActiveRecord::useStatic('Blog')->findAll(array('public = 1 and ctime < "'.date("Y-m-d H:i:s").'" '), array(), array(0, 3));
 		//blog
-		//topprodukt
-		//$t_from = date("Y-m-d", strtotime("-1 day")); 
-		//$t_to = date("Y-m-d", strtotime("-10 day"));		
-		$query = "SELECT * FROM  ws_articles
+		
+		
+					
+		/*$sql = "SELECT ws_articles.* FROM  ws_articles
+			inner join ws_articles_top ON ws_articles.id = ws_articles_top.article_id
+					WHERE ws_articles.active = 'y' and ws_articles.stock > 2 and ws_articles.old_price = 0 and ws_articles.status = 3  ORDER BY ws_articles.views DESC   LIMIT 0, 18";			
+		$top = wsActiveRecord::useStatic('Shoparticles')->findByQuery($sql);
+                */
+		if(/*$top->count() >= 10 and */false) {
+		//$this->view->topproduct = $top;
+		}else{
+                    $query = "SELECT * FROM  ws_articles
 					WHERE stock > 2
 					AND active = 'y'
 					and ws_articles.status = 3
@@ -27,16 +64,8 @@ class HomeController extends controllerAbstract {
 					AND category_id NOT IN(54, 55, 163,84,315,314,249,306,297,307,296)
 					AND dop_cat_id NOT IN (54, 55, 163,84,315,314,249,306,297,307,296)
 					ORDER BY RAND ()  LIMIT 0, 10";
-					
-		$sql = "SELECT ws_articles.* FROM  ws_articles
-			inner join ws_articles_top ON ws_articles.id = ws_articles_top.article_id
-					WHERE ws_articles.active = 'y' and ws_articles.stock > 2 and ws_articles.old_price = 0 and ws_articles.status = 3  ORDER BY ws_articles.views DESC   LIMIT 0, 18";			
-		$top = wsActiveRecord::useStatic('Shoparticles')->findByQuery($sql);
-		if($top->count() >= 10 and false) {
-		$this->view->topproduct = $top;
-		}else{
 			$this->view->topproduct = wsActiveRecord::useStatic('Shoparticles')->findByQuery($query);
-			}
+		}
 		
 		
 	//topprodukt
@@ -53,15 +82,7 @@ class HomeController extends controllerAbstract {
 	
 		//$this->view->news = News::findActiveNews(1);
 
-if(Registry::get('device') == 'computer'){
-	$this->_global_template = 'home.tpl.php';
-}else{
-if($_COOKIE['mobil'] and $_COOKIE['mobil'] == 10){
-$this->_global_template = 'home.tpl.php';
-}else{
-$this->_global_template = 'mindex.php';
-	}
-}
+
 
 	}
 

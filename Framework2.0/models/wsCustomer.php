@@ -7,14 +7,18 @@ class wsCustomer extends wsActiveRecord
     public $hash_visit;
     public $hash_machine;
     public $hash_user;
-
+    
+    /*
+     * @is_logged_in - флаг авторизации пользователя
+     */
     protected $is_logged_in = false;
     protected $_pricelist;
 
     protected function _defineRelations()
     {
         $this->_relations = array(
-		'main_customer' => array('type' => 'hasOne', //belongs to
+		'main_customer' => array(
+                    'type' => 'hasOne', //belongs to
             'class' => self::$_customer_class,
             'field' => 'parent_id'),
             'type' => array('type' => 'hasOne', //belongs to
@@ -70,9 +74,12 @@ class wsCustomer extends wsActiveRecord
                 'class' => self::$_favorite_list_class,
                 'field_foreign' => 'customer_id',
                 'orderby' => array('time_modified' => 'DESC')),
-            'shopping_carts' => array('type' => 'hasMany',
+            
+            'carts' => array(
+                'type' => 'hasMany',
                 'class' => self::$_shopping_cart_class,
-                'field_foreign' => 'customer_id'),
+                'field_foreign' => 'id_user'
+                ),
             'addresses' => array('type' => 'hasMany',
                 'class' => self::$_customer_address_class,
                 'field_foreign' => 'customer_id'),
@@ -80,7 +87,7 @@ class wsCustomer extends wsActiveRecord
                 'class' => self::$_customer_visit_class,
                 'field_foreign' => 'customer_id'),
             'orders' => array('type' => 'hasMany',
-                'class' => self::$_order_class,
+                'class' => self::$_shop_orders_class,
                 'field_foreign' => 'customer_id'),
 
             'favorite_products' => array('type' => 'n2n',
@@ -92,19 +99,35 @@ class wsCustomer extends wsActiveRecord
             'rights' => array('type' => 'hasMany',
                 'class' => self::$_right_class,
                 'field_foreign' => 'customer_id'),
-            'product_history' => array('type' => 'n2n',
+            'product_history' => array(
+                'type' => 'n2n',
                 'field' => 'customer_id',
                 'field_foreign' => 'product_id',
                 'table' => 'ws__n2n__customer__product_history',
                 'class' => self::$_product_class),
+            'segment_type' => [
+            'type' => 'hasOne',
+            'class' => 'CustomersSegment',
+            'field' => 'segment_id'
+                ]
         );
     }
 
 
     function getCart()
     {
-        if ($this->isNew()){return;}
-        return $this->getShoppingCarts()->findFirst(array(), array('id' => 'DESC'));
+        if ($this->isNew()){ return; }
+        
+        //return wsActiveRecord::useStatic(self::$_shopping_cart_class)->findFirst();
+        return $this->getCarts()->at(0);//->findFirst(array(), array('id' => 'DESC'));
+    }
+    function newCart(){
+        if ($this->isNew()){ return; }
+        $cart = new Cart();
+        $cart->setIdUser($this->id);
+        $cart->save();
+        
+        $cart->updateCart();
     }
 
     /*
@@ -216,27 +239,15 @@ class wsCustomer extends wsActiveRecord
     public function getTopOrderProducts()
     {
         return wsActiveRecord::useStatic(self::$_product_class)->findByQuery("
-    		SELECT
-    			products.*, SUM(orderItems.quantity) as total
-			FROM
-				ws_products AS products
-			LEFT JOIN
-				ws_order_items AS orderItems
-					ON orderItems.product_id = products.id
-			LEFT JOIN
-				ws_orders AS orders
-					ON orderItems.order_id = orders.id
-			LEFT JOIN
-				ws_customer AS customer
-					ON orders.customer_id = customer.id
-			WHERE
-				customer.id = {$this->getId()}
-			GROUP BY
-				orderItems.product_id
-			ORDER BY
-				total
-			LIMIT
-				10");
+    		SELECT products.*, SUM(orderItems.quantity) as total
+			FROM ws_products AS products
+			LEFT JOIN ws_order_items AS orderItems ON orderItems.product_id = products.id
+			LEFT JOIN ws_orders AS orders ON orderItems.order_id = orders.id
+			LEFT JOIN ws_customer AS customer ON orders.customer_id = customer.id
+			WHERE customer.id = {$this->getId()}
+			GROUP BY orderItems.product_id
+			ORDER BY total
+			LIMIT 10");
     }
 
 
@@ -278,6 +289,7 @@ class wsCustomer extends wsActiveRecord
        // $webshop = Registry::get('webshop');
         return wsActiveRecord::useStatic(self::$_customer_class)->findFirst(array('username' => (string)$uname));
     }
+    
 
     //useless ??
     /*
@@ -355,44 +367,32 @@ class wsCustomer extends wsActiveRecord
 
     public function isSuperAdmin()//все выше пользователя и админа
     {
-        if ($this->getCustomerTypeId() > 2)
-            return true;
-        else
-            return false;
+        if ($this->getCustomerTypeId() > 2){ return true; }  
+        return false;
     }
 	 public function isDeveloperAdmin()//разработчик
     {
-        if ($this->getCustomerTypeId() == 4)
-            return true;
-        else
+        if ($this->getCustomerTypeId() == 4){ return true;}
             return false;
     }
 	 public function isOperatorAdmin()//оператор
     {
-        if ($this->getCustomerTypeId() == 8)
-            return true;
-        else
+        if ($this->getCustomerTypeId() == 8){return true;}
             return false;
     }
 	public function isPointIssueAdmin()//админ пункта выдачи
     {
-        if ($this->getCustomerTypeId() == 6)
-            return true;
-        else
+        if ($this->getCustomerTypeId() == 6){return true;}
             return false;
     }
 	public function isReturnsAdmin()// менеджер по возвратам
     {
-        if ($this->getCustomerTypeId() == 7)
-            return true;
-        else
+        if ($this->getCustomerTypeId() == 7){return true;}
             return false;
     }
 	public function isPickerAdmin()//комплектовщик
     {
-        if ($this->getCustomerTypeId() == 5)
-            return true;
-        else
+        if ($this->getCustomerTypeId() == 5){return true;}
             return false;
     }
 	

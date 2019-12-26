@@ -65,11 +65,12 @@ class OrderHistory extends wsActiveRecord
         return $text;
     }
 
-	static function getGoArticle($customer, $order, $orders, $title, $size, $color, $price, $article_id = 0){ 
-			$old_size = new Size($size);
-			$old_color = new Shoparticlescolor($color);
+	static function getGoArticle($customer, $order, $orders, $title, $code, $price, $article_id = 0){ 
+			//$old_size = new Size($size);
+			//$old_color = new Shoparticlescolor($color);
 			$name = 'Перемещение товара с №'.$orders;
-			$text = 'Товар '. $title . ' ' . $old_size->getSize() . ' ' . $old_color->getName().' '. $price .' грн.';
+			//$text = 'Товар '. $title . ' ' . $old_size->getSize() . ' ' . $old_color->getName().' '. $price .' грн.';
+                        $text = 'Товар '. $title . ' ' . $code.' '. $price .' грн.';
 			
 		$history = new OrderHistory();
         $history->setCustomerId($customer);
@@ -81,6 +82,16 @@ class OrderHistory extends wsActiveRecord
         return true;
 	
 	}
+        /**
+         * Запись в историю заказа
+         * 
+         * @param type $customer - id пользователя
+         * @param type $order - id заказа
+         * @param type $name - действие
+         * @param type $text - сообщение
+         * @param type $article_id - id товара 
+         * @return boolean
+         */
     static function newHistory($customer, $order, $name, $text, $article_id = 0)
     {
         $history = new OrderHistory();
@@ -92,16 +103,24 @@ class OrderHistory extends wsActiveRecord
         $history->save();
         return true;
     }
-	static function newOrder($customer, $order, $sum_order = 0, $count_order = 0)
+    /**
+     * Запись в историю о создании нового заказа
+     * @param type $customer - пользователь
+     * @param type $order - заказ
+     * @param type $sum_order - сумма заказа
+     * @param type $count_order - товаров в заказе
+     * @return boolean
+     */
+    static function newOrder($customer, $order, $sum_order = 0, $count_order = 0)
     {
         $history = new OrderHistory();
         $history->setCustomerId($customer);
         $history->setOrderId($order);
         $history->setName('Заказ оформлен');
-       // $history->setInfo($text);
+        $history->setInfo($sum_order.' грн.');
         //$history->setArticleId($article_id);
-		$history->setSumOrder($sum_order);
-		$history->setCountArticle($count_order);
+	$history->setSumOrder($sum_order);
+	$history->setCountArticle($count_order);
         $history->save();
         return true;
     }

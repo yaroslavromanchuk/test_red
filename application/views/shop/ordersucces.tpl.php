@@ -22,7 +22,10 @@ if (isset($_COOKIE["SAuid"]) && isset($_COOKIE["utm_source"]) && $_COOKIE["utm_s
     echo '<img src="http://sellaction.net/reg.php?id='.
     $_COOKIE["SAuid"].'-'.$sa_tariff_id.'_'.$order->getAmount().
     '&order_id='.$order->getId().'" width="1" height="1" alt="" />';
-	wsSellaction::add($order->getId(), $order->getAmount());
+	wsSellaction::add($order->getId(), ($order->getAmount()+$order->getDeposit()));
+}
+if(isset($_COOKIE["utm_email_track"])){
+     Emailpost::quickOrderEmail(['track'=>$_COOKIE["utm_email_track"], 'order'=>$order->getId(), 'amount'=>$order->getAmount()+$order->getDeposit(), 'count_article'=>$order->countArticlesSum()]);
 }
 ?>
 <div style="text-align:center;">

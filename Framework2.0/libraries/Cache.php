@@ -8,9 +8,9 @@ class Cache {
     public function setEnabled($is_enabled)
     {
       if ($is_enabled == true)
-        $this->_is_enabled = true;
+      { $this->_is_enabled = true;}
       else   
-        $this->_is_enabled = false;
+      {$this->_is_enabled = false;}
     }
     
     public function isEnabled()
@@ -25,11 +25,15 @@ class Cache {
 
         return $cache->load($id);
     }
-    
+    /**
+     * 
+     * @param type $data
+     * @param type $id
+     * @return boolean
+     */
     public function save($data, $id)
     {
-        if (!$cache = $this->_getCache())
-            return false;
+        if (!$cache = $this->_getCache()){ return false;}
         
         return $cache->save($data, $id);
     }
@@ -48,7 +52,7 @@ class Cache {
         $frontendOptions = array(
             'lifetime' => 7200,
             'automatic_serialization' => true,
-			'automatic_cleaning_factor' => 0); //disable autocleanup
+            'automatic_cleaning_factor' => 0); //disable autocleanup
 
         $backendOptions = array(
             'cache_dir' => './tmp/');
@@ -79,4 +83,4 @@ class Cache {
     	return ;
     }
 }  
-?>
+

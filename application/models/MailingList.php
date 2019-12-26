@@ -9,4 +9,3 @@ class MailingList extends wsActiveRecord
 	}
 
 }
-?>

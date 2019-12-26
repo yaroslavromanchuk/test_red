@@ -51,22 +51,25 @@ function gatFilters(array) {//вызов фильтра товаров
   }
    }
 });
-
+    var order_by = '';
    var gettext = [];
     for(var key in a){
         if(a[key].length >= 1){
+            if(key !== 'order_by'){
             gettext.push(key+'-'+a[key].join(',')); 
+        }else{
+            order_by = key+'='+a[key];
         }
-        
-        
+        }  
     }
                 var search = '';
 		if($('#search_word').val()){
                     search = '?s='+$('#search_word').val();
+                }else if(order_by){
+                    search = '?'+order_by;
                 }	
 //console.log($('#g_url').val()+gettext.join('-')+search);
-		location.href = "https://www.red.ua"+$('#g_url').val()+gettext.join('-')+search;
-
+		location.href = "https://www.red.ua"+$('#g_url').val()+gettext.join('-')+'/'+search;
 }
 function getClearAllFilters(){// уочистка фильтров
 window.location.pathname = $('#g_url').val();

@@ -9,7 +9,9 @@
 	</div>
 	<div class="col-xs-12 col-sm-12 col-md-6 px-0 py-2">
 	<div class="vc_separator    vc_sep_pos_align_center vc_sep_color_black double-bordered-thick " >
-	<span class="vc_sep_holder vc_sep_holder_l"><span class="vc_sep_line" style="border-color: #838282;"></span></span>
+	<span class="vc_sep_holder vc_sep_holder_l">
+            <span class="vc_sep_line" style="border-color: #838282;"></span>
+        </span>
 	<a href="/">
 	<div  class="center_logo_red" style="margin: 0 20px;background: url(<?=Config::findByCode('logotype')->getValue()?>);background-size: cover;"></div></a>
 	<span class="vc_sep_holder vc_sep_holder_r"><span class="vc_sep_line" style="border-color: #838282;"></span></span>
@@ -26,7 +28,7 @@
 </div>
 </div>
 
-<link rel="stylesheet" type="text/css" href="/css/menu_category.css?v=1.2" />
+<link rel="stylesheet" type="text/css" href="/css/menu_category.css?v=1.3.7" />
 <script>
 var e,i=320;
 e = !!/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
@@ -38,7 +40,10 @@ o.children(".sub-menu, .mega-menu").css("margin-left",""),
 n>i&&o.removeClass("sub-menu-open"),
 n>i&&e!==!0?(
 o.on({mouseenter:function(){
-$(this).addClass("sub-menu-open")}
+$(this).addClass("sub-menu-open");
+var h = $(".menu-item-has-children .sub-menu-open").children(".sub-menu").innerHeight()/2-15;
+$(".menu-item-has-children .sub-menu-open").children(".sub-menu").css("top","-"+h+"px");
+}
 ,mouseleave:function(){
 $(this).removeClass("sub-menu-open")}
 })):(o.unbind("mouseenter mouseleave"),
@@ -70,12 +75,17 @@ if($category->getId() == 12){
 			}else{
 			echo '<li class=" menu-item-has-children menu-item-has-mega-menu"><a href="'.$category->getPath().'" '.$color.' class="menu-item-span"><span class="menu-item-span">'.$category->getName().'</span></a>';
 			}
-			if ($sub_cats->count() > 1) { ?>
-			<ul class="sub-menu cat_<?=$category->getId()?>">
-			<?php 	foreach ($sub_cats as $sub_category) { 
-				
+			if ($sub_cats->count() > 0) { ?>
+                    
+			<ul class="sub-menu cat_<?=$category->getId()?>"  <?=($sub_cats->count() > 12)?'style="    list-style-position: inside;
+    -moz-column-count: 2;
+    -webkit-column-count: 2;
+    column-count: 2;"':''?>>
+			<?php 
+                        foreach ($sub_cats as $sub_category) { 
+                                
 		$sub_sub_cats = wsActiveRecord::useStatic('Shopcategories')->findAll(array('parent_id' => $sub_category->getId(), 'active' => 1), array('name'=>'ASC'));
-		if($sub_sub_cats->count() > 0 and $category->getId() != 85){ ?>
+		if($sub_sub_cats->count() > 0 and $category->getId() != 85){?>
 		 <li class="menu-item-has-children"><a href="<?=$sub_category->getPath()?>"><?=$sub_category->getName()?></a>
 		 <ul class="sub-menu cat_<?=$sub_category->getId()?>">
 		 <?php  foreach ($sub_sub_cats as $sub_sub_category) {
@@ -102,8 +112,9 @@ $articles = wsActiveRecord::useStatic('Shoparticles')->count(array('category_id 
 					echo ' <li><a href="' . $sub_category->getPath() . '" '.$color.'>' . $sub_category->getName().'</a></li>';
 	} ?>
 		
-					<?php	} ?>
+					<?php } ?>
 		</ul>
+                        
 						
 	<?php		}else if ($category->getId() == 106) { //show articles from last 10 days
 	$sub_cats = wsActiveRecord::useStatic('Shopcategories')->findAll(array('id in(14,15,33,54,59)'));
@@ -125,23 +136,41 @@ if($t->count() == 0){ continue; }?>
 			}
 
 		}
-
-			if (count($this->cached_brands)) {
+$sql = '
+SELECT red_brands.id, red_brands.name, COUNT( ws_articles.id ) AS cnt
+FROM red_brands
+INNER JOIN ws_articles ON ws_articles.brand_id = red_brands.id
+INNER JOIN ws_articles_sizes ON ws_articles_sizes.id_article = ws_articles.id
+WHERE ws_articles_sizes.`count` >0
+AND ws_articles.active = "y"
+AND ws_articles.status =3
+AND ws_articles.brand_id >0
+GROUP BY red_brands.id
+ORDER BY cnt DESC
+LIMIT 12
+		';
+$cached_brands = wsActiveRecord::findByQueryArray($sql);
+if (count($cached_brands)) {
 ?>
-<li class="menu-item-has-children menu-item-has-mega-menu"><a href="/brands/" class="menu-item-span"><span class="menu-item-span"><?=$this->trans->get('Бренды')?></span></a>
+<li class="menu-item-has-children menu-item-has-mega-menu">
+    <a href="/brands/" class="menu-item-span"><span class="menu-item-span"><?=$this->trans->get('Бренды')?></span></a>
 <ul class="sub-menu">
 <?php
-					$j = 0;
-					foreach ($this->cached_brands as $brand) {
-						if ((int)$brand['brand_id'] and !in_array($brand['brand'], array('<>', '1', 'Italia', 'Made in Germany'))) {
-							$j++;
+    $j = 0;
+    foreach ($cached_brands as $brand) {							$j++;
 ?>
-<li><a href="/all/articles/brands-<?=$brand['brand']?>" <?php if ($j > 12){ echo 'class="brand_hide'; } ?> ><?=$brand['brand']?></a></li>
-<?php if ($j == 12) { ?><li><a href="/brands/" class="brand_show_all"><b><?=$this->trans->get('Показать все');?></b></a></li><?php break;} ?>
-<?php } } ?>
+    <li><a href="/all/articles/brands-<?=strtolower(str_replace(' ', '_', str_replace('+', '%20', urlencode($brand->name))))?>/" ><?=$brand->name?></a></li>
+<?php  } ?>
+<li><a href="/brands/" class="brand_show_all"><b><?=$this->trans->get('Показать все')?></b></a></li>
 </ul>
 <?php
-	}?>
+	} ?>
                         </ul>
                     </div>
 					</div>
+<script  src="/js/jquery.liFixar.js"></script>
+<script>
+$(document).ready(function () {
+	$('.menu-2-box').liFixar({side: 'top',position: $('.top_menu_new').innerHeight()});//
+    });
+</script>

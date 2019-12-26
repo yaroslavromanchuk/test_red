@@ -1,0 +1,459 @@
+/*
+ * Global Styles
+ */
+
+html, body, button, input, p {
+	margin: 0;
+	padding: 0;
+}
+
+html, body {
+	/*background: #555555;*/
+	font-family: Tahoma;
+	font-size: 10pt;
+}
+
+button, input {
+	font-family: Tahoma;
+	font-size: 10pt;
+}
+
+button {
+	background: transparent;
+	border: 0;
+	cursor: pointer;
+	outline: none;
+}
+
+input {
+	background: url(../img/input_bg.png) repeat-x;
+	border: 1px solid #999999;
+	font-weight: bold;
+	padding: 3px;
+}
+
+/*
+ * Paragraphs
+ */
+
+p {
+	padding: 5pt 0;
+}
+
+p.t {
+	padding: 0 0 5pt;
+}
+
+p.b {
+	padding: 5pt 0 0;
+}
+
+/*
+ * Button Parts
+ */
+
+.btn * {
+	background-image: url(../img/btn.png);
+	height: 21px;
+	line-height: 21px;
+}
+
+.btn > div {
+	background-position: left 0px;
+	background-repeat: no-repeat;
+}
+
+.btn > div > div {
+	background-position: right -42px;
+	background-repeat: no-repeat;
+}
+
+.btn > div > div > div {
+	background-position: center -21px;
+	background-repeat: repeat-x;
+	margin: 0 2px 0 2px;
+	padding: 0 10px;
+}
+
+.btn-hl > div {
+	background-position: left -63px;
+}
+
+.btn-hl > div > div {
+	background-position: right -105px;
+}
+
+.btn-hl > div > div > div {
+	background-position: center -84px;
+}
+
+/*
+ * Login Frame Parts
+ */
+
+.frame1_top {
+	background: transparent url(../img/frame1_top.png) no-repeat;
+	width: 250px;
+	height: 10px;
+}
+.frame1_body {
+	background: transparent url(../img/frame1_body.png) repeat-y;
+	padding: 0 25px;
+	width: 200px;
+}
+.frame1_bottom {
+	background: transparent url(../img/frame1_bottom.png) no-repeat;
+	width: 250px;
+	height: 10px;
+}
+
+/*
+ * Login Frame
+ */
+
+#frameLogin {
+	border: 0px;
+	display: none;
+	padding: 0px;
+	width: 250px;
+}
+
+	#frameLogin a, #frameLogin a:hover, #frameLogin a:active, #frameLogin a:visited {
+		color: #333333;
+	}
+	
+	#inpNickname, #inpPassword {
+		width: 192px;
+	}
+
+/*
+ * Main Frame
+ */
+
+#frameMain {
+	border: 0px;
+	display: none;
+	position: relative;
+	width: 960px;
+	height: 560px;
+}
+
+	#main {
+		width: 750px;
+		height: 560px;
+		position: absolute;
+		left: 0px;
+		top: 0px;
+		background: transparent url(../img/log_bg.png) no-repeat;
+	}
+	
+		#log {
+			width: 698px;
+			height: 474px;
+			position: absolute;
+			left: 15px;
+			top: 15px;
+			background: #ffffff;
+			border: 1px solid #aaaaaa;
+			padding: 10px;
+			overflow: auto;
+		}
+		
+		#input {
+			width: 720px;
+			height: 24px;
+			position: absolute;
+			left: 15px;
+			bottom: 15px;
+		}
+		
+			#inpMessage {
+				width: 712px;
+			}
+	
+	#list {
+		width: 210px;
+		height: 560px;
+		position: absolute;
+		right: 0px;
+		top: 0px;
+		background: transparent url(../img/list_bg.png) no-repeat;
+	}
+	
+		#self {
+			width: 178px;
+			height: 38px;
+			position: absolute;
+			left: 15px;
+			top: 15px;
+			background: #ffffcc;
+			border: 1px solid #aaaaaa;
+			cursor: pointer;
+			z-index: 9;
+		}
+		
+			#nickname {
+				font-weight: bold;
+				padding: 3px 5px 0;
+			}
+			
+			#status, #status_label {
+				color: #aaaaaa;
+				padding: 1px 5px;
+			}
+			
+			#status_label {
+				display: none;
+			}
+		
+		#statuses {
+			width: 178px;
+			position: absolute;
+			left: 16px;
+			top: 55px;
+			background: #ffffcc;
+			border-bottom: 1px solid #aaaaaa;
+			display: none;
+			z-index: 9;
+		}
+		
+			#statuses div {
+				cursor: pointer;
+				padding: 3px 5px;
+			}
+		
+		#users {
+			width: 178px;
+			height: 455px;
+			position: absolute;
+			left: 15px;
+			top: 55px;
+			background: #ffffff;
+			border: 1px solid #aaaaaa;
+			border-top: 0;
+			overflow: auto;
+		}
+		
+			#users .user {
+				cursor: pointer;
+				padding: 3px 5px;
+			}
+		
+		#ctrls {
+			width: 168px;
+			height: 24px;
+			position: absolute;
+			left: 21px;
+			bottom: 15px;
+		}
+		
+		#smiles {
+			width: 168px;
+			position: absolute;
+			left: 16px;
+			bottom: 50px;
+			background: #ffffcc;
+			border-top: 1px solid #aaaaaa;
+			padding: 5px;
+			display: none;
+			z-index: 9;
+		}
+
+/*
+ * Access Icons
+ */
+
+.l1, .l2, .l3 {
+	background-image: url(../img/levels.png);
+	background-repeat: no-repeat;
+}
+
+.l1 {
+	background-position: right top;
+}
+
+.l2 {
+	background-position: right center;
+}
+
+.l3 {
+	background-position: right bottom;
+}
+
+/*
+ * Icons
+ */
+
+.icon_none {
+	padding-left: 19px;
+}
+
+.icon_loading {
+	background: transparent url(../img/icons/icon_loading.gif) no-repeat scroll left center;
+	padding-left: 19px;
+}
+
+.icon_status_0 {
+	background: transparent url(../img/icons/icon_status_0.png) no-repeat scroll left center;
+	padding-left: 19px;
+}
+
+.icon_status_1 {
+	background: transparent url(../img/icons/icon_status_1.png) no-repeat scroll left center;
+	padding-left: 19px;
+}
+
+.icon_status_2 {
+	background: transparent url(../img/icons/icon_status_2.png) no-repeat scroll left center;
+	padding-left: 19px;
+}
+
+.icon_status_3 {
+	background: transparent url(../img/icons/icon_status_3.png) no-repeat scroll left center;
+	padding-left: 19px;
+}
+
+/*
+ * Ctrls
+ */
+
+.ctrl {
+	width: 24px;
+	height: 24px;
+	cursor: pointer;
+	background-position: center center;
+}
+
+.ctrl_about {
+	background-image: url(../img/ctrls/about.png);
+	float: left;
+}
+
+.ctrl_clear {
+	background-image: url(../img/ctrls/clear.png);
+	float: left;
+}
+
+.ctrl_clearm {
+	background-image: url(../img/ctrls/clearm.png);
+	float: left;
+}
+
+.ctrl_disconnect {
+	background-image: url(../img/ctrls/disconnect.png);
+	float: left;
+}
+
+.ctrl_send {
+	background-image: url(../img/ctrls/send.png);
+	float: left;
+}
+
+.ctrl_smiles {
+	background-image: url(../img/ctrls/smiles.png);
+	float: left;
+}
+
+.ctrl_smile {
+	background-repeat: no-repeat;
+	float: left;
+}
+
+.ctrl_sound0 {
+	background-image: url(../img/ctrls/sound.png);
+	background-position: center top;
+	float: left;
+}
+
+.ctrl_sound1 {
+	background-image: url(../img/ctrls/sound.png);
+	background-position: center bottom;
+	float: left;
+}
+
+.ctrl_password {
+	background-image: url(../img/ctrls/password.png);
+	background-repeat: no-repeat;
+	position: absolute;
+	top: 33px;
+	right: 24px;
+}
+
+/*
+ * Smile
+ */
+
+.smile {
+	background-position: center;
+	background-repeat: no-repeat;
+	padding: 2px 10px 2px 10px;
+}
+
+/*
+ * Hidden Content
+ */
+
+.hidden {
+	display: none;
+}
+
+/*
+ * Text Sizes
+ */
+
+.txt-small {
+	font-size: 8pt;
+}
+
+/*
+ * Name Colors
+ */
+
+.nm_s, .nm_sw, .nm_o, .nm_ow {
+	font-weight: bold;
+}
+
+.nm_s:hover, .nm_sw:hover, .nm_o:hover, .nm_ow:hover {
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+.nm_s {
+	color: #FF8000;
+}
+
+.nm_sw {
+	color: #7171F4;
+}
+
+.nm_o {
+	color: #333333;
+}
+
+.nm_ow {
+	color: #3333CC;
+}
+
+/*
+ * Message Colors
+ */
+
+.msg_m {
+	color: #333333;
+}
+
+.msg_w {
+	color: #666666;
+}
+
+.msg_s {
+	color: #009900;
+}
+
+.msg_e {
+	color: #FF0000;
+}
+
+.msg_h {
+	color: #993366;
+}

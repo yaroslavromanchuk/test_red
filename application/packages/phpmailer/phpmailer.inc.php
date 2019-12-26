@@ -119,21 +119,20 @@ class phpmailer
 	
 	// Create message and assign to mailer
 	function Send() {
-		if(count($this->to) < 1)
-			$this->error_handler("You must provide at least one recipient email address");
+		if(count($this->to) < 1){$this->error_handler("You must provide at least one recipient email address");}
 
 		$header = $this->create_header();
 		$body = $this->create_body();
 		
 		// Choose the mailer
 		if($this->mailer == "sendmail")
-			$this->sendmail_send($header, $body);
+                {$this->sendmail_send($header, $body);}
 		elseif($this->mailer == "mail")
-			$this->mail_send($header, $body);
+                {$this->mail_send($header, $body);}
 		elseif($this->mailer == "smtp")
-			$this->smtp_send($header, $body);
+                {$this->smtp_send($header, $body);}
 		else
-			$this->error_handler(sprintf("%s mailer is not supported", $this->mailer));
+                {$this->error_handler(sprintf("%s mailer is not supported", $this->mailer));}
 	}
 	
 	// Send using the $sendmail program
@@ -184,8 +183,7 @@ class phpmailer
 			// printf("%s host could not connect<br>", $hosts[$x]); //debug only
 			$x++;
 		}
-		if(!$connection)
-			$this->error_handler("SMTP Error: could not connect to SMTP host server(s)");
+		if(!$connection){$this->error_handler("SMTP Error: could not connect to SMTP host server(s)");}
 	  	  
 		$smtp->Hello($this->Helo);
 		$smtp->Mail(sprintf("<%s>", $this->From));
@@ -198,7 +196,8 @@ class phpmailer
 			$smtp->Recipient(sprintf("<%s>", $this->bcc[$x][0]));
 
 		$smtp->Data(sprintf("%s%s", $header, $body));
-		$smtp->Quit();		
+		$smtp->Quit();	
+                return true;
 	}
 	
 
@@ -305,8 +304,7 @@ class phpmailer
 
 	// Check if attachment is valid and add to list			
 	function AddAttachment($path) {
-		if(!is_file($path))
-			$this->error_handler(sprintf("Could not find %s file on filesystem", $path));
+		if(!is_file($path)){$this->error_handler(sprintf("Could not find %s file on filesystem", $path));}
 
 		// Separate file name from full path
 		$separator = "/";

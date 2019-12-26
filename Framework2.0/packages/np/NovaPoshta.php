@@ -15,7 +15,7 @@ class NovaPoshta{
 	 * @var string $key
 	 * @see https://my.novaposhta.ua/settings/index#apikeys
 	 */
-	protected $key = '1e594a002b9860276775916cdc07c9a6';
+	protected $key = '920af0b399119755cbca360907f4fa60';
 	
 	/**
 	 * @var bool $throwErrors Throw exceptions when in response is error
@@ -366,10 +366,14 @@ if($err) {
 	 * @return mixed
 	 */
 	function getWarehouses($cityRef, $page = 0) {
-		return $this->request('Address', 'getWarehouses', array(
+		return $this->request(
+                        'Address',
+                        'getWarehouses', 
+                        [
 			'CityRef' => $cityRef,
 			'Page' => $page,
-		));
+		]
+                        );
 	}
 	
 	function getWarehousesName($cityRef, $WarehousesRef, $page = 0) {
@@ -1013,8 +1017,14 @@ if($err) {
 	function printMarkings($documentRefs, $type = 'new_html') {
 		$documentRefs = (array) $documentRefs;
 		// If needs link
-		if ($type == 'html_link' OR $type == 'pdf_link')
-			return $this->printGetLink('printMarkings', $documentRefs, $type);
+		if ($type == 'html_link' OR $type == 'pdf_link'){ return $this->printGetLink('printMarkings', $documentRefs, $type); }
+		// If needs data
+		return $this->request('InternetDocument', 'printMarkings', array('DocumentRefs' => $documentRefs, 'Type' => $type));
+	}
+        function printMarking100x100($documentRefs, $type = 'pdf') {
+		$documentRefs = (array) $documentRefs;
+		// If needs link
+		if ($type == 'html_link' OR $type == 'pdf_link'){ return $this->printGetLink('printMarking100x100', $documentRefs, $type); }
 		// If needs data
 		return $this->request('InternetDocument', 'printMarkings', array('DocumentRefs' => $documentRefs, 'Type' => $type));
 	}

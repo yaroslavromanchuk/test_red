@@ -14,6 +14,15 @@ class DeliveryPayment extends wsActiveRecord
 													),
                                                     );
 	}
+        public static function getFop($dely, $pay){
+            if($dely and $pay){
+                $p = wsActiveRecord::useStatic('DeliveryPayment')->findFirst(['delivery_id' => $dely, 'payment_id' => $pay])->fop;
+                if($p){
+                    return $p;
+                }
+                 
+            }
+            return 1;
+        }
 
 }
-?>

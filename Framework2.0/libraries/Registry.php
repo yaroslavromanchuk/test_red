@@ -27,12 +27,12 @@ class Registry extends Orm_Collection
 		*/
 			
     	if(is_array($filename) || file_exists($filename)) {
-			if(is_array($filename))
-				$config = $filename;
-    		else
-				include_once($filename);
-    		if(!isset($config))
-    			throw new Exception('$config variable not found');
+            if(is_array($filename)){
+                $config = $filename;
+            }else{
+                include_once($filename);
+            }
+    		if(!isset($config)){throw new Exception('$config variable not found');}
     		//config loaded to variable $config
     		foreach($config as $key => $value) {
     			Registry::set(Registry::_implodeCase($key), $value);
@@ -69,9 +69,9 @@ class Registry extends Orm_Collection
 		$variable[0] = ucfirst($variable[0]); 
 		$r = &Registry::getInstance();
 		$var = Registry::_implodeCase($variable);
-		if(isset($r->$variable))
-			return $r->{"get$var"}();
-		else {
+		if(isset($r->$variable)){
+                    return $r->{"get$var"}();
+                }else{
 			//try to load this data from config table
 
 			//only if DB initiated
@@ -79,14 +79,13 @@ class Registry extends Orm_Collection
 				Registry::loadDBConfig();
 			}
 			
-			if($r->_initiated && isset($r->$var))
-				return $r->{"get$var"}();
-			else {
+			if($r->_initiated && isset($r->$var)){
+                            return $r->{"get$var"}();
+                            }else{
 				//we didn't find it anywhere - then add it to DB
 				if($r->_initiated) {
 					if(!$r->{"get$var"}()) {
 						$tmp = new Config();
-						
 						//autosave new values
 						$tmp->setName(strtolower($variable));
 						$tmp->save();
@@ -125,9 +124,10 @@ class Registry extends Orm_Collection
 	{
 		$var[0] = ucfirst($var[0]); 
 		$r = Registry::getInstance();
-		if(isset($r->$var))
-			return true;
-		else
-			return false;
+		if(isset($r->$var)){
+                    return true;
+                }else{
+                    return false;
+                }
 	}
 }

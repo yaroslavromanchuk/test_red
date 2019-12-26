@@ -13,15 +13,18 @@
  */
 class ParseExcel extends wsActiveRecord{
     //put your code here
-    
-    public static function getExcelToArray($file)
+    /**
+     * Чтение файла в массив
+     * @param type $file - путь к файлу
+     * @return type
+     */
+    public static function getExcelToArray($file, $ActiveSheet = 0)
             {
                 require_once('PHPExel/PHPExcel/IOFactory.php');
                 $objPHPExcel = PHPExcel_IOFactory::load($file);
-                $objPHPExcel->setActiveSheetIndex(0);
+                $objPHPExcel->setActiveSheetIndex($ActiveSheet);
 		unlink($file);
-                return  $objPHPExcel->getActiveSheet()->toArray();
-                 
+                return  $objPHPExcel->getActiveSheet()->toArray(); 
             }
             
  /**
@@ -45,7 +48,7 @@ public static function getExcelArticles($file)
 		//$mas[$m[16]]['nakladnaya'] = $nakladna[2];
 		$mas[$m[16]]['model'] = trim($m[1]);
 		
-		$mas[$m[16]]['brand'] = trim($m[2]);
+		$mas[$m[16]]['brand'] = str_replace('-',' ',trim($m[2]));
 		
 		$mas[$m[16]]['stock'] = $mas[$m[16]]['stock'] + (int)$m[8];
                 
@@ -58,14 +61,15 @@ public static function getExcelArticles($file)
                     default: break;
                 }
 				
-			$sex = wsActiveRecord::useStatic('Shoparticlessex')->findFirst(array('id_1c'=>(int)$m[9]));
-				if (!$sex) { $errors[] = 'Ошибка Пола "' . $m[10] . '", строка '.$m[0]; $sex = 0; }else{ $sex = $sex->id;}
+		$sex = wsActiveRecord::useStatic('Shoparticlessex')->findFirst(array('id_1c'=>(int)$m[9]));
+                
+		if (!$sex) { $errors[] = 'Ошибка Пола "' . $m[10] . '", строка '.$m[0]; $sex = 0; }else{ $sex = $sex->id;}
 				
 		$mas[$m[16]]['id_sex'] = $sex;
 		$mas[$m[16]]['sex'] = $m[10];
 		
-				$season = wsActiveRecord::useStatic('Shoparticlessezon')->findFirst(array('id_1c'=>(int)$m[11]));
-				if (!$season) { $errors[] = 'Ошибка сезона "' . $m[12] . '", строка '.$m[0]; $season = 0; }else{ $season = $season->id;}
+		$season = wsActiveRecord::useStatic('Shoparticlessezon')->findFirst(array('id_1c'=>(int)$m[11]));
+		if (!$season) { $errors[] = 'Ошибка сезона "' . $m[12] . '", строка '.$m[0]; $season = 0; }else{ $season = $season->id;}
 				
 		$mas[$m[16]]['id_season'] = $season;
 		$mas[$m[16]]['season'] = $m[12];
@@ -212,51 +216,80 @@ $mas=array('model'=>$aSheet[1][3], 'price' =>$aSheet[1][32], 'min_price'=>$aShee
     /**
      * 
      * @param string $name - имя для файла excel без .xls
-     * @param type $parametr ('0'=>array('neme','koll','summ','price'), '1'=>array('','','',''))
-
+     * @param type $parametr ('header'=>[0=>['neme','koll','summ','price']], 'data'=>[0=>[], 1=>[]])
+     * @param type $style - Стиль ечеек
      */
-    public static function saveToExcel($name = '', $parametr = false){
+    public static function saveToExcel($name = '', $parametr = ['header' => [], 'data'=> [], 'title' => 'Превый лист'], $style = false){
         
+      //  l($parametr);
+       // exit();
         
-        
-       require_once('PHPExel/PHPExcel.php');
-         require_once('PHPExel/excelarray.php');//массив буквенных обозначений в excel
+            require_once('PHPExel/PHPExcel.php');
+            require_once('PHPExel/excelarray.php');//массив буквенных обозначений в excel
 
                 $filename = $name . '.xls'; 
                 $pExcel = new PHPExcel();
-                $pExcel->setActiveSheetIndex(0);
+                foreach ($parametr as $key => $val){
+                $pExcel->createSheet();
+                $pExcel->setActiveSheetIndex($key);
                 $aSheet = $pExcel->getActiveSheet();
-                $aSheet->setTitle('Первый лист');
-
+               if(count($val['title'])){ 
+                   $aSheet->setTitle($val['title']);
+               }else{
+                    $aSheet->setTitle('Лист_'.$key);
+               }
+                
+                if($style){
+                   if($style['width']){
+                       foreach ($style['width'] as $k => $w) {
+                           $aSheet->getColumnDimension($k)->setWidth($w);
+                           
+                       }
+                   }
+                   if($style['merge']){
+                        foreach ($style['merge'] as $k => $w) {
+                            $aSheet->mergeCells($k);
+                        }
+                   }
+                   if($style['font']){
+                        foreach ($style['font'] as $k => $w) {
+                            $aSheet->getStyle($k)->applyFromArray($w);
+                        }
+                   }
+               }
+               
                 $j = 1;
                 $i = 0;
-               // $mas =[];
-               foreach ($parametr[0] as $v) {
-                  // $mas[$h[$i].$j] = $v;
-                    $aSheet->setCellValue($h[$i].$j, $v);
+                if(count($val['header'])){
+              // $parametr['header'][0] = $parametr[0];
+               foreach ($val['header'] as $v) {
+                   foreach ($v as $st) {
+                       $aSheet->setCellValue($h[$i].$j, $st);
                     $i++;
+                   }
+                   $i = 0;
+                   $j++;
                }
+    }
               
-           
-                $aSheet->getStyle($h[0].$j.':'.$h[$i].$j)->applyFromArray(array('font' => array('bold' => true)));
+               
+                //$j++;
                 
-                $j++;
-                
-                $i = 0;
-                unset($parametr[0]);
-                
-                foreach ($parametr as $val) {
-                    
+              //  unset($parametr[0]);
+                //$parametr['data'] = $parametr;
+                if(count($val['data'])){
+                    $i = 0;
+                foreach ($val['data'] as $val) {
                     foreach ($val as $z) {
-                      //   $mas[$h[$i].$j] = $val;
                          $aSheet->setCellValue($h[$i].$j, $z);
                         $i++;
                     }
                     $i=0;
-                     $j++;
-                     
+                     $j++; 
                 }
- //return $pExcel;
+    }
+    }
+              
                 require_once("PHPExel/PHPExcel/Writer/Excel5.php");
                 $objWriter = new PHPExcel_Writer_Excel5($pExcel);
 
@@ -264,6 +297,7 @@ $mas=array('model'=>$aSheet[1][3], 'price' =>$aSheet[1][32], 'min_price'=>$aShee
                 header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
                 header("Cache-Control: no-cache, must-revalidate");
                 header("Pragma: no-cache");
+                header('Content-type: application/ms-excel');
                 header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
 
               

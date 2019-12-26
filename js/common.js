@@ -34,12 +34,6 @@ $('form.disabled-while-empty input').on('change keyup', function () {
 			formCompletelyFilled = false;
 		}
 	});
-	//if (form.find('input[type=checkbox]:checked').length == 0) {
-		//if (!form.find('input[type=checkbox][required]').is(':checked')) {
-			//formCompletelyFilled = false;
-		//}
-	//}
-	
 	if (formCompletelyFilled) {
 		$(form).find('.modal-footer button[type=submit]').removeAttr('disabled');
 	} else {

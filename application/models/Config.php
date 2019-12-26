@@ -3,4 +3,3 @@ class Config extends wsConfig
 {
 	
 }
-?>

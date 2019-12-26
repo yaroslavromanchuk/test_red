@@ -1,0 +1,31 @@
+.backet_ul{
+    text-align: center;
+    padding: 0px;
+}
+.backet_ul li {
+    list-style-type: none;
+    float: left;
+}
+.backet_ul label {
+    min-width: 130px;
+    padding: 0.3rem;
+    margin: 2px;
+    border: 1px solid #acacac;
+    background: #ffffff;
+    box-shadow: inset 0 0px 0px 0px rgba(0, 0, 0, 0.3);
+}
+.backet_ul label.active{background: #dadada;box-shadow: inset 0 0px 10px 1px rgba(0, 0, 0, 0.5);}
+.backet_ul div {
+    height: 50px;
+    display: inline-flex;
+}
+.backet_ul img {
+    width: 30px;
+}
+#dop_mat{
+  margin: auto;  
+}
+.img_gif{position:absolute;     width:25px;     display:none;     right:15px; top:4px}
+.hide_online{
+            display: none !important;
+    }

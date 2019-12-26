@@ -9,11 +9,23 @@ class PageController extends controllerAbstract
         echo $this->render('shop/static.tpl.php');
 
     }
+    public function errorAction()
+    {
+
+        echo $this->render('pages/404.tpl.php');
+
+    }
 
     public function socialAction()
     {
 	
         echo $this->render('pages/social.tpl.php');
+    }
+    public function paysAction()
+    {
+       $this->view->delivery =  wsActiveRecord::useStatic('DeliveryType')->findAll(['active_user'=>1]);
+	
+        echo $this->render('pages/pays.tpl.php');
     }
 	public function scanAction()
     {
@@ -324,37 +336,75 @@ echo $s->cod.' - '.$s->count.'<br>';
 
     public function sitemapAction()
     {
-       // header("Content-type: application/xml; charset: UTF-8");
-
-
-        $rss = new Sitemap('www.red.ua');
-        $rss->link = 'https://www.red.ua';
-	$rss->copyright="© Интернет-магазин RED.UA, ".date('Y');
-        $rss->description ='Стильные и яркие вещи по доступной цене. Обувь, сумки, платья, летняя одежда для детей и подростков.';
-	$rss->category ="Мода, стиль, одежда";
-	$rss->language="ru";
-		//$rss->ManagingEditor="market@red.ua";
-
-        $this->_items_per_page = Config::findByCode('news_in_rss')->getValue();
-        
-        $menu = wsActiveRecord::useStatic('Menu')->findAll(array('type_id is not null', 'parent_id' => null, 'no_sitemap'=>NULL, 'nofollow'=>NULL), array('sequence' => 'ASC'));
-	$cats = wsActiveRecord::useStatic('Shopcategories')->findAll(array('sitemap' => 1, 'active' => 1));
-        //$rss->get($menu,$cats);
-        //var_dump($cats);
-        //echo "<pre>".htmlspecialchars($rss->get($menu,$cats))."</pre>";
-       // var_dump($rss->get($menu,$cats));
-        $file = 'sitemap.xml';
-// Открываем файл для получения существующего содержимого
-//$current = file_get_contents($file);
-// Добавляем нового человека в файл
-//$current .= "John Smith\n";
+        $cache = Registry::get('cache');
+	$cache->setEnabled(true);
+        $cache_name = 'sitemap1';
+        $sitemap = $cache->load($cache_name);
+        if(!$sitemap){
+          $data = date("Y-m-d");
+        $_link = "https://www.red.ua";
+      
+$res = "<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>";
+$i = 0;
+        foreach( wsActiveRecord::useStatic('Menu')->findAll(['type_id is not null', 'parent_id' => null, 'no_sitemap'=>NULL, 'nofollow'=>NULL], ['sequence' => 'ASC']) as $item) {
+		//<loc>https://www.red.ua/</loc>
+	//<lastmod>2017-05-10T11:29:32+01:00</lastmod>
+	//<priority>1.0</priority>
+            if($item->name == 'RED.UA'){
+                $res.="<url>";
+            	//$res.="<title><![CDATA[".stripslashes($item->getName())."]]></title>";
+                $res.="<loc>".$_link.stripslashes($item->getPath())."</loc>";
+                $res.="<lastmod>".$data."</lastmod>";
+               // $res.="<changefreq>Always</changefreq>";
+		$res.="<priority>1.0</priority>";
+            $res.="</url>";
+                
+            }else{
+                $res.="<url>";
+            	//$res.="<title><![CDATA[".stripslashes($item->getName())."]]></title>";
+                $res.="<loc>".$_link.stripslashes($item->getPath())."</loc>";
+                $res.="<lastmod>".$data."</lastmod>";
+               // $res.="<changefreq>Daily</changefreq>";
+		$res.="<priority>0.9</priority>";
+            $res.="</url>";
+            }
+            $i++;
+        }
+        foreach(wsActiveRecord::useStatic('Shopcategories')->findAll(['sitemap' => 1, 'active' => 1]) as $item) {
+		//<loc>https://www.red.ua/</loc>
+	//<lastmod>2017-05-10T11:29:32+01:00</lastmod>
+	//<priority>1.0</priority>
+                $res.="<url>";
+            	//$res.="<title><![CDATA[".stripslashes($item->getName())."]]></title>";
+                $res.="<loc>".$_link.stripslashes($item->getPath())."</loc>";
+                $res.="<lastmod>".$data."</lastmod>";
+               // $res.="<changefreq>Weekly</changefreq>";
+		$res.="<priority>0.8</priority>";
+            $res.="</url>";
+            $i++;
+        }
+        $limit = 50000 - $i;	
+			 foreach(wsActiveRecord::useStatic('Shoparticles')->findAll(array( 'active' => "y",  'stock not like "0"', 'status' => 3), array('id'=>'DESC'), [0, $limit]) as $ar){
+                             $res.="<url>";
+            	//$res.="<title><![CDATA[".stripslashes($ar->getModel().' ( '.$ar->getBrand().' )')."]]></title>";
+                $res.="<loc>".$_link.stripslashes($ar->getPath())."</loc>";
+                $res.="<lastmod>".date('Y-m-d', strtotime($ar->ctime))."</lastmod>";
+               // $res.="<changefreq>Weekly</changefreq>";
+				$res.="<priority>0.6</priority>";
+            $res.="</url>";
+            //$i++;
+           // if($i >= 50000) {break;}
+			 }
+$res.="</urlset>";
+$sitemap = $res;
+            $cache->save($res, $cache_name, [$cache_name], false);
+        }
+         header('Content-Type: application/xml');
+        print ($sitemap);
+        exit();
+        //  $file = 'sitemap.xml';
 // Пишем содержимое обратно в файл
-file_put_contents($file, $rss->get($menu,$cats));
-       // echo $rss->get($menu,$cats);
-
-        die();
-	
-       // echo $this->render('pages/sitemap.tpl.php');
+//file_put_contents($file, $rss->get($menu,$cats));
     }
 
 	public function contactAction(){
@@ -438,7 +488,7 @@ file_put_contents($file, $rss->get($menu,$cats));
 
     public function rssAction()
     {
-	header("Content-Type: application/xml ");
+	header("Content-Type: application/xml");
         $rss = new Rss(Config::findByCode('website_name')->getValue());
         $rss->link = "https://{$_SERVER['HTTP_HOST']}/rss/";
 		$rss->copyright="© Интернет-магазин RED.UA, ".date('Y');
@@ -534,7 +584,7 @@ if(@$this->get->id){
 	 $result='';
 	 $post = $this->post;
 	 if($post->send == 'orders'){
-	 $mas = array(3=>'Победа', 5=>'Сторители', 4=>'Укр.Почта',  8=>'НП', 16=>'НП:Наложка', 9=>'Курьер');
+	 $mas = array(3=>'Победа', 4=>'Укр.Почта', 5=>'Строители',  8=>'НП', 16=>'НП:Наложка', 9=>'Курьер', 18=>'Justin');
 	 switch($post->type){
 	 case 1:
 	$ord = wsActiveRecord::findByQueryArray("SELECT  `delivery_type_id` AS  `d` , COUNT(  `id` ) AS  `ctn`
@@ -558,9 +608,9 @@ GROUP BY  `delivery_type_id`");
 $sum=0;
 			foreach($ord as $r){
 			$result.=$mas[$r->d].' - '.$r->ctn.PHP_EOL;
-			$sum+=$r->ctn;
+			//$sum+=$r->ctn;
 			}
-			$result.='Общее количество - '.$sum;
+			//$result.='Общее количество - '.$sum;
         break;
 	 }
 	 
@@ -748,9 +798,9 @@ $result='Данные уценки'.PHP_EOL;
  */
     public function getarticleAction()
     {
-        $article = @intval($_GET['article_id']);
-        $size = @intval($_GET['size_id']);
-        $color = @intval($_GET['color_id']);
+        $article = intval($_GET['article_id']);
+        $size = intval($_GET['size_id']);
+        $color = intval($_GET['color_id']);
 
         if ($size != 0 and $color != 0) {
             $item = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $article, 'id_size' => $size, 'id_color' => $color, 'count > 0'));
@@ -815,9 +865,9 @@ $result='Данные уценки'.PHP_EOL;
          */
 	public function getarticlereturnAction()
     { 
-        $article = @intval($_GET['article_id']);
-        $size = @intval($_GET['size_id']);
-        $color = @intval($_GET['color_id']);
+        $article = (int)$_GET['article_id'];
+        $size = (int)$_GET['size_id'];
+        $color = (int)$_GET['color_id'];
 
         if ($size != 0 and $color != 0) {
             $item = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $article, 'id_size' => $size, 'id_color' => $color, 'count = 0'));
@@ -860,29 +910,28 @@ $result='Данные уценки'.PHP_EOL;
         $delivery = (int)$_GET['delyvery'];
         $order = (int)$_GET['id'];
         $payment = (int)$_GET['payment'];
-        $ord = new Shoporders($order);
+        
 
-        if ($delivery != 0 and $order != 0 and $payment != 0 and $ord->getId() and $this->ws->getCustomer()->isSuperAdmin()) {
-            $pp = wsActiveRecord::useStatic('DeliveryPayment')->findFirst(array('delivery_id' => $delivery, 'payment_id' => $payment));
+        if ($delivery != 0 and $order != 0 and $payment != 0 and $this->ws->getCustomer()->isSuperAdmin()) {
+            $ord = new Shoporders($order);
+            
             OrderHistory::newHistory($this->ws->getCustomer()->getId(), $order, 'Смена доставки',
-                OrderHistory::getPaymentText($ord->getDeliveryTypeId(), $ord->getPaymentMethodId(), $delivery, $payment));
+            OrderHistory::getPaymentText($ord->getDeliveryTypeId(), $ord->getPaymentMethodId(), $delivery, $payment));
+            
             $ord->setPaymentMethodId($payment);
             $ord->setDeliveryTypeId($delivery);
-			
-			/*if($delivery == 9 and false){
-			$pr = $this->recalcmeestCost($ord->getId(), $ord->getAmount());
-			 $ord->setDeliveryCost($pr['price']);
-			 if($pr['meest_id'] != 0) $ord->setMeestId($pr['meest_id']);
-			}else*/
-			if($delivery == 9 and ($ord->getAmount()+$ord->getDeposit()) > 750){
-			$p = 0;
-			$ord->setDeliveryCost(0);
-			}else{
-			$p = $pp->getPrice();
+           //
+            $delly = wsActiveRecord::useStatic('DeliveryPayment')->findFirst(['delivery_id' => $delivery, 'payment_id' => $payment]);
+		 $ord->setFopId($delly->fop);
+                 
+		if($delivery == 9 and $ord->calculateOrderPrice2(true, false, false) > (int)Config::findByCode('kuryer_amount')->getValue()){
+                    $p = 0;
+		}else{
+                    $p = $delly->price;
+		}
             $ord->setDeliveryCost($p);
-			}
             $ord->save();
-		   die($p);
+	die($p);
         } else {
             die('_' . $this->ws->getCustomer()->getId());
         }
@@ -997,7 +1046,22 @@ public function questionAction(){
 
     public function pricelistAction()
     {
-        $filename = 'pricelist.csv';
+       //header("Content-type: text/xml; charset: UTF-8");
+       header( "content-type: application/xml; charset=ISO-8859-15" );
+       $dom = new DOMDocument("1.0", "utf-8"); // Создаём XML-документ версии 1.0 с кодировкой utf-8
+  
+  $root = $dom->createElement("price");
+	$root->setAttribute("date", date('Y-m-d H:m'));
+		$dom->appendChild($root);
+		
+  $date = $dom->createElement("date", date('Y-m-d H:m'));
+		$root->appendChild($date);
+  $name = $dom->createElement("firmName", iconv('windows-1251', 'UTF-8', "Интернет магазин модной одежды").' red.ua');
+		$root->appendChild($name);
+               
+        print $dom->saveXML();
+        exit();
+       /* $filename = 'pricelist.csv';
         $file = $_SERVER['DOCUMENT_ROOT'] . "/tmp/" . $filename;
         $fp = fopen($file, 'wb');
         $hide = 'Категория товара;Производитель;Название товара;Описание товара;Цена в гривне;Ссылка на товар;';
@@ -1055,8 +1119,10 @@ public function questionAction(){
 
         header("Content-Disposition: attachment;filename=\"" . $filename . "\"");
         header("Content-Transfer-Encoding: binary ");
-        die();
+        die();*/
        // d($mas);
+       // echo 'pricelist';
+      //  exit();
     }
 
     public function razmersetkaAction()
@@ -1106,45 +1172,7 @@ public function questionAction(){
 
    public function reviewsAction()
     {
-		
-if((isset($_POST['send_reviews']) and isset($_POST['comment-type'])) or isset($_POST['send_onswer']))
-	{
-	if($this->ws->getCustomer()->getIsLoggedIn() and $this->ws->getCustomer()->isAdmin()){
-	$pub = 1;
-	}else{
-	$pub = 0;
-	}
 	
-	$rev = new Reviews();
-	$rev->setParent_id($_POST['buf']);
-	$rev->setUrl_id($_POST['url_id']);
-	$rev->setName($_POST['sender_name']);
-	$rev->setUrl($_POST['url']);
-	$rev->setMail($_POST['sender_email']);
-	$rev->setText(strip_tags($_POST['message']));
-	$rev->setDate_add(date("d.m.Y \в\ H:i"));
-	$rev->setPublic($pub);
-	if(isset($_POST['comment-type'])){$rev->setFlag($_POST['comment-type']);}
-	$rev->save();
-	
-	 header ('Location: /reviews/');
-	}
-	
-	$onPage = 20;
-    $page = 1;
-            if ((int)$this->get->page > 0) {
-                $page = (int)$this->get->page;
-            }
-	$this->view->onpage = $onPage;
-            $this->view->page = $page;
-			
-$this->view->allcount = wsActiveRecord::useStatic('Reviews')->count(array('public' => 1, 'parent_id' => 0));
-$coments = wsActiveRecord::useStatic('Reviews')->findByQuery('SELECT  distinct(`id`), `parent_id`, `url_id`, `id_material`, `name`, `url`, `mail`, `text`, `date_add`, `public`, `flag` FROM ws_comment_system where public = 1 and parent_id = 0 order by id DESC LIMIT '.$onPage * ($page - 1).', '.$onPage);
-		
-		$this->view->coments = $coments;
-		
-		echo $this->render('reviews/comments.php');
-
 
     }
 
@@ -1163,18 +1191,16 @@ $coments = wsActiveRecord::useStatic('Reviews')->findByQuery('SELECT  distinct(`
 
 	public function returnarticlesAction()
     {
-		if(isset($_POST['return_save'])) 
+		if(isset($this->post->articul)) 
 	{
-	$code = $_POST['articul'];
-	$id_article = $_POST['id_tovar'];
+	$code = $this->post->articul;
+	$id_article = $this->post->id_tovar;
 	$ctime = date('Y-m-d H:i:s');
-	$utime = date('Y-m-d');
-	$email = $_POST['email_r'];
-	$name = $_POST['name_r']; 
-	$utime = "NULL";
-	mysql_query("INSERT INTO  `red_site`.`ws_return_article` (`code` ,`id_article` ,`ctime` ,`utime` ,`email` ,`name`)
-VALUES ('$code',  '$id_article',  '$ctime', NULL ,  '$email',  '$name')");
-
+	$email = $this->post->email_r;
+	$name = $this->post->name_r; 
+	mysql_query("INSERT INTO  `red_site`.`ws_return_article` (`code` ,`id_article` ,`ctime` ,`utime` ,`email` ,`name`) VALUES ('$code',  '$id_article',  '$ctime', NULL ,  '$email',  '$name')");
+        
+        die(json_encode(['type'=>"ok", 'message'=>'Ваше напоминание сохранено! Как только товар появится в наличии, Вам придет email.']));
 	/*$return = new Returnarticle();
 	$return->setCode($code);
 	$return->setIdArticle($id_article);
@@ -1183,8 +1209,8 @@ VALUES ('$code',  '$id_article',  '$ctime', NULL ,  '$email',  '$name')");
 	$return->setEmail($email);
 	$return->setName($name);
 	$return->save();	*/
-	  header("Location: ".$_SERVER['HTTP_REFERER']);
-	}
+        }
+        die(json_encode(['type'=>"error", 'message'=>'Возникла ошибка, обновите страницу и попробуте снова.']));
     }
 	public function sharesAction()
     {

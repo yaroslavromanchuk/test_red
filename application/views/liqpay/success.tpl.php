@@ -1,5 +1,3 @@
-<h1><?=$this->getCurMenu()->getName()?></h1>
-<p><?=$this->getCurMenu()->getPageBody()?></p>
 <?php 
 if($this->test){
 //echo print_r($this->test);

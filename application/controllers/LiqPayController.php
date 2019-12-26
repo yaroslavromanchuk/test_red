@@ -2,11 +2,11 @@
 class LiqPayController extends controllerAbstract{
 
 	private $version = 3;
-    private $public_key = 'i51858842721';
+        private $public_key = 'sandbox_i88126453387';//'i51858842721';
 	private $action = 'pay';
 	
 	private $currency = 'UAH';
-	private $private_key = 'r7A8olggiLS7OEZs4xAioTg2SZI4w6q6mdWFU9kT';
+	private $private_key = 'sandbox_3gY2gskFTOqP6I2qk1CXRdbHAMJMFIIafbuwSpoB';//r7A8olggiLS7OEZs4xAioTg2SZI4w6q6mdWFU9kT';
 	private $checkout_url = 'https://www.liqpay.ua/api/3/checkout';
 	
 
@@ -19,8 +19,8 @@ class LiqPayController extends controllerAbstract{
     public function callbackAction()
     {
         $data = $this->post['data'];
-        $private_key = $this->private_key;
-        $signature = $this->calculateSignature($data, $private_key);
+       // $private_key = $this->private_key;
+        $signature = $this->calculateSignature($data, $this->private_key);
         $parsed_data = json_decode(base64_decode($data), true);
         $order_id = $parsed_data['order_id'];
 		
@@ -46,16 +46,18 @@ class LiqPayController extends controllerAbstract{
     }
 
 public function indexAction(){
-
-	$this->pay();
+        if($this->get->id){
+           $order =  new Shoporders((int)$this->get->id);
+            $this->pay($order->id , $order->amount);
+        }
 	echo $this->render('liqpay/ordersucces.tpl.php');
 	}
 	
 	public function successAction(){
 	if (count($_POST)) {
 	$data = $this->post['data'];
-        $private_key = $this->private_key;
-        $signature = $this->calculateSignature($data, $private_key);
+        //$private_key = $this->private_key;
+        $signature = $this->calculateSignature($data, $this->private_key);
         $parsed_data = json_decode(base64_decode($data), true);
         $order_id = $parsed_data['order_id'];
 		 if ($signature == $this->post['signature']){
@@ -75,52 +77,48 @@ public function indexAction(){
 	echo $this->render('liqpay/success.tpl.php');
 	}
 	
-	public function pay(){
-	$id = 338900;
-	$amount = 10;
-        //$this->load->language('languages/payment/liqpay_checkout');
-		
-       
-		
-        $order_id = $id;
-		 $data['button_confirm'] = 'Оплатить '.$amount.' грн.';
+	public function pay($order_id, $amount){
+            
+	//$amount = $this->liqpay['amount'];
+      //  $order_id = $id;//$this->liqpay['order'];
+	
        // $this->load->model('checkout/order');
        // $order_info = $this->model_checkout_order->getOrder($order_id);
 
         // Collect info about the order to be sent to the API
 
-        $description = 'Заказ №' . $order_id;
+      //  $description = 'Оплата заказа №' . $order_id.' в интернет-магазине red.ua';
 		
 		
-       $result_url = 'https://www.red.ua/liqpay-success';//$this->url->link('liqpay/success', '', 'SSL');
+      // $result_url = 'https://www.red.ua/liqpay-success';//$this->url->link('liqpay/success', '', 'SSL');
 		
-        $server_url = 'https://www.red.ua/liqpay-callback';//$this->url->link('extension/payment/liqpay_checkout/callback', '', 'SSL');
+     //   $server_url = 'https://www.red.ua/liqpay-callback';//$this->url->link('extension/payment/liqpay_checkout/callback', '', 'SSL');
 
 
-        $amount = $amount; 
         $send_data = array(
-			'version' => $this->version,
+            'version' => $this->version,
             'public_key' => $this->public_key,
-            'amount' => $amount,
             'currency' => $this->currency,
-            'description' => $description,
-            'order_id' => $order_id,
             'action' => $this->action,
+            'sandbox' => 1,
+            'amount' => $amount,
+            'order_id' => $order_id,
+            'description' => 'Оплата заказа №' . $order_id.' в интернет-магазине red.ua',
             'language' => $_SESSION['lang'],
-            'server_url' => $server_url,
-            'result_url' => $result_url,
-			'sandbox' => 1
+            'server_url' => 'https://www.red.ua/liqpay-callback',
+            'result_url' => 'https://www.red.ua/liqpay-success',
+            
 			);
-
-
         $liqpay_data = base64_encode(json_encode($send_data));
-        $liqpay_signature = $this->calculateSignature($liqpay_data, $this->private_key);
+       // $liqpay_signature = LiqPay::calculateSignature($liqpay_data);//$this->calculateSignature($liqpay_data, $this->private_key);
 
         $data['data'] = $liqpay_data;
-        $data['signature'] = $liqpay_signature;
+        $data['signature'] = $this->calculateSignature($liqpay_data, $this->private_key);
         $data['action'] = $this->checkout_url;
+        $data['button_confirm'] = 'Оплатить '.$amount.' грн.';
 		
-		$this->view->data = $data;
+	$this->view->data = $data;
+        
        return $this->view->form = $this->render('liqpay/index.tpl.php');
 
        // return $this->load->view($view_path, $data);

@@ -46,7 +46,8 @@ margin-top: -7px;
 }
 	 
 .logo_m{margin-left:5px;width:76px;height:40px}
-.logo-grey{position:absolute;background-image:url('../mobil/mimages/logo-red-new-white.png');width:76px;height:40px;background-size: cover;}
+.logo-grey{
+    margin-top: -10px;background-image:url('../mobil/mimages/logo-red-new-white.png');width:76px;height:40px;background-size: cover;}
 .logo-grey.red{
     background-image:url('../mobil/mimages/logo-red-new.png');
 }
@@ -56,7 +57,7 @@ margin-top: -7px;
 .html{min-width:320px}
 
 .simple_overlay_back{display:none}
-.navbar,.navbar-default,.navbar-fixed-top{display:block;width:100%}
+.navbar,.navbar-default,.navbar-fixed-top{width:100%}
 .men_v{display:none}
 .m_s{display:none}
 .head_box{display:none}
@@ -78,9 +79,9 @@ div.photos img.photo-small{margin:0 2% 2% 2%}
 #result{padding-right: 0px;padding-left: 0px;}
  ul.articles-row li.article-item div.articles .size-color-box{display:block;left:0;    position: relative;}
  ul.articles-row li.article-item div.articles {border-bottom: 1px solid #707070;}
- div.article-detail-box div.photo_min{width:100%;padding: 0rem !important;}
- div.article-detail-box img.photo-small{margin:2px}
- div.article-detail-box div.photos{width:100%; padding: 0rem !important;}
+ div.article-detail-box div.photo_min{width:100%;padding: 0.5rem !important;}
+ div.article-detail-box img.photo-small{margin:2px; max-width: 100px}
+ div.article-detail-box div.photos{width:100%; }
  div.article-detail-box div.photos .article_label_container_right{right: 0px;}
  div.article-detail-box div.texts{width:100%; padding: 0rem !important;}
  .breadcrumb{font-size: 80%;padding: 0.3rem 0.5rem;}
@@ -221,3 +222,5 @@ font-size: 20px;
     margin-top: -25px;
 }
 /**/
+
+

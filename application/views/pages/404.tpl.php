@@ -1,1 +1,4 @@
-<div class="minh-400"><?=$this->getCurMenu()->getPageBody()?></div>
+<?php header("HTTP/1.0 404 Not Found");?>
+<div class="container">
+    <?=$this->getCurMenu()->getPageBody()?>
+</div>

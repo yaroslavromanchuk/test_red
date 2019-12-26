@@ -18,19 +18,19 @@ abstract class Controller {
 		$this->view->website = $this->website;
 		$this->init();
     }
+    public function init() {}
 	
 	public function render($file = '') {
-		if(!$file)
-			$file = strtolower(str_replace('Controller', '', get_class($this))) . DIRECTORY_SEPARATOR . 'index.tpl.php';
+		if(!$file){$file = strtolower(str_replace('Controller', '', get_class($this))) . DIRECTORY_SEPARATOR . 'index.tpl.php';}
 		return $this->view->render($file);
 	}
 	
 	//404
 	public function __call($method, $params) {
 		if(strpos($method, 'ction')!==false)
-			$this->show404Action($method, $params);
+                {$this->show404Action($method, $params);}
 		else
-			return false;
+                {return false;}
 	}
 		
 	static public function process() {
@@ -58,7 +58,7 @@ abstract class Controller {
 		return $content;
 	}
 	
-	public function init() {}
+	
 	
 	protected function _redirect($url) {
 		redirect($url);

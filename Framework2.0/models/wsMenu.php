@@ -67,7 +67,10 @@ class wsMenu extends wsActiveRecord
 
         return $this->action;
     }
-	
+	public function getPathSitemap()
+    {
+          return '/'.$this->getUrl().'/';  
+    }
     public function getPath()
     {
 		if($this->getRedirectUrl()){return $this->getRedirectUrl();}
@@ -75,7 +78,7 @@ class wsMenu extends wsActiveRecord
         $items = array();
         $result = '';
 
-        if (!$items = $this->getParents()){return Registry::get('Website')->getSite()->getPath() . '/' . $this->getUrl() . '/';}
+        if (!$items = $this->getParents()){ return Registry::get('Website')->getSite()->getPath() . '/' . $this->getUrl() . '/';}
 
         foreach ($items as $item){$result .= '/' . $item->getUrl();}
 

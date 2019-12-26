@@ -1,6 +1,6 @@
 <div id="forma_avt" class="forma_avt"  align="center">
 		<form  name="authenticateByLoginPost"
-                          action="/account/login/?redirect=<?=$_SERVER['REQUEST_URI']?>"
+                       action="/account/login/?redirect=<?=$_GET['redirect']?$_GET['redirect']:'/account/'?>"
                           method="post" >
 				   <table cellpadding="0" cellspacing="0"  align="center" style="text-align:center;">
 				   <tr>

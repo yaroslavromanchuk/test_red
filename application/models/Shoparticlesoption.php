@@ -33,6 +33,7 @@ class Shoparticlesoption extends wsActiveRecord
          */
 	public static function findActiveOption($limit = 10)
 	{
+            // $dat = date("Y-m-d", strtotime('-1 days'));
             $dat = date('Y-m-d');
 		return Shoparticlesoption::find('Shoparticlesoption', ["status"=>1, "`start` <= '$dat'", "`end` >= '$dat'"], ['id'=>'DESC'], $limit);
 	}
@@ -66,8 +67,7 @@ class Shoparticlesoption extends wsActiveRecord
          */
           public function getPathFind()
                 {
- 
-                    return "/articles/option/".$this->id."/".$this->_generateUrl($this->option_text).'/';
+                    return "/articles/option/".$this->id."/";
                 }	
 	
 }

@@ -2,7 +2,7 @@
     /**
      *  Readshop abstract
      */
-    include_once 'controllerAbstract.php';
+    //include_once 'controllerAbstract.php';
 
 
     class AccountController extends controllerAbstract
@@ -19,9 +19,17 @@
                 return;
             }
             $this->view->user = $this->ws->getCustomer();
-			$id = $this->ws->getCustomer()->getId();
+			//$id = $this->ws->getCustomer()->getId();
             echo $this->render('account/index.tpl.php');
             return;
+        }
+        public function depositAction(){
+            $this->cur_menu->setName('История депозита');
+               // $this->cur_menu->setPageTitle($title);
+             $this->view->deposit = wsActiveRecord::useStatic('DepositHistory')->findAll(['customer_id'=>$this->ws->getCustomer()->getId()], ['id' => 'DESC'], [0,50]);
+            $this->view->user = $this->ws->getCustomer();
+          echo $this->render('account/deposit.tpl.php');
+            //return;
         }
 
         public function callmyAction()
@@ -177,6 +185,7 @@ if(iconv_substr($info['email'], 0, 4, 'UTF-8') == 'miss'){ SendMail::getInstance
 					$customer->setFlat(@$info['flat']);
                     $customer->save();
 					$subscriber = new Subscriber();
+                                        $subscriber->setSegmentId(1);
 					$subscriber->setName(@$info['name']);
 					$subscriber->setEmail(@$info['email']);
 					$subscriber->setConfirmed(@date('Y-m-d H:i:s'));
@@ -189,7 +198,7 @@ if(iconv_substr($info['email'], 0, 4, 'UTF-8') == 'miss'){ SendMail::getInstance
 					
                     $msg = $this->render('email/new-customer.tpl.php');
                     $subject = 'Создан новый аккаунт в интернет-магазине red.ua';
-						SendMail::getInstance()->sendEmail($info['email'], $info['name'], $subject, $msg); 
+                    SendMail::getInstance()->sendEmail($info['email'], $info['name'], $subject, $msg); 
 
                     $customer = $this->ws->getCustomer();
                     $res = $customer->loginByEmail($info['email'], $info['password']);
@@ -480,7 +489,8 @@ if(iconv_substr($info['email'], 0, 4, 'UTF-8') == 'miss'){ SendMail::getInstance
 
 
         }
-		public function decode($encoded, $key)
+	
+        public function decode($encoded, $key)
                         {//расшифровываем
 		$strofsym="qwertyuiopasdfghjklzxcvbnm1234567890QWERTYUIOPASDFGHJKLZXCVBNM=";//Символы, с которых состоит base64-ключ
 			$x=0;
@@ -537,18 +547,17 @@ if(iconv_substr($info['email'], 0, 4, 'UTF-8') == 'miss'){ SendMail::getInstance
         {
             $this->view->user = $this->ws->getCustomer();
             if ($_POST) {
-                $msg = array();
+                $msg = [];
 
-                if (!$_POST['oldpass'])
-                    $msg[] = $this->trans->get("Please enter old password");
-                if ($this->ws->getCustomer()->getPassword() != md5($_POST['oldpass']))
-                    $msg[] = $this->trans->get("Password do not match");
-                if (!$_POST['password'] || !$_POST['password2'])
-                    $msg[] = $this->trans->get("Please enter 2 passwords");
-                if ($_POST['password'] != $_POST['password2'])
-                    $msg[] = $this->trans->get("Please enter the same password twice");
-                if (strlen($_POST['password']) < 6)
-                    $msg[] = $this->trans->get("Please use minimum 6 symbols for password");
+                if (!$_POST['oldpass']){$msg[] = $this->trans->get("Please enter old password");}
+                
+                if ($this->ws->getCustomer()->getPassword() != md5($_POST['oldpass'])){ $msg[] = $this->trans->get("Password do not match"); }
+                
+                if (!$_POST['password'] || !$_POST['password2']){$msg[] = $this->trans->get("Please enter 2 passwords");}
+                
+                if ($_POST['password'] != $_POST['password2']){$msg[] = $this->trans->get("Please enter the same password twice");}
+                
+                if (strlen($_POST['password']) < 6){$msg[] = $this->trans->get("Please use minimum 6 symbols for password");}
 
                 if (count($msg) > 0) {
                     $this->view->errors = $msg;
@@ -556,7 +565,7 @@ if(iconv_substr($info['email'], 0, 4, 'UTF-8') == 'miss'){ SendMail::getInstance
                     $customer = $this->ws->getCustomer();
                     $customer->setPassword(md5($_POST["password"]));
                     $customer->save();
-                    $this->view->ok = 'Пароль сменен';
+                    $this->view->ok = 'Пароль успешно сменен!';
                 }
             }
             echo $this->render('account/epass.tpl.php');
@@ -824,9 +833,7 @@ SendMail::getInstance()->sendEmail($this->ws->getCustomer()->getEmail(), $this->
                 return;
             }
 
-            if (!isset($_POST['login'])) {
-                echo $this->view->render('account/resetPassword.tpl.php');
-            } elseif (isset($_POST['login'])) {
+            if(isset($_POST['login']) and !empty($_POST['login'])) {
                 // customer not found
                 if (!$customer = wsActiveRecord::useStatic('Customer')->findByUsername($_POST['login'])) {
                     $this->view->error = "Пользователь с такой электронной почтой или телефоном не найден";
@@ -838,39 +845,40 @@ SendMail::getInstance()->sendEmail($this->ws->getCustomer()->getEmail(), $this->
                         . '0123456789';
                     $allowedCharsLength = strlen($allowedChars);
                     $newPass = '';
-                    while (strlen($newPass) < 8)
+                    while (strlen($newPass) < 8){
                         $newPass .= $allowedChars[rand(0, $allowedCharsLength - 1)];
-                    if (strlen($customer->getEmail()) > 4) {
-                        $customer->setPassword(md5($newPass));
+                }
+                 $customer->setPassword(md5($newPass));
                         $customer->save();
+                        unset($_POST['login']);
+                    if (strlen($customer->getEmail()) > 4) {
+                       // $customer->setPassword(md5($newPass));
+                       // $customer->save();
 
                         $subject = $this->trans->get('Your new password for red.ua');
                         $this->view->new_password = $newPass;
                         $this->view->customer = $customer;
-                        $msg = 'Логин: ' . $customer->getUsername() . '. ' . $this->trans->get('Your new password for red.ua') . ': ' . $newPass;
+                        $msg = 'Логин: ' . $customer->getUsername() . '. ' . $this->trans->get('Your new password for red.ua') . ': <b>' . $newPass.'</b>';
 
-SendMail::getInstance()->sendEmail($customer->getEmail(), $customer->getFullname(), $subject, $msg);
+                SendMail::getInstance()->sendEmail($customer->getEmail(), $customer->getFullname(), $subject, $msg);
 
-
-                        $this->view->ok = 1;
+                            
+                        $this->view->ok = 'Новый пароль был успешно отправлен на '.$customer->getEmail();
                     } else {
-
-                        $customer->setPassword(md5($newPass));
-                        $customer->save();
                         $phone = Number::clearPhone($customer->getPhone1());
                         include_once('smsclub.class.php');
                         $sms = new SMSClub(Config::findByCode('sms_login')->getValue(), Config::findByCode('sms_pass')->getValue());
                         $sender = Config::findByCode('sms_alphaname')->getValue();
                         $user = $sms->sendSMS($sender, $phone, 'Vash login: ' . $customer->getUsername() . '. Vash novyj password ' . $newPass);
                         wsLog::add('SMS to user: ' . $sms->receiveSMS($user), 'SMS_' . $sms->receiveSMS($user));
-                        $this->view->ok = 1;
+                        $this->view->ok = 'Новый пароль был успешно отправлен на '.$phone;
                     }
                 }
 
 
-                echo $this->view->render('account/resetPassword.tpl.php');
+                
             }
-
+echo $this->view->render('account/resetPassword.tpl.php');
             return;
         }
 
@@ -927,6 +935,12 @@ SendMail::getInstance()->sendEmail($customer->getEmail(), $customer->getFullname
 
         public function orderhistoryAction()
         {
+            $this->view->css = [
+            '/css/jquery.lightbox-0.5.css'
+        ];
+        $this->view->scripts = [
+            '/js/jquery.lightbox-0.5.js'
+        ];
             if (!$this->ws->getCustomer()->getIsLoggedIn()) {
                 $this->_redirect('/account/');
                 return;

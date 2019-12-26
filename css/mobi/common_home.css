@@ -1,0 +1,109 @@
+html{position:relative;min-height:100%}
+body{background-color:#fff;padding-top:100px;padding-bottom:20px;min-width:320px}
+
+.kat_menu_m{
+    width: 78%;
+    height: auto;
+    max-width: 250px;
+	background: #e9e9e9;
+    background-color: #e9e9e9;
+	
+	-webkit-transition: -webkit-transform .30s ease-out;
+    transition: -webkit-transform .30s ease-out;
+    transition: transform .30s ease-out;
+    transition: transform .50s ease-out,-webkit-transform .50s ease-out;
+	 }
+.kat_menu_m img{
+margin-top: -7px;
+    width: 20px;
+    margin-right: 10px;
+}
+.logo-grey{
+    margin-top: -10px;background-image:url('../../mobil/mimages/logo-red-new-white.png');width:76px;height:40px;background-size: cover;}
+.logo-grey.red{
+    background-image:url('../../mobil/mimages/logo-red-new.png');
+}
+.navbar,.navbar-default,.navbar-fixed-top{width:100%}
+.back{display:block} 
+.left{display:none;-webkit-transform:translateX(-100%);transform:translateX(-100%)}
+.btn-default{font-family:sans-serif;text-align:left;margin-bottom:5px;font-size:14px}
+.home .categories-navigation{margin-top:15px;}
+.home .categories-navigation .row + .row{margin-top:20px;}
+.home .categories-navigation .category{color: #707070;text-decoration: none;font-size: 16px;}
+.home .categories-navigation .category:hover{color:#000000;text-decoration:none;}
+.home .categories-navigation .category .category-logo{width:100px;height:100px;position:relative;margin:0 auto;}
+.home .categories-navigation .category:hover .category-logo{background-position:100px 0px;}
+.home .categories-navigation .category .category-header{text-align:center;}
+.comment-types{text-align:center;margin-bottom:20px;}
+.comment-types .comment-type{display:inline-block;margin-left:20px;margin-right:20px;}
+.comment-types .comment-type:first-child{margin-left:0px;}
+.comment-types .comment-type:last-child{margin-right:0px;}
+.comment-types .comment-type input[type="radio"]{display:none;}
+.comment-types .comment-type input[type="radio"] + label{cursor:pointer;}
+.comment-types .comment-type input[type="radio"] + label:before{content:"";display:block;width:80px;height:80px;margin-bottom:10px;}
+.comment-types .comment-type input[type="radio"]#comment-radio-bad + label:before{background-image:url('../../mobil/mimages/comment/bad.png');}
+.comment-types .comment-type input[type="radio"]#comment-radio-bad:checked + label:before{background-position:80px 0px;}
+.comment-types .comment-type input[type="radio"]#comment-radio-normal + label:before{background-image:url('../../mobil/mimages/comment/normal.png');}
+.comment-types .comment-type input[type="radio"]#comment-radio-normal:checked + label:before{background-position:80px 0px;}
+.comment-types .comment-type input[type="radio"]#comment-radio-good + label:before{background-image:url('../../mobil/mimages/comment/good.png');}
+.comment-types .comment-type input[type="radio"]#comment-radio-good:checked + label:before{background-position:80px 0px;}
+
+.social-networks{text-align:center;margin-top:20px;}
+.social-networks > a:first-child > div{border-radius:5px 0px 0px 5px;overflow:hidden;}
+.social-networks > a:last-child > div{border-radius:0px 5px 5px 0px;overflow:hidden;}
+.social-networks .social-network{display:inline-block;width:40px;height:40px;}
+.social-networks .social-network:hover > .social-network-red{opacity:1;}
+.social-networks .social-network-grey{position:absolute;width:40px;height:40px;}
+.social-networks .social-network-red{position:absolute;width:40px;height:40px;background-position:-40px 0;opacity:0;-webkit-transition:opacity 0.2s ease-in-out;-moz-transition:opacity 0.2s ease-in-out;-ms-transition:opacity 0.2s ease-in-out;-o-transition:opacity 0.2s ease-in-out;transition:opacity 0.2s ease-in-out;}
+.social-networks .social-network-tl > .social-network-grey{background-image:url('../../mobil/mimages/social/tl.png');}
+.social-networks .social-network-tl > .social-network-red{background-image:url('../../mobil/mimages/social/tl.png');}
+.social-networks .social-network-fb > .social-network-grey{background-image:url('../../mobil/mimages/social/fb.png');}
+.social-networks .social-network-fb > .social-network-red{background-image:url('../../mobil/mimages/social/fb.png');}
+.social-networks .social-network-ok > .social-network-grey{background-image:url('../../mobil/mimages/social/odnoklas.png');}
+.social-networks .social-network-ok > .social-network-red{background-image:url('../../mobil/mimages/social/odnoklas.png');}
+.social-networks .social-network-instagram > .social-network-grey{background-image:url('../../mobil/mimages/social/instagram.png');}
+.social-networks .social-network-instagram > .social-network-red{background-image:url('../../mobil/mimages/social/instagram.png');}
+.social-networks .social-network-youtube > .social-network-grey{background-image:url('../../mobil/mimages/social/youtube.png');}
+.social-networks .social-network-youtube > .social-network-red{background-image:url('../../mobil/mimages/social/youtube.png');}
+.social-networks .social-network-blog > .social-network-grey{background-image:url('../../mobil/mimages/social/blog.png');}
+.social-networks .social-network-blog > .social-network-red{background-image:url('../../mobil/mimages/social/blog.png');}
+
+.evaluate-us{text-align:center;}
+.evaluate-us > a{display:inline-block;margin:10px;margin-bottom:0px;width:60px;height:60px;}
+.evaluate-us > a.bad{background-image:url('../../mobil/mimages/comment/bad-small.png');}
+.evaluate-us > a.bad:hover{background-position:60px 0px;}
+.evaluate-us > a.normal{background-image:url('../../mobil/mimages/comment/normal-small.png');}
+.evaluate-us > a.normal:hover{background-position:60px 0px;}
+.evaluate-us > a.good{background-image:url('../../mobil/mimages/comment/good-small.png');}
+.evaluate-us > a.good:hover{background-position:60px 0px;}
+
+.blog_mobi{
+    padding: 10px;
+}
+.blog_mobi li{
+
+    list-style-type: none;
+}
+
+.blog_mobi img{
+    padding-right: 10px;
+    float: left;
+    width: 25%;
+}
+.blog_mobi span{
+	top: 10px;
+    color: #707070;
+    font-size: 90%;
+    position: relative;
+}
+.blog_mobi p{
+font-size: 20px;
+    font-weight: bold;
+    color: #5f5e5f;
+    text-align: center;
+    margin-top: -25px;
+}
+.input_sersh{margin-right:2%;margin-left:2%;width:96%;font-size:14px;padding:6px 0 4px 10px;border:1px solid #cecece;background:#f6f6f6;border-radius:10px;margin-top:1%}
+.img_bag:before{
+    font-size:30px
+}

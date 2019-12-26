@@ -7,7 +7,7 @@ class wsActiveRecord extends Orm_ActiveRecord
 	protected static $_block_type_class = BLOCK_TYPE_CLASS;
 	protected static $_block_position_class = BLOCK_POSITION_CLASS;
 	protected static $_brand_class = BRAND_CLASS;
-	protected static $_shopping_cart_item_class = SHOPPING_CART_ITEM_CLASS;
+	
 	protected static $_country_class = COUNTRY_CLASS;
 	protected static $_customer_class = CUSTOMER_CLASS;
 	protected static $_customer_address_class = CUSTOMER_ADDRESS_CLASS;
@@ -23,7 +23,10 @@ class wsActiveRecord extends Orm_ActiveRecord
 	protected static $_product_category_class = PRODUCT_CATEGORY_CLASS;
 	protected static $_product_property_class = PRODUCT_PROPERTY_CLASS;
 	protected static $_product_property_value_class = PRODUCT_PROPERTY_VALUE_CLASS;
+        
 	protected static $_shopping_cart_class = SHOPPING_CART_CLASS;
+        protected static $_shopping_cart_item_class = SHOPPING_CART_ITEM_CLASS;
+        
 	protected static $_supplier_class = SUPPLIER_CLASS;
 	protected static $_price_class = PRICE_CLASS;
 	protected static $_favorite_list_class = FAVORITE_LIST_CLASS;
@@ -66,10 +69,7 @@ class wsActiveRecord extends Orm_ActiveRecord
 	protected static $_shop_orders_class = SHOP_ORDERS_CLASS;
 	protected static $_shop_order_articles_class = SHOP_ORDER_ARTICLES_CLASS;
 	protected static $_shop_order_remarks_class = SHOP_ORDER_REMARKS_CLASS;
-	//protected static $_shop_order_statuses_class = SHOP_ORDER_STATUSES_CLASS;
 	
-	//protected static $_amazon_order_articles_class = AMAZON_ORDER_ARTICLES_CLASS;
-
 	public function getTable($new_table = '')
 	{
 		return DB_SUFFIX . $this->_table;
@@ -84,8 +84,8 @@ class wsActiveRecord extends Orm_ActiveRecord
 	
 	protected function _generateUrl($shortcut) 
 	{
-		$shortcut = $this->_translit(iconv('UTF-8','windows-1251',$shortcut));
-		return strtolower(preg_replace(array('/[^a-zA-Z0-9 -]/', '/[ -]+/', '/^-|-$/'), array('', '-', ''), $this->remove_accent($shortcut)));
+		//return strtolower(preg_replace(array('/[^a-zA-Z0-9 -]/', '/[ -]+/', '/^-|-$/'), array('', '-', ''), $this->remove_accent($this->_translit(iconv('UTF-8','windows-1251', mb_strtolower($shortcut))))));
+                return strtolower(preg_replace(array('/[^a-zA-Z0-9 -]/', '/[ -]+/', '/^-|-$/'), array('', '-'), $this->remove_accent($this->_translit(iconv('UTF-8','windows-1251//TRANSLIT', mb_strtolower($shortcut))))));
 	}
 
 	/*
@@ -172,8 +172,8 @@ class wsActiveRecord extends Orm_ActiveRecord
 		$str = strip_tags($str);
 		$str = preg_replace("![^абвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯa-z0-9 ]!i", " ", $str);
 		$str = preg_replace("![\s]{2,}!", " ", $str);*/
-		$str = trim($str);
-		$ns = convert_cyr_string($str, "w", "k");
+		//$str = ;
+		$ns = convert_cyr_string(trim($str), "w", "k");
 		$b = '';
 		for ($i=0;$i<strlen($ns);$i++)
 		{
@@ -194,4 +194,3 @@ class wsActiveRecord extends Orm_ActiveRecord
 	}	
 	
 }
-?>

@@ -7,7 +7,7 @@
     <meta name="keywords" content="<?=htmlspecialchars($this->getCurMenu()->getMetatagKeywords()); ?>"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
 	<meta name="google-site-verification" content="5KsgGP4-JCTjV0dafIfi5_AI73MIryFuGqLvAgIthAI" />
-        <meta name="robots" content="noindex, nofollow"/>
+        <meta name="robots" content="noindex, follow"/>
     <title><?=htmlspecialchars($this->getCurMenu()->getTitle())?></title>
 	<link rel="alternate" hreflang="ru-UA" href="https://www.red.ua/ru<?=$_SERVER['REQUEST_URI']?>" />
 		<link rel="alternate" hreflang="uk-UA" href="https://www.red.ua/uk<?=$_SERVER['REQUEST_URI']?>" />

@@ -1,148 +1,8 @@
-<script src="/js/desires.js?v=1.4"></script>
-
-
-		<!-- Dialog return -->
-	<div class="modal fade comment-form" id="comment-modal_b_ord1" tabindex="-1" role="dialog" aria-labelledby="comment-modal_b_ord1">
-		<div class="modal-dialog" role="document" id="f_order1">
-	    	<div class="modal-content modal-md">
-				<form id="qo1" action="/page/returnarticles/" method="post" class="disabled-while-empty" name="qo1" onsubmit="return hidenn();">
-				<div id="hidennn"> 
-				<input type="hidden" name="id_tovar" id="id_tovar" value="<?php echo $this->getShopItem()->getId(); ?>" />
-						<div class="modal-header">
-							<h5 class="modal-title"><?=$this->trans->get('Сообщить, когда появится в наличии')?>!</h5>
-							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						</div>
-						<div class="modal-body">						
-							<div class="comment-types">
-								<div class="comment-type">
-								<span class="red">*</span> - <?php echo $this->trans->get('Поля, обязательные для заполнения');?>
-								</div>
-							</div>
-							<div class="form-group form-group-sm">
-								<label for="name_r"><?php echo $this->trans->get('Имя');?><span class="red">*</span></label>
-							<?php	if ($this->ws->getCustomer()->getIsLoggedIn()) {?>
-								<input class="form-control" name="name_r" id="name_r" required value="<?php
-								echo $this->ws->getCustomer()->getFirstName();?>"/>
-								<?php }else{?>
-								<input class="form-control" name="name_r" id="name_r" required value=""/><?php }?>
-							</div>
-							<div class="form-group form-group-sm">
-								<label for="email_r">e-mail<span class="red">*</span></label>
-							<?php 	if ($this->ws->getCustomer()->getIsLoggedIn()) {?>
-							<input class="form-control" type="email" name="email_r" id="email_r" placeholder="sample@domen.com" required value="<?php
-							echo $this->ws->getCustomer()->getEmail();?>" /> <?php }else{?>
-							<input class="form-control" type="email" name="email_r" id="email_r" placeholder="sample@domen.com" required value=""/>
-							<?php
-							}?>
-							</div>
-							<div style="min-height: 48px;">
-						<p>
-							<?php echo $this->trans->get('Размер'); ?>:
-						</p>
-						<span id="size_return">
 <?php
-							$one_z_r = 0;
-							$one_c_r = 0;
-							$mas = array();
-							foreach ($this->getShopItem()->getSizes() as $size) {
-								if ($size->getCount() == 0) {
-									$mas [$size->getSize()->getId()] = $size->getSize()->getSize();
-								}
-							}
-							foreach (array_unique($mas) as $kay => $value) { 
-							if (count($mas) == 1) { 
-									$one_z_r = $kay;
-									echo '<input hidden type="radio" value="' . $kay . '" name="size_return" id="'. $kay . 'size_return" checked="checked">';
-									echo '<label for="'. $kay . 'size_return" class="lebb">' . $value . '</label>';
-								} else {
-									echo '<input hidden type="radio" value="' . $kay . '" name="size_return" id="'. $kay . 'size_return">';
-									echo '<label for="'. $kay . 'size_return" class="lebb">' . $value . '</label>';
-								}
-							}
-?>
-						<!-- </select> -->
-						</span>
-						<span class="error size">
-							<i class="arrow-left"></i>
-							<span ><?=$this->trans->get('Выберите размер')?></span>
-						</span>
-						<div class="clear" style="padding:0;"></div>
-					</div>
-<div>
-						<span id="color_return">
-<?php
-							$mass = array();
-							foreach ($this->getShopItem()->getSizes() as $color) {
-								if ($color->getCount() == 0) {
-									$mass [$color->getColor()->getId()] = $color->getColor()->getName();
-								}
-							}
-							foreach (array_unique($mass) as $kay => $value) {
-							if (count($mass) == 1) {
-									$one_c_r = $kay;
-									echo '<input hidden type="radio" value="' . $kay . '" name="color_return" id="'. $kay . 'color_return" checked="checked">';
-									
-								} else {
-									echo '<input hidden type="radio" value="' . $kay . '" name="color_return" id="'. $kay . 'color_return">';
-									echo '<label for="'. $kay . 'color_return" class="lebb"><i>' . $value . '</i></label>';
-								}
-							}
-?>
-			<!-- </select> -->
-						</span>
-						<span class="error color">
-							<i class="arrow-left"></i>
-							<span><?php echo $this->trans->get('Выберите цвет');?></span>
-						</span>
-<?php
-							if(!$one_c_r or !$one_z_r ){?><br>
-							<br><span class="sarticle_return" style="display: none;"><?=$this->trans->get('Артикул');?>: <span class="red"></span></span>
-							<input style="display: none;" class="form-control " type="text" name="articul" id="articul" value=""/>
-<?php
-							}
-							else {
-                                                            $cod = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article'=>$this->getShopItem()->getId(),'id_size'=>$one_z_r,'id_color'=>$one_c_r, 'count = 0'))->getCode();
-							
-?>
-							<br><span class="sarticle_return"><?=$this->trans->get('Артикул')?>:<span class="red"><?=$cod?></span></span>
-							<input style="display: none;" class="form-control " type="text" name="articul" id="articul" value="<?=$cod?>"/>
-
-<?php
-							}
-?>
-					</div>
-						</div>
-						<div class="modal-footer">
-							<input  type="submit" class="btn btn-danger" name="return_save" value="Сохранить">
-						<button id="sev"  style="display: none;" type="button" class="btn btn-default exit" data-dismiss="modal" aria-label="Close"></button>
-						</div>
-						</div>
-				    
-					
-				</form>
-	    	</div>
-	  	</div>
-
-	</div>	
-	<script>
-					function hidenn() {
-					//var article = $('#articul').val(); 
-					//console.log(article);
-					var size_id_x = $('input[name="size_return"]:checked').val();
-                                        var color_id_x = $('input[name="color_return"]:checked').val();
-			
-					if(color_id_x > 0 && size_id_x > 0){
-					alert("<?=$this->trans->get('Ваше пожелание сохранено')?>.");
-					document.getElementsByClassName("exit")[0].click();
-					return true;
-					}else{
-					alert("<?=$this->trans->get('Выберите розмер и цвет')?>!");
-					return false; 
-					}
-				};
-				
-	</script>
-	<!-- End dialog return -->
+$remind = $this->getShopItem()->getRemind();
+if($remind){
+echo $this->render('/article/file/remind.php');
+ } ?>
 		<!-- !Comment modal -->
 	<div class="modal fade comment-form" id="comment-modal_b_ord" tabindex="-1" role="dialog" aria-labelledby="comment-modal_b_ord">
 		<div class="modal-dialog" role="document" id="f_order">
@@ -235,29 +95,32 @@
 </div>
 <!--okno brenda-->
 <?php
-$Headers = get_headers('https://www.red.ua'.$this->getShopItem()->getImagePath('card_product'));
-if(strpos($Headers[0], '200')) {
+//echo $this->getShopItem()->getImagePath('card_product');
+$Headers = @get_headers('https://www.red.ua'.$this->getShopItem()->getImagePath('card_product'));
+
+if(stripos($Headers[0], '200') !== false) {
 $rs = 'card_product';
 }else{
 $rs = 'detail';
 }
 	$label = false;
-	if ($this->getShopItem()->getLabelId()) {
-		$label = $this->getShopItem()->getLabel()->getImage();
-	}
+if ($this->getShopItem()->getLabelId()) {
+$label = $this->getShopItem()->getLabel()->getImage();
+}
 ?>
 <div class="row article-detail-box p-2 m-0">
 <?php if (count($this->getShopItem()->getImages()) > 0) { ?>
-<div class="photo_min col-xs-12  col-lg-1 col-xl-1">
-<a href='<?=$this->getShopItem()->getImagePath()?>' class="cloud-zoom-gallery" title="<?=htmlspecialchars($this->getShopItem()->getTitle())?>" data-rel="useZoom: 'zoom', smallImage: '<?=$this->getShopItem()->getImagePath($rs)?>'"
+<div class="photo_min col-sm-12  col-lg-1 col-xl-1">
+<a href="<?=$this->getShopItem()->getImagePath()?>" class="cloud-zoom-gallery" title="<?=htmlspecialchars($this->getShopItem()->getTitle())?>" data-rel="useZoom: 'zoom', smallImage: '<?=$this->getShopItem()->getImagePath($rs)?>'"
 >						
-<div class="for_cloud_big_src" style="display:none"><?=$this->getShopItem()->getImagePath();?></div>
-<img src="<?=$this->getShopItem()->getImagePath('listing');?>" alt="<?=htmlspecialchars($this->getShopItem()->getTitle())?>" class="photo-small" onmouseover="$(this).parent().click()"/></a>
+<img src="<?=$this->getShopItem()->getImagePath('listing');?>" alt="<?=htmlspecialchars($this->getShopItem()->getTitle())?>" class="photo-small"
+     onmouseover="$(this).parent().click()"/>
+</a>
 <?php foreach ($this->getShopItem()->getImages() as $image) { ?>
-<a href='<?=$image->getImagePath()?>' class='cloud-zoom-gallery  <?=((int)$image->getColorId() > 0)?' color_click_'.$image->getColorId():''?>' title="<?=$image->getTitle()?>"  data-rel="useZoom: 'zoom', smallImage: '<?=$image->getImagePath($rs)?>'" 
+<a href="<?=$image->getImagePath()?>" class='cloud-zoom-gallery  <?=((int)$image->getColorId() > 0)?' color_click_'.$image->getColorId():''?>' title="<?=$image->getTitle()?>"  data-rel="useZoom: 'zoom', smallImage: '<?=$image->getImagePath($rs)?>'" 
 >
-<div class="for_cloud_big_src" style="display:none"><?=$image->getImagePath();?></div>
-<img src="<?=$image->getImagePath('listing')?>" alt="<?=$image->getTitle()?>" class="photo-small"   onmouseover="$(this).parent().click()" />
+<img src="<?=$image->getImagePath('listing')?>" alt="<?=$image->getTitle()?>" class="photo-small"
+     onmouseover="$(this).parent().click()" />
 </a>
 <?php } ?>
 </div>
@@ -289,24 +152,27 @@ if($label == '/storage/label/final_sale_1.png'){
 	<?php
 	} ?> 
     <div class="">  
- <?php if ($label) { ?>
+ <?php if ($label and false) { ?>
     <div class="article_label_container_left"><div class="article_label"><img alt="label" src="<?=$label?>" style="width: 100%"/></div></div>
         <?php } ?>
      <?php
-     
+     if($this->getShopItem()->label_id){ ?>
+         <span class="sale-icon">
+                    <?=$this->getShopItem()->label->name?$this->getShopItem()->label->name:''?>
+                </span>
+    <?php }
    $option =  $this->getShopItem()->getOptions();
     if($option->value){
         ?>
-    <div class="article_label_container_right" >
-        <div class="article_label">
-            <img src="/storage/label/promotion.png" alt="promotion"  data-tooltip="tooltip"  data-original-title="<?=$option->option_text?>" >
-        </div> 
-    </div> 
+    <span class="sale-icon-right" data-tooltip="tooltip"  data-original-title="<?=$option->option_text?>">
+                    Акция
+                </span>
        <?php } ?>
-<div style="display:none" id="cloud_big_src"><?=$this->getShopItem()->getImagePath()?></div>
 
-<a onclick="$('a.cloud-zoom').css('z-index',1);" href='<?=$this->getShopItem()->getImagePath()?>' class='cloud-zoom' id='zoom' >
-<img class="photo-big" id="test" itemprop="image"  src="<?=$this->getShopItem()->getImagePath($rs)?>" alt='<?=htmlspecialchars($this->getShopItem()->getTitle())?>' title="<?=htmlspecialchars($this->getShopItem()->getTitle())?>" >
+<a onclick="$('a.cloud-zoom').css('z-index',1);" href='<?=$this->getShopItem()->getImagePath()?>' class='cloud-zoom' id='zoom'  data-cloudzoom="zoomSizeMode:'image',autoInside: 550, zoomImage: '<?=$this->getShopItem()->getImagePath()?>', zoomPosition:'inside', zoomOffsetX:0"  >
+<img class="photo-big " id="test" itemprop="image"  
+     
+     src="<?=$this->getShopItem()->getImagePath($rs)?>" alt='<?=htmlspecialchars($this->getShopItem()->getTitle())?>' title="<?=htmlspecialchars($this->getShopItem()->getTitle())?>" >
 </a>
 </div>
 	</div>
@@ -315,7 +181,7 @@ if($label == '/storage/label/final_sale_1.png'){
 	<div class="texts col-xs-12 col-sm-12 col-lg-6  col-xl-7 px-0">
 	<div class="model"><?=$this->getShopItem()->getModel()?></div>
 <div class="shop_brand"  itemprop="brand" itemscope itemtype="http://schema.org/Brand">
-<a href="/brands/id/<?=$this->getShopItem()->brand_id?>/<?=$this->getShopItem()->getBrand()?>/"><span itemprop="name"><?=$this->getShopItem()->getBrand()?></span></a>
+<a href="<?=$this->getShopItem()->brands->getPath()?>"><span itemprop="name"><?=$this->getShopItem()->getBrand()?></span></a>
 </div>
 <div class="article-category"><span  style="color: #969696;text-transform: uppercase;"><?=$this->trans->get('category')?> : </span><a  href="<?=$this->getShopItem()->getCategory()->getPath()?>"><?=$this->getShopItem()->getCategory()->getH1()?></a></div>
 
@@ -369,14 +235,7 @@ if($this->getShopItem()->getModelId()){
 							<span><?=$this->trans->get('Выберите размер'); ?></span>
 						</span>
                                                    
- <a href="#"  class="rozmerSetka1" onclick="
-     $('.popap_blok').css('width',$(document).width()).css('height',$(document).height()).show();
-	$('.mask').css('width',$(document).width()).css('height',$(document).height()).css({'opacity':'0.7'}).show();
-	$('#rozmerSetka1').css('left',($(document).width()-$('#rozmerSetka1').width())/2);
-	$('#rozmerSetka1').toggle('slow', function() {});
-        return false;">
-     (<?=$this->trans->get('размерная сетка')?>)
- </a>
+
 <?php if ($this->getShopItem()->category->getSizeType() > 0 and $this->getShopItem()->getSizeType() != 100) {
 	echo $this->render('/pages/razmersetka.tpl.php'); 
 } ?>
@@ -427,7 +286,7 @@ if($this->getShopItem()->getModelId()){
 <?php                                                       $art = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article'=>$this->getShopItem()->getId(),'id_size'=>$one_z,'id_color'=>$one_c))->getCode();
 										echo $art;
 ?>
-									</span><input type="text" hidden value="<?=$art;?>" id="artikul" name="artikul">
+									</span><input type="text" hidden value="<?=$art?>" id="artikul" name="artikul">
 								</span>
 <?php
 							}
@@ -787,7 +646,6 @@ if($n){ ?>
 </div>
 </div>
 <div class="row m-auto"><?=$this->render('/pages/sliders/articles.php')?></div>
-<script src="/js/call/jquery.mask.js"></script>
 <script>
 	function getArticle(sizeid, colorid) {
 		if (sizeid > 0) {
@@ -795,7 +653,7 @@ if($n){ ?>
 				$.ajax({
 					type: 'GET',
 					dataType: 'json',
-					url: '/page/getarticle/&'+"color_id=" + colorid + '&size_id=' + sizeid + '&article_id=' + <?=$this->getShopItem()->getId()?>,
+					url: '/page/getarticle/&'+"color_id=" + colorid + '&size_id=' + sizeid + '&article_id=' + <?=$this->getShopItem()->getId()?>+'/',
 					beforeSend: function(){
 					$("#message").fadeOut(300);
 						$('#article').css('opacity', '0.1');
@@ -823,45 +681,10 @@ if($n){ ?>
 			}
 		}
 	}
-	// для напоминалки
-	function getArticleReturn(sizeid, colorid) {
-		if (sizeid > 0) {
-			if (colorid > 0) {
-				$.ajax({
-					type: 'GET',
-					dataType: 'json', 
-					url: '/page/getarticlereturn/&'+"color_id=" + colorid + '&size_id=' + sizeid + '&article_id=' + <?=$this->getShopItem()->getId()?>,
-					beforeSend: function(){
-						$('#article').css('opacity', '0.1');
-						$('#wait_circle').show();
-					},
-					success: function (result) {
-						if (result.type === 'error') {
-							$('#article').css('opacity', '1');
-							$('#wait_circle').hide();
-							$('.sarticle_return span').html('соответствия размер - цвет есть в наличии');
-							$('.sarticle_return').show();
-						}
-						else {
-							$('.sarticle_return span').html(result.code);
-							$('#articul').val(result.code);
-							$('.sarticle_return').show();
-						}
-					},
-					error:function(e){
-						$('.sarticle_return span').html('error_ajax');
-						$('.sarticle_return').show();
-					},
-					complete: function(){
-					}
-				});
-			}
-		}
-	}
-	// выход для напоминалки
+
 
 	$(document).ready(function () {
-		$(".tab-content").tab();
+		//$(".tab-content").tab();
 	$(".phone_form").mask("38(999)999-99-99");
 	
 		$('a.cloud-zoom').lightBox({fixedNavigation: true,overlayOpacity: 0.6});
@@ -880,10 +703,10 @@ if($n){ ?>
 			$('#color').html('загрузка...');
 			$('#article').css('opacity', '0.5');
 			$('#wait_circle').show();
-			var url = '/page/getcolor/&'+"size_id=" + size_id + '&article_id=' + <?=$this->getShopItem()->getId()?>;
+			var url = '/page/getcolor/'+"&size_id=" + size_id + '&article_id=' + <?=$this->getShopItem()->getId()?>+'/';
 			$.get(
 				url,
-				"size_id=" + size_id + '&article_id=' + <?=$this->getShopItem()->getId()?>,
+				"size_id=" + size_id + '&article_id=' + <?=$this->getShopItem()->getId()?>+'/',
 				function (result) {
 					if (result.type == 'error') {
 						alert('error');
@@ -901,6 +724,7 @@ if($n){ ?>
 						$('#color').html(options);
 						$('#article').css('opacity', '1');
 						$('#wait_circle').hide();
+                                                 $('#sub_bascet').attr({disabled:false});
 					}
 				},
 				"json"
@@ -923,10 +747,10 @@ if($n){ ?>
 			$('#article').css('opacity', '0.5');
 			$('#size').html('загрузка...');
 			$('#wait_circle').show();
-			var url = '/page/getsize/&'+"color_id=" + color_id + '&article_id=' + <?=$this->getShopItem()->getId()?>;
+			var url = '/page/getsize/&'+"color_id=" + color_id + '&article_id=' + <?=$this->getShopItem()->getId()?>+'/';
 			$.get(
 				url,
-				"color_id=" + color_id + '&article_id=' + <?=$this->getShopItem()->getId()?>,
+				"color_id=" + color_id + '&article_id=' + <?=$this->getShopItem()->getId()?>+'/',
 				function (result) {
 					if (result.type == 'error') {
 						alert('error');
@@ -944,97 +768,14 @@ if($n){ ?>
 						$('#size').html(options);
 						$('#article').css('opacity', '1');
 						$('#wait_circle').hide();
+                                               $('#sub_bascet').attr({disabled:false});
 					}
 				},
 				"json"
 			);
 		});
 		
-		//для напоминалки
 		
-		$('#size_return').on('change', 'input[name="size_return"]', function() {
-			$( ".error.size_return" ).fadeOut();
-			var size_id = $('input[name="size_return"]:checked').val() || 0;
-			var color_id = $('input[name="color_return"]:checked').val() || 0;
-			if (color_id > 0 && size_id > 0) {
-				getArticleReturn(size_id, color_id);
-			}
-			if (size_id == '0') {
-				window.location.reload(true);
-				return(false);
-			}
-			$('#color_return').html('загрузка...');
-			$('#article').css('opacity', '0.5');
-			$('#wait_circle').show();
-			var url = '/page/getcolorreturn/&'+"size_id=" + size_id + '&article_id=' + <?=$this->getShopItem()->getId()?>;
-			$.get(
-				url,
-				"size_id=" + size_id + '&article_id=' + <?=$this->getShopItem()->getId()?>,
-				function (result) {
-					if (result.type == 'error') {
-						alert('error');
-						return(false);
-					}
-					else {
-						var options = '';
-						var checked = '';
-						$(result.color).each(function () {
-							checked = '';
-							if (color_id == $(this).attr('id')) checked = 'checked="checked"';
-							options +=	'<input hidden type="radio" value="' + $(this).attr('id') + '" name="color_return" id="' + $(this).attr('id') + 'color_return" '+ checked +'>'
-										'<label for="' + $(this).attr('id') + 'color_return" class="lebb"><i>' + $(this).attr('title') + '</i></label>';
-						});
-						$('#color_return').html(options);
-						$('#article').css('opacity', '1');
-						$('#wait_circle').hide();
-					}
-				},
-				"json"
-			);
-			
-		});
-
-		$('#color_return').on('change', 'input[name="color_return"]', function() {
-			$( ".error.color" ).fadeOut();
-			var size_id = $('input[name="size_return"]:checked').val() || 0;
-			var color_id = $('input[name="color_return"]:checked').val() || 0;
-			$('.color_click_' + color_id).click();
-			if (color_id > 0 && size_id > 0) {
-				getArticleReturn(size_id, color_id);
-			}
-			if (color_id == '0') {
-				window.location.reload(true);
-				return(false);
-			}
-			$('#article').css('opacity', '0.5');
-			$('#size_return').html('загрузка...');
-			$('#wait_circle').show();
-			var url = '/page/getsizereturn/&'+"color_id=" + color_id + '&article_id=' + <?=$this->getShopItem()->getId()?>;
-			$.get(
-				url,
-				"color_id=" + color_id + '&article_id=' + <?=$this->getShopItem()->getId()?>,
-				function (result) {
-					if (result.type === 'error') {
-						alert('error');
-						return(false);
-					}
-					else {
-						var options = '';
-						var checked = '';
-						$(result.size).each(function () {
-							checked = '';
-							if (size_id === $(this).attr('id')) { checked = 'checked="checked"';}
-							options +=	'<input hidden type="radio" value="' + $(this).attr('id') + '" name="size_return" id="' + $(this).attr('id') + 'size_return" '+ checked +'>'+
-										'<label for="' + $(this).attr('id') + 'size_return"class="lebb"><i>' + $(this).attr('title') + '</i></label>';
-						});
-						$('#size_return').html(options);
-						$('#article').css('opacity', '1');
-						$('#wait_circle').hide();
-					}
-				},
-				"json"
-			);
-		});
 		
 	});
 </script>

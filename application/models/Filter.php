@@ -22,29 +22,21 @@ class Filter extends wsActiveRecord
 		'min_max' => $min_max_price
         )
      */
-    public static function getArticlesFilter($search = '', $addtional = false, $category = false, $order_by = false,  $page = 0, $onPage = 30)
+    public static function getArticlesFilter($filter)
 	{
-        $param = [];
-        $meta = [];
-        $title =[];
-        //order by
         
-		switch($order_by){
-                case 'cena_vozrastaniyu': $order_by = 'price ASC'; $meta['nofollow'] = 1;  $meta['footer']['block'] = 'tut';  break;
-                case 'cena_ubyvaniyu': $order_by = 'price DESC'; $meta['nofollow'] = 1;  $meta['footer']['block'] = 'tut';  break;
-                case 'populyarnost_vozrastaniyu': $order_by = 'views ASC'; $meta['nofollow'] = 1;  $meta['footer']['block'] = 'tut';  break;
-                case 'populyarnost_spadaniyu': $order_by = 'views DESC'; $meta['nofollow'] = 1;  $meta['footer']['block'] = 'tut';  break;
-                case 'date_vozrastaniye': $order_by = 'ctime ASC'; $meta['nofollow'] = 1;  $meta['footer']['block'] = 'tut';  break;
-                case 'date_spadaniye': $order_by = 'ctime DESC'; $meta['nofollow'] = 1;  $meta['footer']['block'] = 'tut';  break;
-		default:  $order_by = 'ctime DESC';
-		}
+        //$search = '', $addtional = false, $category = false, $order_by = false,  $page = 0, $onPage = 30
+        $search = $filter['search']?$filter['search']:''; //
+        $category = $filter['category']?$filter['category']:false;
+        $addtional = $filter['filter']?$filter['filter']:false; //
+        $order_by = $filter['order_by']?$filter['order_by']:false; //
+        $page = $filter['page']?$filter['page']:0; //
+        $onPage = $filter['Onpage']?$filter['Onpage']:32; //
         
-                if($page){
-                   // $meta['nofollow'] = 1;
-                    $meta['footer']['block'] = 'tut';
-                }
-		
-		$t_t = date("Y-m-d H:m:s", strtotime("-5 day"));
+        $param = []; //
+        
+             
+		$t_t = date("Y-m-d H:m:s", strtotime("-7 day"));
 		
         $where = "
                   FROM ws_articles_sizes
@@ -72,13 +64,10 @@ class Filter extends wsActiveRecord
 		
         if ($search)
             {
-            $meta['footer']['block'] = 'tut';
-            $meta['nofollow'] = 1;
-            $title[] = $search;
+           
             $mas = explode(' ', $search);
             if (count($mas) > 1) {
-
-                $find_slov = array();
+                $find_slov = [];
                 foreach ($mas as $v) {
                     $find_slov[] = '
                                 (model like "%' . mysql_real_escape_string($v) . '%"
@@ -89,24 +78,20 @@ class Filter extends wsActiveRecord
                                         or brand like "%' . mysql_real_escape_string($search) . '%"
                                         or long_text like "%' . mysql_real_escape_string($search) . '%" or long_text_uk like "%' . mysql_real_escape_string($search) . '%"))';
 
-            } else {
+            }else{
                 $where .= ' AND ( ws_articles.model like "%' . mysql_real_escape_string($search) . '%" or ws_articles.model_uk like "%' . mysql_real_escape_string($search) . '%"
             or ws_articles.brand like "%' . mysql_real_escape_string($search) . '%"
             or ws_articles.long_text like "%' . mysql_real_escape_string($search) . '%" or ws_articles.long_text_uk like "%' . mysql_real_escape_string($search) . '%" or ws_articles_sizes.code like "%' . mysql_real_escape_string($search) . '%" )';
             }
         }
+        
+        
 
-		
-		
-
-		//$min_max_price = 'SELECT MIN(price) as min, MAX(price) as max ' . $where;
-		
-		//if (@$addtional['price']['min']) $where .= ' AND ws_articles.price >= ' . $addtional['price']['min'];
-		//if (@$addtional['price']['max']) $where .= ' and ws_articles.price <= ' . $addtional['price']['max'];
 		$param['newcat'] = self::getAllCategory($category);
 		$param['categories'] = self::getAllParametrs($where, $category->id, 'categories', $search);
-		
-		
+                
+		return self::where($search, $category, $addtional, $order_by, $page, $onPage, $param, $where);
+	/*	
                
         if (count($addtional['categories'])) {
              foreach ($param['categories'] as $value) {
@@ -114,163 +99,48 @@ if(in_array($value['id'], $addtional['categories'])){
                                $title[] = mb_strtolower($value['title']);
                         }
                 }
-              $meta['footer']['block'] = 'tut';
    $where .= ' AND (ws_articles.category_id IN (' . implode(',', $addtional['categories']) . ') OR ws_articles.dop_cat_id IN (' . implode(',', $addtional['categories']) . '))';
         }
-      //  d($where, false);
-		
-		$param['brands'] = self::getAllParametrs($where, $category->id, 'brands');
-		
-		if (count($addtional['brands'])) {
-                  foreach ($param['brands'] as $value) {
-                       if(in_array($value['id'], $addtional['brands'])){
-                             $title[] = $value['title'];
-                        }
-                }
-                 if(count($addtional) == 1 and count($addtional['brands']) == 1){
-                  $text = FooterText::Text(['category_id' =>$category->id, 'brand_id' => $addtional['brands'][0]]);
-                  if($text){
-                     $meta['footer']['text'] = $text;
-                 }else{
-                      $meta['footer']['block'] = 'tut';
-                 }
-                }else{
-                    $meta['footer']['block'] = 'tut';
-                }
-                
-               // $meta['footer']['block'] = 'tut';
-             
-            $where .= ' AND ws_articles.brand_id IN (' . implode(',', $addtional['brands']) . ')';
-           // $where .= ' AND ws_articles.brand_id IN (' . $addtional['brands'] . ')';
-        }
-        // d($where, false);
-		$param['sezons'] = self::getAllParametrs($where, $category->id, 'sezons');
-                
-	if (count($addtional['sezons'])) {
-            foreach ($param['sezons'] as $value) {
-                if(in_array($value['id'], $addtional['sezons'])){
-                             $title[] = $value['title'];
-                        }
-                }
-                
-                if(count($addtional) == 1 and count($addtional['sezons']) == 1){
-                 $text = FooterText::Text(['category_id' =>$category->id, 'sezon_id' => $addtional['sezons'][0]]);
-                 if($text){
-                     $meta['footer']['text'] = $text;
-                 }else{
-                      $meta['footer']['block'] = 'tut';
-                 }
-                }else{
-                    $meta['footer']['block'] = 'tut';
-                }
-                
-                   
-                    
-            $where .= ' AND ws_articles.sezon IN ('.implode(',',$addtional['sezons']).')';
-            //$where .= ' AND ws_articles.sezon IN ('.$addtional['sezons'].')';
-        }
-        //d($where, false);
-		$param['colors'] = self::getAllParametrs($where, $category->id, 'colors');
-        if (count($addtional['colors'])) {
-            foreach ($param['colors'] as $value) {
-                if(in_array($value['id'], $addtional['colors'])){
-                                 $title[] = mb_strtolower($value['title']);
-                        }
-                }
-                
-                if(count($addtional) == 1 and count($addtional['colors']) == 1){
-                 $text = FooterText::Text(['category_id' =>$category->id, 'color_id' => $addtional['colors'][0]]);
-                 if($text){
-                     $meta['footer']['text'] = $text;
-                 }else{
-                      $meta['footer']['block'] = 'tut';
-                 }
-                }else{
-                    $meta['footer']['block'] = 'tut';
-                }
-                
-            $where .= ' AND ws_articles.color_id IN (' . implode(',', $addtional['colors']) . ')';
-             //$where .= ' AND ws_articles.color_id IN (' . $addtional['colors'] . ')';
-          // $meta['footer']['block'] = 'tut';
-        }
-		$param['sizes'] = self::getAllParametrs($where, $category->id, 'sizes');
-        if (count($addtional['sizes'])) {
-            foreach ($param['sizes'] as $value) {
-                if(in_array($value['id'], $addtional['sizes'])){
-                                 $title[] = mb_strtolower($value['title']);
-                        }
-                }
-                
-                if(count($addtional) == 1 and count($addtional['sizes']) == 1){
-                  $text = FooterText::Text(['category_id' =>$category->id, 'size_id' => $addtional['sizes'][0]]);
-                    if($text){
-                     $meta['footer']['text'] = $text;
-                 }else{
-                      $meta['footer']['block'] = 'tut';
-                 }
-                }else{
-                    $meta['footer']['block'] = 'tut';
-                }
-                
-            $where .= ' AND ws_articles_sizes.id_size IN (' . implode(',', $addtional['sizes']) . ')';
-            //$where .= ' AND ws_articles_sizes.id_size IN (' . $addtional['sizes'] . ')';
-           // $meta['footer']['block'] = 'tut';
-        }
-		$param['labels'] = self::getAllParametrs($where, $category->id, 'labels');
-        if (count($addtional['labels'])) {
-            $meta['nofollow'] = 1;
-            $where .= ' AND ws_articles.label_id IN ('.implode(',', $addtional['labels']).')';
-            //$where .= ' AND ws_articles.label_id IN ('.$addtional['labels'].')';
-            $meta['footer']['block'] = 'tut';
-        }
+        
+
+	$param['brands'] = self::getAllParametrs($where, $category->id, 'brands');	
+            if (count($addtional['brands'])) {
+                $where .= ' AND ws_articles.brand_id IN (' .implode(',', $addtional['brands']). ')';
+            }
+	
+        $param['sezons'] = self::getAllParametrs($where, $category->id, 'sezons');     
+            if (count($addtional['sezons'])) {      
+                $where .= ' AND ws_articles.sezon IN ('.implode(',',$addtional['sezons']).')';
+            }
+            
+	$param['colors'] = self::getAllParametrs($where, $category->id, 'colors');
+            if (count($addtional['colors'])) {   
+                $where .= ' AND ws_articles.color_id IN (' . implode(',', $addtional['colors']) . ')';
+            }
+	
+        $param['sizes'] = self::getAllParametrs($where, $category->id, 'sizes');
+            if (count($addtional['sizes'])) {
+                $where .= ' AND ws_articles_sizes.id_size IN (' . implode(',', $addtional['sizes']) . ')';
+            }
+	$param['labels'] = self::getAllParametrs($where, $category->id, 'labels');
+            if (count($addtional['labels'])) {
+           
+                $where .= ' AND ws_articles.label_id IN ('.implode(',', $addtional['labels']).')';
+            }
 
 	$param['skidka'] = self::getAllParametrs($where, $category->id, 'skidka');
-	if (count($addtional['skidka'])) {
-                $meta['nofollow'] = 1;
-            $where .= ' AND ws_articles.ucenka IN ('.implode(',', $addtional['skidka']).')';
-           // var_dump($where);
-             //$where .= ' AND ws_articles.ucenka IN ('.$addtional['skidka'].')';
-          $meta['footer']['block'] = 'tut';
+            if (count($addtional['skidka'])) {
+                $where .= ' AND ws_articles.ucenka IN ('.implode(',', $addtional['skidka']).')';
         }
 
-        $title = ' '.implode(', ', $title);
         
-        $meta['h1'] = ($category->getH1()?$category->getH1():$category->getName()).' '.$title.' '.Translator::get('в интернет магазине RED');
-        
-        $title_obr = explode(' ', ($category->getH1()?$category->getH1():$category->getName()));
-        krsort($title_obr);
-        $title_obr = implode(' ', $title_obr);
-        if($category->parent_id == 85){
-             $meta['title'] = trim(($category->getTitle()?$category->getTitle():$category->getName()));
-        }else{
-            $meta['title'] = trim(($category->getTitle()?$category->getTitle():$category->getName()).' '.$title.' '.Translator::get('dop_title'));
-        }
-        
-        if($category->id){
-            if($category->id == 85){
-                $meta['descriptions'] =$category->getDescription();
-            }elseif($category->parent_id == 85){
-                $meta['descriptions'] = $category->getH1().' '.mb_strtolower($title).' '.Translator::get('в интернет магазине RED').$category->getDescription();
-            }else{
-             $meta['descriptions'] = $category->getRoutezGolovna().' '.Translator::get('в интернет магазине RED').' '.Translator::get('покупайте').' '.mb_strtolower($title_obr).mb_strtolower($title).' '.Translator::get('description_exit');
-            }
-             
-            }else{
-             $meta['descriptions'] = trim($title).' '.Translator::get('в интернет магазине RED').' '.Translator::get('покупайте').' '.mb_strtolower($title_obr).mb_strtolower($title).' '.Translator::get('description_exit');
-        }
-       
-		
 		$min_max_price = 'SELECT MIN(price) as min, MAX(price) as max ' . $where;
 		
-		if ($addtional['price']['min']) { $meta['nofollow'] = 1; $where .= ' AND ws_articles.price >= ' . $addtional['price']['min'];}
-		if ($addtional['price']['max']) {  $meta['nofollow'] = 1; $where .= ' and ws_articles.price <= ' . $addtional['price']['max'];}
+		if ($addtional['price']['min']) { $where .= ' AND ws_articles.price >= ' . $addtional['price']['min'];}
+		if ($addtional['price']['max']) {  $where .= ' and ws_articles.price <= ' . $addtional['price']['max'];}
 		
-//d($where, false);
 
         $count_article_query = 'SELECT count(distinct(ws_articles.id)) as cnt' .$where;
-//d($count_article_query, false);
-       
-
 
         $total_articles = wsActiveRecord::findByQueryArray($count_article_query)[0]->cnt;
 		//d($total_articles, false);
@@ -278,7 +148,7 @@ if(in_array($value['id'], $addtional['categories'])){
 			$rest = iconv_substr($search, 0, -1, 'UTF-8');
 			$total_articles = 0;
 			$where = str_replace($search, mysql_real_escape_string($rest), $where);
-                        $meta['nofollow'] = 1;
+                      
 			}
 			
         $articles_query = 'SELECT distinct(ws_articles.id), ws_articles.* ' .$where. ' ORDER BY ' . $order_by . ' LIMIT ' . $page * $onPage . ',' . $onPage;
@@ -300,13 +170,15 @@ if(in_array($value['id'], $addtional['categories'])){
             'articles' => $articles,
             'pages' => ceil($total_articles / $onPage),
             'parametr' =>  $param,
-            'meta' => $meta,
+           // 'meta' => $meta,
             //'min_max' => $min_max_price
         );
+         * */
+         
     }
 	
     /**
-     * 
+     * Дочерние категории, отображаются слева на странице
      * @param type $where - условие
      * @param type $category - категория которая вызвала
      * @param type $search - текст поиска
@@ -342,7 +214,7 @@ if(in_array($value['id'], $addtional['categories'])){
                          if($cat->getActiveProductCountFilter('label_id = 13')){
                              if($cat->kids){
                         $array[$cat->id] = [
-                    'url' => $cat->getPath().'labels-13',
+                    'url' => $cat->getPath().'labels-13/',
                     'id' => $cat->id,
                     'name' => $cat->getRoutez(),
                     'parent' => '',//$cat->getRoutezGolovna(), 
@@ -352,7 +224,7 @@ if(in_array($value['id'], $addtional['categories'])){
                              foreach ($cat->kids as $c){
                                  if($c->getActiveProductCountFilter('label_id = 13')){
                                     $array[$cat->id]['kids'][] = [
-                    'url' => $c->getPath().'labels-13',
+                    'url' => $c->getPath().'labels-13/',
                     'id' => $c->id,
                     'name' => $c->getRoutez(),
                     'parent' => '',//$cat->category->getRoutezGolovna(), 
@@ -367,7 +239,7 @@ if(in_array($value['id'], $addtional['categories'])){
                                  
                              }else{
                     $array[$cat->id] = [
-                    'url' => $cat->getPath().'labels-13',
+                    'url' => $cat->getPath().'labels-13/',
                     'id' => $cat->id,
                     'name' => $cat->getRoutez(),
                     'parent' => '',//$cat->getRoutezGolovna(), 
@@ -491,30 +363,6 @@ if(in_array($value['id'], $addtional['categories'])){
                     $categories = wsActiveRecord::useStatic('Shoparticles')->findByQuery($categories);
         //convert to array
         foreach ($categories as $cat) {
-         /*   if($cat->category->getKids()->count() == 0){
-                
-                 $array[] = [
-                    'url' => $cat->category->getNewPath(),
-                    'id' => $cat->category_id,
-                    'name' => $cat->category->getName(),
-                    'parent' => '',
-                    'count' => $cat->cnt,
-                    'title' => $cat->category->getName()
-                ];
-            }else{
-                foreach ($cat->category->getKids() as $v) {
-                    $array[] = [
-                    'url' => $v->getNewPath(),
-                    'id' => $v->id,
-                    'name' => $v->getName(),
-                    'parent' => '',
-                    'count' => '',
-                    'title' => $v->getName()
-                ];
-                }
-                
-            }*/
-            
                 if (in_array($category_id, array(106, 85, 299, 300, 301, 302, 303, 11, 267, 0)) or $search != '' ){
                     if($cat->category->parent->parent_id == 0){
                 $array[$cat->category->id] = [
@@ -566,7 +414,9 @@ if(in_array($value['id'], $addtional['categories'])){
 		case 'brands': 
                     $brands = Shoparticles::findByQueryArray('SELECT `ws_articles`.brand_id, `ws_articles`.brand, count(distinct(ws_articles.id)) AS cnt '. $where.' GROUP BY ws_articles.brand_id ORDER BY `ws_articles`.brand ');
                         foreach ($brands as $brand) {
-                            $array[] = ['id' => $brand->brand_id, 'name' => strtolower($brand->brand), 'count' =>  $brand->cnt, 'title' =>$brand->brand ];
+                            $b = str_replace('&', '_', $brand->brand);
+                            $b = strtolower(str_replace(' ', '_', $brand->brand));
+                            $array[] = ['id' => $brand->brand_id, 'name' => $b, 'count' =>  $brand->cnt, 'title' =>$brand->brand ]; //urlencode()
                         }
                 break;
 		case 'sezons': $sezons = 'SELECT `ws_articles`.`sezon`, count(distinct(ws_articles.id)) AS ctn ' . $where.' AND  `ws_articles`.`sezon` IS NOT NULL  group by `ws_articles`.`sezon`';
@@ -681,15 +531,11 @@ if(in_array($value['id'], $addtional['categories'])){
         $min_max_price = 'SELECT MIN(price) as min, MAX(price) as max ' . $where;
 
         $count_article_query = 'SELECT count(distinct(ws_articles.id)) as cnt' .$where;
-//d($count_article_query, false);
         $total_articles = Shoparticles::findByQueryArray($count_article_query)[0]->cnt;
-		//d($total_articles, false);
         if (!$total_articles){ $total_articles = 0; }
 			
         $articles_query = 'SELECT distinct(ws_articles.id), ws_articles.* ' .$where. ' ORDER BY ' . $order_by . ' LIMIT ' . $page * $onPage . ',' . $onPage;	
-//d($articles_query, false);
         $articles_list = Shoparticles::useStatic('Shoparticles')->findByQuery($articles_query);
-      //  d($articles_list, false);
         $min_max_price =  Shoparticles::findByQueryArray($min_max_price);
        $param['price_min'] = $min_max_price[0]->min;
        $param['price_max'] = $min_max_price[0]->max;
@@ -711,28 +557,18 @@ if(in_array($value['id'], $addtional['categories'])){
      * @param type $onPage - товаров на странице
      * @return array список полученіх товаров
      */
-    public static function getArticlesOptionList($option, $addtional = false, $order_by = false,  $page, $onPage)
+    public static function getArticlesOptionList($filter)
     {
-        $options =  $option;//=  Shoparticlesoption::useStatic('Shoparticlesoption')->findById((int)$option);
+        $options =  $filter['option'];//=  Shoparticlesoption::useStatic('Shoparticlesoption')->findById((int)$option);
          
          if($options){
-             //var_dump($option);
+        $addtional = $filter['filter']?$filter['filter']:false; //
+        $order_by = $filter['order_by']?$filter['order_by']:false; //
+        $page = $filter['page']?$filter['page']:0; //
+        $onPage = $filter['Onpage']?$filter['Onpage']:32; //
              $param = [];
-        $meta = [];
-        $title =[];
-             
+
         
-        //order by
-		switch($order_by){
-                case 'cena_vozrastaniyu': $order_by = 'price ASC'; $meta['nofollow'] = true;  break;
-                case 'cena_ubyvaniyu': $order_by = 'price DESC'; $meta['nofollow'] = true;  break;
-                case 'populyarnost_vozrastaniyu': $order_by = 'views ASC'; $meta['nofollow'] = true;  break;
-                case 'populyarnost_spadaniyu': $order_by = 'views DESC'; $meta['nofollow'] = true;  break;
-                case 'date_vozrastaniye': $order_by = 'ctime ASC'; $meta['nofollow'] = true;  break;
-                case 'date_spadaniye': $order_by = 'ctime DESC'; $meta['nofollow'] = true;  break;
-		default:  $order_by = 'ctime DESC';
-		}
-             
               $where = " FROM ws_articles_sizes
 					JOIN ws_articles ON ws_articles_sizes.id_article = ws_articles.id ";
 
@@ -759,124 +595,100 @@ if(in_array($value['id'], $addtional['categories'])){
 						and ws_articles.status = 3
                                                 AND ws_articles_options.option_id = ".$options->id;
                       break;
+                  case 'sezon': 
+                      $where .=" JOIN ws_articles_options on ws_articles.sezon = ws_articles_options.sezon_id"
+                             . " WHERE ws_articles_sizes.count > 0 and ws_articles.active = 'y' 
+						AND ws_articles.stock not like '0'  
+						and ws_articles.status = 3
+                                                AND ws_articles_options.option_id = ".$options->id;
+                      break;
                   default: 
                       $where .= " WHERE ws_articles_sizes.count > 0 and ws_articles.active = 'y' 
 						AND ws_articles.stock not like '0'  
 						and ws_articles.status = 3";
                       break;
               }
-             /// var_dump($where);
-              $param['categories'] = self::getAllParametrs($where, 0, 'categories', '', true);
               
-                     if (count($addtional['categories'])) {
-             foreach ($param['categories'] as $value) {
-                if(in_array($value['id'], $addtional['categories'])){
-                               $title[] = mb_strtolower($value['title']);
-                        }
-                }
-              $meta['footer'] = 'tut';
-   $where .= ' AND (ws_articles.category_id IN (' . implode(',', $addtional['categories']) . ') OR ws_articles.dop_cat_id IN (' . implode(',', $addtional['categories']) . '))';
-        }
-      //  d($where, false);
-		
-		$param['brands'] = self::getAllParametrs($where, $category->id, 'brands');
-		
-		if (count($addtional['brands'])) {
-                  foreach ($param['brands'] as $value) {
-                       if(in_array($value['id'], $addtional['brands'])){
-                             $title[] = $value['title'];
-                        }
-                }
-                    $meta['footer'] = 'tut';
-            $where .= ' AND ws_articles.brand_id IN (' . implode(',', $addtional['brands']) . ')';
-           // $where .= ' AND ws_articles.brand_id IN (' . $addtional['brands'] . ')';
-        }
-        // d($where, false);
-		$param['sezons'] = self::getAllParametrs($where, $category->id, 'sezons');
-                
-		if (count($addtional['sezons'])) {
-                    foreach ($param['sezons'] as $value) {
-                        if(in_array($value['id'], $addtional['sezons'])){
-                             $title[] = $value['title'];
-                        }
-                }
-                    $meta['footer'] = 'tut';
-                    
-            $where .= ' AND ws_articles.sezon IN ('.implode(',',$addtional['sezons']).')';
-            //$where .= ' AND ws_articles.sezon IN ('.$addtional['sezons'].')';
-        }
-        //d($where, false);
-		$param['colors'] = self::getAllParametrs($where, $category->id, 'colors');
-        if (count($addtional['colors'])) {
-            foreach ($param['colors'] as $value) {
-                if(in_array($value['id'], $addtional['colors'])){
-                                 $title[] = mb_strtolower($value['title']);
-                        }
-                }
-            $where .= ' AND ws_articles.color_id IN (' . implode(',', $addtional['colors']) . ')';
-             //$where .= ' AND ws_articles.color_id IN (' . $addtional['colors'] . ')';
-        }
-		$param['sizes'] = self::getAllParametrs($where, $category->id, 'sizes');
-        if (count($addtional['sizes'])) {
-            foreach ($param['sizes'] as $value) {
-                if(in_array($value['id'], $addtional['sizes'])){
-                                 $title[] = mb_strtolower($value['title']);
-                        }
-                }
-            $where .= ' AND ws_articles_sizes.id_size IN (' . implode(',', $addtional['sizes']) . ')';
-            //$where .= ' AND ws_articles_sizes.id_size IN (' . $addtional['sizes'] . ')';
-        }
-		$param['labels'] = self::getAllParametrs($where, $category->id, 'labels');
-        if (count($addtional['labels'])) {
-            $meta['nofollow'] = 1;
-            $where .= ' AND ws_articles.label_id IN ('.implode(',', $addtional['labels']).')';
-            //$where .= ' AND ws_articles.label_id IN ('.$addtional['labels'].')';
-        }
+           return self:: where('', false, $addtional, $order_by, $page, $onPage, $param, $where);
 
-		$param['skidka'] = self::getAllParametrs($where, $category->id, 'skidka');
-		 if (count($addtional['skidka'])) {
-                     $meta['nofollow'] = 1;
-            $where .= ' AND ws_articles.ucenka IN ('.implode(',', $addtional['skidka']).')';
-           // var_dump($where);
-             //$where .= ' AND ws_articles.ucenka IN ('.$addtional['skidka'].')';
-        }
-              
-
-              //  $param['categories'] = self::getAllParametrs($where, '', 'categories', '', true);
-		
-		
-		if ($addtional['price']['min']) {$where .= ' AND ws_articles.price >= ' . $addtional['price']['min'];}
-		if ($addtional['price']['max']) {$where .= ' and ws_articles.price <= ' . $addtional['price']['max'];}
-		
-		
-		
-                
-        $min_max_price = 'SELECT MIN(price) as min, MAX(price) as max ' . $where;
-
-        $count_article_query = 'SELECT count(distinct(ws_articles.id)) as cnt' .$where;
-//d($count_article_query, false);
-        $total_articles = Shoparticles::findByQueryArray($count_article_query)[0]->cnt;
-		//d($total_articles, false);
-        if (!$total_articles){ $total_articles = 0; }
-			
-        $articles_query = 'SELECT distinct(ws_articles.id), ws_articles.* ' .$where. ' ORDER BY ' . $order_by . ' LIMIT ' . $page * $onPage . ',' . $onPage;	
-//d($articles_query, false);
-        $articles_list = Shoparticles::useStatic('Shoparticles')->findByQuery($articles_query);
-      //  d($articles_list, false);
-        $min_max_price =  Shoparticles::findByQueryArray($min_max_price);
-        $param['price_min'] = $min_max_price[0]->min;
-        $param['price_max'] = $min_max_price[0]->max;
-		
-        return [
-            'count' => $total_articles,
-            'articles' => $articles_list,
-            'pages' => ceil($total_articles / $onPage),
-            'parametr' =>  $param
-        ];
          }else{
              return false;
          }
         
+    }
+    static private function where($search = '', $category = false, $addtional, $order_by = false, $page = 0, $onPage = 32, $param, $where = '') {
+        
+        switch($order_by){
+                case 'cena_vozrastaniyu': $order_by = 'price ASC'; break;
+                case 'cena_ubyvaniyu': $order_by = 'price DESC'; break;
+                case 'populyarnost_vozrastaniyu': $order_by = 'views ASC';  break;
+                case 'populyarnost_spadaniyu': $order_by = 'views DESC';  break;
+                case 'date_vozrastaniye': $order_by = 'ctime ASC';   break;
+                case 'date_spadaniye': $order_by = 'ctime DESC';  break;
+		default:  $order_by = 'ctime DESC';
+		}
+        
+        $cat = $category?$category->id:'';
+        $param['brands'] = self::getAllParametrs($where, $cat, 'brands');	
+            if (count($addtional['brands'])) {
+                $where .= ' AND ws_articles.brand_id IN (' .implode(',', $addtional['brands']). ')';
+            }
+	
+        $param['sezons'] = self::getAllParametrs($where, $cat, 'sezons');     
+            if (count($addtional['sezons'])) {      
+                $where .= ' AND ws_articles.sezon IN ('.implode(',',$addtional['sezons']).')';
+            }
+            
+	$param['colors'] = self::getAllParametrs($where, $cat, 'colors');
+            if (count($addtional['colors'])) {   
+                $where .= ' AND ws_articles.color_id IN (' . implode(',', $addtional['colors']) . ')';
+            }
+	
+        $param['sizes'] = self::getAllParametrs($where, $cat, 'sizes');
+            if (count($addtional['sizes'])) {
+                $where .= ' AND ws_articles_sizes.id_size IN (' . implode(',', $addtional['sizes']) . ')';
+            }
+	$param['labels'] = self::getAllParametrs($where, $cat, 'labels');
+            if (count($addtional['labels'])) {
+           
+                $where .= ' AND ws_articles.label_id IN ('.implode(',', $addtional['labels']).')';
+            }
+
+	$param['skidka'] = self::getAllParametrs($where, $cat, 'skidka');
+            if (count($addtional['skidka'])) {
+                $where .= ' AND ws_articles.ucenka IN ('.implode(',', $addtional['skidka']).')';
+        }
+
+        $min_max_price = 'SELECT MIN(price) as min, MAX(price) as max ' . $where;
+		
+		if ($addtional['price']['min']) { $where .= ' AND ws_articles.price >= ' . $addtional['price']['min'];}
+		if ($addtional['price']['max']) {  $where .= ' and ws_articles.price <= ' . $addtional['price']['max'];}
+		
+
+        $count_article_query = 'SELECT count(distinct(ws_articles.id)) as cnt' .$where;
+
+        $total_articles = wsActiveRecord::findByQueryArray($count_article_query)[0]->cnt;
+        if (!$total_articles){
+			$rest = iconv_substr($search, 0, -1, 'UTF-8');
+			$total_articles = 0;
+			$where = str_replace($search, mysql_real_escape_string($rest), $where);
+                      
+			}
+			
+        $articles_query = 'SELECT distinct(ws_articles.id), ws_articles.* ' .$where. ' ORDER BY ' . $order_by . ' LIMIT ' . $page * $onPage . ',' . $onPage;
+        $articles = wsActiveRecord::useStatic('Shoparticles')->findByQuery($articles_query);
+        
+        $min_max_price =  Shoparticles::findByQueryArray($min_max_price);
+                if($min_max_price[0]->min) {$param['price_min'] = $min_max_price[0]->min;}else{$param['price_min'] = 0;}
+                if($min_max_price[0]->max){$param['price_max'] = $min_max_price[0]->max;}else{$param['price_max'] = 0;}
+        
+         return [
+            'search'=> $search,
+            'count' => $total_articles,
+            'articles' => $articles,
+            'pages' => ceil($total_articles / $onPage),
+            'parametr' =>  $param,
+        ];
     }
     
 	

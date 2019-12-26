@@ -2,7 +2,15 @@
 class DeliveryType extends wsActiveRecord
 {
 	protected $_table = 'ws_delivery_types';
-	protected $_orderby = array('name'=>'ASC');
+	protected $_orderby = array('sort'=>'ASC');
+        protected $_multilang = [
+			'name' => 'name',
+                        'prices' => 'prices',
+			'time' => 'time',
+			'notice' => 'notice',
+                        'note' => 'note',
+			'adress' => 'adress'
+                            ];
 	
 	protected function _defineRelations()
 	{	
@@ -10,4 +18,3 @@ class DeliveryType extends wsActiveRecord
 	}
 
 }
-?>

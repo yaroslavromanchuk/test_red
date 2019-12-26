@@ -19,6 +19,7 @@
 		</div>
 	</div>
 </div>
+<div class="container">
 <div class="card text-center">
   <div class="card-header">
    <h1 class="green"><?=$text[0]?></h1>
@@ -26,7 +27,7 @@
   <div class="card-body">
     <h5 class="card-title"><?=$this->user->getMiddleName().' '.$this->user->getFirstName()?></h5>
     <p class="card-text">
-	<table cellspacing="0" cellpadding="4" class="basket-cont view" align="center" >
+	<table  class="table" >
     <tbody>
     <tr>
         <td class="info"><?=$text[1]?></td>
@@ -59,7 +60,8 @@
         <tr>
             <td><?=$text[8]?></td>
             <td >
-                <?=Shoparticles::showPrice($this->user->getDeposit())?> грн.
+                <?=Shoparticles::showPrice($this->user->getDeposit())?> грн. 
+                <a href="/account/deposit/" class="btn btn-danger btn-sm">История</a>
             </td>
         </tr>
     <?php } ?>
@@ -89,6 +91,7 @@
 </div><br><br>
 <input class="form-control" style="    max-width: 200px;font-size: 13px;text-align: center;display: inline;" name="trec" type="text" id="trec" value="" pattern="[0-9]{9,14}"  maxlength="14" placeholder="ТТН">   <button  type="button" class="btn btn-danger" onclick="tracking($('#trec').val());"><?=$text[11]?></button>
   </div>
+</div>
 </div>
 <script>
 function tracking(x) {

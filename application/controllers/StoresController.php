@@ -47,6 +47,14 @@ public function indexAction(){
    $this->cur_menu->setMetatagDescription('Акції роздрібних магазинів RED – Київ, Бориспіль ✓ Телефони ✓ Графік работи');
    $this->cur_menu->nofollow = 1;
     echo $this->render('stores/akcii.php');
+    
+    /*    $this->cur_menu->setName('Адреси магазинів');
+   $this->cur_menu->setPageTitle('Магазини RED');
+   $this->cur_menu->setMetatagDescription('Адреса роздрібних магазинів RED – Київ, Бориспіль ✓ Телефони ✓ Графік работи');
+   $this->cur_menu->nofollow = 1;
+    echo $this->render('stores/address.php');
+     * */
+     
     }
 }
 public function postAction(){

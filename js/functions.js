@@ -47,7 +47,7 @@ function getQuickCart(id) {//dobavlenie tovara v korzinu
 				
 			},
 			type: "POST",
-			url: '/addtocard/id/'+id,
+			url: '/addtocard/id/'+id+'/',
 			data: '&size=' + size + '&color=' + color + '&artikul=' + art,
 			dataType: 'json',
 			success: function (data) {
@@ -129,6 +129,8 @@ function getQuickCart(id) {//dobavlenie tovara v korzinu
 		$(".error.size").html('');
 	}
 }
+
+        
 function getQuickOrder(id) {//bistriy zakaz open form
 	$('#qo-result').hide();
 	var size = $("input[name='size']:checked").val();
@@ -211,7 +213,7 @@ function submitCartValidator(id) {// add korzina s bistrogo prosmotra
 				$('#wait_circle').show();
 			},
 			type: "POST",
-			url: '/addtocard/id/'+id,
+			url: '/addtocard/id/'+id+'/',
 			data: '&size=' + size + '&color=' + color + '&artikul=' + art,
 			dataType: 'json',
 			success: function (data) {
@@ -253,12 +255,13 @@ function submitCartValidator(id) {// add korzina s bistrogo prosmotra
         }
 		return false;
 }
+
 $(document).ready(function () {
-	$('.menu-2-box').liFixar({side: 'top',position: $('.top_menu_new').innerHeight()});//
+	//$('.menu-2-box').liFixar({side: 'top',position: $('.top_menu_new').innerHeight()});//
        // $('.filter_fixed').liFixar({side: 'top',position: $('.menu-2-box').innerHeight()+$('.top_menu_new').innerHeight(), 'background-color' : '#a59e9e !important' });//
         //$('#filter').liFixar({side: 'top',position: $('.menu-2-box').innerHeight()});//
 	
-$("#qo").submit(function () {//bistriy zakaz
+$("#qo").submit(function () { //bistriy zakaz
 	
 		var f = $('#telephone').val();
 		f = f.replace(/[^0123456789]/g, '');
@@ -284,12 +287,13 @@ $("#qo").submit(function () {//bistriy zakaz
 			$('#hide .modal-footer').hide();
 				},
 				type: 'POST',
-				url: '/quick-order/&',
+				url: '/quick-order/',
 				data: $("form#qo").serialize() + '&size=' + $("input[name='size']:checked").val() + '&color=' + $("input[name='color']:checked").val()+'&artikul='+$('#artikul').val(),
 				dataType: 'json',
 				success: function (data) {
-				dataLayer.push({'event' : 'quick', 'eventAction' : 'add_quick'});
+				
 				if(data.result == 'send'){
+                                  dataLayer.push({'event' : 'quick', 'eventAction' : 'add_quick'});
 				$('#qo-result').hide();
 				$('#hide .modal-body').html(data.message);
 				$('#hide .modal-footer').hide();
@@ -309,6 +313,7 @@ $("#qo").submit(function () {//bistriy zakaz
 				}	
 				},
 				error: function (e) {
+                                    console.log(e);
 					$('#qo-result').html('Извините, но при отправке заказа произошла ошибка, попробуйте позже');
 					$('#qo-result').show();
 					$('#hide .modal-footer').hide();
@@ -340,7 +345,7 @@ $("#qo").submit(function () {//bistriy zakaz
         
 	var brand_vis_all = 1;
         
-	$('#filterButton button').click(function () {
+	$('#filterButton button').click(function (){
 		$('#filterButton button').removeClass('filterButton_classSelect');
 		$(this).addClass('filterButton_classSelect');
 		var brandList = $(this).parent().attr('id') + "_select";
@@ -364,7 +369,7 @@ $("#qo").submit(function () {//bistriy zakaz
 		$(this).mouseleave(function () { $(this).next().css({'text-decoration': 'none'}); });
 	});
         
-	$('#brand_discription').hide(0);
+	$('#brand_discription').hide();
         
 	$('#brand_name').hover(function () {
 		$('#brand_discription').fadeIn();
@@ -379,7 +384,7 @@ $("#qo").submit(function () {//bistriy zakaz
 	});
 
     
-$("#scrolled-socials").hide();
+//$("#scrolled-socials").hide();
 	// hide #back-top first
 	$("#back-top").hide();
 	// fade in #back-top
@@ -387,10 +392,10 @@ $("#scrolled-socials").hide();
 $(function () {
 	$(window).scroll(function () {
 			if ($(this).scrollTop() > 100) {
-			$("#scrolled-socials").fadeIn();
+			//$("#scrolled-socials").fadeIn();
 				$('#back-top').fadeIn();
 			} else {
-			$("#scrolled-socials").fadeOut();
+			//$("#scrolled-socials").fadeOut();
 				$('#back-top').fadeOut();
 			}
 		});
@@ -398,13 +403,13 @@ $(function () {
 $('#back-top a').click(function () {
 			$('body,html').animate({
 				scrollTop: 0
-			}, 800);
+			}, 500);
 			return false;
 		}); 
 	});
         
 });
-
+/*
 (function() {
 var widgetId = 'a977b0023f4594ba63190bf5ca00d6ba';
 var s = document.createElement('script');
@@ -413,8 +418,10 @@ s.charset = 'utf-8';
 s.async = true;
 s.src = '//callme.voip.com.ua/lirawidget/script/'+widgetId;
 var ss = document.getElementsByTagName('script')[0];
-ss.parentNode.insertBefore(s, ss);}
-)();
+ss.parentNode.insertBefore(s, ss);
+}
+)();*/
+
 
 function setUk(lang, ses, url) {
 if(lang !== ses){
@@ -437,8 +444,40 @@ if(lang !== ses){
 }
 
 function setCooki(e) {
-document.cookie = "mobil =" + e;
-location.reload();
+        document.cookie = "mobil =" + e;
+        location.reload();
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+  var lazyloadImages = document.querySelectorAll("img.catalog_img");    
+  var lazyloadThrottleTimeout;
+  
+  function lazyload () {
+    if(lazyloadThrottleTimeout) {
+      clearTimeout(lazyloadThrottleTimeout);
+    }    
+    
+    lazyloadThrottleTimeout = setTimeout(function() {
+        var scrollTop = window.pageYOffset;
+        lazyloadImages.forEach(function(img) {
+            if(img.offsetTop < (window.innerHeight + scrollTop)) {
+              img.src = img.dataset.src;
+              img.classList.remove('catalog_img');
+            }
+        });
+        if(lazyloadImages.length == 0) { 
+            
+          document.removeEventListener("scroll", lazyload);
+          window.removeEventListener("resize", lazyload);
+          window.removeEventListener("orientationChange", lazyload);
+        }
+    }, 20);
+  }
+
+  document.addEventListener("scroll", lazyload);
+  window.addEventListener("resize", lazyload);
+  window.addEventListener("orientationChange", lazyload);
+});
+
 
 

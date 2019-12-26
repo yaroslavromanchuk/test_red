@@ -384,13 +384,28 @@ class Orm_ActiveRecord extends Orm_Array
 		
 		return $deleted;
 	}
-	
+	/**
+         * Выборка по запросу
+         * @param type $class_name - имя класа
+         * @param type $condition - условия ['поле'=>'значение']
+         * @param type $sorting - сортировка ['что'=>'как']
+         * @param type $limits - лимит записей [0,100]
+         * @param type $count - получить количество записей в таблице, 0 - не активно, 1 - активно. по кмолчанию 0 
+         * @return type
+         */
 	static public function find($class_name, $condition = array(), $sorting = array(), $limits = array(), $count = 0)
 	{
 		 return self::useStatic($class_name)->findAll($condition, $sorting, $limits, $count);
 	}
-	
-	public function findAll($condition = array(), $sorting = array(), $limits = array(/*0, 1000*/), $count = 0)
+	/**
+         *  Выборка всех записей с таблицы
+         * @param type $condition - условия ['поле'=>'значение']
+         * @param type $sorting - сортировка ['что'=>'как']
+         * @param type $limits - лимит записей [0,100]
+         * @param type $count - получить количество записей в таблице, 0 - не активно, 1 - активно. по кмолчанию 0 
+         * @return \Orm_Collection
+         */
+	public function findAll($condition = [], $sorting = [], $limits = [], $count = 0)
 	{	
 		if($count)
 		{
@@ -402,23 +417,20 @@ class Orm_ActiveRecord extends Orm_Array
 		}
 		else
 		{
-			$this->stmt
-				->from(
+			$this->stmt->from(
 					$this->getTable(),
 					array('*')
-					)
-				->order($this->_sort($sorting));
-			if ($limits)
-				$this->stmt
-					->limit($limits);
+					)->order(
+                                                $this->_sort($sorting)
+                                                );
+		if ($limits){$this->stmt->limit($limits);}
 			
 			// add autoload objects
 			$this->_addAutoloadToSelect();
 		}
 		
 		// add where condition
-		$this->stmt
-			->where($this->_where($condition));
+		$this->stmt->where($this->_where($condition));
 			
 		// check for extra params (site_id and lang_id)
 		$this->addExtraStmtParams();	
@@ -427,14 +439,11 @@ class Orm_ActiveRecord extends Orm_Array
 		if($res = $this->stmt->getResults())
 		{
 
-			if($count)
-				return $res[0]->cnt;
+			if($count){return $res[0]->cnt;}
 
 			foreach($res as $row)
 			{
 				$val = new $this->_model();
-
-
 				//$val->import($row, $from_db = 1);
 				$val->loadObject($row);
 				$result[] = $val;
@@ -444,12 +453,15 @@ class Orm_ActiveRecord extends Orm_Array
 		
 		return new Orm_Collection($result);
 	}
-	
+	/**
+         * Выборка по sql запросу
+         * @param type $query
+         * @return \Orm_Collection
+         */
 	public function findByQuery($query)
 	{
-		$result = array();
-		if(!$query)
-			return new Orm_Collection($result);
+		$result = [];
+		if(!$query){return new Orm_Collection($result);}
 			
 		if($res = $this->stmt->setQuery($query)->getResults())
 		{
@@ -462,27 +474,39 @@ class Orm_ActiveRecord extends Orm_Array
 		}
 		return new Orm_Collection($result);
 	}
-	
+	/**
+         * Получить количество записей по запросу
+         * @param type $condition - условия ['поле'=>'значение']
+         * @param type $sorting - сортировка ['что'=>'как']
+         * @param type $limits - лимит записей [0,100]
+         * @return type
+         */
 	public function count($condition = array(), $sorting = array(), $limits = array())
 	{
 		return $this->findAll($condition, $sorting, $limits, 1);
 	}
-	
-	public function findFirst($condition = array(), $sorting = array())
+	/**
+         * Получить одну первую запись
+         * @param type $condition - условия ['поле'=>'значение']
+         * @param type $sorting - сортировка ['что'=>'как']
+         * @return type
+         * @throws Orm_Exception
+         */
+	public function findFirst($condition = [], $sorting = [])
 	{
 		$res = $this->findAll($condition, $sorting, array(0, 1));
-		if($res)
-			return $res[0];
-		else 
-			throw new Orm_Exception("Nothing found in findFirst");
+		if($res){
+                    return $res[0];
+                }else{
+                    throw new Orm_Exception("Nothing found in findFirst");
+                }
 			//return $this;
 	}
 	
 	
 	public function clear()
 	{
-		foreach($this->_store as &$val)
-			$val = '';
+		foreach($this->_store as &$val){ $val = ''; }
 	}
 	
 
@@ -492,9 +516,9 @@ class Orm_ActiveRecord extends Orm_Array
 	{
 		$res = $this->findAll($condition, $sorting, $limits);
 		if($zero)
-			$result = array('0' => '');
+                {$result = array('0' => '');}
 		else
-			$result = array();
+                {$result = array();}
 		foreach($res as $row)
 		{
 			$result[$row->getId()] = $row->getName();
@@ -528,8 +552,8 @@ class Orm_ActiveRecord extends Orm_Array
 		if(is_numeric($data) && $data>0)
 			return $this->findById($data);
 		
-		if(is_array($data))
-			$data = (object) $data;
+		if(is_array($data)){$data = (object) $data;}
+                
 		if(is_object($data)) {
 			foreach($data as $key => $value) {
 				$this->{"set$key"}($value);
@@ -593,7 +617,11 @@ class Orm_ActiveRecord extends Orm_Array
 	}
 	
 	//------------------------------------------
-	
+	/**
+         * Первод в транслейт
+         * @param type $name - текст
+         * @return type - транслит
+         */
 	protected function _translatedName($name) {
 		$lang = $this->getLang();
 		if(isset($this->{$name . $lang})){
@@ -613,20 +641,37 @@ class Orm_ActiveRecord extends Orm_Array
 			);
 		return $this->stmt->update($this->getTable(), $set, $data)->execute();
 	}
-	
+	/**
+         * Выполнить запрос в БД
+         * @param type $query - sql запрос
+         * @return type
+         */
 	public function _query($query) {
 		return $this->getStmt()->setQuery($query)->execute();
 	}
-
+        /**
+         * Выполнить запрос sql
+         * @param type $query
+         * @return type
+         */
 	static public function query($query) {
 		$s = new Orm_Statement(Registry::get('db'), 'wsActiveRecord');
 		return $s->setQuery($query)->execute();
 	}
-
+        /**
+         *  Получить одну запись в массив (обьект)
+         * @param type $query
+         * @return ['']
+         */
 	static public function findByQueryFirstArray($query) {
 		$s = new Orm_Statement(Registry::get('db'), 'wsActiveRecord');
 		return $s->setQuery($query)->getRow();
 	}
+        /**
+         * Запрос в массив
+         * @param type $query
+         * @return object
+         */
 	static public function findByQueryArray($query) {
 		$s = new Orm_Statement(Registry::get('db'), 'wsActiveRecord');
 		return $s->setQuery($query)->getResults();
@@ -635,10 +680,9 @@ class Orm_ActiveRecord extends Orm_Array
 	protected function _set($conditions, $forced = 0, $insert = 0)
 	{
 
-		if(!is_array($conditions) || !count($conditions))
-			return '';
+		if(!is_array($conditions) || !count($conditions)){return '';}
 
-		$str = array();
+		$str = [];
 		foreach($conditions as $field => $value)
 		{
 			if(array_key_exists($field, $this->db_store) || $forced)
@@ -649,8 +693,8 @@ class Orm_ActiveRecord extends Orm_Array
 				}
 			}
 		}
-		if(!count($str))
-			return '';
+		if(!count($str)){return '';}
+                
 		return ' ' . implode(', ', $str);
 	}
 
@@ -677,9 +721,9 @@ class Orm_ActiveRecord extends Orm_Array
 			foreach($conditions as $key => $value)
 			{
 				if(!is_numeric($key) && !strpos($key, '.'))
-					$new_conditions[$this->getTable() . '.' . $key] = $value;
+                                {$new_conditions[$this->getTable() . '.' . $key] = $value;}
 				else
-					$new_conditions[$key] = $value;
+                                {$new_conditions[$key] = $value;}
 			}
 			$conditions = $new_conditions;
 		}
@@ -694,12 +738,11 @@ class Orm_ActiveRecord extends Orm_Array
 			$conditions = $this->_orderby;
 		}
 
-		if((is_array($conditions) && !count($conditions))
-			|| !$conditions)
-			return $this->stmt->rquote($this->_id) . ' ASC ';
+		if((is_array($conditions) && !count($conditions)) || !$conditions)
+                {return $this->stmt->rquote($this->_id) . ' ASC ';}
 
 		if(!is_array($conditions) && $conditions)
-			return $this->escape(str_ireplace('order by', '', $conditions));
+                {return $this->escape(str_ireplace('order by', '', $conditions));}
 
 		$ret = array();
 		foreach($conditions as $field => $value)
@@ -761,11 +804,11 @@ class Orm_ActiveRecord extends Orm_Array
 	
 	protected function _getDBFields()
 	{
-		if (!$this->_table) return false;
+		if (!$this->_table) {return false;}
 		
-		if(count($this->db_store)) return $this->db_store;
+		if(count($this->db_store)) {return $this->db_store;}
 		
-		$allfields = array();
+		$allfields = [];
 		
 		$cache_name = INPATH . 'tmp/'.$this->_table;
 		$allfields = @unserialize(@file_get_contents($cache_name));
@@ -948,20 +991,23 @@ class Orm_ActiveRecord extends Orm_Array
 	
 	public function getLastInsertId()
 	{
-		if(PDO)
-			return $this->db->lastInsertId();
-		else
-			return @mysql_insert_id($this->db);
+		if(PDO){
+                    return $this->db->lastInsertId();
+                }else{
+                    return @mysql_insert_id($this->db);
+                }
 	}
 	
 	//------------------------------------------
-
+        /**
+         * Создает обьект класа
+         * @param type $class - имя класа, если класа
+         * @return \class
+         * @throws Orm_Exception
+         */
 	static public function useStatic ($class)
 	{
-		if(class_exists($class))
-			return new $class();
-		else
-			throw new Orm_Exception("Class '$class' not found");
+		if(class_exists($class)){return new $class();}else{throw new Orm_Exception("Class '$class' not found");}
 	}
 	
 		
@@ -970,19 +1016,16 @@ class Orm_ActiveRecord extends Orm_Array
 	{
 		$this->_model = get_class($this);
 		$this->db = Registry::get('db');
-		if(PDO)
-			$this->db->setFetchMode(Zend_Db::FETCH_OBJ);
+		if(PDO){$this->db->setFetchMode(Zend_Db::FETCH_OBJ);}
+                
 		$this->setLang(Registry::get('lang'));
 		$this->stmt = new Orm_Statement($this->db, $this->_model);
 		$this->_defineRelations();
 		Registry::set('obj', Registry::get('obj') + 1);
 
 		//init internal field array
-		if(!$this->_getDBFields())
-			throw new Orm_Exception("Cannot init table {$this->getTable()}");
-		if($id)
-			$this->import($id);
-			
+		if(!$this->_getDBFields()){throw new Orm_Exception("Cannot init table {$this->getTable()}");}
+		if($id){$this->import($id);}	
 	}
 
 	
@@ -993,9 +1036,9 @@ class Orm_ActiveRecord extends Orm_Array
 		
 		//check relations
 		if(isset($this->_relations[$label]))
-			$this->_setRelation($label, $object);
+                {$this->_setRelation($label, $object);}
 		else
-			$this->_store[$label] = $object;
+                {$this->_store[$label] = $object;}
 		
 		return $this;
 	}
@@ -1285,15 +1328,22 @@ class Orm_ActiveRecord extends Orm_Array
 	
 	
 	//------------------------------------------
-	
+	/**
+         * Вывод в дебаг
+         * @param type $var - содержимое
+         */
 	public function debug($var)
 	{
 		Debug::dump($var);
 	}
-
+        /**
+         * Вывод на екран содержимого
+         * @param type $data - содержиме
+         */
 	public function log($data)
-	{
-		//echo ' - ' . $data . "<br/>\n";
+	{       echo '<pre>';
+		print_r($data);
+                echo '</pre>';
 	}		
 	
 }

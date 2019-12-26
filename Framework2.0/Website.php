@@ -1,7 +1,7 @@
 <?php
 class Website
 {
-    protected $_customer;
+        protected $_customer;
 	protected static $_language;
 	protected static $_site;
     

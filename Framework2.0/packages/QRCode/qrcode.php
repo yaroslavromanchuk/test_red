@@ -101,10 +101,19 @@ class qrcode
     }  
       
     //getting link for image  
+     public function get_link($size = 'Small', $EC_level = 'L', $margin = '0'){  
+        $data =  $this->data;
+         $data = str_replace("%", "%25", $data);
+         $data = str_replace("/", "%2f", $data);
+         $data = str_replace("&", "%26", $data);
+       
+         return 'https://qrcode.tec-it.com/API/QRCode?data='.$data.'&errorcorrection=M&backcolor=%23ffffff&istransparent=True&size=Small'; 
+     }
+    /*
     public function get_link($size = 100, $EC_level = 'L', $margin = '0'){  
         $this->data = urlencode($this->data);   
         return 'http://chart.apis.google.com/chart?chs='.$size.'x'.$size.'&cht=qr&chld='.$EC_level.'|'.$margin.'&chl='.$this->data;  
-    }  
+    }  */
       
     //forcing image download 
     public function download_image($file){ 
@@ -118,4 +127,3 @@ class qrcode
         file_put_contents($path, $file);
     } 
 }  
-?>

@@ -39,9 +39,23 @@ if(Registry::get('device') == 'computer' or ($_COOKIE['mobil'] and $_COOKIE['mob
     
 	<meta  name="image"  content="https://www.red.ua<?=htmlspecialchars($view);?>" />
 	<meta  property="og:image"  content="https://www.red.ua<?=htmlspecialchars($view);?>" />
-        
+        <?php if($this->canonical){
+             echo '<link rel="canonical" href="https://www.red.ua'.$this->canonical.'" />';
+        }elseif($this->g_url ){
+          //  if(Registry::get('lang') == 'uk'){
+           // echo '<link rel="canonical" href="https://www.red.ua'.substr($this->g_url, 3).'" />';
+       // }else{ 
+             echo '<link rel="canonical" href="https://www.red.ua'.$this->g_url.'" />';
+        // }
+         }else{
+         //    if(Registry::get('lang') == 'uk'){
+         //   echo '<link rel="canonical" href="https://www.red.ua'.substr($_SERVER['REQUEST_URI'], 3).'" />';
+      //  }else{ 
+             echo '<link rel="canonical" href="https://www.red.ua'.$_SERVER['REQUEST_URI'].'" />';
+        // }
+         } ?>
         <?php if($this->get->page){
-           echo '<link rel="canonical" href="https://www.red.ua'.$this->g_url.'" />';
+          // echo '<link rel="canonical" href="https://www.red.ua'.$this->g_url.'" />';
         } ?>
 	<?php if($this->getCurMenu()->getNofollow()){ ?>
 	 <meta name="robots" content="noindex, follow"/>
@@ -63,7 +77,6 @@ if(Registry::get('device') == 'computer' or ($_COOKIE['mobil'] and $_COOKIE['mob
 		echo $title?$title.' - '.Config::findByCode('website_name')->getValue():Config::findByCode('website_name')->getValue();
 		} ?>
     </title>  
-	
 	<?php
 	global $uk;
 	global $ru;
@@ -81,30 +94,27 @@ switch($_SESSION['lang']){
 	$uk = '/uk'.$_SERVER['REQUEST_URI'];
 	$ru = $_SERVER['REQUEST_URI'];
 	break;
-	
 }
 ?>
-	
-		<link rel="alternate" hreflang="ru-UA" href="https://www.red.ua<?=$ru?>" />
-		<link rel="alternate" hreflang="uk-UA" href="https://www.red.ua<?=$uk?>" />
-		<link  rel="shortcut icon" href="/favicon.ico"/>
-		<link href="/js/slider-fhd/slick.css" rel="stylesheet" type="text/css" />
-		<link href="/js/slider-fhd/slick-theme.css" rel="stylesheet" type="text/css" />  
-		<link rel="stylesheet" type="text/css" href="/css/bs/css/bootstrap.css?v=1.0"/>
-                <link rel="stylesheet" type="text/css" href="/css/Ionicons/css/ionicons.min.css"/>
-                <link rel="stylesheet" type="text/css" href="/js/select2/css/select2.min.css?v=1.2"/>
-		<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.3.5"/>
-                <?php if(!$desctop){ ?><link rel="stylesheet" type="text/css" href="/css/common.css?v=2.40"/><?php } ?>	
-		<link rel="stylesheet" type="text/css" href="/css/new.css?v=1.0"/>
-		<link rel="stylesheet" type="text/css" href="/css/cloud-zoom.css"/>
-		<link rel="stylesheet" type="text/css" href="/css/jquery.lightbox-0.5.css" media="screen"/>		
-		
-	<script src="/js/jquery.js"></script>
-        <script src="/js/timer.js?v=1.6"></script>
-		 
-    <?php if (false) { ?>
-        <script src="http://maps.google.com/maps?file=api&amp;v=2.x&amp;key=<?=Config::findByCode('google_map_api')->getValue();?>"></script>
-    <?php } ?>
+		<link rel="alternate" hreflang="ru-UA" href="https://www.red.ua<?=$ru?>" >
+		<link rel="alternate" hreflang="uk-UA" href="https://www.red.ua<?=$uk?>" >
+		<link  rel="shortcut icon" href="/favicon.ico">
+
+                <link rel="stylesheet"  href="/css/bs/css/bootstrap.min.css?v=1.5"  >
+               <!-- <link rel="stylesheet"  href="/css/Ionicons/css/ionicons.css">-->
+               <link rel="stylesheet"  href="/css/ionicons/3.0/css/ionicons.min.css">
+                    
+                <link rel="stylesheet"  href="/css/style.css?v=1.4.2" media="(min-width: 768px)" >
+		<link rel="stylesheet"  href="/css/style_new.css?v=1.4.9">
+                <?php if(!$desctop){ ?><link rel="stylesheet"  href="/css/mobi/common_site.css?v=1.4.18"><?php }?>
+		<?php
+                if($this->css){
+                    foreach ($this->css as $css) { ?>
+                <link  rel="stylesheet"  href="<?=$css?>?v=1.1.88"   >
+                    <?php }
+                }
+                ?>
+        
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -114,50 +124,32 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- End Google Tag Manager -->
 </head>
 <body>
-    <?php if($this->user->id == 8005){
-        //var_dump($this->getCategory());
-        //echo print_r($this->getProduct());
-       // echo 'tut';
-        //echo print_r($this->get);
-       // var_damp($this->get);
-           // echo print_r($this->files);
-	//echo $this->get
-	/*if($this->getShopItem()){
-            if($this->getShopItem()->getOptions()){
-	echo print_r($this->getShopItem()->getOptions());
-        echo $this->getShopItem()->getOptions()->type;
-            }
-	}*/
-	//echo $this->getCategory()->getParent(1)->getTitle();
-	//echo $this->getCategory()->getRoutezGolovna();
-	//echo '<pre>';
-	//echo print_r($this->getCurMenu());
-	//echo '</pre>';
-	//d(,false);
-	//echo $_SERVER['REQUEST_URI'];
-	//echo $this->getCurMenu()->getPath();
-	//echo $this->getCurMenu()->getTitle();
-	
-         // echo '<pre>';
-          // print_r($this->transla);
-			 //print_r($this->getCurMenu()->article);
-			// print_r($this->meta);
-			//echo print_r($this->getCategory()->getParent(1)->getTitle());
-			//echo '</pre>';
-        
-	} ?>
+  
+<!--<script src="/js/jquery-3.4.1.min.js"></script>-->
+<script src="/js/jquery.js"></script>
+<script  src="/js/timer.js?v=1.6"></script>
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5DFS2PQ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
+<?php  if($this->user->id == 8005){ ?>
+
+       <?php // echo $this->render('poll/index.tpl.php');
+     // l($this->get);
+  } ?>
 <div id="simple_overlay_back" class="simple_overlay_back"></div>
 <header>
-<?php if($desctop == true){
+<?php if($desctop){
 echo $this->cached_top_menu;  
 echo $this->cached_topcategories;
 }else{
  echo $this->cached_mobi_menu;
 } ?>
 </header>
+<?php if(isset($_COOKIE['track']) and $_COOKIE['track'] == 'globus_shop'){
+echo '<div style="position: fixed;top: 70px;left: 15px;">'
+    . '<a class="btn btn-danger" href="/advertising/">Реклама</a>'
+        . '</div>';
+}?>
 <div itemscope <?php if(trim($this->getCurMenu()->getUrl()) == 'product'){ echo 'itemtype="http://schema.org/Product"';} ?>  class="container-fluid">
 <div class="row d-none d-md-block d-lg-block d-xl-block">
 <nav aria-label="breadcrumb" style="margin: 3px;">
@@ -179,7 +171,7 @@ if($this->g_url){ ?>
    <?php 
 }
  ?>
-                <h1 itemprop="name"  class="h1 text-dark font-size-100">
+<h1 itemprop="name"  class="h1 text-dark font-size-100 <?php if($this->getCurMenu()->getUrl() == 'product'){echo 'd-none';}?>">
      <?php   if ($this->getCurMenu()->getName()){
 	 echo ucfirst($this->getCurMenu()->getName()); 
 }elseif($this->getCurMenu()->getUrl() == 'search'){
@@ -188,19 +180,20 @@ if($this->g_url){ ?>
  echo $this->getCurMenu()->getTitle();
  }elseif($this->getOnepostblog()){
 echo '<h1 itemprop="name" class="text-dark font-size-100">'.$this->onepostblog[0]->post_name.'</h1>';
- }
- ?>
-                    
-            </h1>
+ }?>
+</h1>
          </div>
 </div>
+
+    <!--
 <div class="row column-1 d-none d-md-block d-lg-block d-xl-block">
 <div class="col-lg-12 text-center">
 </div>
-</div>		
-<div class="row column-2">
+</div>	-->	
+<div class="row column-2 <?=$this->getCategory()->id?>">
 <div class="content-box w-100"><?=$this->getContent()?></div>
 </div>
+
 <div class="row column-3">
 <?php
 if($this->getCurMenu()->getFooter()){ ?>
@@ -213,7 +206,9 @@ if($this->getCurMenu()->getFooter()){ ?>
 </div>
 <?php } ?>
 </div>
+    
 <div class="clearfix"></div>
+
 <?php  if(trim($this->getCurMenu()->getUrl()) == 'category'){
 $sp = [];
 foreach($this->articles as $article){$sp[] = $article->getId();}
@@ -247,19 +242,23 @@ rnt('add_audience', {audienceId: '20676_254951d7-6d13-4ea2-a507-747c9e6fe802'});
 </script>
 <?php } ?>
 </div>
- 
-<script  src="/js/filter.js?v=5.5"></script>
-<script   src="/js/jquery.liFixar.js"></script>
-    <script src="/js/functions.js?v=3.9.22"></script>
-    <script   src="/js/cloud-zoom.1.0.2.js"></script>
-    <script  src="/js/jquery.cycle.all.js?v=3.0.3"></script>
-    <script  src="/js/jquery.lightbox-0.5.js"></script>
-    <script  src="/css/bs/js/bootstrap.js?v=1.5"></script>
-	<script   src="/css/bs/js/bootstrap.bundle.min.js?v=1.0"></script>
-	<script    src="/js/select2/js/select2.min.js?v=1.0"></script>
-	
-	<script  src="/js/slider-fhd/slick.min.js" ></script>
-	<script >
+
+
+<script src="/js/functions.js?v=4.3"></script>
+<?php
+    if($this->scripts){
+        foreach ($this->scripts as $scripts) { ?>
+            <script  src="<?=$scripts?>?v=1.1.3"></script>
+        <?php }
+    }
+?>              
+            <?php if($desctop){ ?>
+            <script  src="/css/bs/js/bootstrap.js?v=1.5"></script><?php 
+            }else{ ?>
+            <script async src="/css/bs/js/bootstrap.min.js?v=1.5"></script>
+            <?php } ?>
+            <script async src="/css/bs/js/bootstrap.bundle.min.js?v=1.0"></script>
+	<script>
         jQuery.browser = {};
         (function () {
             jQuery.browser.msie = false;
@@ -270,15 +269,7 @@ rnt('add_audience', {audienceId: '20676_254951d7-6d13-4ea2-a507-747c9e6fe802'});
             }
         })();
     </script>
-   <!-- footer--><?php if($desctop == true){ echo $this->cached_bottom_menu; }else{ echo $this->cached_mobi_futer; } ?><!-- exit footer-->	     
- <?php
-if($this->user->id == 8005){
-   //echo '<pre>';
-   // print_r($this->getCurMenu());
-   //print_r($_GET);print_r($this->get);
-   
-   //echo '</pre>';
-}
- ?>       
+   <!-- footer--><?=$this->cached_bottom_menu?><!-- exit footer-->
+<?php // if($this->user->id == 8005){ l($_SESSION['poll']); } ?>
 </body>
 </html>

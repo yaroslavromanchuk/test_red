@@ -239,15 +239,18 @@
 			});
 		};
 		img1 = new Image();
-		$(img1).load(function () {
+		$(img1).on('load', function () {
 			ctx.init2(this, 0);
 		});
 		img1.src = sImg.attr('src');
+                
 		img2 = new Image();
-		$(img2).load(function () {
+		$(img2).on('load',function () {
 			ctx.init2(this, 1);
 		});
-		img2.src = $('#cloud_big_src').html();
+               
+		img2.src =  $('.cloud-zoom').attr('href');
+          
 	}
 	$.fn.CloudZoom = function (options) {
 		try {
@@ -279,9 +282,9 @@
 				$(this).bind('click', $(this), function (event) {
 				
 					var data = event.data.data('relOpts');
-					$('#cloud_big_src').html($(this).attr('href'));
+					$('.cloud-zoom').attr('href', $(this).attr('href'));
 					$('#' + data.useZoom).data('zoom').destroy();
-					$('#cloud_big_src').html(event.data.attr('href'));
+					$('.cloud-zoom').attr('href', event.data.attr('href'));
 					if ($(this).children('div').html() == null) {
 						$('#' + data.useZoom).attr('href', $('#zoom').attr('href'))
 					} else {

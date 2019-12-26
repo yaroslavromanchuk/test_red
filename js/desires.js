@@ -1,5 +1,5 @@
 function setDesires(x){
-    console.log('tut');
+  //  console.log('tut');
     if($('#d_chek-'+x).prop('checked')){
             $.ajax({
                 url:'/desires/',
@@ -9,7 +9,7 @@ function setDesires(x){
                 beforeSend:function(){
                     $('#zet-'+x).attr('title','Удалить c избранного');},
                 success:function(res){
-                    console.log(res);
+                   // console.log(res);
                 },
         error: function(e){
             console.log(e);
@@ -19,7 +19,7 @@ function setDesires(x){
                     $(".desires_ok_div").load("document.location #desires");
         }
     });
-return false;
+return true;
 }else{
         $.ajax({
             url:'/desires/add/',
@@ -32,7 +32,7 @@ return false;
                 $('#zet-'+x).attr('title','Добавить в избранное');
             },
             success:function(res){
-                console.log(res);
+               // console.log(res);
             },
         error: function(e){
             console.log(e);
@@ -43,6 +43,6 @@ return false;
             }
         });
     
-    return false;
+    return true;
 }
 }

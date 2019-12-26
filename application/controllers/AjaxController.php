@@ -9,23 +9,22 @@ class AjaxController extends controllerAbstract
 
     }
     public function getbasketcountAction(){
-        if (!isset($_SESSION['basket']))
-            $_SESSION['basket'] = [];
+        if (!isset($_SESSION['basket'])){$_SESSION['basket'] = [];}
         $this->basket  = $_SESSION['basket'];
         $articles_count = 0;
         $articles_price = 0.0;
-        if ( $this->basket)
+        if ( $this->basket){
             foreach ( $this->basket as $item) {
                 $articles_count += $item['count'];
                 $articles_price += $item['price'] * $item['count'];
             }
+    }
         die(json_encode(array('cnt'=>$articles_count,'price'=>$articles_price)));
     }
     /**
      * Содержимое корзины
      */
-    public function getviewbacketAction() {
-$sum=0;
+public function getviewbacketAction() {
 $count = 0;
 $rez='';
 $i=0;
@@ -40,42 +39,34 @@ $img = $article->getImagePath('small_basket');
 $rez.='<img src="'.$img.'" alt="'.$article->getTitle().'" style="padding-right: 5px;"/>';
 $rez.=$article->getTitle();
 $rez.=' '.$item['count'].' шт.';
-//$rez.=' '.$article->getPriceSkidka().' грн.';
 $rez.='</div></li>';
-//$sum+=$item['count']*$article->getPriceSkidka();
-}else{
-   // $article = wsActiveRecord::useStatic('Shoparticles')->findById($item['article_id']);
-  //$sum+=$item['count']*$article->getPriceSkidka();
 }
 if($i>=10) {$j+=$item['count'];}
 
 $count+=$item['count'];
 $i++;
-			}
-			if($i >=10) $rez.='<li style="list-style-type: none;"><div><p style="text-align: center;">Еще '.$j.'</p></div>';
- $rez.='</ul><p>'.$this->trans->get("Общее количество товаров").' '.$count.'</p>'; //<!--<p>'.$this->trans->get("Сумма к оплате").' ~'.$sum.' грн.</p>';-->
+}
+if($i >=10){
+    $rez.='<li style="list-style-type: none;"><div><p style="text-align: center;">Еще '.$j.'</p></div>';
+  $rez.='</ul><p>'.$this->trans->get("Общее количество товаров").' '.$count.'</p>'; 
+}
  }else{
    $rez.='<p style="text-align: center;">'.$this->trans->get("В корзине ничего нет").'</p>';
  }
-//print_r($this->basket);
 die(json_encode(html_entity_decode($rez)));
-        
+ 
     }
 	
 	public function setlangAction(){
-
 	if($this->post->lang){
-		
             $_SESSION['lang'] = $this->post->lang; 
-
 			if($this->post->lang == 'uk'){
 				$page = '/uk'.$this->post->ur;
-				
 			}else{
 				$page = substr($this->post->ur, 3);
 			}
+            die($page);
         }		
-	 die($page);
 	return false;
 	}
 	
@@ -83,9 +74,8 @@ die(json_encode(html_entity_decode($rez)));
 	$arrr = [];
 	
 	$cats = wsActiveRecord::useStatic('Shopcategories')->findFirst(array('id' => $this->post->cat, 'active' => 1));
-$arr = $cats->getKidsIds();
-$arr = array_unique($arr);
-$cat = implode(",", $arr);
+        
+$cat = implode(",", array_unique($cats->getKidsIds()));
 
 	$count = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery("SELECT count(  `ws_articles_sizes`.`id` ) AS ctn
 FROM  `ws_articles_sizes` 
@@ -101,8 +91,7 @@ $arrr['ctn'] = $count;
         
         public function setorderamountbasketAction() {
             $_SESSION['total_price'] = $this->post->amount;
-            die();
-            
+            die(); 
         }
          public function clearAction(){
             if($this->ws->getCustomer()->getId()){
@@ -114,6 +103,35 @@ $arrr['ctn'] = $count;
             }
             die(json_encode('ok'));
         }
+        /**
+         * Количество пользователей онлайн в реальном времени
+         */
+        public function usersiteAction(){
+             $base = INPATH."session.txt";
+             $file = file($base);
+             $s = sizeof($file);
+            die(json_encode($s));
+        }
+          public function  sitkaAction()
+                {
+              $src = '';
+              switch ($this->get->id){
+                  case 1: $src = '/img/size/size1.png'; break;
+                   case 2: $src = '/img/size/size2.png'; break;
+                    case 3: $src = '/img/size/size3.png'; break;
+                     case 4: $src = '/img/size/size4.png'; break;
+                      case 5: $src = '/img/size/size5.png'; break;
+                       case 6: $src = '/img/size/size6.png'; break;
+                        case 7: $src = '/img/size/baby_ob.png'; break;
+                         case 8: $src = '/img/size/baby.png'; break;
+default : $src = '/img/size/size1.png'; break;
+              }
+             // print_r($this->get->id);
+                 //print($this->post->id);
+              $res = '<img style="width: 100%;" class="" src="'.$src.'" alt="size"/>';
+                     die(json_encode($res));
+            
+                }
 
 
 

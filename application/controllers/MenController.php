@@ -14,7 +14,22 @@
 class MenController extends controllerAbstract
 {
     private $parent_category = 15;
-    
+     public function init() {
+        parent::init();
+        $this->view->css = [
+            '/css/cloudzoom/cloudzoom.css',
+            '/css/jquery.lightbox-0.5.css',
+                        '/js/select2/css/select2.min.css',
+            '/css/catalog/catalog.css', 
+        ];
+        $this->view->scripts = [
+            '/js/filter.js',
+            '/js/jquery.cycle.all.js',
+            '/js/cloud-zoom.1.0.2.js',
+            '/js/jquery.lightbox-0.5.js',
+            '/lib/select2/js/select2.min.js'
+        ];
+    }
     public function indexAction() {
       // var_dump($this->get);
          
@@ -34,20 +49,53 @@ class MenController extends controllerAbstract
              //echo   $category->id;
          FilterController::getFilter($category);  
     }
-    public function tenniskirubashkiAction(){
+    public function tenniskirubashkiAction() {
+        $this->_redirect('/men/tenniski/');
+    }
+    public function rubashkiAction(){
         $this->view->category = $category = new Shopcategories(39);
         FilterController::getFilter($category);  
     }
+    public function tenniskiAction(){
+        $this->view->category = $category = new Shopcategories(344);
+        FilterController::getFilter($category);  
+    }
     public function futbolkimaikiAction(){
+        $this->_redirect('/men/futbolki/');
+       // $this->view->category = $category = new Shopcategories(32);
+       // FilterController::getFilter($category);  
+    }
+    public function futbolkiAction(){
         $this->view->category = $category = new Shopcategories(32);
+        FilterController::getFilter($category);  
+    }
+    public function maikiAction(){
+        $this->view->category = $category = new Shopcategories(343);
         FilterController::getFilter($category);  
     }
     public function pidzhakikostjumyAction(){
         $this->view->category = $category = new Shopcategories(40);
         FilterController::getFilter($category);  
     }
-    public function dzhemperyreglanyAction(){
+    public function pidzhakiAction(){
+        $this->view->category = $category = new Shopcategories(40);
+        FilterController::getFilter($category);  
+    }
+    public function kostjumyAction(){
+        $this->view->category = $category = new Shopcategories(351);
+        FilterController::getFilter($category);  
+    }
+    public function dzhemperyreglanyAction(){//
+        $this->_redirect('/men/dzhempery/');
+        //$this->view->category = $category = new Shopcategories(78);
+       // FilterController::getFilter($category);  
+    }
+    public function dzhemperyAction(){//
         $this->view->category = $category = new Shopcategories(78);
+        FilterController::getFilter($category);  
+    }
+    public function reglanyAction(){//
+        $this->view->category = $category = new Shopcategories(353);
         FilterController::getFilter($category);  
     }
     public function dzhinsyAction(){
@@ -67,7 +115,10 @@ class MenController extends controllerAbstract
         FilterController::getFilter($category);  
     }
     
-    
+    public function pukhovikiAction(){
+        $this->view->category = $category = new Shopcategories(352);
+        FilterController::getFilter($category);  
+    }
     public function paltoAction(){
         $this->view->category = $category = new Shopcategories(324);
         FilterController::getFilter($category);  

@@ -7,11 +7,11 @@ class ShopordersVozrat extends wsActiveRecord
     protected function _defineRelations()
     {
         $this->_relations = array(
-		'articles' => array(
+          /*  'articles' => array(
             'type' => 'hasMany',
             'class' => 'ShoporderarticlesVozrat',
             'field_foreign' => 'order_id',
-			'orderby' => array('id' => 'ASC'),
+            'orderby' => array('id' => 'ASC'),
             'onDelete' => 'delete'),
         'payment_method' => array(
                 'type' => 'hasOne',
@@ -20,7 +20,23 @@ class ShopordersVozrat extends wsActiveRecord
         'delivery_type' => array(
                 'type' => 'hasOne',
                 'class' => 'DeliveryType',
-                'field' => 'delivery_type_id'),
+                'field' => 'delivery_type_id'
+            ),*/
+        'order' => [
+            'type' => 'hasOne',
+                'class' => 'Shoporders',
+                'field' => 'order_id'
+        ],
+        'priynav' => [
+            'type' => 'hasOne',
+                'class' => 'Customer',
+                'field' => 'admin_create'
+        ],
+        'obrabotal' => [
+            'type' => 'hasOne',
+                'class' => 'Customer',
+                'field' => 'admin_obrabotan'
+        ]
         );
     }
     public function getVSum(){
@@ -34,5 +50,3 @@ class ShopordersVozrat extends wsActiveRecord
 
 
 }
-
-?>

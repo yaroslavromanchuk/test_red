@@ -6,7 +6,14 @@ class BrandsController extends controllerAbstract
     public function init()
     {
         parent::init();
-
+    $this->view->css = [
+            '/css/cloudzoom/cloudzoom.css',
+            '/css/jquery.lightbox-0.5.css'
+        ];
+        $this->view->scripts = [
+            '/js/cloud-zoom.1.0.2.js',
+            '/js/jquery.lightbox-0.5.js',
+            ];
     }
 
     public function  indexAction()
@@ -20,7 +27,11 @@ class BrandsController extends controllerAbstract
             } else {
                 $this->_redirect('/brands/');
             }
-        } else {
+        }elseif($this->get->subscribe){
+          echo $this->subscribe();
+            die();
+          // die(json_encode(['send'=>1, 'message'=>'Вы успешно подписаны на обновления бренда!']));
+        }else{
             $this->showList();
         }
 
@@ -152,10 +163,74 @@ class BrandsController extends controllerAbstract
         $this->cur_menu->setName($brand->name);
         $this->cur_menu->setMetatagDescription($this->trans->get('info_brand').' '.$brand->name.' ✓ '.$this->trans->get('товары бренда').' '.$brand->name.' '.$this->trans->get('exit_brand'));
         $this->view->brand = $brand;
-        $this->view->articles = $brand->findActiveArticles();
+        $this->view->articles = $brand->findActiveArticles(4);
         $this->view->articlesHtml = $this->render('brands/helper.tpl.php');
 
         echo $this->render('brands/item.tpl.php');
 
+    }
+    
+    public function subscribe(){
+       $param = []; 
+        if($this->post->method == 'add'){
+             $param['brand_id'] = $this->get->subscribe;
+            if($this->ws->getCustomer()->getIsLoggedIn()){
+                $param['customer_id'] = $this->ws->getCustomer()->id;
+                 $param['email'] = $this->ws->getCustomer()->email;
+            }
+            if(!wsActiveRecord::useStatic('BrandSubscribeCustomer')->findAll($param)->count()){
+                $s = new BrandSubscribeCustomer();
+                $s->import($param);
+                $s->save();
+                return 'Вы успешно подписаны на обновления бренда!';
+                //die(json_encode(['send'=>1, 'message'=>'Вы успешно подписаны на обновления бренда!']));
+            }else{
+                return 'Вы уже подписаны на этот бренд';
+            }
+            return false;
+            
+        }elseif($this->post->method == 'dell'){
+             $param['brand_id'] = $this->get->subscribe;
+            if($this->ws->getCustomer()->getIsLoggedIn()){
+                $param['customer_id'] = $this->ws->getCustomer()->getId();
+            }
+            if($sub = wsActiveRecord::useStatic('BrandSubscribeCustomer')->findAll($param)){
+                foreach ($sub as $s){
+                $s->destroy();
+                }
+                return 'Вы успешно отписались от обновлений бренда!';
+              // die(json_encode(['send'=>1, 'message'=>'Вы успешно одписались от обновлений бренда!']));
+            }
+            return false;
+        }elseif($this->post->method == 'sub'){
+             if($this->post->email && $this->isValidEmail($this->post->email)){
+                  $param['brand_id'] = $this->post->subscribe;
+                  $param['email'] = $this->post->email;
+                  if(!wsActiveRecord::useStatic('BrandSubscribeCustomer')->findAll($param)->count()){
+                  $s = new BrandSubscribeCustomer();
+                $s->import($param);
+                $s->save();
+                return 'Вы успешно подписаны на обновления бренда!';
+                  }else{
+                      return 'Вы уже подписаны на обновления этого бренда.';
+                  }
+             }
+             return 'Введите корректный email';
+        }elseif($this->post->method == 'sub_dell'){
+            if($this->post->email && $this->isValidEmail($this->post->email)){
+                  $param['brand_id'] = $this->get->subscribe;
+                  $param['email'] = $this->post->email;
+                  if($sub = wsActiveRecord::useStatic('BrandSubscribeCustomer')->findAll($param)){
+                foreach ($sub as $s){
+                $s->destroy();
+                }
+                 return 'Вы успешно отписались от обновлений бренда!';
+            }
+             }
+             return false;
+        }
+                        
+              return 'error';         // echo $this->post->method;
+                       
     }
 }

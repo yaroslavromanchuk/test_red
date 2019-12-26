@@ -19,6 +19,7 @@ class Naleyki extends wsActiveRecord{
             case '2':  return self::ukr($get->ids);
             case '3': return self::np($get->ids);
             case '4': return self::kur($get->ids);
+            case '5': return self::justin($get->ids);
              default:
                  break;
                             }  
@@ -29,6 +30,13 @@ class Naleyki extends wsActiveRecord{
                 return ['order'=>$orders, 'page'=>'order/nakleyki/magaz.tpl.php'];
             }
             private static function ukr($ids)
+            {
+                $orders = wsActiveRecord::useStatic('Shoporders')->findAll(["id in({$ids})"],['id'=>'ASC']);
+               // return ['order'=>$orders, 'page'=>'order/nakleyki/ukr.tpl.php'];
+                return ['order'=>$orders, 'page'=>'order/nakleyki/np.tpl.php'];
+                
+            }
+            private static function justin($ids)
             {
                 $orders = wsActiveRecord::useStatic('Shoporders')->findAll(["id in({$ids})"],['id'=>'ASC']);
                // return ['order'=>$orders, 'page'=>'order/nakleyki/ukr.tpl.php'];

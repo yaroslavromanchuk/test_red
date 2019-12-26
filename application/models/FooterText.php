@@ -14,6 +14,33 @@
 class FooterText extends wsActiveRecord
 {
     protected $_table = 'ws_filter_footer_text';
+    protected function _defineRelations()
+    {
+         $this->_relations = [
+            'category' => array(
+                'type' => 'hasOne',
+                'class' => self::$_shop_categories_class,
+                'field' => 'category_id'),
+            'color' => array(
+                'type' => 'hasOne',
+                'class' => 'Shoparticlescolor',
+                'field' => 'color_id'),
+            'size' => array(
+                'type' => 'hasOne',
+                'class' => 'Size',
+                 'field' => 'size_id'),
+             'brand' => array(
+                'type' => 'hasOne',
+                'class' => 'Brand',
+                 'field' => 'brand_id'),
+             'sezon' => array(
+                'type' => 'hasOne',
+                'class' => 'Shoparticlessezon',
+                 'field' => 'sezon_id'),
+         ];
+    }
+    
+    
     
     
     public function Text($param){

@@ -12,12 +12,8 @@
 	<a href="https://<?=$dname?>"><img src="https://<?=$dname?>/img/email/logo_new.png" alt="RED"  style="height:30px;"></a>
 	</span>
 	<span  style="float: right;text-align:right;">
-        <a href="https://t.me/shop_red_ua">
-            <img src="https://<?=$dname?>/img/email/tl.png" alt="telegram"   style="width:30px;padding: 0px 1px;" >
-        </a>
-	<a href="http://www.facebook.com/pages/RED-UA/148503625241218?sk=wall">
-            <img src="https://<?=$dname?>/img/email/fb.png" alt="facebook"   style="width:30px;padding: 0px 1px;" >
-        </a>
+        <a href="https://t.me/shop_red_ua"><img src="https://<?=$dname?>/img/email/tl.png" alt="telegram"   style="width:30px;padding: 0px 1px;" ></a>
+	<a href="http://www.facebook.com/pages/RED-UA/148503625241218?sk=wall"><img src="https://<?=$dname?>/img/email/fb.png" alt="facebook"   style="width:30px;padding: 0px 1px;" ></a>
 	<a href="http://instagram.com/red_ua"><img src="https://<?=$dname?>/img/email/inst.png" alt="instagramm"  style="width:30px;padding: 0px 1px;"></a>
 	<a href="https://www.youtube.com/user/SmartRedShopping"><img src="https://<?=$dname?>/img/email/youtube.png" alt="youtube" style="width:30px;padding: 0px 1px;"></a>
 	<a  href="https://www.red.ua/blog/"><img src="https://<?=$dname?>/img/email/blog.png" alt="blog"  style="width:30px;padding: 0px 1px;"></a>

@@ -8,7 +8,7 @@ $(function($){
 <h1>Регистрация</h1>
 <?php
 $bool = false;
- if($this->errors) $bool = true;
+ if($this->errors) {$bool = true;}
  ?>
 <form method="post" action="" class="contact-form w-100 was-validated " name="register" id="register">
 <div class="row mx-auto  p-3 ">
@@ -88,58 +88,3 @@ $bool = false;
 		</div>	
 		</div>
 	</form>
-	
-<script> 
-$(document).ready(function() {  
-
-var regVr22 = "<div><img style='margin-bottom:-4px;' src='/img/load.gif' alt='Отправка...' width='16' height='16'><span style='font: 11px Verdana; color:#333; margin-left:6px;'>Данные обрабатываются...</span></div><br>";
-/*
-$("#send").click(function(){
-    var captSRC = "/application/views/pages/captcha.php";
-		$("#loadBar").html(regVr22).show();
-		var email = $("#email").val();
-		var name = $("#name").val();
-		var middle_name = $("#middle_name").val();
-		var city = $("#city").val();
-		var company = $("#company").val();
-		var street = $("#street").val();
-		var house = $("#house").val();
-		var date_birth = $("#date_birth").val();
-		var telephone = $("#telephone").val();
-		var password = $("#password").val();
-		var password2 = $("#password2").val();
-		var captcha = $("#captcha").val();
-		$.ajax({
-			type: "POST",
-			url: "/account/register/",
-			data: {"name": name, "email": email, "middle_name": middle_name, "city": city, "street": street, "house": house, "date_birth": date_birth, "telephone": telephone, "password": password, "password2": password2, "company": company,  "captcha": captcha},
-			cache: false,
-			success: function(response){
-		var messageResp = "<p style='font-family:Verdana; font-size:11px; color:green; border:1px solid #00CC00; padding:10px; margin:20px; border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px; background-color:#fff;'>Спасибо, <strong>";
-		var resultStat = "!</strong> Ваш аккаунт зарегистрирован!</p>";
-		var oll = (messageResp + middle_name + " " + name + resultStat);
-				if(response == 1){ 
-				$("#loadBar").html(oll).fadeIn(3000);
-				$("#name").val("");
-				$("#email").val("");
-				$("#company").val("");
-				$("#street").val("");
-				$("#house").val("");
-				$("#telephone").val("");
-				$("#password").val("");
-				$("#").val("");
-				$("#middle_name").val("");
-				$("#city").val("");
-				$("#captcha").val("");
-				$("#capT").attr('src',captSRC);
-				} else {
-		$("#loadBar").html(response).fadeIn(3000);
-		$("#capT").attr('src', captSRC); 
-		}
-										}
-		});
-		return false;
-		
-});*/
-});
-</script>

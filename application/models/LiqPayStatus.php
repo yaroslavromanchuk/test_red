@@ -14,4 +14,3 @@ class LiqPayStatus extends wsActiveRecord
 	
 
 }
- ?>

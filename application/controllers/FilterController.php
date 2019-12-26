@@ -17,31 +17,38 @@ class FilterController extends controllerAbstract {
      * @param type $category - Обьект - категория/ Обьезательный параметр
      * @param type $url - если нужно передать урл, иначе автоматически формируется ''
      * @param type $search - в случаи поиска передаем текст иначе пустота ''
-     * @return отфильтрованій товар
+     * @return отфильтрованый товар
      */
     public  function getFilter($category, $url = '', $search = '')
             {
         
         $page_onpage_order_by = self::page_order_by();
-        
-       if($url == ''){ $this->view->g_url = $category->getPath(); }
+        $canonical = '';
+       if($url == ''){ $canonical .= $category->getPath(); $this->view->g_url = $category->getPath(); }//
        if($search != ''){ $this->view->search_word = $search; }
         $param = [];
        if($this->get->categories) {
            $param['categories'] = explode(',', $this->get->categories);
            
        }
-       if(count($_GET)){
+//if($this->ws->getCustomer()->isAdmin()){l($this->get);}
+       if(count($_GET) > 1){
+          // print_r($_GET);
            $this->cur_menu->nofollow = 1;
        }
        
        if($this->get->brands) {
+           $canonical.= 'brands-'.$this->get->brands.'/';
+          // print_r($this->get);
            foreach (explode(',', $this->get->brands) as $v){
             if ($v) {
+                
+             //  echo $v;
                $param['brands'][] = (int)Brand::findByQueryFirstArray("SELECT id FROM `red_brands` WHERE  `name` LIKE  '".$v."' ")['id'];
             }
             }
        }
+       $this->view->canonical = $canonical;
        if($this->get->colors) {
            $param['colors'] = explode(',', $this->get->colors);
        }
@@ -65,15 +72,28 @@ class FilterController extends controllerAbstract {
        
        if($this->get->price_min) {$param['price']['min'] = $this->get->price_min;}
        if($this->get->price_max) {$param['price']['max'] = $this->get->price_max;}
-
-         $search_result = Filter::getArticlesFilter($search, $param, $category, $page_onpage_order_by['order_by'], $page_onpage_order_by['page'], $page_onpage_order_by['onPage']);
-         if($search_result['meta']) {
-                   // $this->cur_menu->article = 1; 
-                   if($search_result['meta']['nofollow']) { $this->cur_menu->nofollow = 1; } 
-                   if($search_result['meta']['h1']) {  $this->cur_menu->setName($search_result['meta']['h1']);}
-                   if($search_result['meta']['title']) { $this->cur_menu->setPageTitle($search_result['meta']['title']);}
-                   if($search_result['meta']['descriptions']) { $this->cur_menu->setMetatagDescription($search_result['meta']['descriptions']);}
-                   self::futterText($search_result['meta']['footer'], $category);
+       
+       $meta_param = [
+           'search'=>$search,
+           'filter' => $param,
+           'category' => $category,
+           'order_by' => $page_onpage_order_by['order_by'],
+           'page' => $page_onpage_order_by['page'],
+           'Onpage' => $page_onpage_order_by['onPage']
+       ];
+       
+       $meta = Meta::getMeta($meta_param);
+       
+      //   $search_result = Filter::getArticlesFilter($search, $param, $category, $page_onpage_order_by['order_by'], $page_onpage_order_by['page'], $page_onpage_order_by['onPage']);
+          $search_result = Filter::getArticlesFilter($meta_param);
+         
+         if($meta) {
+                   if($meta['nofollow']) { $this->cur_menu->nofollow = 1; } 
+                   if($meta['h1']) {  $this->cur_menu->setName($meta['h1']);}
+                   if($meta['title']) { $this->cur_menu->setPageTitle($meta['title']);}
+                   if($meta['descriptions']) { $this->cur_menu->setMetatagDescription($meta['descriptions']);}
+                   
+                   self::futterText($meta['footer'], $category);
                }else{
                    self::get_cur_menu($category);
                }
@@ -86,7 +106,7 @@ class FilterController extends controllerAbstract {
             }
             
             public function futterText($param, $category) {
-                if(@$param['block']){
+                if(isset($param['block'])){
                 $this->cur_menu->setPageFooter('');
             }elseif($param['text']){
                 $this->cur_menu->setPageFooter($param['text']);

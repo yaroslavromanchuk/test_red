@@ -1,5 +1,3 @@
-<link type="text/css" href="/css/findex.css?v=1" rel="stylesheet"/>
-<link rel="stylesheet" type="text/css" href="/css/stores/fm.revealator.jquery.min.css"/>
 <?php
 $text_trans_blog = explode(',', $this->trans->get('Недавнее,Ваше Имя,Подписаться,Смотреть')); 
 if(Registry::get('device') == 'computer' or ($_COOKIE['mobil'] and $_COOKIE['mobil'] == 10)){ 
@@ -131,22 +129,22 @@ foreach ($this->blog as $value) { ?>
 	</div>
 </div>
 
-						<?php 
+			<?php 
 
 if ($this->allcount > $this->onpage) {
 ?>
-<div class="row m-auto">
-<div class="col-lg-12 text-center">
-	<ul  class="finder_pages">
+	<div class="clear"></div>
+	<div style="text-align: center;padding:10px;">
+	<ul style="font-size: 16px;" class="finder_pages">
 		<?php
 	if ($this->page > 1) {
 ?>
-		<li class="page-skip"><a href="&page=<?=$this->page-1;?>"><span style="padding:5px;"><< </span></a></li>
+		<li class="page-skip"><a href="?page=<?=$this->page-1;?>"><span style="padding:5px;"><< </span></a></li>
 <?php
 	} ?>
 	<?php
 	$b = '';
-	$st = ceil($this->allcount/10);
+	$st = ceil($this->allcount/20);
 	$q = 1;
 	$f1 = 0;
 	$f2 = 0;
@@ -154,54 +152,53 @@ for($i = 1;$i<=$st; $i++) {
 if($i == $this->page)  {$b = 'class="selected"';}else{ $b = '';}
 if($st > 10){
 if($i < $this->page - 4 and $i < 4 ){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if($i < ($this->page - 3) and $f1 == 0){
 $f1 = 1;
 echo '<li><span style="padding:5px;">...</span></li>';
 }elseif($this->page == $i){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if(($this->page - 1) == $i){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if(($this->page - 2) == $i){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if(($this->page - 3) == $i){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if(($this->page + 1) == $i){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if(($this->page + 2) == $i){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if(($this->page + 3) == $i){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if($i > ($this->page + 3) and $f2 == 0 ){
 echo '<li class="page-skip"><span style="padding:5px;">...</span></li>';
 $f2 = 1;
 }else if($i == $st){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if($i == ($st - 1)){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }
 else if($i == ($st - 2)){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }
 }else{
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }
 }
 	?>
 		<?php
 	if ($this->page < ceil($this->allcount / $this->onpage)) {
 ?>
-			<li class="page-skip"><a href="&page=<?=$this->page + 1;?>"><span style="padding:5px;"> >></span></a></li>
+			<li class="page-skip"><a href="?page=<?=$this->page + 1;?>"><span style="padding:5px;"> >></span></a></li>
 <?php
 	}
 ?>
 	</ul>
 	</div>
-</div>
+    <div class="clear"></div>
 <?php
 }
 ?>
-<script  src="/js/stores/fm.revealator.jquery.min.js?v=1.0"></script>
 <script>
 (function(d, s, id) {
                 var js, fjs = d.getElementsByTagName(s)[0];

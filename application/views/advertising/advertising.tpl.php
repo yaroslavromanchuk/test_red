@@ -43,7 +43,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <section>
 <div class="container-fluid p-0">
 <div class="row m-auto">
-<div class="col-sm-12 content-box p-2 m-2 text-center" style="display: none;"><?=$this->render('finder/list.fhd.tpl.php')?></div>
+<div class="col-sm-12 content-box p-0 m-0 text-center" style="display: none;"><?=$this->render('finder/list.fhd.tpl.php')?></div>
 <div class="col-sm-12 content-box-baner p-0 m-0 text-center" >
     <img src="/img/logo/logo-fhd-red_new.png" class="my-auto" style="width: 100%">
 </div>
@@ -52,7 +52,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </div>
             </div>
         </div>
-    <div class="go_to_sit">На сайт</div>>
+    <div class="go_to_sit" id="ret_video" style="position: absolute;bottom: 35px;z-index: 999;right: 175px;display: none;">
+        <a class="btn btn-danger" href="#" onclick="HideVideo();return false;">Пропустити відео</a>
+    </div>
+    <div class="go_to_sit" style="position: absolute;bottom: 35px;z-index: 999;right: 75px;">
+        <a class="btn btn-danger" href="/">На сайт</a>
+    </div>
+    
 </section>
 <script>
     /* <![CDATA[ */
@@ -82,16 +88,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 var i = 0;
 
 $(document).ready(function(){
+
     //$("body").fadeIn(1000);
-    $('.content-box-baner').fadeOut(100);
-    $('.content-box').fadeIn(1000);
+    $('.content-box-baner').slideUp(1000);
+    $('.content-box').slideDown(1000);
  //$("body").css("display", "none");
 
 var video = $("#video");
 video.bind("ended", function() {
 $('#div_video').fadeOut();
 //$(".content-box-baner").html('<img src="/img/logo/logo-fhd-red.png" class="my-auto" style="width: 75%">');
-$(".content-box-baner").fadeIn(100);
+$(".content-box-baner").slideDown(1000);
 showArticles();
 //$(".content-box").fadeIn(1000); 
 
@@ -105,19 +112,27 @@ video.bind("loadeddata", function() {
 );
 
 });
+function HideVideo(){
+$('#video').trigger('pause');
+$('#div_video').fadeOut();
+$(".content-box-baner").slideDown(1000);
+showArticles();
+}
 function showVideo(i){ 
+    $('#ret_video').show();
 
 //console.log(mas);
 var rand = i;//Math.floor(Math.random() * (7 - 1)) + 1;
 	 $('#video').attr('src', '/img/video/'+rand+'_1.mp4');
 		$('#video').trigger('play');
 		$(".content-box").fadeOut(); 
-                 $(".content-box-baner").fadeOut();
+                 $(".content-box-baner").slideUp(1000);
 	 	$(".content-box").html('');
 	 // $('#div_video').fadeIn(2000);
 		return true;
     }
 function showArticles(){
+    $('#ret_video').hide();
 
 $.ajax({  
             url: "/advertising/index/id/1/",   
@@ -126,7 +141,7 @@ $.ajax({
 		$('#video').trigger('stop');
             },
             complete: function (e) {
-                $(".content-box-baner").fadeOut();
+                $(".content-box-baner").slideUp(1000);
                // $(".content-box").fadeIn(1000); 
             }
         });

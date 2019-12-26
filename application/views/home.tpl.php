@@ -1,29 +1,26 @@
 <!DOCTYPE html >
 <html lang="<?=Registry::get('lang')?>">
 <head>
-<?php //clearstatcache(); ?>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta name="description" content="<?=htmlspecialchars($this->getCurMenu()->getMetatagDescription()); ?>"/>
-    <meta name="keywords" content="<?=htmlspecialchars($this->getCurMenu()->getMetatagKeywords()); ?>"/>
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<meta name="google-site-verification" content="5KsgGP4-JCTjV0dafIfi5_AI73MIryFuGqLvAgIthAI" />
+    <meta name="description" content="<?=htmlspecialchars($this->getCurMenu()->getMetatagDescription())?>"/>
+    <meta name="keywords" content="<?=htmlspecialchars($this->getCurMenu()->getMetatagKeywords())?>"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="google-site-verification" content="5KsgGP4-JCTjV0dafIfi5_AI73MIryFuGqLvAgIthAI" />
     <title><?=Config::findByCode('home_title')->getValue()?></title>
 	
 	
 	<link rel="alternate" hreflang="ru-UA" href="https://www.red.ua/ru<?=$_SERVER['REQUEST_URI']?>" />
-		<link rel="alternate" hreflang="uk-UA" href="https://www.red.ua/uk<?=$_SERVER['REQUEST_URI']?>" />
-	<link rel="shortcut icon" href="/favicon.ico"/>	
-	<link  rel="stylesheet" type="text/css" href="/js/slider-fhd/slick.css?v=1"  />
-	<link  rel="stylesheet" type="text/css" href="/js/slider-fhd/slick-theme.css?v=1" />
-    <link rel="stylesheet" type="text/css" href="/css/bs/css/bootstrap.css?v=1.0"/>
-    <link rel="stylesheet" type="text/css" href="/css/style.css?v=2.3.1"/>
-    <link rel="stylesheet" type="text/css" href="/css/new.css?v=1.3"/>
-    <!--<link rel="stylesheet" type="text/css" href="/css/stores/fm.revealator.jquery.min.css"/>-->
-    
+	<link rel="alternate" hreflang="uk-UA" href="https://www.red.ua/uk<?=$_SERVER['REQUEST_URI']?>" />
+        <link rel="shortcut icon" href="/favicon.ico"/>	
+        
+    <?php if($this->css){
+            foreach ($this->css as $css) { ?>
+                <link  rel="stylesheet" type="text/css" href="<?=$css?>?v=1.0" />
+            <?php }
+        }?>
 	
-    <script src="/js/jquery.js"></script>
-     <script src="/js/timer.js?v=1.6"></script>
-	
+    <script src="/js/jquery-3.4.1.min.js"></script>
+
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -38,18 +35,18 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 <header>
-<?=$this->cached_top_menu;?>
-<?=$this->cached_topcategories;?>
+<?=$this->cached_top_menu?>
+<?=$this->cached_topcategories?>
 </header>
 <!-- содержымое главной страницы-->
 <?php /*if($this->ws->getCustomer()->isAdmin()){ } */?>
-<?php if($this->ws->getCustomer()->getId() == 8005){
-echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/advertising/">Реклама</a></div>';
-
+<?php if(isset($_COOKIE['track']) and $_COOKIE['track'] == 'globus_shop'){
+echo '<div style="position: fixed;top: 70px;left: 15px;">'
+    . '<a class="btn btn-danger" href="/advertising/">Реклама</a>'
+        . '</div>';
 }?>
 <section>
 <div class="container-fluid">
-    <?php if(true){ ?>
         <div class="row bg-dark p-1">
         <style>.col.text-center.p-1 a:hover { text-decoration: none;</style>   
             <div class="col text-center p-1">
@@ -77,9 +74,9 @@ echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/advertising/">
                 </a>
             </div>
     </div>
-        
-    <?php } ?>
-<?php $c = $this->block6->count(); if ($c > 0) { ?>
+
+<?php $c = $this->block6->count();
+if ($c > 0) { ?>
 <!--новый банер-->
 <div class="row">
 	<div class="slider-baner col-md-12 col-xl-12 px-0" >
@@ -88,8 +85,7 @@ echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/advertising/">
                     <?php for($j=0; $j<$c;$j++){ ?>
     <li data-target="#moby_slider" data-slide-to="<?=$j?>" <?=$j==0?'class="active"':''?> ></li>
                     <?php }?>
-  </ol>
-                
+  </ol>          
   <div class="carousel-inner">
            <?php $i=0;  foreach ($this->block6 as $block) { ?>
 			<div class="carousel-item <?=$i==0?'active':''?>"  >
@@ -127,29 +123,17 @@ echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/advertising/">
 <?php } ?>
 <?php if ($this->topproduct->count() > 5) { ?>
 <!--top articles-->
-<div class="row">
+<div class="row pop_t   revealator-zoomin revealator-duration10 revealator-once">
 <div class="block-title py-4 w-100">
 	<div class="vc_separator    vc_sep_pos_align_center vc_sep_color_black double-bordered-thick ">
 	<span class="vc_sep_holder vc_sep_holder_l"><span class="vc_sep_line"></span></span>
-	<h4><?=$this->trans->get('ПОПУЛЯРНЫЕ ТОВАРЫ');?><span><?=$this->trans->get('самые просматриваемые товары');?></span></h4>
+	<h4><?=$this->trans->get('ПОПУЛЯРНЫЕ ТОВАРЫ')?><span><?=$this->trans->get('самые просматриваемые товары')?></span></h4>
 	<span class="vc_sep_holder vc_sep_holder_r"><span class="vc_sep_line"></span></span>
 	</div>
 </div>
     <div class="top_articles col-md-12 px-0">
 <?php foreach ($this->topproduct as $block) {
-            if ($block->getId()) { ?> 
-			<div class="top_articles_item col-xs-12 col-sm-6 col-md-3" >
-         <a  href="<?=$block->getPath();?>" style="    text-align: center;">
-        <img  src="<?=$block->getImagePath('detail'); ?>" alt="<?=$block->getBrand();?>" style="max-width:100%;"  >  
-		</a>
-				<div class="post-name" >
-				<h2><a href="<?=$block->getPath();?>"><?=$block->getModel();?></a></h2>
-				<h2><a href="<?=$block->getPath();?>"><?=$block->getBrand();?></a></h2>
-				</div>
-				<hr>
-				<p><?=$block->getPrice()?> грн</p>
-     </div>
-<?php } } ?>
+            if ($block->getId()) {  echo  $block->getItemBlockCachedHtml(false); } } ?>
     </div>
 </div>
 <!--top articles-->
@@ -157,9 +141,11 @@ echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/advertising/">
 
 <?php if($this->homeblock->count() > 0) { ?>
 <!--top categories-->
-<div class="row homeblock"  >
-<?php foreach ($this->homeblock as $block) { ?>
-<div class=" col-xs-12 col-sm-6 col-md-3 p-1">
+<div class="row homeblock "  >
+<?php
+$i = 0;
+foreach ($this->homeblock as $block) { ?>
+<div class=" col-xs-12 col-sm-6 col-md-3 p-1 <?php if($i<2){ echo 'revealator-slideright';}else{echo 'revealator-slideleft ';} ?> revealator-duration10 revealator-once">
 <div class="column-inner">
 				 <a href="<?=$block->getUrl()?>">
 				 <img alt="<?=$block->getName()?>" src="<?=$block->getImage()?>" >
@@ -170,36 +156,24 @@ echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/advertising/">
 				</a>
 </div>
 </div>
-<?php } ?> 
+<?php $i++; } ?> 
 <div class="clearfix"></div>
 </div>
 <!--top categories-->
 <?php } ?>
 <!--one articles-->
 <?php if ($this->oneproduct->count() > 4) { ?>
-<div class="row  ">
+<div class="row  p_t  revealator-zoomin revealator-duration10 revealator-once">
 <div class="block-title py-4 w-100">
 	<div class="vc_separator    vc_sep_pos_align_center vc_sep_color_black double-bordered-thick ">
 	<span class="vc_sep_holder vc_sep_holder_l"><span class="vc_sep_line"></span></span>
-	<h4><?=$this->trans->get('ПОСЛЕДНИЕ ТОВАРЫ');?><span><?=$this->trans->get('ПОСЛЕДНИЙ РАЗМЕР ИЛИ ПАРА');?></span></h4>
+	<h4><?=$this->trans->get('ПОСЛЕДНИЕ ТОВАРЫ');?><span><?=$this->trans->get('ПОСЛЕДНИЙ РАЗМЕР ИЛИ ПАРА')?></span></h4>
 	<span class="vc_sep_holder vc_sep_holder_r"><span class="vc_sep_line"></span></span>
 	</div>
 	</div>
     <div class="top_articles col-md-12 px-0">
 <?php foreach ($this->oneproduct as $block) {
-            if ($block->getId()) { ?> 
-			<div class="top_articles_item col-md-3" >
-         <a  href="<?=$block->getPath();?>" style="text-align: center;">
-        <img  src="<?=$block->getImagePath('detail'); ?>" alt="<?=$block->getBrand();?>" style="max-width:100%;"  >  
-		</a>
-				<div class="post-name" >
-				<h2><a href="<?=$block->getPath();?>"><?=$block->getModel();?></a></h2>
-				<h2><a href="<?=$block->getPath();?>"><?=$block->getBrand();?></a></h2>
-				</div>
-				<hr>
-				<p><?=$block->getPrice()?> грн</p>
-     </div>
-<?php } } ?>
+            if ($block->getId()) {  echo  $block->getItemBlockCachedHtml(false); } } ?>
     </div>
 </div>
 <?php } ?>
@@ -214,45 +188,62 @@ echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/advertising/">
 	<span class="vc_sep_holder vc_sep_holder_r"><span class="vc_sep_line"></span></span>
 	</div>
 	</div>
-<?php foreach($this->blog as $b){ ?>
+<?php
+foreach($this->blog as $b){ ?>
 <div class="col-xs-12  col-md-4 p-1">
 	<article>           
                <div class="blog-div-fon">
 			   <div class="post-image">
-			    <a href="<?=$b->getPath()?>?utm_source=blog&utm_medium=link&utm_content=Blog&utm_campaign=Blog">
+			    <a href="<?=$b->getPath()?>">
 			   <img alt="<?=$b->getPostName()?>" src="/storage<?=$b->getImage()?>">
 			   <span class="hover-overlay"></span>
 			   <span class="hover-readmore"><?=$this->trans->get('Смотреть далее');?>...</span>
 			   </a>
 			   </div>
 			   <div class="post-name">
-				<h2><a href="<?=$b->getPath()?>?utm_source=blog&utm_medium=link&utm_content=Blog&utm_campaign=Blog"><?=$b->getPostName()?></a></h2>
+				<h2><a href="<?=$b->getPath()?>"><?=$b->getPostName()?></a></h2>
+                                <!--?utm_source=blog&utm_medium=link&utm_content=Blog&utm_campaign=Blog-->
 				</div>
 				<div class="post-date"><?=date("d.m.Y", strtotime($b->getUtime()))?></div>
 				</div>
 	</article>
 </div>
-<?php } ?> 
+<?php
+
+
+} ?> 
 <div class="clearfix"></div>
 </div>
 <?php } ?>
 <!--blog-->
 <!--brand-->
-<div class="row brand mt-2  " >
+<div class="row brand mt-2  revealator-slideup revealator-duration10 revealator-once" >
 <div class="new_brand_slider" >
 <div class="border-box">
-					<?php $i=0; if($this->cached_brands->count() >= 3){
-					foreach ($this->cached_brands as $brand) {
-						if($brand['logo'] != NULL){ ?>
+	<?php
+        $sql = "
+		SELECT COUNT( ws_articles.id ) AS cnt, red_brands.logo, red_brands.name
+FROM ws_articles_sizes
+INNER JOIN ws_articles ON ws_articles_sizes.id_article = ws_articles.id
+INNER JOIN red_brands ON red_brands.id = ws_articles.brand_id
+WHERE ws_articles.active =  'y'
+AND ws_articles.status =3
+AND ws_articles.`stock` NOT LIKE  '0'
+AND ws_articles.brand_id >0
+AND red_brands.logo IS NOT NULL 
+GROUP BY brand_id
+HAVING cnt >=3
+ORDER BY cnt DESC 
+LIMIT 8
+		";
+$cached_brands = wsActiveRecord::useStatic("Shoparticles")->findByQuery($sql);
+      if($cached_brands){ foreach ($cached_brands as $brand) { ?>
 					<div class="brand_item" >
-						<a href="/category/brands/<?=(int)$brand['brand_id'];?>" >
-						<img style="max-height: 65px;max-width: 150px;" src="<?=$brand['logo']; ?>" alt="<?=$brand['brand'];?>">
+						<a href="/all/articles/brands-<?=$brand->name?>/" >
+                                                    <img style="max-height: 65px;max-width: 150px;" src="<?=$brand->logo?>" alt="<?=$brand->name?>">
 						</a>
 					</div>
 					<?php 
-					$i++;
-					}
-					if($i >= 8) break;
 					}
 					}
 					?>
@@ -269,6 +260,7 @@ echo '<div style="position: fixed;top: 47px;left: 0px;"><a href="/advertising/">
         </div>
     </div>
 </div>
+
 <!--пуш о смене email -->
 <?php if(!isset($_COOKIE['puch_close']) and isset($_COOKIE['s']) and $_COOKIE['s'] !='' and false){ 
 if($this->ws->getCustomer()->getIsLoggedIn()){ 
@@ -304,7 +296,13 @@ if(Registry::get('device') != 'computer' or ($_COOKIE['mobil'] and $_COOKIE['mob
 <noscript><div style="display:inline;">
 <img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/1005381332/?value=0&amp;label=1vqdCJyg5gMQ1M2z3wM&amp;guid=ON&amp;script=0"/>
 </div></noscript>
-
+<?php
+    if($this->scripts){
+        foreach ($this->scripts as $scripts) { ?>
+            <script  src="<?=$scripts?>?v=1.0"></script>
+        <?php } 
+    }
+?> 
 <script>
 $(document).ready(function(){
 var width = window.innerWidth;
@@ -313,21 +311,6 @@ if(width <= 1200){w = 5;}
 if(width <= 1003) { w = 4;}
 if(width <= 993) { w = 3;}
 if(width <= 770) { w = 2;}
-/*
-$('.slider-baner').slick({
-accessibility: true,
-adaptiveHeight: true,
-arrows: true,
-autoplay: true,
-prevArrow: '<img src="#" style="background-image:url(/img/slider/p-n-b.png); width:50px; height:50px;"  data-role="none" class="slick-prev-next prev" aria-label="Previous" tabindex="0" role="button">',
-nextArrow: '<img src="#" style="background-image:url(/img/slider/p-n-b.png); width:50px;height:50px;"  data-role="none" class="slick-prev-next next" aria-label="Next" tabindex="0" role="button">',
-autoplaySpeed: 3000,
-draggable: true,
-easing: 'fade',
-fade: true,
-speed: 1000,
-dots: true
-});*/
 $('.top_articles').slick({
 	prevArrow: '<img src="#" style="background-image:url(/img/slider/p-n-b.png);" data-role="none" class="slick-prev-next prev" aria-label="Previous" tabindex="0" role="button">',
 nextArrow: '<img src="#" style="background-image:url(/img/slider/p-n-b.png);"  data-role="none" class="slick-prev-next next" aria-label="Next" tabindex="0" role="button">',
@@ -339,35 +322,29 @@ nextArrow: '<img src="#" style="background-image:url(/img/slider/p-n-b.png);"  d
 	  autoplay: false,
 	  });  
 });
-</script>
-<script src="/js/slider-fhd/slick.min.js"></script>	
-	<script  src="/js/functions.js?v=1.3"></script>	
-	<script src="/js/jquery.liFixar.js"></script>
-     <script  src="/css/bs/js/bootstrap.js?v=1.0"></script>
-	 <script   src="/css/bs/js/bootstrap.bundle.min.js?v=1.0"></script>
-         <!--<script  src="/js/stores/fm.revealator.jquery.min.js?v=1.0"></script>-->
-       <!--  <script  src="/js/parallax/parallax.min.js?v=1.0"></script>	-->
-          
-	 <script>
-     
-     $(window).bind('scroll',function(e){
-         parallaxScroll();
-    console.log($(window).scrollTop());
-});
-function parallaxScroll(){
-    var scrolled = $(window).scrollTop();
-    if(scrolled >= 490){ // transform: matrix(1, 0, 0, 1, 0, 31);
-        
-        //-o-transform: translateY(-20px);
- // -ms-transform: translateY(-20px);
-  //-moz-transform: translateY(-20px);
-  //-webkit-transform: translateY(-20px);  
-  //transform: translateY(-20px);
-       // $('.homeblock').css('transform', translateY(-21)+'px');
-    //$('.homeblock').css('top',(0-(scrolled*.25))+'px');
-    }
-    //$('#parallax-bg2').css('top',(0-(scrolled*.5))+'px');
-   // $('#parallax-bg3').css('top',(0-(scrolled*.75))+'px');
+function setUk(lang, ses, url) {
+if(lang !== ses){
+      $.ajax({
+         type: "POST",
+         url: "/ajax/setlang/",
+         data: "&lang="+lang+"&ur="+url,
+         success: function(res){
+			 console.log(res);
+			 location.replace(res);
+
+		 },
+		 error: function(e){
+			 console.log(e);
+			 
+		 }
+          });
+		}
+          return false;
+}
+
+function setCooki(e) {
+        document.cookie = "mobil =" + e;
+        location.reload();
 }
         jQuery.browser = {};
         (function () {
@@ -380,6 +357,4 @@ function parallaxScroll(){
         })();
     </script>
 </body>
-
-
 </html>

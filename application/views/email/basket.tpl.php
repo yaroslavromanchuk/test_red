@@ -85,7 +85,7 @@
 		$p = $price['price']/$article_or->getCount();
 		if ($price_real != $p){ $pr = $price_real; }else{ $pr = ''; }
 	
-		$skid = '  -'.round((1 - ($p/ $price_real)) * 100).'%';
+		$skid = '  -'.ceil((1 - ($p/ $price_real)) * 100).'%';
 		
 	echo '<span style="text-decoration: line-through;color: #666;font-weight: normal;font-size: 10px;">'.$pr.'</span><span style="font-size: 10px;color:red;font-weight: bold;position: relative;top: -5px;"> '.$skid.'</span><br>'.Shoparticles::showPrice($p).' грн.';
 

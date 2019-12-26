@@ -10,11 +10,9 @@ class EventController extends controllerAbstract
 
     public function activAction()
     {
-        if (!$this->ws->getCustomer()->getIsLoggedIn()) {
-            $this->_redirect('/account/login/');
-            return;
-        }
-
+       
+          //  print_r($this->get);
+         //   exit();
         if (!$this->get->id) {
             $this->_redirect('/event_error/');
             return;
@@ -41,17 +39,25 @@ class EventController extends controllerAbstract
             $this->_redirect('/event_error/'); 
             return;
         }
+         if (!$this->ws->getCustomer()->getIsLoggedIn()) {
+            $this->_redirect('/account/login/?redirect='.$event->getPath());
+             return ;
+        }
+        
         $find = wsActiveRecord::useStatic('EventCustomer')->findFirst(array('event_id' => $event->getId(), 'customer_id' => $this->ws->getCustomer()->getId()));
 		$session = session_id();
         if ($find) {
-            echo '<p>Вы уже подписаны на эту акцию.</p>';
+            $this->view->info = '<p>Вы уже подписаны на эту акцию.</p>';
         } else {
             $new_cev = new EventCustomer();
             $new_cev->setSessionId($session);
             $new_cev->setCustomerId($this->ws->getCustomer()->getId());
+            $new_cev->setEndTime($event->finish.' 23:59:59');
             $new_cev->setEventId($event->getId());
             $new_cev->save();
-            echo '<h1 class="violet">Вы успешно подписались на акцию.</h1> <p>Вы получаете дополнительную скидку ' . $event->getDiscont() . '% на период с ' . date('d.m.Y', strtotime($event->getStart())) . ' по ' . date('d.m.Y', strtotime($event->getFinish())) . '</p>';
+            $this->view->info ='<h3 class="violet">Вы успешно подписались на акцию.</h3> <p>Вы получаете дополнительную скидку ' . $event->getDiscont() . '% на период с ' . date('d.m.Y', strtotime($event->getStart())) . ' по ' . date('d.m.Y', strtotime($event->getFinish())) . '</p>';
+
         }
+         echo $this->render('/event/ok.tpl.php');
     }
 }

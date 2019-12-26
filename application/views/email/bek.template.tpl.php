@@ -1,58 +1,67 @@
 <?php $dname = Config::findByCode('domain_name')->getValue();
-$basket = '?utm_source=returnbasket&utm_medium=email&utm_content=Return_Basket&utm_campaign=Return_Basket';
-?>
+        $basket = '?utm_source=returnbasket&utm_medium=email&utm_content=Return_Basket&utm_campaign=Return_Basket';
+        ?>
 <html>
-    <head>
-        		<title><?php echo Config::findByCode('website_name')->getValue();?></title>
-		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<base href="http://<?php echo $dname?>/" target="_blank" />
-
-    </head>
-    <body>
-		<img src="https://www.google-analytics.com/collect?v=1&tid=UA-29951245-1&cid=<?php echo $this->getEmail();?>&t=event&ec=return_basket_open&ea=open&el=<?php echo $this->getEmail();?>&cs=return_basket_open&cm=email&cn=Return_Basket" width="1" height="1" alt="" />
-        <center>
-            <table border="0" cellpadding="0" cellspacing="0" width="700" align="center" style="background:#fff;border-collapse:collapse;">
-			<tr>
-				<td align="right" colspan="2" style="padding: 10px 10px 0 0;">
-					<a href="http://vk.com/club21090760"><img src="http://<?php echo $dname?>/img/social_black/social_black_vk.png" alt="vkontakte" border="0" width="25" height="25" style="text-decoration:none;"></a>
-					<a href="http://www.facebook.com/pages/RED-UA/148503625241218?sk=wall"><img src="http://<?php echo $dname?>/img/social_black/social_black_fb.png" alt="facebook" border="0" width="25" height="25" style="text-decoration:none;"></a>
-					<a href="http://twitter.com/#!/red_ukraine"><img src="http://<?php echo $dname?>/img/social_black/social_black_tw.png" alt="twitter" border="0" width="25" height="25" style="text-decoration:none;"></a>
-					<a href="http://instagram.com/red_ua"><img src="http://<?php echo $dname?>/img/social_black/social_black_inst.png" alt="instagramm" border="0" width="25" height="25" style="text-decoration:none;"></a>
-					<a href="http://www.odnoklassniki.ru/group/56643212738594"><img src="http://<?php echo $dname?>/img/social_black/social_black_odnkl.png" alt="odnoklasniki" border="0" width="25" height="25" style="text-decoration:none;"></a>
-				</td>
-			</tr>
-			<tr>
-				<td style="padding: 0 0 0 10px;">
-					<a href="http://<?php echo $dname.$basket;?>" class="logo"><img src="http://<?php echo $dname?>/img/_red_logo.png" alt="RED" height="50" width="130"/></a>
-				</td>
-				<td>
-					<span style="color: #666;font-size: 16pt;left: 195px;top: 40px;text-align: center;margin: 0;font-family: Verdana, Tahoma, Arial;">Большие бренды — маленькие цены</span>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2"><img src="http://<?php echo $dname?>/images/lightbox-blank.gif" height="10" border="0"/></td>
-			</tr>
-			<tr>
-				<td colspan="2" align="center">
-					<table border="0" cellpadding="0" cellspacing="0" align="center" style="border-collapse:collapse;margin: 0;width: 100%;border-top: 1px solid;border-bottom: 1px solid;height: 48px;">
-						<tr><?php 
-						$menu = wsActiveRecord::useStatic('Shopcategories')->findAll(array('parent_id'=>0, 'active'=>1));
-						foreach ($menu as $menui) {
-							echo '
-								<td align="center" border="0" style="padding: 7px 0;">
-									<span style="color: #2D2D2D;font-family: Arial;font-size: 15px;font-weight: bold;height: 48px;padding: 0 2px;text-decoration: none;">
-				<a style="color: #2D2D2D;text-decoration: none;line-height: 15px;" href="'.$menui->getPath().$basket.'">
-											'.$menui->getName().'
-										</a>
-									</span>
-								</td>
-							';
-						} ?>
-						</tr>
-					</table>
-				</td>
-			</tr>
-		</table>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>RED</title>
+</head>
+<body style="font-family: Verdana,Tahoma,Arial;font-size:14px">
+    <img src="https://www.google-analytics.com/collect?v=1&tid=UA-29951245-1&cid=<?php echo $this->getEmail();?>&t=event&ec=return_basket_open&ea=open&el=<?php echo $this->getEmail();?>&cs=return_basket_open&cm=email&cn=Return_Basket" width="1" height="1" alt="" />
+	<table  style="width:700px;background: black;" align="center" border="0" cellpadding="0" cellspacing="0">
+	<tr>
+	<td style="border-bottom: 2px solid #e30613;padding:10px;">
+	<span  style="text-align:left;">
+	<a href="https://<?=$dname?>"><img src="https://<?=$dname?>/img/email/logo_new.png" alt="RED"  style="height:30px;"></a>
+	</span>
+	<span  style="float: right;text-align:right;">
+        <a href="https://t.me/shop_red_ua"><img src="https://<?=$dname?>/img/email/tl.png" alt="telegram"   style="width:30px;padding: 0px 1px;" ></a>
+	<a href="http://www.facebook.com/pages/RED-UA/148503625241218?sk=wall"><img src="https://<?=$dname?>/img/email/fb.png" alt="facebook"   style="width:30px;padding: 0px 1px;"></a>
+	<a href="http://instagram.com/red_ua"><img src="https://<?=$dname?>/img/email/inst.png" alt="instagramm"  style="width:30px;padding: 0px 1px;"></a>
+	<a href="https://www.youtube.com/user/SmartRedShopping"><img src="https://<?=$dname?>/img/email/youtube.png" alt="youtube" style="width:30px;padding: 0px 1px;"></a>
+	<a  href="https://www.red.ua/blog/"><img src="https://<?=$dname?>/img/email/blog.png" alt="blog"  style="width:30px;padding: 0px 1px;"></a>
+	</span>
+	</td>
+	</tr>
+	<tr>
+	<td  style="border-bottom: 1px solid #9E9E9E;text-align:center;">
+	<table style="width:700px;font-family: monospace; background: white;" >
+	<tbody style="width:700px;">
+	<tr>
+	<?php 
+foreach (wsActiveRecord::useStatic('Shopcategories')->findAll(array('parent_id'=>0, 'active'=>1, 'email IS NOT NULL')) as $menui) {?>
+<td style="padding:0;">
+<a href="https://<?=$dname.$menui->getPath().$basket?>"  style="letter-spacing: -1px;text-decoration: none;
+    text-transform: uppercase;
+    width: 68px;
+    text-align: center;
+    display: inline-block;
+    padding: 0;
+    line-height: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #605f60;"  target="_blank">
+<img src="https://<?=$dname?>/img/email/cat/<?=$menui->img_email?>.png" style="width:40px;margin-top: 5px;">
+<br><span style="margin-left: -5px;"><?=$menui->getEmail()?></span></a></td>
+						<?php } ?>
+	<td style="padding:0;">
+            <a href="https://www.red.ua/brands/<?=$basket?>" style="letter-spacing: -1px;text-decoration: none;
+    text-transform: uppercase;
+    width: 68px;
+    text-align: center;
+    display: inline-block;
+    padding: 0;
+    line-height: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #605f60;"   target="_blank"><img src="https://<?=$dname?>/img/email/cat/brands.png" style="width:40px;margin-top: 5px;"><br>Бренды</a>
+	</td>
+	</tr>
+	</tbody>
+	</table>
+	</td>
+	</tr>
+	</table>
 		
  <table border="0" cellpadding="0" cellspacing="0" width="700" align="center" style="background:#fff;border-collapse:collapse;">
                             <tr>
@@ -64,13 +73,13 @@ $basket = '?utm_source=returnbasket&utm_medium=email&utm_content=Return_Basket&u
 	<tr>
 	<td align="center">
 	<br>
-	<a href="http://<?php echo $dname."/basket/".$basket;?>"><img style="width:250px;" src="/images/bek_return1.png" alt="Перейти в корзину"/>
+	<a href="https://<?=$dname."/basket/".$basket?>"><img style="width:250px;" src="https://<?=$dname?>/images/bek_return1.png" alt="Перейти в корзину"/>
 	</a>
 	<br>
 	</td>
 		<td align="center">
 	<br>
-<a href="http://<?php echo $dname.$basket;?>"><img style="width:250px;" src="/images/returnshop2.png" alt="Шопинг в RED.UA"/>
+<a href="https://<?=$dname.$basket;?>"><img style="width:250px;" src="/images/returnshop2.png" alt="Шопинг в RED.UA"/>
 	</a>
 	<br>
 	</td>
@@ -82,18 +91,11 @@ $basket = '?utm_source=returnbasket&utm_medium=email&utm_content=Return_Basket&u
 $i=0;
 	foreach ($this->getBasket() as $key => $item){
 		$i++;
-		if (($article = wsActiveRecord::useStatic('Shoparticles')->findById($item['article_id'])) && $article->getId()) {
-			
-?>
-					
-						<td width="175" class="">
-							<a href="http://<?php echo $dname."/basket/".$basket;?>">
-								<img style="width:175px;" src="<?php echo $article->getImagePath('listing'); ?>" alt="<?php echo htmlspecialchars($article->getTitle()); ?>"/><br>
-								<?php echo $article->getTitle(); ?>
-								
-							</a>
-						</td>
-						<?php if($i==4){echo "</tr><tr>";}?>
+		if (($article = wsActiveRecord::useStatic('Shoparticles')->findById($item['article_id'])) && $article->getId()) { ?>
+<td width="175" class="">
+    <a href="https://<?=$dname."/basket/".$basket?>"><img style="width:175px;" src="https://<?=$dname?><?=$article->getImagePath('listing')?>" alt="<?=htmlspecialchars($article->getTitle())?>"/><br><?=$article->getTitle()?></a>
+</td>
+<?php if($i==4){echo "</tr><tr>"; } ?>
 					
 <?php
 			
@@ -103,15 +105,22 @@ $i=0;
 ?>
 </tr>
 </table>
- <table border="0" cellpadding="0" cellspacing="0" width="700" align="center" style="background:#fff;border-collapse:collapse;">
-			<tr>
-				<td style="background:#ddd;text-align:center; padding:10px;">
-					<a href="http://<?php echo $dname;?>/returns/?utm_source=returnbasket&utm_medium=email&utm_content=Return_Basket&utm_campaign=Return_Basket" style="text-decoration:none;padding:0 16px;text-align: center;"><span style="color:#333;">Возвраты ></span></a>
-					<a href="http://<?php echo $dname;?>/store-locator/?utm_source=returnbasket&utm_medium=email&utm_content=Return_Basket&utm_campaign=Return_Basket" style="text-decoration:none;padding:0 16px;text-align: center;"><span style="color:#333;">Магазины сети </span><span style="color:red">RED</span><span style="color:#333;"> ></span></a>
-					<a href="http://<?php echo $dname;?>/pays/?utm_source=returnbasket&utm_medium=email&utm_content=Return_Basket&utm_campaign=Return_Basket" style="text-decoration:none;padding:0 16px;text-align: center;"><span style="color:#333;">Доставка и оплата ></span></a>
-				</td>
-			</tr>
-         </table>
-        </center>
+<table  align="center" border="0" cellpadding="0" cellspacing="0" style="font-size:12px;color:#6c6c6c;width:700px;">
+<tr style="background: #ededed;">
+<td  style="<?=$w?>padding-top:10px;padding-left:10px;"><b>CALL-ЦЕНТР</b></td>
+<td  style="<?=$w?>padding-top:10px;padding-left:10px;"><b>КОНТАКТЫ</b></td>
+<td  style="<?=$w?>padding-top:10px;padding-left:10px;"><b>СТРАНИЦЫ</b></td>
+</tr>
+<tr style="background: #ededed;" >
+<td  style="<?=$w?>padding-left:10px;">Пн-Пт: 09:00 - 18:00<br>Сб-Вс: Выходные</td>
+<td  style="<?=$w?>padding-left:10px;" >(044) 224-40-00<br>(063) 809-35-29<br>(067) 406-90-80<br>market@red.ua</td>
+<td  style="<?=$w?>padding-left:10px;padding-bottom:10px;" >
+<a href="https://<?=$dname?>/advantages/" style="color: #878787;text-decoration: none;">Преимущества</a><br>
+<a href="https://<?=$dname?>/reviews/" style="color: #878787;text-decoration: none;">Отзывы</a><br>
+<a href="https://<?=$dname?>/pays/" style="color: #878787;text-decoration: none;">Доставка и оплата</a><br>
+<a href="https://<?=$dname?>/returns/" style="color: #878787;text-decoration: none;">Возвраты</a>
+</td>
+</tr>
+</table>
     </body>
 </html>

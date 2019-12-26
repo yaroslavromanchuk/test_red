@@ -4,26 +4,25 @@
 ?>
 <?php if($this->filters){ ?>
  <form class="form-filter w-100" action="#" >
-     <div class="card">
-     <div class="row m-0 content ">
-        <?php  if($this->search_word){ ?>
+<div class="card">
+<div class="row m-0 content">
+<?php  if($this->search_word){ ?>
 <div class="d-none">
    <span class="search_result" ><?=$this->search_word?$text_result_trans[0].' : <span class="rez_s">'.$this->search_word.'</span><br>':''?></span>
     <input type="hidden" id="search_word" value="<?=$this->search_word?>" >
 </div>
 <?php } ?> 
-<div class="col-sm-12 col-md-6 col-lg-2 col-xl-2 p-1 text-center">
+<div class="col-sm-12  p-1 text-center">
     <div class="form-group mb-0">
        <select name="order_by" id="order_by" onchange="return getOrdreBy(this,0)" class="form-control select2" data-placeholder="<?=$text_result_trans[2]?>:">
                             <option value=""><?=$text_result_trans[2]?>:</option>
-                            <option value="cena_vozrastaniyu" <?php if($this->get->order_by and $this->get->order_by == 'cena_vozrastaniyu') echo 'selected'; ?> ><?=$text_result_trans[3];?></option>
-                            <option value="cena_ubyvaniyu" <?php if($this->get->order_by and $this->get->order_by  == 'cena_ubyvaniyu') echo 'selected'; ?> ><?=$text_result_trans[4];?></option>
-                            <option value="populyarnost_vozrastaniyu" <?php if($this->get->order_by and $this->get->order_by  == 'populyarnost_vozrastaniyu') echo 'selected'; ?> ><?=$text_result_trans[5];?></option>
-                            <option value="populyarnost_spadaniyu" <?php if($this->get->order_by and $this->get->order_by  == 'populyarnost_spadaniyu') echo 'selected'; ?> ><?=$text_result_trans[6];?></option>
-                            <option value="date_vozrastaniye" <?php if($this->get->order_by and $this->get->order_by == 'date_vozrastaniye') echo 'selected'; ?> ><?=$text_result_trans[7];?></option>
-                            <option value="date_spadaniye" <?php if($this->get->order_by and $this->get->order_by == 'date_spadaniye') echo 'selected'; ?> ><?=$text_result_trans[8];?></option>
-                        </select> 
-        <!--<button type="button"  class="btn btn-secondary btn-sm goFilter drop_list" ><?=$text[1]?></button>-->
+                            <option value="cena_vozrastaniyu" <?php if($this->get->order_by and $this->get->order_by == 'cena_vozrastaniyu'){ echo 'selected';} ?> ><?=$text_result_trans[3]?></option>
+                            <option value="cena_ubyvaniyu" <?php if($this->get->order_by and $this->get->order_by  == 'cena_ubyvaniyu') {echo 'selected';} ?> ><?=$text_result_trans[4]?></option>
+                            <option value="populyarnost_vozrastaniyu" <?php if($this->get->order_by and $this->get->order_by  == 'populyarnost_vozrastaniyu'){ echo 'selected';} ?> ><?=$text_result_trans[5]?></option>
+                            <option value="populyarnost_spadaniyu" <?php if($this->get->order_by and $this->get->order_by  == 'populyarnost_spadaniyu') {echo 'selected';} ?> ><?=$text_result_trans[6]?></option>
+                            <option value="date_vozrastaniye" <?php if($this->get->order_by and $this->get->order_by == 'date_vozrastaniye') {echo 'selected';} ?> ><?=$text_result_trans[7]?></option>
+                            <option value="date_spadaniye" <?php if($this->get->order_by and $this->get->order_by == 'date_spadaniye') {echo 'selected';} ?> ><?=$text_result_trans[8]?></option>
+        </select> 
     </div>
 
 </div>
@@ -31,23 +30,23 @@
                      		 
 <input type="hidden" id="selected_root_category" name="selected_root_category" value="<?=$this->finder_category?>">
             <!-- Бренды -->
-            <?php if (count($this->filters['brands'])) { ?>
-            <div class="col-sm-12 col-md-6 col-lg-2 col-xl-2 text-center align-middle p-1">
+            <?php if (count($this->filters['brands'])){ ?>
+            <div class="col-sm-12  text-center align-middle p-1">
                 <div class="form-group has-danger mb-0">
                 <select class="form-control select2" data-placeholder="Brands" multiple name="brands" id="brands">
                     <?php
 				$asc = explode(',' , $this->get->brands);
                                 ksort($this->filters['brands']);
                         foreach ($this->filters['brands'] as $cat) { ?>
-                    <option <?php if ($this->get->brands == $cat['name']){ ?> selected <?php }else if(in_array($cat['name'], $asc)){ ?> selected <?php } ?>  value="<?=$cat['name']?>"><?=$cat['title']?></option>
+                    <option <?php if ($this->get->brands == urldecode($cat['name'])){ ?> selected <?php }elseif(in_array(urldecode($cat['name']), $asc)){ ?> selected <?php } ?>  value="<?=$cat['name']?>"><?=$cat['title']?></option>
                         <?php } ?>
                 </select>
             </div>
                  </div>
             <?php } ?>
 <!-- Сезон -->
-	<?php if (count($this->filters['sezons'])) { ?>
-	<div class="col-sm-12 col-md-6 col-lg-1 col-xl-1 text-center align-middle p-1">
+	<?php if (count($this->filters['sezons'])){ ?>
+	<div class="col-sm-12  text-center align-middle p-1">
             <div class="form-group has-danger mb-0">
                                 <select class="form-control select2" data-placeholder="Сезон" multiple name="sezons" id="sezons">
                                     <?php
@@ -61,8 +60,8 @@
         </div>
 			<?php }	?>
             <!-- Размеры -->
-<?php if (count($this->filters['sizes'])) { ?>
-        <div class="col-sm-12 col-md-6 col-lg-1 col-xl-1 text-center align-middle p-1">
+<?php if (count($this->filters['sizes'])){ ?>
+        <div class="col-sm-12  text-center align-middle p-1">
                     <div class="form-group has-danger mb-0">
                         <select class="form-control select2" data-placeholder="<?=$text[3]?>" multiple name="sizes" id="sizes">
                           <?php 
@@ -75,8 +74,8 @@
         </div>
             <?php } ?>
             <!-- Цвета -->
-            <?php if (count($this->filters['colors'])) { ?>
-                <div class="col-sm-12 col-md-6 col-lg-1 col-xl-1 text-center align-middle p-1" >
+            <?php if (count($this->filters['colors'])){ ?>
+                <div class="col-sm-12  text-center align-middle p-1" >
                      <div class="form-group has-danger mb-0">
                        <select class="form-control select2" data-placeholder="<?=$text[4]?>" multiple name="colors" id="colors">   
                         <?php
@@ -89,8 +88,8 @@
                 </div>
             <?php } ?>
             <!-- LABELS -->
-            <?php if (count($this->filters['labels'])) { ?>
-                <div class="col-sm-12 col-md-6 col-lg-1 col-xl-1 text-center align-middle p-1">
+            <?php if (count($this->filters['labels'])){ ?>
+                <div class="col-sm-12  text-center align-middle p-1">
                     <div class="form-group has-danger mb-0" >
                          <select class="form-control select2" data-placeholder="Labels" multiple name="labels" id="labels">   
                         <?php
@@ -103,8 +102,8 @@
                 </div>
             <?php } ?>
 			<!-- skidka -->
-            <?php if (count($this->filters['skidka'])) { ?>
-                <div class="col-sm-12 col-md-6 col-lg-1 col-xl-1 text-center align-middle p-1">
+            <?php if (count($this->filters['skidka'])){ ?>
+                <div class="col-sm-12  text-center align-middle p-1">
                     <div class="form-group has-danger mb-0" >
                          <select class="form-control select2" data-placeholder="Скидки" multiple name="skidka" id="skidka">   
                         <?php
@@ -117,7 +116,7 @@
                 </div>
             <?php } ?>
     <?php if($this->filters['price_min'] || $this->filters['price_max']){ ?>
-			<div class="col-sm-12 col-md-6 col-lg-2 col-xl-2  text-center align-middle p-1">
+			<div class="col-sm-12   text-center align-middle p-1">
                     <div class="form-group mb-0" >
 <div class="input-group">
   <span class="input-group-addon tx-size-sm lh-2"><?=$text[5]?></span>
@@ -127,10 +126,9 @@
   </div>
   </div>
                         <?php  } ?>
-                        <div class="col-sm-12 col-md-6 col-lg-1 col-xl-1 p-1">
+                        <div class="col-sm-12  text-center ">
                             <i class="icon ion-ios-checkmark-circle-outline goFilter mr-2" data-tooltip="tooltip" data-original-title="<?=$text[1]?>" title="<?=$text[1]?>" style="font-size: xx-large; cursor: pointer"></i>
 <i class="icon ion-ios-close-circle-outline" style="font-size: xx-large; cursor: pointer" data-tooltip="tooltip"  onclick="return getClearAllFilters();" data-original-title="<?=$text[0]?>" title="<?=$text[0]?>" ></i>                            
-<!--<button type="button"  class="btn btn-secondary btn-sm goFilter" ><?=$text[1]?></button>-->
                         </div>
                             
                    
@@ -217,14 +215,8 @@ if($i == 5) break;
     });
 
 				$('.goFilter').click(function() {
-                                   // var input = $("form.form-filter").serialize();
-                                   // console.log(input);
-                                    
-                                //  var input2 = $("form.form-filter").serializeArray();
-                                  //  console.log(input2);
 				if (true) {
-                               // $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
-				return gatFilters($("form.form-filter").serializeArray());
+                               return gatFilters($("form.form-filter").serializeArray());
 
   }else{
               $(this).detach('#list_f');

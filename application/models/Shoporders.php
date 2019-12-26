@@ -41,6 +41,11 @@ class Shoporders extends wsActiveRecord
 				'class' => 'Shoporderstatuses',
 				'field' => 'status'
 			),
+            'fop' => [
+                'type' => 'hasOne',
+				'class' => 'Fop',
+				'field' => 'fop_id'
+            ],
                         'customer' => [
                         'type' => 'hasOne',
                         'class' => self::$_customer_class,
@@ -53,20 +58,18 @@ class Shoporders extends wsActiveRecord
     { 
         $total_a = $total_o = 0.00;
         $articles = $this->getArticles();
-        if ($articles->count())
+        $bool = false;
+        if ($articles->count()){
 
-            $bool = false;
-        foreach ($articles as $item)
-            if ($item['option_id'] > 0)
-                $bool = true;
-        if (!$bool)
-            $total_o += $this->getDeliveryCost();
+        foreach ($articles as $item){ if ($item['option_id'] > 0){ $bool = true;}}
+            
+        if (!$bool){ $total_o += $this->getDeliveryCost();}
 
         foreach ($articles as $article) {
             $total_a += $article['price'] * $article['count'];
-            if ($article['option_id'] > 0)
-                $total_o += $article['option_price'] * $article['count'];
+            if ($article['option_id'] > 0){ $total_o += $article['option_price'] * $article['count'];}
         }
+    }
         switch ($param) {
             case 'a'    :
                 return $total_a;
@@ -81,19 +84,22 @@ class Shoporders extends wsActiveRecord
     {
         $total = 0;
         $articles = $this->getArticles();
-        if ($articles->count())
-            foreach ($articles as $article)
+        if ($articles->count()){
+            foreach ($articles as $article){
                 $total += $article->getCount();
+            }
+    }
         return $total;
     }
 	public function getSkuCount()//количество SKU в заказе
     {
         $total = 0;
         $articles = $this->getArticles();
-        if ($articles->count())
+        if ($articles->count()){
             foreach ($articles as $article){
-             if($article->getCount() > 0) $total++;
+             if($article->getCount() > 0) {$total++;}
 				}
+        }
         return $total;
     }
 	public function getArticlesEvent()//наличие в заказе товара с доп скидкой
@@ -102,7 +108,7 @@ class Shoporders extends wsActiveRecord
         $articles = $this->getArticles();
         if ($articles->count()){
             foreach ($articles as $article){
-			if(($article->getEventId() and $article->getEventSkidka()) or($article->getOptionId())) $event = true;
+			if(($article->getEventId() and $article->getEventSkidka()) or($article->getOptionId())){ $event = true;}
 				}
 				}
         return $event;
@@ -141,7 +147,7 @@ class Shoporders extends wsActiveRecord
 
 	static public function getDeliveryPrice()
 	{
-		if ($_SESSION['order_amount'] >= 750 and $_SESSION['basket_contacts']['delivery_type_id'] == 9){ return 0;}
+		if ($_SESSION['order_amount'] >= (int)Config::findByCode('kuryer_amount')->getValue() and $_SESSION['basket_contacts']['delivery_type_id'] == 9){ return 0;}
 		
 		$d = wsActiveRecord::useStatic('DeliveryPayment')->findFirst(array('delivery_id' => @$_SESSION['basket_contacts']['delivery_type_id'], 'payment_id' => @$_SESSION['basket_contacts']['payment_method_id']));
 
@@ -317,33 +323,29 @@ class Shoporders extends wsActiveRecord
     {
        $order_history_price = $this->getPriceWithSkidka();
 
-	   //if($delivery){
-             //  $deli = (float)$this->getDeliveryCost(); }else{
-               $deli =(float)$this->getDeliveryCost();
-               
-         //  }// esli ukrpochta = true else false
-	   
-        if ($order_history_price < 0) {$order_history_price = 0;}
-
-        if ($this->getDeposit()) {
-            $price_2 = (float)$order_history_price + (float)$deli - (float)$this->getDeposit();
-        } else {
-            $price_2 = (float)$order_history_price + (float)$deli;
-        }
-		
-		
-        if($this->getBonus()){
+        if ($order_history_price < 0) {  $order_history_price = 0; }
+        
+         $price_2 = (float)$order_history_price;
+         
+         if($this->getBonus()){
             if($price_2 >= Config::findByCode('min_sum_bonus')->getValue()){
-                $price_2 = $price_2 - (float)$this->getBonus();
+                $price_2 -= (float)$this->getBonus();
             }
-        }	
+        }
+        
+        $price_2 += (float)$this->getDeliveryCost();
 
-
-    if ($price_2 < 0) {
-        $price_2 = 0; 
-    }
+        if ($this->getDeposit()) { $price_2 -= (float)$this->getDeposit(); }
+        
+        if($this->getDopSumma()){ $price_2 += (float)$this->getDopSumma();}
 		
-	$price_2 = round($price_2, 2);
+		
+        	
+
+
+    if ($price_2 < 0) { $price_2 = 0; }
+    
+   // $price_2 = ceil($price_2);
 		
     if ($price_2 != $this->getAmount()){
 		//d($price_2, false);
@@ -361,7 +363,7 @@ class Shoporders extends wsActiveRecord
      * 
      * @param type $use_deposit - считать депозит, по умолчанию true
      * @param type $use_format - true отобразить в формате 100,10 иначе 100.10 по умолчанию true
-     * @param type $delivery - true можно не указывать
+     * @param type $delivery - true для учета стоимости доставки, можно не указывать
      * @param type $bonus - false можно не указывать
      * @return float
      */
@@ -369,24 +371,26 @@ class Shoporders extends wsActiveRecord
     {
       $order_history_price = $this->getPriceWithSkidka();
 	   
-        $deli = $this->getDeliveryCost();
+         if ($order_history_price < 0) {  $order_history_price = 0; }
+         
+         $price_2 = $order_history_price;
         
-        if ($this->getDeposit() > 0){
-            $price_2 = $order_history_price + $deli - $this->getDeposit();
-        } else {
-            $price_2 = $order_history_price + $deli; 
-            
-        }
-	
         if($this->getBonus() > 0){
             if($price_2 >= Config::findByCode('min_sum_bonus')->getValue()){
-                $price_2 = $price_2 - $this->getBonus();
+                $price_2 -= $this->getBonus();
             }
         }
         
+        if($delivery){
+         $price_2 += (float)$this->getDeliveryCost();
+        }
+        if ($this->getDeposit() > 0){ $price_2 -= $this->getDeposit(); }
+
+        if($this->getDopSumma()){ $price_2 += (float)$this->getDopSumma();}
+        
         if ($price_2 < 0) { $price_2 = 0; }
 		
-	$price_2 = round($price_2, 2);
+	//$price_2 = ceil($price_2);
         
 	if ($use_format) { $price_2 = Number::formatFloat($price_2, 2); }
 		
@@ -422,17 +426,19 @@ class Shoporders extends wsActiveRecord
                 if ($order->getDeposit() == 0) return false;
             }
 
-		$d_cost = $order->getDeliveryCost(); 
+		//$d_cost = $order->getDeliveryCost(); 
 			
             $customer = new Customer($order->getCustomerId());
             
-            $sum = (($order->getPriceWithSkidka() + $d_cost) - $order->getDeposit()) - $customer->getDeposit();
-            $old = $order->getDeposit();
-            $deposit = ($customer->getDeposit() + $order->getDeposit()) - ($order->getPriceWithSkidka() + $d_cost);
+            $sum = (($order->getPriceWithSkidka() + $order->getDeliveryCost()+$order->getDopSumma()) - $order->getDeposit()) - $customer->getDeposit();
+            
+            $old = $order->getDeposit();//=100
+            
+            $deposit = ($customer->getDeposit() + $order->getDeposit()) - ($order->getPriceWithSkidka() + $order->getDeliveryCost()+$order->getDopSumma());
             if ($sum < 0) { $sum = 0; }
             if ($deposit < 0){ $deposit = 0;}
             
-            $dedosit_to_order = ($order->getPriceWithSkidka() + $d_cost) - $sum;
+            $dedosit_to_order = ($order->getPriceWithSkidka() + $order->getDeliveryCost()+$order->getDopSumma()) - $sum;
 			
             $customer->setDeposit(round($deposit, 2));
             $order->setDeposit(round($dedosit_to_order, 2));
@@ -442,6 +448,48 @@ class Shoporders extends wsActiveRecord
         OrderHistory::newHistory($admin, $order->getId(), 'Использован депозит. Депозит сменился ', 'C "' . $old . '" на "' . $order->getDeposit() . '"');
 	$no = '-';
 	DepositHistory::newDepositHistory($admin, $customer->getId(), $no, $order->getDeposit(), $order->getId());
+        }
+        return true;
+
+    }
+    /**
+     * Использование бонуса в заказе
+     * @param type $admin - id админа
+     * @return boolean
+     */
+    public function updateBonus($admin)
+    {
+        $order = $this;
+        if ($order->getId()) {
+            $customer = new Customer($order->getCustomerId());
+             
+            if ($customer->getBonus() == 0) {}
+                
+            
+            if($order->getBonus() == 0){
+               
+            $sum = $order->getAmount();
+            if ($sum < 0) { $sum = 0; }
+             $c_bonus = $customer->getBonus();
+            if($sum > 0 and $c_bonus > 0){
+                if($sum >= $c_bonus){
+                   $bonus = $c_bonus;
+                     $customer->setBonus(0);
+                    $customer->save();
+                }else{
+                    $bonus = $sum;
+                     $customer->setBonus(round(($c_bonus-$sum), 2));
+                    $customer->save();
+                }
+                
+                 OrderHistory::newHistory($admin, $order->getId(), 'Использован бонус. Бонус сменился ', 'C "' . $order->getBonus() . '" на "' . $bonus . '"');
+                
+           $order->setBonus($bonus);
+           $order->save();
+            }
+            }else{
+                return false;
+            }
         }
         return true;
 

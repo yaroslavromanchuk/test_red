@@ -14,4 +14,3 @@ class wsSellaction extends wsActiveRecord
 		$logger->save();
 	}
 }
-?>

@@ -64,7 +64,7 @@
                  * @param type $sum_order - сумма текущего заказа
                  * @return type
                  */
-	public function getPerc($all_orders_amount, $sum_order = 0)
+	public function getPerc1($all_orders_amount, $sum_order = 0)
             {
             /*
              * $s - дополнительная скидка на товар
@@ -84,7 +84,25 @@
              * стоимость товара в заказе
              */                   
 		$price = $this->getPrice() * $this->getCount();
-			
+		
+                //$event_skidka = $this->getEventSkidka();
+         /*
+          * проверяем наличие доп. скидки на это товар
+          * если больше 0 - к $s добавляем доп. скидку 
+          */
+	if ($this->getEventSkidka() != 0) 
+            {
+             $s += (int)$this->getEventSkidka();
+            }
+            
+            	$kod = false;
+    if($this->order->getKupon()){				
+        $kod = wsActiveRecord::useStatic('Other')->findFirst(["cod"=>$this->order->getKupon()]);
+	if(($kod->category_id and $kod->category_id != $this->article_db->category_id) or ($this->order->getSumOrder() < $kod->min_sum))
+            { 
+            $kod = false; 
+            }
+}    
         /*
          * проверка на участвие товара в акциях
          */
@@ -98,8 +116,21 @@
                       * если $this->getOptionPrice() == 0 - добавляем к $s дополнительную скидку и идем дальше по функции
                       */
                      if($this->getOptionPrice()  > 0){
-                        $mas['minus'] = $price - $this->getOptionPrice()*$this->getCount();
-                        $mas['price'] = $this->getOptionPrice();
+                       
+                        $mas['price'] = ceil($this->getOptionPrice()*$this->getCount());
+                        
+                        if($this->order->getKupon()){
+                        
+                             $kod = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$this->order->getKupon()));
+                             if($kod and $kod->all == 1){
+                                 $mas['price'] = ceil($mas['price'] *(1-$kod->skidka/100));
+					}
+                         }
+                        if($s > 0){
+                               $mas['price'] = ceil($mas['price']*(1-$s/100));
+                        }   
+                        $mas['minus'] = FLOOR($price - $mas['price']);
+                       
 			return $mas;
                      }else{
                          
@@ -113,18 +144,11 @@
          * усли нет - заходим в условие для добавления доп. скидок
          * если стоит блок return $mas
          */	 
-	if (!$this->getSkidkaBlock()) {
+	if (/*!$this->getSkidkaBlock()*/true) {
 	 
 	
 		//$today = date("Y-m-d H:i:s");
-	$kod = false;
-    if($this->order->getKupon()){				
-        $kod = wsActiveRecord::useStatic('Other')->findFirst(["cod"=>$this->order->getKupon()]);
-	if(($kod->category_id and $kod->category_id != $this->article_db->category_id) or ($this->order->getSumOrder() < $kod->min_sum))
-            { 
-            $kod = false; 
-            }
-}
+
 
 	
 	
@@ -136,15 +160,7 @@
 	 //d($this->order, false);
 	
 	 
-	 //$event_skidka = $this->getEventSkidka();
-         /*
-          * проверяем наличие доп. скидки на это товар
-          * если больше 0 - к $s добавляем доп. скидку 
-          */
-	if ($this->getEventSkidka() != 0) 
-            {
-             $s += (int)$this->getEventSkidka();
-            }
+	 
 	 
 			//d($skidka, false);
                 /*
@@ -154,30 +170,30 @@
                  */
                 if ((int)$this->getOldPrice() == 0) {
                     if ($skidka != 0) {
-                        $minus = (($price / 100) * ($skidka+$s));
+                        $minus = FLOOR((($price / 100) * ($skidka+$s)));
                         $price -= $minus;
                             if($kod and $kod->new_cust_plus == 1){ // 
-				$m = (($price / 100) * $kod->skidka);
+				$m = FLOOR((($price / 100) * $kod->skidka));
 				$minus += $m;
 				$price -= $m;
                             }
                     }else{
                         if ($all_orders_amount <= 700) {
-                            $minus = (($price / 100) * $s);
+                            $minus = FLOOR((($price / 100) * $s));
                             $price -= $minus;
                         } elseif ($all_orders_amount > 700 && $all_orders_amount <= 5000) { //5%
-                             $minus = (($price / 100) * (5+$s));
+                             $minus = FLOOR(($price / 100) * (5+$s));
                             $price -= $minus;
                         } elseif ($all_orders_amount > 5000 && $all_orders_amount <= 12000) { //10%
-                           $minus = (($price / 100) * (10+$s));
+                           $minus = FLOOR(($price / 100) * (10+$s));
                             $price -= $minus;
                         } elseif ($all_orders_amount > 12000) { //15%
-                            $minus = (($price / 100) * (15+$s));
+                            $minus = FLOOR(($price / 100) * (15+$s));
                             $price -= $minus;
                         }
 						
 					if($kod and $kod->new_sum_plus == 1){
-						$m = (($price / 100) * $kod->skidka);
+						$m = FLOOR(($price / 100) * $kod->skidka);
 						$minus += $m;
 						$price -= $m;
 						//kupon
@@ -185,15 +201,28 @@
                     }
 					
                 }else{
+                    
+                    if($this->getOldPrice() and $this->ucenka and $this->order->skidka > $this->ucenka){
+                       // $price = $this->getOldPrice() * $this->getCount();
+                        $price = $this->getOldPrice() * (1-$this->order->skidka/100) * $this->getCount();
+                        $minus = FLOOR(($this->getOldPrice()-$price));
+			
+                    }else{
+			
+                    $minus = FLOOR($this->getOldPrice() - $this->getPrice());
+                    }
 				
-			$minus += ($this->getOldPrice() - $this->getPrice());
-			$m = (($price / 100) * $s);
-			$minus += $m;
-			$price -= $m;
+			//$minus += ($this->getOldPrice() - $this->getPrice());
+                    if($s > 0){
+			//$m = FLOOR(($price / 100) * $s);
+                        $price = $price * (1-$s/100);
+			$minus = ($this->getOldPrice() - $price);
+			//$price -= $m;
+                }
 				//$price -= $m;
 			//kupon
 			if($kod and $kod->ucenka == 1){
-						$m = (($price / 100) * $kod->skidka);
+						$m = FLOOR(($price / 100) * $kod->skidka);
 						$minus += $m;
 						$price -= $m;
 						//kupon
@@ -203,15 +232,156 @@
 		//скидка к окремому  товару в заказе
 						
 			if($kod and $kod->all == 1){
-			$m = (($price / 100) * $kod->skidka);
+			$m = FLOOR(($price / 100) * $kod->skidka);
 						$minus += $m;
 						$price -= $m;
 						//kupon
 							}
 
         }
-        $mas['price'] = $price;
-        $mas['minus'] = $minus;
+        
+        
+        $mas['price'] = ceil($price);
+        $mas['minus'] = FLOOR($minus);
+		
+		
+        return $mas;
+    }
+    public function getPerc($all_orders_amount, $sum_order = 0)
+            {
+            /*
+             * $s - дополнительная скидка на товар
+             */
+            $s = 0;
+            $coment = '';
+            /*
+             * $mas - массив для возвращения данных
+             */
+            $mas = [];
+            
+            /*
+             * сумма скидки на товар
+             */
+		$minus = 0.00;
+            /*
+             * стоимость товара в заказе
+             */                   
+		$price = $this->getPrice();
+		
+                //$event_skidka = $this->getEventSkidka();
+         /*
+          * проверяем наличие доп. скидки на это товар
+          * если больше 0 - к $s добавляем доп. скидку 
+          */
+	if ($this->getEventSkidka() != 0) 
+            {
+             $s += (int)$this->getEventSkidka();
+             $coment.='<div class="alert alert-info" style="padding: 5px;margin-top: 10px;font-size: 10px;">- '.$s.'% дополнительная скидка</div>';
+            }
+            
+            	$kod = false;
+    if($this->order->getKupon()){				
+        $kod = wsActiveRecord::useStatic('Other')->findFirst(["cod"=>$this->order->getKupon()]);
+	if(($kod->category_id and $kod->category_id != $this->article_db->category_id) or ($this->order->getSumOrder() < $kod->min_sum))
+            { 
+            $kod = false; 
+            }
+            }    
+        /*
+         * проверка на участвие товара в акциях
+         */
+	if($this->getOptionId())
+            { 
+                     /*
+                      * если $this->getOptionPrice() > 0 - возвращаем сумму скидки и фиксировану цену товра
+                      * @return $mas
+                      * выходим с функции 
+                      * 
+                      * если $this->getOptionPrice() == 0 - добавляем к $s дополнительную скидку и идем дальше по функции
+                      */
+                     if($this->getOptionPrice()  > 0){
+                          $e =  wsActiveRecord::useStatic('Shoparticlesoption')->findById($this->getOptionId());
+                       if($s > 0){
+                             $s+=$e->value;//  $mas['price'] = ceil($mas['price']*(1-$s/100));
+                        }else{
+                            $s=$e->value;
+                        }
+                         if($kod and $kod->all == 1){
+                             $s+=$kod->skidka;
+				}
+                                
+                        $mas['price'] = ceil($this->getPrice() *(1-$s/100))*$this->count;;// $this->getOptionPrice()*$this->count;
+                        
+                          
+                        $mas['minus'] = FLOOR($this->getPrice()*$this->count - $mas['price']);
+			return $mas;
+                     }else{
+                         
+                        $e =  wsActiveRecord::useStatic('Shoparticlesoption')->findById($this->getOptionId());
+
+                        $s += $e->value;
+                         $coment .= '<div class="alert alert-success" style="padding: 5px;margin-top: 10px;font-size: 10px;">'.$e->option_text.'</div>';
+                     }
+            }
+	/*
+         * проверяем стоит ли блок скидок на этом товаре
+         * усли нет - заходим в условие для добавления доп. скидок
+         * если стоит блок return $mas
+         */	 
+	if (/*!$this->getSkidkaBlock()*/true) {
+	 /*
+          * доп. скидка на весь заказ
+          */
+	$skidka = $this->order->getSkidka();
+                /*
+                 * проверяем товар на уценку,
+                 * если $this->getOldPrice() == 0 - значит товар не уценялся и на него действуют доп. скидки и аклиентские и скидки по промокоду
+                 * усли $this->getOldPrice()  > 0 - значит товар попал в уценку и на него не действуют клиентские скидки, действуют только доп. скидки и скидки по промокоду
+                 */
+                if ((int)$this->getOldPrice() == 0) {
+                    if ($skidka != 0) {
+                        $s+=$skidka;
+                            if($kod and $kod->new_cust_plus == 1){ // 
+				$s+=$kod->skidka;
+                                $coment .= '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка '.$kod->skidka.'% по промокоду.</div>';
+                            }
+                    }else{
+                          if ($all_orders_amount > 700 && $all_orders_amount <= 5000) { //5%
+                                $s+=5;
+                        } elseif ($all_orders_amount > 5000 && $all_orders_amount <= 12000) { //10%
+                            $s+=10;
+                        } elseif ($all_orders_amount > 12000) { //15%
+                            $s+=15;
+                        }			
+			if($kod and $kod->new_sum_plus == 1){
+			$s+=$kod->skidka;
+			$coment .= '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка '.$kod->skidka.'% по промокоду.</div>';
+			}
+                    }		
+                }else{
+                    if($this->getOldPrice() and $this->ucenka and $this->order->skidka > $this->ucenka){
+			 $s+=ceil($this->order->skidka-$this->ucenka);
+                    }
+			if($kod and $kod->ucenka == 1){
+                            $s+=$kod->skidka;
+			}
+		}
+		//скидка к окремому  товару в заказе			
+			if($kod and $kod->all == 1){
+			 $s+=$kod->skidka;
+			}
+        }
+         if($s > 0){
+            $price = ceil($this->getPrice() *(1-$s/100));
+            $minus = FLOOR($this->getPrice() - $price);
+                }else{
+                    $price = $this->getPrice();
+                    $minus = 0;
+                }
+                
+        $mas['price'] = ceil($price*$this->count);
+        $mas['minus'] = FLOOR($minus*$this->count);
+        $mas['comment'] = $coment;
 		
 		
         return $mas;
@@ -223,6 +393,8 @@
          */
         public function  getCode()
         {
+            if($this->getArtikul()){ return $this->getArtikul(); }
+            
             $item = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $this->getArticleId(), 'id_size' => $this->getSize(), 'id_color' => $this->getColor()));
             if ($item) {
                 return $item->getCode();
@@ -250,6 +422,7 @@
 	public function getOptions()
 	{
 	$dat = date('Y-m-d');
+       // $dat = date('Y-m-d', strtotime("-1 days"));
 	$sql ="SELECT  `ws_articles_option`. * 
 FROM  `ws_articles_option` 
 JOIN  `ws_articles_options` ON  `ws_articles_option`.`id` =  `ws_articles_options`.`option_id` 
@@ -260,6 +433,7 @@ AND (
  `ws_articles_options`.`article_id` = ".$this->article_db->id."
 OR  `ws_articles_options`.`category_id` = ".$this->article_db->category_id."
 OR  `ws_articles_options`.`brand_id` = ".$this->article_db->brand_id."
+OR  `ws_articles_options`.`sezon_id` = ".$this->article_db->sezon."
 )";
 	$option = wsActiveRecord::findByQueryArray($sql);
 	if (count($option)){

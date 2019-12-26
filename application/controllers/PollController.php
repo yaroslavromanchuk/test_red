@@ -16,9 +16,7 @@ class PollController extends controllerAbstract
                 $this->ws->getCustomer()->save();
             }
             die();
-        }
-
-        if ($this->get->metod == 'ajax') {
+        }elseif ($this->get->metod == 'ajax') {
             $customerId = $this->ws->getCustomer()->getId();
             $poll = new Poll($this->post->id);
 
@@ -35,9 +33,7 @@ class PollController extends controllerAbstract
                 }
             }
             die($this->post->usertype);
-        }
-
-        if (!@$_COOKIE['polled']) {
+        }elseif (!@$_COOKIE['polled']) {
             setcookie('polled', 1, time() + 60 * 300, '/');
 
             $errors = array();
@@ -91,6 +87,49 @@ class PollController extends controllerAbstract
             }
         }
         die();
+    }
+    public function formAction()
+    {
+        $mass = [];
+        if($this->get->method == 'go'){
+        if(count($_POST['poll'])){
+            $cust = $this->ws->getCustomer()->getId();
+            foreach ($_POST['poll'] as $k=> $p){
+                $mass[$k]['poll_id'] = $k;
+                $mass[$k]['question_id'] = $p;
+                $mass[$k]['customer_id'] = $cust;
+                $mass[$k]['date'] = strftime('%Y-%m-%d %H:%M:%S');
+            }
+            foreach ($mass as $pp){
+                $find = wsActiveRecord::useStatic('PollResults')->findFirst(array('customer_id' => $pp['customer_id'], 'poll_id' => $pp['poll_id']));
+                if (!$find) {
+                    $userPoll = new PollResults();
+                    $userPoll->import($pp);
+                    $userPoll->save();
+                }
+                }
+           
+            $res = Poll::calcPoll($mass);
+            if($this->ws->getCustomer()->getId()){
+                $this->ws->getCustomer()->setNoPoll(1);
+                $this->ws->getCustomer()->setPollResult($res['ok']);
+                $this->ws->getCustomer()->save();
+            }
+            echo $res['res'];
+            die();
+        }
+        }
+        echo Poll::formaPoll($mass);
+        //$view = Registry::get('View');
+     // return $this->render('poll/index.tpl.php');
+      die();
+    }
+    public function textAction()
+    {
+       echo Poll::textPoll();
+        //$view = Registry::get('View');
+     // return $this->render('poll/index.tpl.php');
+     die();
     }
 
     public function resultsAction()

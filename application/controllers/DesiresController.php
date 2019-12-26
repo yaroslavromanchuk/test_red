@@ -16,7 +16,24 @@ class DesiresController extends controllerAbstract
     
     
     //put your code here
-    
+    public function init() {
+        parent::init();
+        $this->view->css = [
+            '/css/cloudzoom/cloudzoom.css',
+            '/css/jquery.lightbox-0.5.css',
+            '/js/select2/css/select2.min.css',
+            '/css/catalog/catalog.css', 
+        ];
+        $this->view->scripts = [
+            '/js/desires.js',
+            '/js/call/jquery.mask.js',
+            '/js/jquery.cycle.all.js',
+            '/js/cloud-zoom.1.0.2.js',
+            '/js/jquery.lightbox-0.5.js',
+            '/js/slider-fhd/slick.min.js',
+            '/lib/select2/js/select2.min.js'
+        ];
+    }
     
     public function indexAction() {
       // d(Shoparticles::findByIds($this->post->ids), false);
@@ -39,7 +56,7 @@ class DesiresController extends controllerAbstract
 	$this->view->articles = $art;
         $this->view->result_count = $art->count();
             }
-	$this->view->result = $this->view->render('finder/list.tpl.php');
+	$this->view->result = $this->view->render('finder/list.desires.tpl.php');
         
 	echo $this->view->render('finder/result.tpl.php');
 		

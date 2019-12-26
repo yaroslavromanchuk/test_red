@@ -76,8 +76,8 @@ class SMSClub
 	protected function execute($command, $params = array())
 	{
 		$this->_errors = array();
-		$response = file_get_contents($this->generateUrl($command, $params));
-		return @unserialize($this->base64_url_decode($response));
+		//$response = file_get_contents($this->generateUrl($command, $params));
+		return @unserialize($this->base64_url_decode(file_get_contents($this->generateUrl($command, $params))));
 	}
 	
 	protected function generateUrl($command, $params = array())

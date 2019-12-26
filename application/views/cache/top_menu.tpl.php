@@ -135,8 +135,11 @@ $result = explode(',',$this->trans->get('Избранное,В избранно�
 </a>
 </div>
                 <?php } ?>
-	<div >
+	
+            <div class="desires_ok_div">
+                <div    id="desires" >
 	<?php if($_SESSION['desires'] or $des > 0 ){ ?>
+            
 					<a href="<?=($_SESSION['lang']== 'uk')?'/uk':''?>/desires/" class="new_login_ok nav-link" data-placement="left"  data-tooltip="tooltip"  title="<?=$result[0]?>">
 					<img class="img_des" src="/img/top_menu/des_wite_all.png" alt="Избранное"/>
 					</a>
@@ -149,6 +152,7 @@ $result = explode(',',$this->trans->get('Избранное,В избранно�
 					<?php 
 					}
 					?>
+                </div>
 	</div>
 <div>
 	<a href="#" class="nav-link" data-placement="left" onclick="basket_view()" data-tooltip="tooltip" title="<?php if($articles_count > 0){echo $result[6].' '.$articles_count.' '.$word;}else{echo $result[7];}?>" >					

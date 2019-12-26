@@ -2,7 +2,6 @@
     class MailerNew
     {
         static private $instance = null;
-        private $view;
         private $admin_email;
         private $admin_name;
         private $email_charset;
@@ -31,6 +30,22 @@
         }
 
 //	MailerNew::getInstance()->sendToEmail($admin_email, 'RED', $subject, $msg, 0, $order->getEmail(), $order->getName());
+        /**
+         * 
+         * @param type $email
+         * @param type $name
+         * @param type $subject
+         * @param type $text
+         * @param type $new
+         * @param type $from_email
+         * @param type $from_name
+         * @param type $smtp
+         * @param type $usubscribe_text
+         * @param type $subsciber
+         * @param type $uploadfile
+         * @param type $filename
+         * @return boolean
+         */
         public function sendToEmail($email, $name = '', $subject, $text, $new = 1, $from_email = '', $from_name = '', $smtp = 1, $usubscribe_text = 0, $subsciber = 0, $uploadfile = '', $filename = '')
         {
 
@@ -55,9 +70,6 @@
                 }
             }
 
-           // if ($usubscribe_text) {
-                //$text .= '<p>' . 'Чтобы отписаться от этой рассылки, перейдите <a  href="http://datamind.com.ua/unsubscriber?code=' . Customer::getHideEmail($email) . '">по ссылке</a>' . '<p>';
-            //}
 
             $text = iconv('UTF-8', $this->email_charset, trim($text));
             $subject = iconv('UTF-8', $this->email_charset, $subject);
@@ -70,13 +82,7 @@
             $row = array();
             $row['email'] = $email;
             $row['name'] = $name;
-			/*
-            $this->view->data = $row;
-            $this->view->post = new Orm_Array();
-            $this->view->post->message = $text;
-
-            $msg = $text;//$this->view->render('email/general.tpl.php');
-*/
+	
             if ($smtp) {
                 $this->mimemail->IsSMTP();
                 $this->mimemail->SMTPAuth = true;
@@ -91,9 +97,9 @@
             $this->mimemail->IsHTML(true);
             $this->mimemail->CharSet = 'UTF-8';
             $this->mimemail->Subject = "=?UTF-8?B?" . base64_encode($subject) . "?=\r\n";
-			if($uploadfile and $filename){
-			 $this->mimemail->addAttachment($uploadfile, $filename);
-			 }
+            if($uploadfile and $filename){
+		$this->mimemail->addAttachment($uploadfile, $filename);
+            }
 
             try {
                 $this->mimemail->AddAddress($email, $name);
@@ -109,7 +115,11 @@
                 }
                 $this->mimemail->Body = $text;
                 @$this->mimemail->send();
+                $this->mimemail->ClearAddresses();
+                $this->mimemail->ClearAttachments();
+                $this->mimemail->IsHTML(false);
                 wsLog::add('Email notification "' . $subject . '" sent to: ' . $row['email'], 'Email');
+                
             } catch (phpmailerException $e) {
               wsLog::add($e->errorMessage(), 'ERROR'); //Pretty error messages from PHPMailer
             } catch (Exception $e) {
@@ -118,8 +128,21 @@
 
             return true;
         }
-		
-		public function sendToEmailSub($email, $name = '', $subject, $text, $new = 1, $from_email = '', $from_name = '', $smtp = 1, $usubscribe_text = 0, $subsciber = 0)
+	/**
+         * 
+         * @param type $email
+         * @param type $name
+         * @param type $subject
+         * @param type $text
+         * @param type $new
+         * @param type $from_email
+         * @param type $from_name
+         * @param type $smtp
+         * @param type $usubscribe_text
+         * @param type $subsciber
+         * @return boolean
+         */	
+	public function sendToEmailSub($email, $name = '', $subject, $text, $new = 1, $from_email = '', $from_name = '', $smtp = 1, $usubscribe_text = 0, $subsciber = 0)
         {
 
             if ($new) {
@@ -193,7 +216,7 @@
                     $this->mimemail->From = $this->subscribe_email;
                 }
                 $this->mimemail->Body = $text;
-                @$this->mimemail->send();
+                @$this->mimemail->Send();
                 wsLog::add('Email notification "' . $subject . '" sent to: ' . $row['email'], 'Email');
             } catch (phpmailerException $e) {
               wsLog::add($e->errorMessage(), 'ERROR'); //Pretty error messages from PHPMailer

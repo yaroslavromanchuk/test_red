@@ -14,7 +14,22 @@
 class WomenController extends controllerAbstract
 {
     private $parent_category = 14;
-    
+     public function init() {
+        parent::init();
+        $this->view->css = [
+            '/css/cloudzoom/cloudzoom.css',
+            '/css/jquery.lightbox-0.5.css',
+            '/js/select2/css/select2.min.css',
+            '/css/catalog/catalog.css', 
+        ];
+        $this->view->scripts = [
+            '/js/filter.js',
+            '/js/jquery.cycle.all.js',
+            '/js/cloud-zoom.1.0.2.js',
+            '/js/jquery.lightbox-0.5.js',
+            '/lib/select2/js/select2.min.js'
+        ];
+    }
     public function indexAction(){
         $this->view->category = $category = new Shopcategories($this->parent_category);
          FilterController::getFilter($category);
@@ -28,9 +43,7 @@ class WomenController extends controllerAbstract
     }
     
     public function beljoAction() { 
-        //var_dump($this->get);
-                $this->view->category = $category = new Shopcategories(249);
-             //echo   $category->id;
+            $this->view->category = $category = new Shopcategories(249);
          FilterController::getFilter($category);  
     }   
         public function beljomaikiAction(){
@@ -61,11 +74,28 @@ class WomenController extends controllerAbstract
         $this->view->category = $category = new Shopcategories(296);
         FilterController::getFilter($category);  
         }
+        public function kolhotyAction(){
+        $this->view->category = $category = new Shopcategories(357);
+        FilterController::getFilter($category);  
+        }
+        
+        
         
     public function bluzyrubashkiAction(){
+        $this->_redirect('/men/bluzy/');
+       // $this->view->category = $category = new Shopcategories(148);
+       // FilterController::getFilter($category);  
+    }
+    public function bluzyAction(){
         $this->view->category = $category = new Shopcategories(148);
         FilterController::getFilter($category);  
     }
+    public function rubashkiAction(){
+        $this->view->category = $category = new Shopcategories(342);
+        FilterController::getFilter($category);  
+    }
+    
+    
     public function brjukiAction(){
         $this->view->category = $category = new Shopcategories(80);
         FilterController::getFilter($category);  
@@ -94,6 +124,15 @@ class WomenController extends controllerAbstract
         $this->view->category = $category = new Shopcategories(147);
         FilterController::getFilter($category);  
     }
+    public function kostjumyAction(){
+        $this->view->category = $category = new Shopcategories(147);
+        FilterController::getFilter($category);  
+    }
+    public function kombinezonyAction(){
+        $this->view->category = $category = new Shopcategories(350);
+        FilterController::getFilter($category);  
+    }
+    
      public function kupalnikiAction(){
         $this->view->category = $category = new Shopcategories(74);
         FilterController::getFilter($category);  
@@ -161,6 +200,10 @@ class WomenController extends controllerAbstract
         $this->view->category = $category = new Shopcategories(319);
         FilterController::getFilter($category);  
         }
+        public function pukhovikiAction(){
+        $this->view->category = $category = new Shopcategories(354);
+        FilterController::getFilter($category);  
+        }
         public function paltoAction(){
         $this->view->category = $category = new Shopcategories(322);
         FilterController::getFilter($category);  
@@ -177,6 +220,19 @@ class WomenController extends controllerAbstract
         $this->view->category = $category = new Shopcategories(323);
         FilterController::getFilter($category);  
         }
+        public function nakidkiAction(){
+        $this->view->category = $category = new Shopcategories(337);
+        FilterController::getFilter($category);  
+        }
+        public function kardiganyAction(){
+        $this->view->category = $category = new Shopcategories(338);
+        FilterController::getFilter($category);  
+        }
+         public function kosmetikaAction(){
+        $this->view->category = $category = new Shopcategories(341);
+        FilterController::getFilter($category);  
+        }
+        
         
 
 }

@@ -15,13 +15,11 @@ $text = explode(',', $this->trans->get('цвет,размер,количеств
 if (in_array($order->status, array(100, 1, 9, 11, 10)) and false) { ?>
 <a href="/account/orderhistory/?deleteorder=<?php echo $order->getId(); ?>">Отменить заказ</a>
 <?php } ?>
-
-<?php if(true){ ?>
 <div class="col-sm-12 col-md-12 col-lg-8 col-xl-8 m-auto">
 <div id="accordion">
 <div class="card">
-<div class="card-header p-2 text-uppercase font-weight-bold" id="heading<?=$order->id?>" data-toggle="collapse" data-target="#collapse<?=$order->id?>" aria-expanded="true" aria-controls="collapse<?=$order->id?>">
-   <?=$order_sa.' '.date('d-m-Y', strtotime($order->getDateCreate()))?>, № <?=$order->getId()?> <span> <?=$st?>: </span><?php if(in_array($order->status, array(15, 16, 9))){ echo $status[9]; }else{ echo $status[$order->status]; } ?>
+<div class="card-header p-2 text-uppercase " id="heading<?=$order->id?>" data-toggle="collapse" data-target="#collapse<?=$order->id?>" aria-expanded="true" aria-controls="collapse<?=$order->id?>">
+   <!--<?=$order_sa.' '.date('d-m-Y', strtotime($order->getDateCreate()))?>,--> № <?=$order->getId()?>  <?=$st?>: <span class="font-weight-bold"><?=$order->stat->group_name->getName()?></span> (<?=Shoparticles::showPrice($order->amount)?> грн.)
 <i class="icon ion-logo-buffer text-right float-right mx-2" style="font-size:14px;"></i>  
 </div>
   <div id="collapse<?=$order->id?>" class="collapse" aria-labelledby="heading<?=$order->id?>" data-parent="#accordion">
@@ -30,7 +28,7 @@ if (in_array($order->status, array(100, 1, 9, 11, 10)) and false) { ?>
   <?php
 $price_real = 0.00;
 	$t_real_price = 0.00;
-		$sum_skudka = 0.00;
+	$sum_skudka = 0.00;
 	$total_price = 0.00;
 	$to_pay_minus = 0.00;
 	foreach ($order->getArticles() as $article) {
@@ -91,6 +89,18 @@ echo '<span style="text-decoration: line-through;color: #666;font-weight: normal
         </div>
 </div>
 </div>
+    <?php if($order->getDeliveryTypeId() == 8 or $order->getDeliveryTypeId() == 16){ ?>
+    <div class="col-xl-12">
+<div class="row">
+<div class="col-sm-6 col-xs-6 col-md-6 col-lg-6 col-xl-6text-left ">
+		<?=$this->trans->get('Отделение')?>: 
+		</div>
+<div class="text-right col-sm-6 col-xs-6 col-md-6 col-lg-6 col-xl-6 ">
+		<?=$order->getSklad()?>
+        </div>
+</div>
+</div>
+    <?php } ?>
 <div class="col-xl-12">
 <div class="row">
 <div class="col-sm-6 col-xs-6 col-md-6 col-lg-6 col-xl-6text-left ">
@@ -164,6 +174,22 @@ echo '<span style="text-decoration: line-through;color: #666;font-weight: normal
 </div>
 </div>
 <?php } ?>
+       <?php if($order->payment_method_id == 7 and $order->getCustomerId() == 26350){ ?> 
+    <div class="col-xl-12">
+    <div class="row">
+<div class="col-sm-6 col-xs-6 col-md-6 col-lg-6 col-xl-6 text-left ">
+	<?=$this->trans->get('Статус оплаты')?>:
+		</div>
+    
+
+<div class="text-right col-sm-6 col-xs-6 col-md-6 col-lg-6 col-xl-6 ">
+<?=$order->liqpay_status->name?>
+    <br>
+    <a class="btn btn-success" href="/liqpay/id/<?=$order->id?>/">Оплатить <?=$order->amount?> грн.</a>
+    </div>
+    </div>
+        </div>
+            <?php } ?>
 <div class="col-xl-12">
 <div class="row">
 <div class="col-sm-6 col-xs-6 col-md-6 col-lg-6 col-xl-6 text-left ">
@@ -185,8 +211,7 @@ echo '<span style="text-decoration: line-through;color: #666;font-weight: normal
 <div class="text-right col-sm-6 col-xs-6 col-md-6 col-lg-6 col-xl-6 ">
 <?=$order->liqpay_status->name?>
     
-     <?php if($order->liqpay_status != 3  and $order->open_pay == 1){
-                    ?>
+     <?php if($order->liqpay_status != 3  and $order->open_pay == 1 and $order->status == 100){ ?>
 <form action="/payment/powtorpay/" method="POST" name="payment">
 <div class="form-group" >
     <input  name="order" type="hidden" required  class="form-control" value="<?=$order->id?>">
@@ -208,6 +233,7 @@ echo '<span style="text-decoration: line-through;color: #666;font-weight: normal
        
         
 } ?>
+
 	</div>
   </div>
   
@@ -215,7 +241,6 @@ echo '<span style="text-decoration: line-through;color: #666;font-weight: normal
 </div>
 </div>
     </div>
-<?php } ?>
 </div>
       
     
@@ -234,7 +259,7 @@ if ($this->allcount > $this->onpage) {
 		<?php
 	if ($this->page > 1) {
 ?>
-		<li class="page-skip"><a href="&page=<?=$this->page-1;?>"><span style="padding:5px;"><< </span></a></li>
+		<li class="page-skip"><a href="?page=<?=$this->page-1;?>"><span style="padding:5px;"><< </span></a></li>
 <?php
 	} ?>
 	<?php
@@ -247,44 +272,44 @@ for($i = 1;$i<=$st; $i++) {
 if($i == $this->page)  {$b = 'class="selected"';}else{ $b = '';}
 if($st > 10){
 if($i < $this->page - 4 and $i < 4 ){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if($i < ($this->page - 3) and $f1 == 0){
 $f1 = 1;
 echo '<li><span style="padding:5px;">...</span></li>';
 }elseif($this->page == $i){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if(($this->page - 1) == $i){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if(($this->page - 2) == $i){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if(($this->page - 3) == $i){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if(($this->page + 1) == $i){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if(($this->page + 2) == $i){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if(($this->page + 3) == $i){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if($i > ($this->page + 3) and $f2 == 0 ){
 echo '<li class="page-skip"><span style="padding:5px;">...</span></li>';
 $f2 = 1;
 }else if($i == $st){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if($i == ($st - 1)){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }
 else if($i == ($st - 2)){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }
 }else{
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }
 }
 	?>
 		<?php
 	if ($this->page < ceil($this->allcount / $this->onpage)) {
 ?>
-			<li class="page-skip"><a href="&page=<?=$this->page + 1;?>"><span style="padding:5px;"> >></span></a></li>
+			<li class="page-skip"><a href="?page=<?=$this->page + 1;?>"><span style="padding:5px;"> >></span></a></li>
 <?php
 	}
 ?>

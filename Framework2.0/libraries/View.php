@@ -1,15 +1,32 @@
 <?php
 class View extends Orm_Magic {
+    
+        /**
+         *
+         * @var type 
+         */
 	protected $_path = APP_DIR;
-
+        
+        /**
+         * Установка корневого каталога темы 
+         * @param type $path
+         */
 	public function setRenderPath($path) {
 		$this->_path = $path;
 	}
-	
+	/**
+         * Получение корневого каталога темы 
+         * @return type
+         */
 	public function getRenderPath() {
 		return $this->_path;
 	}
-	
+	/**
+         * Чтение файла для представления данных
+         * @param type $filename - имя файла который нужно прочитать
+         * @return type - представление данных
+         * @throws Exception - сообщение ошибки, в случаи отсутсвия файла
+         */
 	function render($filename) {
 		$result = '';
 		$fn = $this->getRenderPath() .'/views/' . $filename;
@@ -27,7 +44,10 @@ class View extends Orm_Magic {
 
 		return $result;
 	}
-	
+	/**
+         * Просмотр файла
+         * @param type $filename - имя файла
+         */
 	function show($filename) {
 		echo $this->render($filename);
 	}

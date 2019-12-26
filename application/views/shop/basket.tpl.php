@@ -82,7 +82,7 @@ if ($this->getCard()['article']){ ?>
                             </div>
                             <div class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 text-center pt-3 pt-lg-5">
                                 <a class="delete_basket_item" href="<?=wsActiveRecord::useStatic('Menu')->findByUrl('shop-checkout-step1-delete')->getPath()."point/{$key}"; ?>" onclick="return confirm('<?=$this->trans->get('Удалить товар из корзины?'); ?>')" data-tooltip="tooltip" title="Удалить">
-		<i class="glyphicon glyphicon-remove" aria-hidden="true" ></i>
+		<ion-icon name="close"></ion-icon>
 				</a>
                             </div>
                             <?php 
@@ -295,4 +295,4 @@ location.replace("/basket/?kupon="+$('#kupon').val());
 			//console.log(real_sum);
 	});
 							
-						</script>
+</script>

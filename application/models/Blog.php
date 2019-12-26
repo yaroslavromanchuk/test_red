@@ -17,7 +17,7 @@ class Blog extends wsActiveRecord
     }
 	public function getPath()
     	{
-    		return "/blog/id/" . $this->getId() .'/'.$this->_generateUrl($this->getPostName().'/');
+    		return "/blog/id/" . $this->getId() .'/'.$this->_generateUrl($this->getPostName()).'/';
     	    	}
                 
 	public function LikeActive($id_customer, $id_post){

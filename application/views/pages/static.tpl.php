@@ -1,2 +1,3 @@
-	<!--<h1><?php //echo $this->getCurMenu()->getName();?></h1>-->
-	<?php echo $this->getCurMenu()->getPageBody();?>
+<div class="container">
+    <?=$this->getCurMenu()->getPageBody()?>
+</div>

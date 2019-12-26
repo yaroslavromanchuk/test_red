@@ -49,7 +49,7 @@
 				$asc = explode(',' , $this->get->brands);
                                 ksort($this->filters['brands']);
                         foreach ($this->filters['brands'] as $cat) { ?>
-                    <option <?php if ($this->get->brands == $cat['name']){ ?> selected <?php }else if(in_array($cat['name'], $asc)){ ?> selected <?php } ?>  value="<?=$cat['name']?>"><?=$cat['name']?></option>
+                 <option <?php if ($this->get->brands == urldecode($cat['name'])){ ?> selected <?php }elseif(in_array(urldecode($cat['name']), $asc)){ ?> selected <?php } ?>  value="<?=$cat['name']?>"><?=$cat['title']?></option>
                         <?php } ?>
                 </select>
             </div>
@@ -158,10 +158,8 @@
     </script>
                     		</div>
 		<div class="modal-footer">
-<button class="btn btn-outline-danger btn-sm" data-dismiss="modal" onclick="return getClearAllFilters();"  aria-hidden="true">Очистить</button>
-<button class="btn btn-outline-secondary btn-sm  goFilter" data-dismiss="modal"  aria-hidden="true">Применить</button><br>			
-
-
+<button class="btn btn-outline-danger btn-lg" data-dismiss="modal" onclick="return getClearAllFilters();"  aria-hidden="true">Очистить</button>
+<button class="btn btn-outline-secondary btn-lg  goFilter" data-dismiss="modal"  aria-hidden="true">Применить</button><br>			
 		</div>
 		</div>
 	</div>

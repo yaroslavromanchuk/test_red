@@ -36,7 +36,7 @@ class Shopcategories extends wsActiveRecord
 	}
 	
 	public function findLastSequenceRecord() {
-		return $this->findFirst(array(), array('sequence'=>'DESC'));
+		return $this->findFirst([], ['sequence'=>'DESC']);
 	}
 	
 	public function getUrl()
@@ -44,27 +44,20 @@ class Shopcategories extends wsActiveRecord
 		return $this->_generateUrl($this->name);
 	}
 
-      
+      /**
+       * Ссылка на категорию
+       * @return type
+       */
         public function getPath(){
         $lang = '';
         if(Registry::get('lang') == 'uk'){$lang = '/uk';}
-       /* switch ($this->controller){
-            case 'sale': ''; break;
-            case '': ''; break;
-            default :  return $lang.'/'.$this->controller.'/'.$this->action.'/';
-    
-}*/
             return $lang.'/'.$this->controller.'/'.$this->action.'/';
-            
-        
-
         }
-        
-
-
+        public function getPathUk(){
+            return '/uk/'.$this->controller.'/'.$this->action.'/';
+        }
         public function getPath1()
         {
-       // $items = array();
         $result = '';
         $lang = '';
         if(Registry::get('lang') == 'uk'){$lang = '/uk';}
@@ -77,32 +70,17 @@ class Shopcategories extends wsActiveRecord
         foreach ($this->getParents() as $item){
 		$result .= $item->getUrl().'/';
 		}
-              //  return $lang.'/category/id/' .$this->getId().'/'. $result;
         }
 
         $result .= $this->getUrl() . '/';
 
-		return $lang.'/category/id/' .$this->getId().'/'. $result;
+	return $lang.'/category/id/' .$this->getId().'/'. $result;
         }
-	
-	/*
-    public function getPath()
-    {
-        $items = array();
-        $result = '';
-
-        if (!$items = $this->getParents())
-            return '/' . $this->getUrl() . '/';
-
-        foreach ($items as $item)
-            $result .= '/' . $item->getUrl();
-
-        $result .= '/' . $this->getUrl() . '/';
-
-		return $result;
-    }
-    */
-
+        /**
+         * 
+         * @param type $show_myself = 0
+         * @return type
+         */
     public function getParents($show_myself = 0)
     {
     	if ($this->_parents){
@@ -141,17 +119,19 @@ class Shopcategories extends wsActiveRecord
         return $this->_parents;
     }
 
-    
+    /**
+     * Хлебные крошки
+     * @param type $links
+     * @return type
+     */
     public function getRoute($links = 1)
     {
     	$p = $this->getParents();
     	$res = [];
-         $i=1;
     	if($p and count($p) > 1){
 
     	foreach($p as $parent){
             $res[] = '<li class="breadcrumb-item" itemscope itemtype="http://data-vocabulary.org/Breadcrumb"><a itemprop="url" href="' . $parent->getPath() . '"><span itemprop="title">' . $parent->getName() . '</span></a></li>';
-            
         }
         
             }
@@ -159,12 +139,14 @@ class Shopcategories extends wsActiveRecord
         
     	$ret = implode('', $res);
 
-    	if(!$links)
-    		return strip_tags($ret);
-    	else
-    		return $ret;
+    	if(!$links){ return strip_tags($ret); }
+        
+        return $ret;
     }
-
+        /**
+         * Дочерние категории
+         * @return []
+         */
 	public function getKidsIds()
 	{
 		$ids = array($this->getId());
@@ -172,8 +154,7 @@ class Shopcategories extends wsActiveRecord
 		if($kids = $this->getKids()){
 			foreach($kids as $kid)
 			{
-                    
-				$kid_ids = $kid->getKidsIds();
+                            $kid_ids = $kid->getKidsIds();
 				foreach($kid_ids as $id){
 					$ids[] = $id;
                                 }
@@ -181,22 +162,24 @@ class Shopcategories extends wsActiveRecord
         }
 		return $ids;
 	}
-    
+        /**
+         * количество SKU в продаже
+         * @return int
+         */
 	public function getActiveProductCount()
 	{
-		$ids = array($this->getId());
-		if($kids = $this->getKids()){
-                        foreach($kids as $kid) { 
-                    $ids[] = $kid->getId();
-                        
-                        }
+		$ids = [];
+		if($kids = $this->getKidsIds()){
+                    $ids = $kids;
+                   // foreach($kids as $kid) { 
+                   // $ids[] = $kid->getId();
+                     //   }
         }
-        
 		$cat_text = 'category_id in (' . implode(', ', $ids) . ')';	
-		return wsActiveRecord::useStatic('Shoparticles')->count(array('stock not like "0" ', 'status = 3 ', $cat_text));
+		return wsActiveRecord::useStatic('Shoparticles')->count(['stock not like "0" ', 'status = 3 ', $cat_text]);
 	}
         /**
-         * Количество товара с учетом фильтра
+         * Количество SKU с учетом фильтра
          * по умолчанию :stock not like "0", status = 3, category_id in
          * @param type $filter = '', можно - label_id = 13...
          * @return int
@@ -215,7 +198,7 @@ class Shopcategories extends wsActiveRecord
 		return wsActiveRecord::useStatic('Shoparticles')->count(array('stock not like "0" ', 'status = 3 ', $cat_text, $filter));
 	}
         /**
-         * Количество товара уцененного
+         * Количество уцененного SKU
          * @return type
          */
         public function getActiveProductCountSale()
@@ -232,9 +215,16 @@ class Shopcategories extends wsActiveRecord
 		$cat_text = 'dop_cat_id in (' . implode(', ', $ids) . ')';	
 		return wsActiveRecord::useStatic('Shoparticles')->count(array('stock not like "0" ', 'status = 3 ', $cat_text));
 	}
+        /**
+         * Полное название категории с учетом родителя
+         * @return string
+         */
     public function getRoutez(){
         $a = '';
-        if($this->parent){ if($this->parent->parent){ $a .= $this->parent->parent->getName().' : '; }
+        if($this->parent){
+            if($this->parent->parent){
+                $a .= $this->parent->parent->getName().' : '; 
+            }
             $a .= $this->parent->getName().' : ';
         }
         $a .= $this->getName();
@@ -348,6 +338,11 @@ class Shopcategories extends wsActiveRecord
           asort($mas);
         return $mas;
     }
+    /**
+     * Название конкретной категории
+     * @param type $id - категории
+     * @return type
+     */
 	static function CatName($id){
 	$c =  wsActiveRecord::useStatic('Shopcategories')->findById($id);
 	return $c->getRoutez();//$c['name'];

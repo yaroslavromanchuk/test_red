@@ -4,7 +4,8 @@
  */
 class UkrPostAPI{
 	protected $BEARER = '957aaecc-ed29-3c01-944f-0407dbd795ef';
-	protected $TOKEN = '38c9400b-71c2-4acb-91db-a338c3030e90';
+      //  protected $BEARERSTATUS = '283c9d9a-2373-367c-9fcb-85cb16b35ffb';
+        protected $TOKEN = '38c9400b-71c2-4acb-91db-a338c3030e90';
 	protected $UUID  =  'ce4e19d6-6a4f-4f1f-a8c4-5b4a1f9cde9a';
 	protected $throwErrors = FALSE;
 	protected $type = 'POST';
@@ -285,22 +286,20 @@ public function getNewClientAdmin($type = 'INDIVIDUAL', $name = '', $lastName = 
 	}
         /**
          * Приклад запиту зміни клієнта
-         * @param type $uuid
-         * @param type $addressId
-         * @param type $phoneNumber
-         * @return type
+         * @param array
+         *  uuid - ''
+         *  name - ''
+         *  firstName - Имя
+         *  middleName - Отчкство
+         *  lastName - Фамилия
+         *  addressId - 0
+         *  phoneNumber - номер телефона (+380931010813)
+         *  externalId - id в нашей базе
+         *  counterpartyUuid - ''
+         * @return array
          */
-        public function getEditClient($uuid = '', $name = '', $addressId = 0, $phoneNumber = '',$externalId = '',$counterpartyUuid = ''){
-            $param = [];
-            
-            if($name){ $param ['name'] = $name;}
-            if($addressId){ $param ['addressId'] = $addressId;}
-            if($phoneNumber){ $param ['phoneNumber'] = $phoneNumber;}
-            if($externalId){ $param ['externalId'] = $externalId;}
-            if($counterpartyUuid){$param['counterpartyUuid'] = $counterpartyUuid;}
-
-            $model = 'clients/'.$uuid;
-            return $this->request('PUT', $model, $param);
+        public function getEditClient($uuid = '', $param = []){ 
+            return $this->request('PUT', 'clients/'.$uuid, $param);
         }
         /**
          * Приклад запиту/відповіді зміни головної адреси клієнта 
@@ -315,8 +314,7 @@ public function getNewClientAdmin($type = 'INDIVIDUAL', $name = '', $lastName = 
                     'main' => true
                     ]]
                     ];
-            $model = 'clients/'.$uuid;
-            return $this->request('PUT', $model, $param);  
+            return $this->request('PUT', 'clients/'.$uuid, $param);  
         }
         /**
          * Пошук всіх кліентів по externalId
@@ -324,9 +322,7 @@ public function getNewClientAdmin($type = 'INDIVIDUAL', $name = '', $lastName = 
          * @return type
          */
          public function getClientExternalId($externalId = ''){
-
-            $model = 'clients/external-id/'.$externalId;
-            return $this->request('GET', $model);
+            return $this->request('GET', 'clients/external-id/'.$externalId);
         }
         /**
          * Пошук клієнта по номеру телефону
@@ -338,8 +334,7 @@ public function getNewClientAdmin($type = 'INDIVIDUAL', $name = '', $lastName = 
               'countryISO3166' => 'UA',
               'phoneNumber' => $phone
             ];
-            $model = 'clients/phone';
-            return $this->request('GET', $model, $param);
+            return $this->request('GET', 'clients/phone', $param);
         }
 	/**
          * Приклад запиту створення групи відправлень
@@ -655,10 +650,10 @@ public function getNewClientAdmin($type = 'INDIVIDUAL', $name = '', $lastName = 
           * @return type
           */
          public function getlifecycle($trec = '') {
-             
-             $model = 'shipments/'.$trec.'/lifecycle';
-            return $this->request('GET', $model); 
+            return $this->request('GET', 'shipments/'.$trec.'/lifecycle'); 
          }
+         
+        
          /**
           * отримання статусу післяплати по баркоду відправлення 
           * @param type $bar - barcode відправлення
@@ -674,7 +669,7 @@ public function getNewClientAdmin($type = 'INDIVIDUAL', $name = '', $lastName = 
           * @return type
           */
          public function getSticker100_100($shipment_uui = ''){
-             $param = '&size=SIZE_A4';
+            // $param = '&size=SIZE_A4';
              $model = 'shipments/'.$shipment_uui.'/sticker';
              return $this->prints('GET', $model, $param);
          }
@@ -683,9 +678,10 @@ public function getNewClientAdmin($type = 'INDIVIDUAL', $name = '', $lastName = 
           * @param type $shipment_group_uuid
           * @return type
           */
-         public function getSticker100_100Group($shipment_group_uuid = ''){
+         public function getSticker100_100Group($shipment_group_uuid = '', $type = ''){
              //$param = ['size' => 'SIZE_A4'];
-             $param = '';// '&size=SIZE_A4';
+             if($type){ $type = '&size='.$type;}
+             $param =  $type;//'&size=SIZE_A4';
              $model = 'shipment-groups/'.$shipment_group_uuid.'/sticker';
              return $this->prints('GET', $model, $param);
          }
@@ -754,7 +750,7 @@ $crl = [
   CURLOPT_RETURNTRANSFER => true,
  // CURLOPT_ENCODING => "",
   CURLOPT_MAXREDIRS => 10,
-  CURLOPT_TIMEOUT => 30,
+  CURLOPT_TIMEOUT => 60,
  // CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
  // CURLOPT_CUSTOMREQUEST => $type,
  // CURLOPT_POSTFIELDS => $param,
@@ -774,6 +770,37 @@ if ($err) {
   return $this->prepare($err);
 } else {
 return $response;
+}
+}
+
+ public function getStatusTraking($barcode = '') {
+             return $this->tracing('statuses','&barcode='.$barcode);
+         }
+private function tracing( $model = 'statuses', $param = ''){
+$curl = curl_init();
+$crl = [
+  CURLOPT_URL => 'https://www.ukrposhta.ua/status-tracking/0.0.1/'.$model.'?token='.$this->token.$param,
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 30,
+ // CURLOPT_CUSTOMREQUEST => $type,
+  CURLOPT_HTTPHEADER => [
+    "Authorization: Bearer 283c9d9a-2373-367c-9fcb-85cb16b35ffb",
+    "Cache-Control: no-cache",
+    "Content-Type: application/json"
+  ]
+];
+curl_setopt_array($curl, $crl);
+
+$response = curl_exec($curl);
+$err = curl_error($curl);
+curl_close($curl);
+
+if ($err) {
+  return $this->prepare($err);
+} else {
+  return $this->prepare($response);
+ // echo $response;
 }
 }
 
@@ -808,7 +835,7 @@ public function getRegionsFilter(){
          * @return type
          */
         public function getPostIndexFilter($id = ''){
-              $model = 'address-classifier/get_postoffices_by_postindex?pi='.$id;
+              $model = 'address-classifier/get_postoffices_by_postindex?pc='.(string)$id;
 	 return $this->requestfilter('GET', $model);
         }
 
@@ -835,6 +862,7 @@ curl_close($curl);
 if ($err) {
   echo "cURL Error #:" . $err;
 } else {
+   // return $response;
  //return $this->prepare(simplexml_load_string($response));
     $arr = (array)simplexml_load_string($response);
     //return $arr;

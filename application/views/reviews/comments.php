@@ -1,6 +1,3 @@
-<link type="text/css" href="/css/findex.css?v=1" rel="stylesheet"/>
-<link rel="stylesheet" type="text/css" href="/application/views/reviews/css/style_reviews.css" />
-<link rel="stylesheet" type="text/css" href="/application/views/reviews/css/modal-contact-form.css" />
 <?php $text_trans_reviews = explode(',', $this->trans->get('Введите Имя,Введите сообщение,Введите Email,Оставить отзыв,Ваш отзыв принят,Смотреть ответы,Ответить,Ваш ответ принят,Отправить')); ?>	
 <form name="form_reviews" method="post" action="/reviews/" onsubmit="return validate_form();">		
 <div id="div-0"  class="row  m-auto">
@@ -47,7 +44,7 @@
 </div>
 </div>
 </form>		
-		<script type="text/javascript">	
+		<script>	
 			$(document).ready( function() {
 		$('input:radio').change(function() {$('#mes').html('');});//palec
 		$("#message").keypress(function (e) { $("#mes_t").html('');});//vvod message
@@ -191,7 +188,7 @@ $row = mysql_fetch_row($res);
 	</div>
 	<?php } ?>
 
-<script type="text/javascript">
+<script>
 function hide_show(id, i)
 {
 //$(i).hide();
@@ -289,7 +286,7 @@ if ($this->allcount > $this->onpage) {
 		<?php
 	if ($this->page > 1) {
 ?>
-		<li class="page-skip"><a href="&page=<?=$this->page-1;?>"><span style="padding:5px;"><< </span></a></li>
+		<li class="page-skip"><a href="?page=<?=$this->page-1;?>"><span style="padding:5px;"><< </span></a></li>
 <?php
 	} ?>
 	<?php
@@ -302,44 +299,44 @@ for($i = 1;$i<=$st; $i++) {
 if($i == $this->page)  {$b = 'class="selected"';}else{ $b = '';}
 if($st > 10){
 if($i < $this->page - 4 and $i < 4 ){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if($i < ($this->page - 3) and $f1 == 0){
 $f1 = 1;
 echo '<li><span style="padding:5px;">...</span></li>';
 }elseif($this->page == $i){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if(($this->page - 1) == $i){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if(($this->page - 2) == $i){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if(($this->page - 3) == $i){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if(($this->page + 1) == $i){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if(($this->page + 2) == $i){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if(($this->page + 3) == $i){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if($i > ($this->page + 3) and $f2 == 0 ){
 echo '<li class="page-skip"><span style="padding:5px;">...</span></li>';
 $f2 = 1;
 }else if($i == $st){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }else if($i == ($st - 1)){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }
 else if($i == ($st - 2)){
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }
 }else{
-echo '<li class="page-skip"><a href="&page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
+echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;" '.$b.'>'.$i.'</a></li>';
 }
 }
 	?>
 		<?php
 	if ($this->page < ceil($this->allcount / $this->onpage)) {
 ?>
-			<li class="page-skip"><a href="&page=<?=$this->page + 1;?>"><span style="padding:5px;"> >></span></a></li>
+			<li class="page-skip"><a href="?page=<?=$this->page + 1;?>"><span style="padding:5px;"> >></span></a></li>
 <?php
 	}
 ?>

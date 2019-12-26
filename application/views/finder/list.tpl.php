@@ -10,14 +10,16 @@
 	</div>
 </div>
 </div>
-<ul class="row articles-row p-0 m-0 w-100">
-<?php foreach($this->articles as $article){
+<div class="row articles-row m-auto w-100">
+<?php
+$i = 1;
+foreach($this->articles as $article){
     $article->getSpecNakl();
-    echo $article->getSmallBlockCachedHtml();
+    echo $article->getSmallBlockCachedHtml(false);
+    $i++;
 } ?>
-</ul>
-
-<div class="row m-0">
+</div>
+<div class="row m-auto">
 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center pt-3" >
 <input type="hidden" class="items_on_page" name="items_on_page" value="<?=$_COOKIE['items_on_page']?$_COOKIE['items_on_page']:32?>" />
 <div class="btn-group mb-3"  data-toggle="buttons-checkbox">
@@ -32,13 +34,13 @@ $limit = 4;
 	$text = '';
 	$page = ($this->cur_page+1);
 $text.='<nav aria-label="Page navigation example">
-	<ul class="pagination pagination-dark mb-0 pagination-sm  justify-content-center" >';
+	<ul class="pagination pagination-sm pagination-dark mb-0   justify-content-center" >';
 	if ($page > 1) {
-        $text .= '<li class="page-item"><a class="page-link" href=""  onclick="return ToPage(1)" aria-label="Previous"><span aria-hidden="true"><<</span></a></li>';
-		$text.='<li class="page-item"><a class="page-link"  href=""  onclick="return ToPage('.($page - 1).')"><span aria-hidden="true"><</span></a></li>';
+        $text .= '<li class="page-item"><a class="page-link" href=""  onclick="return ToPage(1)" aria-label="Previous"><span class="previous_all_page_link" aria-hidden="true"></span></a></li>';
+		$text.='<li class="page-item"><a class="page-link"  href=""  onclick="return ToPage('.($page - 1).')"><span class="previous_page_link" aria-hidden="true"></span></a></li>';
     } else {
-         $text .= '<li class="page-item disabled"><a class="page-link" aria-label="Previous"><span aria-hidden="true"><<</span></a></li>';
-		$text.='<li class="page-item disabled"><a class="page-link" ><span aria-hidden="true"><</span></a></li>';
+         $text .= '<li class="page-item disabled"><a class="page-link" aria-label="Previous"><span class="previous_all_page_link" aria-hidden="true"></span></a></li>';
+		$text.='<li class="page-item disabled"><a class="page-link" ><span class="previous_page_link" aria-hidden="true"></span></a></li>';
     }
 	 $start = 1;
     $end = $this->total_pages;
@@ -52,17 +54,18 @@ $text.='<nav aria-label="Page navigation example">
 	
 	for ($i = $start; $i <= $end; $i++) {
         if ($i == $page) {
-            $text .= '<li class="page-item active"><a class="page-link" disabled >'.$i.'<span class="sr-only">(current)</span></a></li>';
+            $text .= '<li class="page-item active"><a class="page-link" style="pointer-events: none; 
+    cursor: default;" >'.$i.'<span class="sr-only">(current)</span></a></li>';
         } else {
             $text .= '<li class="page-item"><a class="page-link" href="" onclick="return ToPage('.$i.')">' . $i . '</a></li>';
         }
     }
 	 if ($page == $this->total_pages) {
-	 	$text.='<li class="page-item disabled"><a class="page-link" ><span aria-hidden="true">></span></a></li>';
-	   $text .= '<li class="page-item disabled"><a class="page-link"  aria-label="Next"><span aria-hidden="true">>></span></a></li>';
+	 	$text.='<li class="page-item disabled"><a class="page-link" ><span class="next_page_link" aria-hidden="true"></span></a></li>';
+	   $text .= '<li class="page-item disabled"><a class="page-link"  aria-label="Next"><span class="next_all_page_link" aria-hidden="true"></span></a></li>';
     } else {
-	$text.='<li class="page-item"><a class="page-link" href="" onclick="return ToPage('.($page+1).')"><span aria-hidden="true">></span></a></li>';
-	$text .= '<li class="page-item"><a class="page-link" href="" onclick="return ToPage('.$this->total_pages.')" aria-label="Previous"><span aria-hidden="true">>></span></a></li>';
+	$text.='<li class="page-item"><a class="page-link" href="" onclick="return ToPage('.($page+1).')"><span class="next_page_link" aria-hidden="true"></span></a></li>';
+	$text .= '<li class="page-item"><a class="page-link" href="" onclick="return ToPage('.$this->total_pages.')" aria-label="Previous"><span class="next_all_page_link" aria-hidden="true"></span></a></li>';
     }
 	$text .='</ul>
 	</nav>';
@@ -71,14 +74,10 @@ echo $text;
 ?>
 </div>
 </div>
-<?php }else{
-    ?>
+<?php }else{ ?>
 <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center p-3">
-    <div class="alert alert-danger" role="alert">
-        
-  <?=$this->trans->get('message_no_articles');?>
-</div>
-        </div>
+        <div class="alert alert-danger" role="alert"><?=$this->trans->get('message_no_articles');?></div>
+    </div>
 </div>
  <?php   } ?>

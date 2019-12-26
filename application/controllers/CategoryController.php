@@ -8,6 +8,17 @@ class CategoryController extends controllerAbstract
     //put your code here   
     	public function categoryAction()
         {
+            $this->view->css = [
+            '/css/cloudzoom/cloudzoom.css',
+            '/css/jquery.lightbox-0.5.css',
+                        '/js/select2/css/select2.min.css',
+                        '/css/catalog/catalog.css', 
+        ];
+            $this->view->scripts = [
+                 '/js/filter.js',
+            '/js/jquery.cycle.all.js',
+                '/lib/select2/js/select2.min.js'
+                ];
             $search_word = $this->get->s;
 		if (!$search_word) { $search_word = false;
 		}else{

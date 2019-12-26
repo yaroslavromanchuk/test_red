@@ -11,4 +11,3 @@ class Blacklist extends wsActiveRecord
 
 
 }
-?>

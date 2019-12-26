@@ -118,11 +118,6 @@ class FinderController extends controllerAbstract {
 						&& !count($parametrs['sezons'])){
             $enable_all_child_categories = true;
         }
-        //
-       // $parametrs['prices_min_max'] = array(
-          //  'min'=>$this->post->price_min?$this->post->price_min:$this->get->price_min,
-          //  'max'=>$this->post->price_max?$this->post->price_max:$this->get->price_max
-      //  );
 
         $page = $this->get->page?(int)$this->get->page:$this->post->page;
         if((int)$this->post->on_page){
@@ -135,29 +130,16 @@ class FinderController extends controllerAbstract {
                   $prod_on_page =  Config::findByCode('products_per_page')->getValue();
               }
 
-             $onPage = $prod_on_page;
-
-
-
-        $articles = Finder::getArticlesByWord($search_word, $parametrs, $page, $onPage, $this->post->selected_root_category, $this->post->order_by);
-
-
-        $total = $articles['count'];
-        $pages = $articles['pages'];
-
+        $articles = Finder::getArticlesByWord($search_word, $parametrs, $page, $prod_on_page, $this->post->selected_root_category, $this->post->order_by);
         $this->view->articles = $articles['articles'];
         $this->view->cur_page = $this->post->page;
-        $this->view->total_pages = $pages;
-
-        $articles = $this->render('finder/list.tpl.php');
-
-        $enabled_params = Finder::getAllEnabledParametrs($search_word, $parametrs, false, $enable_all_child_categories);
+        $this->view->total_pages = $articles['pages'];
 
         $result = array(
-            'result'=>$articles,
-            'enabled_params'=>$enabled_params,
-            'total_count'=>$total,
-            'total_pages'=>$pages
+            'result'=>$this->render('finder/list.tpl.php'),
+            'enabled_params'=>Finder::getAllEnabledParametrs($search_word, $parametrs, false, $enable_all_child_categories),
+            'total_count'=>$articles['count'],
+            'total_pages'=>$articles['pages']
 
         );
         die(json_encode($result));

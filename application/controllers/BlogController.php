@@ -3,7 +3,21 @@
 class BlogController extends controllerAbstract
 {
 
-
+public function init() {
+        parent::init();
+        $this->view->css = [
+            '/css/cloudzoom/cloudzoom.css',
+            '/css/jquery.lightbox-0.5.css',
+            '/css/findex.css',
+            '/css/stores/fm.revealator.jquery.min.css'
+        ];
+        $this->view->scripts = [
+            '/js/cloud-zoom.1.0.2.js',
+            '/js/jquery.lightbox-0.5.js',
+            '/js/stores/fm.revealator.jquery.min.js'
+        ];
+    }
+    
     public function indexAction()
     {
 	$data = [];
@@ -19,9 +33,9 @@ class BlogController extends controllerAbstract
             } else {
                 $this->_redirect('/blog/');
             }
-        } elseif((int)$this->get->category) {
+        }elseif((int)$this->get->cat) {
 
-		$blog_c = (int)$this->get->category;
+		$blog_c = (int)$this->get->cat;
 		if ($blog_c) {
                     
                     $cat = new BlogCategory($blog_c);
@@ -45,6 +59,10 @@ class BlogController extends controllerAbstract
                 $this->cur_menu->nofollow = 1;
                 $page = (int)$this->get->page;
             }
+            if(isset($_GET['utm_source'])){
+                $this->cur_menu->nofollow = 1;
+            }
+            
 	$this->view->onpage = $onPage;
             $this->view->page = $page;
 		

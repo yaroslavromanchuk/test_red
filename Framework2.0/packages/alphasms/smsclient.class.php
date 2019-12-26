@@ -48,12 +48,18 @@ class SMSClient
 {
 	public $mode = 'HTTPS'; //HTTP or HTTPS
 	protected $_server = '://alphasms.com.ua/api/http.php';
-	protected $_errors = array();
+	protected $_errors = [];
 	protected $_last_response = array();
-	private $_version = '1.9';
-	
-	
-	//IN: login and password or key on platform (AlphaSMS)
+	private $_version = 'https';
+        
+        protected $login = '';
+        protected $password = '';
+        protected $key = '';
+
+
+
+
+        //IN: login and password or key on platform (AlphaSMS)
 	public function __construct($login = '', $password = '', $key = '')
 	{
 		$this->_login = $login;
@@ -66,20 +72,53 @@ class SMSClient
 	//OUT: 	message_id to track delivery status, if empty message_id - check errors via $this->getErrors()
 	public function sendSMS($from, $to, $message, $send_dt = 0, $wap = '', $flash = 0)
 	{
-		if(!$send_dt)
-			$send_dt = date('Y-m-d H:i:s');
+		if(!$send_dt){ $send_dt = date('Y-m-d H:i:s'); }
+                
 		$d = is_numeric($send_dt) ? $send_dt : strtotime($send_dt);
-		$data = array(	'from'=>$from,
-						'to'=>$to,
-						'message'=>$message,
-						'ask_date'=>date(DATE_ISO8601, $d),
-						'wap'=>$wap,
-						'flash'=>$flash,
-						'class_version'=>$this->_version);
+		$data = [
+                    'from'=>$from,
+                    'to'=>$to,
+                    'message'=>$message,
+                    'ask_date'=>date(DATE_ISO8601, $d),
+                    'wap'=>$wap,
+                    'flash'=>$flash,
+                    'version'=>$this->_version
+                        ];
 		$result = $this->execute('send', $data);
-		if(count(@$result['errors']))
-			$this->_errors = $result['errors'];
-		return @$result['id'];
+		if(count($result['errors'])){ $this->_errors = $result['errors']; }
+		return $result['id'];
+	}
+        /**
+         * sendViber
+         * @param type $from
+         * @param type $to
+         * @param type $message
+         * @param type $send_dt
+         * @return type
+         */
+        public function sendViber($from, $to, $message, $send_dt = 0)
+	{
+		if(!$send_dt){ $send_dt = date('Y-m-d H:i:s'); }
+                
+		$d = is_numeric($send_dt) ? $send_dt : strtotime($send_dt);
+		$data = [
+                    'from'=>$from,
+                    'to'=>$to,
+                    'message'=>$message,
+                    'ask_date'=>date(DATE_ISO8601, $d),
+                    'viber' => 1,
+                    'viber_type' => 'text',
+                    'viber_message' => $message,
+                    'viber_from' => $from,
+                    'viber_lifetime' => 120,
+                    'viber_sms' => 0,
+                    'version'=>$this->_version
+                        ];
+		$result = $this->execute('send', $data);
+		if(count($result['errors'])){
+                    $this->_errors = $result['errors'];
+                    }
+		return $result['id'];
 	}
 	
 	//IN: 	message_id to track delivery status
@@ -88,9 +127,8 @@ class SMSClient
 	{
 		$data = array('id'=>$sms_id);
 		$result = $this->execute('receive', $data);
-		if(count(@$result['errors']))
-			$this->_errors = $result['errors'];
-		return @$result['status'];		
+		if(count($result['errors'])){$this->_errors = $result['errors'];}
+		return $result['status'];		
 	}
 
 	//IN: 	message_id to delete
@@ -99,18 +137,16 @@ class SMSClient
 	{
 		$data = array('id'=>$sms_id);
 		$result = $this->execute('delete', $data);
-		if(count(@$result['errors']))
-			$this->_errors = $result['errors'];
-		return @$result['status'];		
+		if(count($result['errors'])){$this->_errors = $result['errors'];}
+		return $result['status'];		
 	}
 	
 	//OUT:	amount in UAH, if no return - check errors
 	public function getBalance()
 	{
 		$result = $this->execute('balance');
-		if(count(@$result['errors']))
-			$this->_errors = $result['errors'];
-		return @$result['balance'];		
+		if(count($result['errors'])){$this->_errors = $result['errors'];}
+		return $result['balance'];		
 	}
 	
 	//OUT:	returns number of errors
@@ -159,8 +195,7 @@ class SMSClient
 		$result = strtr($string, $converter);
 		
 		//upper case if needed
-		if(mb_strtoupper($string) == $string)
-			$result = mb_strtoupper($result);
+		if(mb_strtoupper($string) == $string){$result = mb_strtoupper($result);}
 			
 		return iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $result);
 	}	
@@ -182,8 +217,7 @@ class SMSClient
 			$params['key'] = $this->_key;
 			$params['command'] = $command;
 			$params_url = '';
-			foreach($params as $key=>$value)
-		 		$params_url .= '&' . $key . '=' . $this->base64_url_encode($value);
+			foreach($params as $key=>$value){ $params_url .= '&' . $key . '=' . $this->base64_url_encode($value); }
 		
 			//cURL HTTPS POST
 			$ch = curl_init(strtolower($this->mode) . $this->_server);
@@ -193,7 +227,7 @@ class SMSClient
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $params_url);			
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);			
-			$response = @curl_exec($ch);
+			$response = curl_exec($ch);
 			curl_close($ch);
 
 			$this->_last_response = @unserialize($this->base64_url_decode($response));

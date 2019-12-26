@@ -3,13 +3,12 @@ class wsConfig extends wsActiveRecord
 {
 	protected $_table = 'ws_config';
 	
-	protected static $_cache = array();
-	protected $_multilang = array('value' => 'value');
+	protected static $_cache = [];
+	protected $_multilang = ['value' => 'value'];
 
     public static function findByCode($code)
     {
-		if(isset(self::$_cache[$code]))
-			return self::$_cache[$code];
+		if(isset(self::$_cache[$code])){return self::$_cache[$code];}
 		
         self::$_cache[$code] = wsActiveRecord::useStatic(self::$_config_class)->findFirst(array('code'=>$code));
 		if(!self::$_cache[$code] || !self::$_cache[$code]->getId())

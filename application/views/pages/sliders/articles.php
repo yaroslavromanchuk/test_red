@@ -1,16 +1,7 @@
 <?php
-$articles_query1 = '
-SELECT * FROM ws_articles WHERE
-ws_articles.`stock` not like "0"
-AND  (ws_articles.`model` =  "'.$this->getShopItem()->getModel().'" or ws_articles.`model_uk` =  "'.$this->getShopItem()->getModel().'")
-AND  ws_articles.`category_id` ='.$this->getShopItem()->getCategoryId().'
-AND   ws_articles.id != '.$this->getShopItem()->getId().'
-and ws_articles.status = 3
-ORDER BY  `ws_articles`.`ctime` ASC 
-LIMIT 10';
-$finish_articles1 = wsActiveRecord::useStatic('Shoparticles')->findByQuery($articles_query1);
-    if ($finish_articles1->count() > 5 ) { ?>
-<div class="col-md-12 mx-auto w-100">
+$similar = ($this->similar->count() > 5)?$this->similar:false;
+    if ($similar){ ?>
+<div class="col-sm-12 mx-auto w-100 similar_block " style="display: none">
 <div class="block-title py-4 w-100">
 	<div class="vc_separator    vc_sep_pos_align_center vc_sep_color_black double-bordered-thick ">
 	<span class="vc_sep_holder vc_sep_holder_l"><span class="vc_sep_line"></span></span>
@@ -18,23 +9,14 @@ $finish_articles1 = wsActiveRecord::useStatic('Shoparticles')->findByQuery($arti
 	<span class="vc_sep_holder vc_sep_holder_r"><span class="vc_sep_line"></span></span>
 	</div>
 	</div>
-<div class="top_articles col-md-12 px-0"> 
+<div class="top_articles row px-0"> 
 <?php
-foreach ($finish_articles1 as $block) {
+foreach ($similar as $block) { 
 if ($block->getId()) {
-?>
-		<div class="top_articles_item col-xs-12 col-sm-6 col-md-3" >
-        <a  href="<?=$block->getPath();?>" style="    text-align: center;">
-        <img  src="<?=$block->getImagePath('detail')?>" alt="<?=$block->getBrand();?>" style="max-width:100%;"  >  
-		</a>
-				<div class="post-name" >
-				<h2><a href="<?=$block->getPath()?>"><?=$block->getModel();?></a></h2>
-				<h2><a href="<?=$block->getPath()?>"><?=$block->getBrand();?></a></h2>
-				</div>
-				<hr>
-				<p><?=$block->getPrice()?> грн</p>
-     </div>
-<?php } } ?>         
+    echo  $block->getItemBlockCachedHtml(false);
+    } 
+} 
+?>         
 </div>
 </div>
 <?php } ?>
@@ -50,7 +32,9 @@ nextArrow: '<img src="#" style="background-image:url(/img/slider/p-n-b.png);"  d
 	  speed: 500,
 	  easing: 'fade',
 	  autoplay: true
-	  });  
+	  });
+          
+          $('.similar_block').slideDown("slow");
 });
 
     

@@ -3,7 +3,7 @@ class HomeBlock extends wsActiveRecord
 {
 	protected $_table = 'red_home_blocks';
 	protected $_orderby = array('date' => 'DESC');
-protected $_multilang = array('name' => 'name', 'image' => 'image');
+        protected $_multilang = array('name' => 'name', 'image' => 'image');
 	
 	protected function _defineRelations()
 	{	
@@ -12,7 +12,7 @@ protected $_multilang = array('name' => 'name', 'image' => 'image');
  public function _beforeDelete()
     {
 
-        unlink($_SERVER['DOCUMENT_ROOT'].$this->getImage());
+        @unlink($_SERVER['DOCUMENT_ROOT'].$this->getImage());
         return true;
     }
     public function getBlockText(){
@@ -21,7 +21,7 @@ protected $_multilang = array('name' => 'name', 'image' => 'image');
 			case 2: return 'Женская одежда';
             case 1: return 'Аксессуары';
             case 5: return 'Текстиль';
-			case 4: return 'Мужская одежда';
+            case 4: return 'Мужская одежда';
             case 3: return 'Нижний 2';
             
             
@@ -29,4 +29,3 @@ protected $_multilang = array('name' => 'name', 'image' => 'image');
         }
     }
 }
-?>

@@ -21,4 +21,3 @@ class Shoparticlesoptions extends wsActiveRecord
 	
 	
 }
-?>

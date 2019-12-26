@@ -186,9 +186,21 @@ class Customer extends wsCustomer
         if($this->getBlockM() == 1) { return true;}
         return false;
     }
+    //проверка на блок пользователя на заказ с магазина
+    public function isBlockOnline(){
+        if($this->getBlockOnline()){
+            return true;
+        }
+        return false;
+    }
 	//проверка на блок пользователя на быструю заявку
     public function isBlockQuick(){
         if($this->getBlockQuick() == 1){ return true; }
+        return false;
+    }
+    //проверка на блок пользователя на быструю заявку
+    public function isBlockJustin(){
+        if($this->getBlockJustin() == 1){ return true; }
         return false;
     }
 
@@ -277,5 +289,6 @@ class Customer extends wsCustomer
 		return $co['date_create'];
     }
     
+   
 	
 }

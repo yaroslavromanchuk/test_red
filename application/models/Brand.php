@@ -16,10 +16,16 @@ class Brand extends wsActiveRecord
                 'field_foreign' => 'brand_id',
                 'orderby' => array('ctime' => 'ASC')
             ),
-		'balance' => array(
+            'balance' => array(
                 'type' => 'hasMany',
                 'class' => 'BalanceCategory',
                 'field_foreign' => 'id_brand',
+                'orderby' => array('id' => 'ASC')
+            ),
+            'subscribes' => array(
+                'type' => 'hasMany',
+                'class' => 'BrandSubscribeCustomer',
+                'field_foreign' => 'brand_id',
                 'orderby' => array('id' => 'ASC')
             ),
 
@@ -27,20 +33,40 @@ class Brand extends wsActiveRecord
 
 
     }
+    public function getIsSubscribe($id){
+       $s = wsActiveRecord::useStatic('BrandSubscribeCustomer')->findAll(['brand_id'=>$this->getId(), 'customer_id'=>$id]);
+       if($s->count()){ return true;}
+       
+       return false;
+    }
+    
+    public function getToUrl(){
+                           return mb_strtolower(str_replace(' ', '_', str_replace('&', '&amp;', $this->name)));
+                        
+    }
+    public function getToSitemapUrl(){
+         return "/all/articles/brands-".$this->getToUrl()."/";
+                         
+                        
+    }
+
     /**
      * 
      * @return type
      */
     public function getPath()
     	{
-    		return "/brands/id/" . $this->getId() .'/'.mb_strtolower($this->_generateUrl($this->name)).'/';
+    		return "/brands/id/" . $this->getId() .'/'.$this->_generateUrl(str_replace(" ", "_", $this->name))."/";
     	    	}
     /**
     * 
     * @return type
     */
     public function getPathFind(){
-        return "/all/articles/brands-".mb_strtolower($this->name);
+        return "/all/articles/brands-".$this->_generateUrl(str_replace(" ", "_", $this->name))."/";
+    }
+    public function getPathNew(){
+        return "/new/all/brands-".$this->_generateUrl(str_replace(" ", "_", $this->name))."/";
     }
     /**
      * 
@@ -58,8 +84,8 @@ AND ws_articles.active =  "y"
 AND ws_articles.brand_id >0
 and red_brands.hide = 1';
 
-        $brands = 'SELECT brand_id, brand, COUNT( DISTINCT (ws_articles.id) ) AS cnt ' . $where;
-        $brands = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery($brands . ' GROUP BY brand_id ORDER BY  `cnt` DESC ');
+        $brandd = 'SELECT brand_id, brand, COUNT( DISTINCT (ws_articles.id) ) AS cnt ' . $where;
+        $brands = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery($brandd . ' GROUP BY brand_id ORDER BY  `cnt` DESC ');
 
         $i = 0;
         foreach ($brands as $brand) {
@@ -85,15 +111,13 @@ and red_brands.hide = 1';
      * @return type
      */
     public  function findActiveArticles ($limit = 8){
-        $query = 'SELECT distinct(ws_articles.id), ws_articles.*,DATE_FORMAT(ws_articles.data_new,"%Y-%m-%d") as orderctime
-        FROM ws_articles_sizes
-        JOIN ws_articles ON ws_articles_sizes.id_article = ws_articles.id
-        WHERE ws_articles_sizes.count > 0
-        AND ws_articles.active = "y"
-        AND ws_articles.stock > 0
-        AND (DATE_FORMAT(ws_articles.ctime,"%Y-%m-%d") < DATE_ADD(NOW(), INTERVAL -1 DAY) OR ws_articles.get_now = 1)
-        AND ws_articles.brand_id IN ("'.$this->getId().'")
-        ORDER BY orderctime DESC, model ASC LIMIT 0,'.$limit;
+        $query = 'SELECT  *
+        FROM ws_articles
+        WHERE ws_articles.active = "y"
+        AND ws_articles.stock not like "0"
+        AND ws_articles.status = 3
+        AND ws_articles.brand_id = '.$this->id.'
+        LIMIT 0,'.$limit;
 
         $articles = wsActiveRecord::useStatic('Shoparticles')->findByQuery($query);
 
@@ -106,6 +130,20 @@ and red_brands.hide = 1';
     public function getCountArticles(){
         $sql="SELECT sum(stock) as ctn FROM ws_articles WHERE `stock` NOT LIKE  '0' and status = 3 and brand_id=".$this->id;
         return wsActiveRecord::useStatic('Shoparticles')->findByQuery($sql)->at(0)->ctn;	
+    }
+    public function getCount(){
+        $sql="SELECT count(ws_articles.id) as ctn FROM ws_articles WHERE `stock` NOT LIKE  '0' and status = 3 and brand_id=".$this->id;
+        return wsActiveRecord::useStatic('Shoparticles')->findByQuery($sql)->at(0)->ctn;	
+    }
+    public function getCountsub(){
+         $r = wsActiveRecord::findByQueryFirstArray("
+                SELECT sum(`ws_order_articles`.`count`) as `ctn` 
+                FROM `ws_orders` 
+                INNER JOIN `ws_order_articles` on `ws_orders`.`id` =  `ws_order_articles`.`order_id` 
+                WHERE `ws_orders`.`track` like '".$this->track."' ")['ctn'];
+         if($r) {return $r;}
+         return 0;
+         
     }
 }
 

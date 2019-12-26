@@ -133,7 +133,7 @@ class Mimeg
         Mimeg::resize(360, 360, $filename);
       //  Mimeg::resize(800, 600, $filename);
         //Mimeg::resize(396, 365, $filename);
-		Mimeg::resize(600, 600, $filename);
+	Mimeg::resize(600, 600, $filename);
         return true;
     }
 	

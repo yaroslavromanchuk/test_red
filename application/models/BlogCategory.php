@@ -11,7 +11,7 @@ class BlogCategory extends wsActiveRecord
          */
 	public function getPath()
     	{
-    		return "/blog/category/" . $this->getId() .'/'.$this->_generateUrl($this->getName()).'/';
+    		return "/blog/cat/" . $this->getId() .'/'.$this->_generateUrl($this->getName()).'/';
     	}
         
             /**

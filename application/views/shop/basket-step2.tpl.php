@@ -1,13 +1,6 @@
-<script  src="/js/call/jquery.mask.js?v=20131212"></script>
-<link rel="stylesheet" href="/js/meest/jquery-ui.css?v=20131212" type="text/css" media="screen">
-<script  src="/js/meest/jquery-ui.js?v=20131212"></script>
-
-<script>$( function(){ $("#telephone").mask("38(999)999-99-99");});</script>
-
-
 <input hidden id="c_b" type="text" value="<?php if($_SESSION['count_basket'] > count($_SESSION['basket'])){ echo $_SESSION['count_basket']; }else{ echo count($_SESSION['basket']); }?>">
-
-<div class="row mx-auto bg-white p-0">
+<div class="container pb-3">
+<div class="row mx-auto bg-white p-3 card ">
 	<div class="col-md-12 col-lg-10 col-xl-10 mx-auto p-1">
 	
 	<?php if (!$this->ws->getCustomer()->getIsLoggedIn()) { ?>
@@ -55,8 +48,11 @@
 		';
 	}
 ?>
+            
 <form method="post" action="" class="contact-form" name="basket_contacts" id="basket_contacts"  style="text-align: center;">
+    
 <div id="contact"  class="row">
+    <div class="col-xs-12 col-sm-12"><h3  class="card-title text-center"><?=$this->trans->get('Контактные данные')?></h3></div>
 		<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 form-group">
 		<?php
 				if (!$this->ws->getCustomer()->getIsLoggedIn() || !$this->ws->getCustomer()->getMiddleName()) {
@@ -127,7 +123,7 @@
 	<input type="button" class="btn btn-danger btn-lg" value="<?=$this->trans->get('Продолжить');?>" onclick="validate_form1();">
 	</div>
 	</div>
-	<script type="text/javascript">
+	<script>
 	function validate_form1(){
 	$('#delivery').hide();
 	var valid = true;
@@ -308,14 +304,39 @@ function delivery_form(){
                 val = false;
         }else{ flat.removeClass("red");}
 
-		}else if($('#delivery_type_3').prop("checked") || $('#delivery_type_5').prop("checked")){
+		}else if($('#delivery_type_3').prop("checked")){
 			var count = $('#c_b').val();
 			//console.log(count);
 		 if(count > 5) { val = false;
 $('#ms').html("<?=$this->trans->get('На пункт выдачи заказов можно заказать не более 5 единиц товара в одном заказе, у Вас в заказе')?> "+count+" <?=$this->trans->get('единиц. Удалите пожалуйста')?> "+(count-5)+"<?=$this->trans->get('единиц из заказа')?>!").fadeIn(100);
 		//location.href = '/basket/';
 		}
+		}else if($('#delivery_type_18').prop("checked")){
+                console.log('br');
+                var city_jast = $("#city_justin");
+			var sklad_jast = $("#branch");
+		if(city_jast.val() == "")
+        {
+				$('#ms').html("<?=$this->trans->get('Пожалуйста, заполните поле Город')?>").fadeIn(100);
+				city_jast.addClass("red");
+				city_jast.focus();
+                val = false;
+        }else{ city_jast.removeClass("red"); }
+		if(sklad_jast.val() == "")
+        {
+            $('#ms').html("<?=$this->trans->get('Пожалуйста, выберите отделение для доставки')?>").fadeIn(100);
+				sklad_jast.addClass("red");
+				sklad_jast.focus();
+                val = false;
+        }else{
+		//sklad_jast.val($('#sklad option:selected').data('id'));
+		sklad_jast.removeClass("red");
 		}
+                }
+                if($('#delivery_type_5').prop("checked")){
+               // alert('error');
+                val = false;
+                }
 		if(val === true){
 		$('#go_f').show();
 		$('#ms').hide();
@@ -342,21 +363,20 @@ $('#ms').html("<?=$this->trans->get('На пункт выдачи заказов
 </script>
 <div class="row form-group" id="delivery" style="display:none;" >
 		<div class="col-xl-12" >
-		<h3 align="center"><?=$this->trans->get('Выберите способ доставки')?></h3>
+		<h3  class="card-title text-center"><?=$this->trans->get('Выберите способ доставки')?></h3>
 					<div class="btn-group" data-toggle="buttons"> 
 					<ul class="backet_ul" align="center">
-<?php foreach(wsActiveRecord::useStatic('DeliveryType')->findAll(array('active_user'=> 1), array('name'=>'ASC')) as $dely){
- if($dely->getId() == 16) continue;?>
-					<li style="list-style-type: none;" >
+<?php foreach(wsActiveRecord::useStatic('DeliveryType')->findAll(array('active_user'=> 1), array('sort'=>'ASC')) as $dely){ if($dely->getId() == 16){ continue;} ?>
+					<li>
 					<label  class="btn btn-default label_delivery" for="delivery_type_<?=$dely->getId()?>">
 					<div class="media">
 					<input hidden class="delivery_type" name="delivery_type_id" id="delivery_type_<?=$dely->getId()?>" value="<?=$dely->getId();?>" type="radio" >
-					<img class="align-self-center mr-2"  src="/img/delivery/<?=$dely->getImg();?>"/>
-					<div class="media-body"><p class="my-auto"><?=$dely->getName();?></p></div>
+					<img class="align-self-center mr-2"  src="<?=$dely->getImg()?>"/>
+					<div class="media-body"><p class="my-auto"><?=$dely->getName()?></p></div>
 					</div>
 					</label>
 					</li>
-					<?php } ?>
+					<?php }?>
 					</ul>
 					</div>
 		</div>
@@ -404,6 +424,23 @@ $('#ms').html("<?=$this->trans->get('На пункт выдачи заказов
 			<input name="s_street" id="s_street" type="text"  placeholder="<?=$this->trans->get('Улица')?>" class="form-control<?php if (in_array('s_street', $this -> errors, true)) echo " red"; ?>" value=""/>
 			<div class="help" id="h_s"><?=$this->trans->get('Начните ввод улицы и выберите со списка')?></div>
 			<input type="hidden" id="s_street_id" name="s_street_id">
+		</div>
+<div class="col-xs-12 col-sm-12  col-md-12 col-md-12 col-lg-12 col-xl-12 justin"  > 
+			<div class="form-group text-left">
+                    <label class="form-control-label">Город: <span class="tx-danger">*</span></label>
+                    <select class="form-control select2" name="city_justin" id="city_justin" data-placeholder="Выберите город" required="false" tabindex="-1" >
+                         <option label="Выберите город"></option>
+                    </select>
+                </div>
+		</div>
+                    <div class="col-xs-12 col-sm-12  col-md-12 col-md-12 col-lg-12 col-xl-12  justin"  > 
+			<div class="form-group text-left">
+                    <label class="form-control-label">Отделение: <span class="tx-danger">*</span></label>
+                    <select class="form-control select2" name="branch" id="branch" data-placeholder="Выберите Отделение" required="false" tabindex="-1" >
+                        <option label="Выберите Отделение"></option>
+                        
+                    </select>
+                </div>
 		</div>
 <div class="col-xs-12 col-sm-12  col-md-6 col-md-6 col-lg-6 col-xl-6 form-group up" id="sity" style="<?php//np
 						if (!in_array($this->basket_contacts['delivery_type_id'], array(4,8)))
@@ -466,16 +503,18 @@ if(true){
 				</div>
 			</div>
 		</div>
-<!--<p  class="alert alert-danger k_type w-100" >
-    <span style="font-size:  18px;font-weight:  bold;">Обратите внимание!</span>
-    <br>Изменения в режиме работы курьерской доставка. Заказы оформленные с 29.12.2018 по 10.01.2019, будут доставлены с 11.01.2019 года.<br> За дополнительной информацией обращайтесь в Колл.центр (044) 224-40-00
-</p>-->
-<p  class="alert alert-danger m_type" >
-    <span style="font-size:  18px;font-weight:  bold;">Обратите внимание!</span>
-    <br>C 01.06.2018 для получения заказа в пункте самовывоза, его нужно оплатить в полном размере(онлайн при оформлении или в самом пункте самовывоза). За дополнительной информацией обращайтесь в Колл.центр (044) 224-40-00
+<p  class="alert alert-success k_type1 d-none w-100" >
+    <span style="font-size:  16px;font-weight:  bold;">Мы рады что Вы с нами, и доставим Ваш заказ совершенно БЕСПЛАТНО</span>
+    <!--<br>Изменения стоимости курьерской доставка. С 03.09.2019 стоимость доставки составляет 65 грн.<br>Бесплатная доставка при заказе от 900 грн.<br> За дополнительной информацией обращайтесь в Колл.центр (044) 224-40-00-->
 </p>
+<div class="alert alert-danger m_type col-sm-12" >
+    <h4 class="alert-heading">Обратите внимание!</h4>
+     <p>По техническим причинам, доставка в пункт самовывоза ул.Строителей 40, <b>ВРЕМЕННО НЕДОСТУПНА</b>.<br>В связи с этим, мы предлагаем Вам оформить доставку курьером по Киеву. Мы доставим Ваши заказы <b>БЕСПЛАТНО</b>.</p> 
+     <hr>
+     <p>За дополнительной информацией обращайтесь в Колл.центр <a href="tel:+380442244000">+38(044) 224-40-00</a></p>
+</div>
 
-<div class="col-xl-12 sv only_sv" id="pobedy" style="<?php if ($this->basket_contacts['delivery_type_id'] != 3){ echo 'display: none;';} ?> " >
+<div class="col-sm-12 sv only_sv" id="pobedy" style="<?php if ($this->basket_contacts['delivery_type_id'] != 3){ echo 'display: none;';} ?> " >
 			<div class="panel panel-default sv only_sv">
 				<div class="row panel-body" style="background: white;">
 					<div class="col-sm-12 col-md-3 col-lg-3 col-xl-3 form-group sv only_sv">
@@ -511,15 +550,15 @@ if(true){
 		</div>
 	<div class="col-xl-12" style="margin-top: 10px;">
 	<input type="button" class="btn btn-danger btn-lg" value="<?=$this->trans->get('Назад');?>" onclick="obratno1();" style="float: left;border-color: #969696;background: #969696;">
-	<input type="button" class="btn btn-danger btn-lg" value="<?=$this->trans->get('Продолжить');?>" onclick="delivery_form();" style="float: right;">
+	<input type="button" class="btn btn-danger btn-lg"  id="go_to_pay" value="<?=$this->trans->get('Продолжить');?>" onclick="delivery_form();" style="float: right;">
 	<br>
 		</div>
 	</div>
 
 <div class="row form-group payment_panel" id="pay" style="display:none;">
 		<div class="col-xs-12 col-md-12 col-lg-12" >
-		<h3 align="center"><?=$this->trans->get('Выберите способ оплаты')?></h3>
-		<!--<p  class="alert alert-danger" >Онлайн оплаты временно не доступны. Проводятся тестовые работы по настройте.</p>-->
+		<h3 class="card-title text-center"><?=$this->trans->get('Выберите способ оплаты')?></h3>
+		<p  class="alert alert-danger" ><?=$this->trans->get('По техническим причинам, онлайн оплата временно не доступна. Приносим свои извинения за временные неудобства')?>.</p>
 <?php if($this->ws->getCustomer()->isBlockNpN()) { ?>
 <p id="text_np" class="text_np alert alert-danger" style="display: none;"><?=$this->trans->get('В связи с нарушением условий оплаты заказов, наложенный платеж для Вас временно не доступен.<br>Вы можете оплачивать заказы мгновенно онлайн с помощью Visa MasterCard и Приват24.
 					<br>За детальной информацией обращайтесь в Call центр.<br>')?>
@@ -532,17 +571,23 @@ if(true){
 <p  id="text_mag" class="text_mag alert alert-danger" style="display: none;"><?=$this->trans->get('В связи с нарушением условий выкупа заказов, оплата наличными для Вас временно не доступна.
 					<br>Вы можете оплачивать заказы мгновенно онлайн с помощью Visa MasterCard и Приват24.
 					<br>За детальной информацией обращайтесь в Call центр.<br>')?></p>
-<?php } ?>
+<?php } if($this->ws->getCustomer()->isBlockOnline()){ ?>
+<p  class="alert alert-danger" ><?=$this->trans->get('По техническим причинам, онлайн оплаты, временно недоступны. Приносим свои извинения за временные неудобства.')?></p>
+    <?php } if($this->ws->getCustomer()->isBlockJustin()){ ?>
+        <p  id="text_justin" class="text_justin alert alert-danger" style="display: none;"><?=$this->trans->get('В связи с нарушением условий выкупа заказов, оплата наличными для Вас временно не доступна.
+					<br>Вы можете оплачивать заказы мгновенно онлайн с помощью Visa MasterCard и Приват24.
+					<br>За детальной информацией обращайтесь в Call центр.<br>')?></p>
+        <?php } ?>
 <div class="btn-group payment_method_container"  data-toggle="buttons"  >
 <ul class="backet_ul" align="center">
 <li>
-<label id="l_nl" class="btn btn-default k_p s_m_p s_p_p label_payment <?php if($this->ws->getCustomer()->isBlockCur()) {echo " hide_kur";}
-if($this->ws->getCustomer()->isBlockM()){ echo " hide_mag";} ?>" 
-style="<?php if (!in_array($this->basket_contacts['delivery_type_id'], array(3,9,5))){ echo ' display: none;';} ?>">
+<label id="l_nl" class="btn btn-default k_p s_m_p s_p_p jastin_p label_payment <?php if($this->ws->getCustomer()->isBlockCur()) { echo " hide_kur";}
+if($this->ws->getCustomer()->isBlockM()){ echo " hide_mag";} if($this->ws->getCustomer()->isBlockJustin()){ echo " hide_justin";} ?>" 
+style="<?php if (!in_array($this->basket_contacts['delivery_type_id'], array(3,9,5,18))){ echo ' display: none;';} ?>">
 							<div class="media">
 							<input class="payment_method" hidden name="payment_method_id" id="payment_method_1" value="1" type="radio" autocomplete="on">
 							<img class="align-self-center mr-2" src="/img/delivery/uah.png"/>
-							<div class="media-body"><?=$this->trans->get('При получении')?></div>
+							<div class="media-body"><span class="align-self-center"><?=$this->trans->get('При получении')?></span></div>
 							</div>
 						</label>
 </li>
@@ -562,24 +607,23 @@ if(false){
  ?>
 <li>
 <label id="l_o" class="btn btn-default k_p s_m_p s_p_p np_p up_p label_payment"  style="<?php
-						if (!in_array($this->basket_contacts['delivery_type_id'], array(4, 8, 9, 5, 3)))
+						if (!in_array($this->basket_contacts['delivery_type_id'], array(4, 8, 9, 3)))
                                                 {echo 'display: none;';} ?>">
 							<div class="media">
 							<input class="payment_method" hidden name="payment_method_id" id="payment_method_7" value="7" type="radio" autocomplete="on">
 							<img class="align-self-center mr-2" src="/img/delivery/vm.png"/>
-							<div class="media-body" >Онлайн<br>оплата</div>
+							<div class="media-body" >Онлайн оплата<br>(тестовый режим)</div>
 							</div>
 						</label>
 </li>
 <?php } ?>
 <?php 
 //if($this->ws->getCustomer()->getId() == 8005){
-if(true){
+if(false){
  ?>
-<li>
-<label id="l_vs" class="btn btn-default k_p s_m_p s_p_p np_p up_p label_payment"  style="<?php
-						if (!in_array($this->basket_contacts['delivery_type_id'], array(4, 8, 9, 5, 3)))
-                                                {echo 'display: none;';} ?>">
+<li <?=$this->ws->getCustomer()->isBlockOnline()?'class="hide_online"':''?>>
+<label id="l_vs" class="btn btn-default k_p s_m_p s_p_p np_p up_p jastin_p label_payment "  style="<?php
+	if (!in_array($this->basket_contacts['delivery_type_id'], array(4, 8, 9, 5, 3,18))){echo 'display: none;';} ?>">
 							<div class="media">
 							<input class="payment_method" hidden name="payment_method_id" id="payment_method_4" value="4" type="radio" autocomplete="on">
 							<img class="align-self-center mr-2" src="/img/delivery/vm.png"/>
@@ -587,16 +631,17 @@ if(true){
 							</div>
 						</label>
 </li>
-<li>
-<label id="l_privat" class="btn btn-default k_p s_m_p s_p_p np_p up_p label_payment" style="<?php
-						if (!in_array($this->basket_contacts['delivery_type_id'], array(4, 8, 9, 5, 3))) {echo 'display: none;';} ?>">
+
+<li <?=$this->ws->getCustomer()->isBlockOnline()?'class="hide_online"':''?>>
+<label id="l_privat" class="btn btn-default k_p s_m_p s_p_p np_p up_p jastin_p label_payment" style="<?php
+						if (!in_array($this->basket_contacts['delivery_type_id'], array(4, 8, 9, 5, 3,18))) {echo 'display: none;';} ?>">
 					<div class="media">
 					<input class="payment_method" hidden name="payment_method_id" id="payment_method_6" value="6" type="radio" autocomplete="on">
 					<img class="align-self-center mr-2"  src="/img/delivery/p24.png"/>
 							<div class="media-body" >Онлайн<br>Приват24</div>
 							</div>
 						</label>
-</li>
+</li>  
 <!--
 <li>
 <label id="l_wb" class="btn btn-default k_p s_m_p s_p_p np_p up_p label_payment"  style="<?php
@@ -625,7 +670,7 @@ if(true){
 <!-- соглашение + заказать-->
 	<div class="row" id="sog" style="display:none;" >
 	<div class="col-xs-12 col-md-12 col-lg-12 np_np" style="display: none; margin-bottom: 15px; 
-	<?php if (!in_array(@$this->basket_contacts['delivery_type_id'], array(8,16))){ echo 'display: none;'; }?>">
+	<?php if (!in_array($this->basket_contacts['delivery_type_id'], array(8,16))){ echo 'display: none;'; }?>">
 	<?=$this->trans->get('<span style="color: red;">Посылку Вы оплачиваете в отделении Новой Почты. Для оформления возврата у Вас есть 14 дней. <a href="/returns/" target="_blank">Условия возврата.</a></span>')?>
 	</div>
 	<div class="col-xs-12 col-md-12 col-lg-12">
@@ -649,8 +694,8 @@ if(true){
 	</td>
 	<td style="width:50%;text-align: right;">
 	<br>
-	<button style=" float: right;"  id="go_f" type="button" class="btn btn-danger btn-lg"   onclick="validate_form_uslug();"><?=$this->trans->get('Заказать');?></button>
-	<button style="display:none; float: right;" id="go" type="submit" class="btn btn-danger btn-lg" onclick="document.forms.basket_contacts.submit(); return false;"><?=$this->trans->get('Заказать');?></button>
+	<input  style=" float: right;"  id="go_f" type="button" class="btn btn-danger btn-lg"   onclick="validate_form_uslug();" value="<?=$this->trans->get('Заказать');?>" >
+	<input style="display:none; float: right;" id="go" type="submit" class="btn btn-danger btn-lg" onclick="document.forms.basket_contacts.submit(); return false;" <?=$this->trans->get('Заказать');?>>
 	<br>
 	</td>
 	</tr>
@@ -661,9 +706,11 @@ if(true){
 </form>
 </div>
 </div>
-<script   >
+</div>
+<script>
+    
 function validate_form_uslug (){
-valid_uslug = true;
+var valid_uslug = true;
 	if(document.getElementById('oznak').checked == false){
 	valid_uslug = false;
 	$('#ms').html('<?=$this->trans->get('Вы не отметили что ознакомлены с условиями предоставления услуг ФОП "Цыбуля".')?>').fadeIn(100);
@@ -695,7 +742,9 @@ valid_uslug = true;
 	}
 
 
-			$(document).ready( function() {
+			$(function() {
+                           // $('.select2').parsley();
+                            'use strict'
 			//np
 			$("#city_np").focus(function (){ $('#h_np').fadeIn(300);}); 
 				$("#city_np").blur(function (){$('#h_np').fadeOut(300); });
@@ -719,20 +768,21 @@ valid_uslug = true;
 					$('.np_np').hide();
 					$('.up').hide();
 					$('.up_p').hide();
+                                        $('.jastin_p').hide();
 					$('.k').hide();
+                                        $('.justin').hide();
 					$('.k_p').hide();
 					$('#pobedy').hide();
 					$('#stroitely').hide();
 					//$('#mishugi').hide();
 				$('#dop_mat').show();
-				
-				
-					if (delivery == 4) {
-					$('.np_np').hide();
+                                $('#go_to_pay').show();
+                                
+                                switch(delivery){
+                                    case '4': 
+                                                $('.np_np').hide();
 						$('#pobedy').hide();
 						$('#stroitely').hide();
-					//	$('#mishugi').hide();
-						
 						$('#dostav').show();
 						$('.dop_fields').show();
 						$('.up').show(); 
@@ -741,13 +791,11 @@ valid_uslug = true;
 						$('.text_np').show();
 						$('.text_kur').hide();
 						$('.text_mag').hide();
-						
-					}
-					if (delivery == 8) {
-						$('#pobedy').hide();
+                                                $('.text_justin').hide();
+                                    break;
+                                    case '8': 
+                                                $('#pobedy').hide();
 						$('#stroitely').hide();
-						//$('#mishugi').hide();
-						
 						$('#dostav').show();
 						$('.dop_fields').show();
 						$('.np').show();
@@ -755,52 +803,58 @@ valid_uslug = true;
 						$('.hide_np').hide();
 						$('.text_np').show();
 						$('.text_kur').hide();
-						$('.text_mag').hide();		
-					}
-							if (delivery == 9) {
-                                                            $('.k_type').show();
-							$('.np_np').hide();
-								$('#pobedy').hide();
-								$('#stroitely').hide();
-								//$('#mishugi').hide();
-								
-								$('#dostav').show();
-								$('.dop_fields').show();
-						
+						$('.text_mag').hide();
+                                                $('.text_justin').hide();
+                                    break;
+                                    case '9': 
+                                                $('.k_type').show();
+						$('.np_np').hide();
+						$('#pobedy').hide();
+						$('#stroitely').hide();
+						$('#dostav').show();
+						$('.dop_fields').show();
 						$('.k_p').show();
 						$('.k').show();
 						$('.hide_kur').hide();
-						$('.text_kur').show(); console.log(delivery);
+						$('.text_kur').show();// console.log(delivery);
 						$('.text_mag').hide();
+                                                $('.text_justin').hide();
 						$('.text_np').hide();
-							}
-					if(delivery == 5){
-					$('.m_type').show();
-                                        
-					$('.mish_type').show();
-					$('.np_np').hide();
-						$('#pobedy').hide();
-						$('#stroitely').show();
-							//$('#mishugi').show();
-							$('.s_m_p').show();
-							$('.hide_mag').hide();
-							$('.text_mag').show();
-							$('.text_kur').hide();
-							$('.text_np').hide();	
-						}
-					if(delivery == 3){
-					$('.m_type').show();
-					$('.np_np').hide();
-						//$('#mishugi').hide();
-						$('#stroitely').hide();
-							$('#pobedy').show();
-							$('.s_p_p').show();
-							$('.hide_mag').hide();
-							$('.text_mag').show();
-							$('.text_kur').hide();
-							$('.text_np').hide();
-						}
+                                    break;
+                                    case '18':                                            
+       $.ajax({
+         type: 'POST',
+         url: '/shop/justin/',
+         dataType: 'json',
+         data: {metod: 'city'},
+         success: function(data) {
+             $('#branch').empty();
+             $('#city_justin').empty().select2({data : data});
+         }
+     });
+                                            $('.justin').show();
+                                            $('#dostav').show();
+                                            $('.dop_fields').show();
+                                            $('.jastin_p').show();
+                                            $('.hide_justin').hide();
+                                            $('.text_justin').show();
+                                    break;
+                                    case '3': 
+                                            $('.np_np').hide();
+                                            $('#pobedy').show();
+                                            $('.s_p_p').show();
+                                            $('.hide_mag').hide();
+                                            $('.text_mag').show();
+                                            $('.text_kur').hide();
+                                            $('.text_justin').hide();
+                                            $('.text_np').hide();
+                                    break;
+                                    default: break;
+                                }
 		});
+        $('#city_justin').on("select2:select", function(e){ console.log('sel'); refresh(e);});
+        $('#city_justin').on("select2:unselect", function(){  $('#branch').empty(); });
+              
 $('#s_street').autocomplete({
 	source: '/shop/getmistcity/?what=street',
 			minLength: 3,
@@ -815,65 +869,96 @@ $('#s_street').autocomplete({
 			}
 				});	
 	//npva pochta	city
-var uidnp = $('#city_np').val();
-	$('#city_np').autocomplete({
-			source: '/shop/novapochta/?what=citynpochta&term=' + uidnp,
-			minLength: 2,
-			maxHeight: 200,
-			deferRequestBy: 100,
-			search: function( event, ui ) {
-			$('#k_np_g').fadeIn(500);
-			//console.log(ui);
-				$('#cityx').val('');
-			},
-			select: function (event, ui) {
-			$('#k_np_g').fadeOut(300);
-			//console.log(ui);
-				if (ui.item == null) {
-					$('#cityx').val('');
-				} else {
-					$('#cityx').val(ui.item.id);
-					//console.log(ui.item.id);
-					myNP(ui.item.id);
+   $( "#city_np" ).autocomplete({
+     minLength: 2,
+    maxHeight: 100,
+    deferRequestBy: 100,
+      source: function(request, response){
+           var lang = "<?=Registry::get('lang')?>";
+         if(lang == 'uk'){ lang  = 'ua';}
+        // организуем кроссдоменный запрос 
+                let np = new NP('1e594a002b9860276775916cdc07c9a6', lang);
+                    var respons = np.getCities(0, request.term);
+                    
+                    if(respons.success){
+                        response($.map(respons.data, function(item){
+              return{
+                label: item.DescriptionRu,
+                value: item.DescriptionRu,
+                id: item.Ref
+              }
+            }));
+                    }else{
+                        console.log(respons);
+                    }
+      },
+    select: function (event, ui) {
+            if (ui.item == null) {
+		$('#cityx').val('');
+            } else {
+		$('#cityx').val(ui.item.id);
+		myNP(ui.item.id);
 	
-				}
-			}
-		});	
+	}
+            }
+    });	
 	//получение отделений
 			$('.payment_method').change(function() {
 				var delivery = $('.delivery_type:checked').val();
 				var payment = $('.payment_method:checked').val();
-				$('#dop_t').show();	
+					
 				if((delivery == 8 || delivery == 16) && payment == 3){$('.np_np').show(); }else{$('.np_np').hide();}	
-				if(delivery == 4) { $('#d_text').html('<?=$this->trans->get('Отправка заказов Укрпочтой - вторник и четверг.');?>');	}
-				if(delivery == 8 || delivery == 16) { $('#d_text').html("<?=$this->trans->get("Отправка заказов Новой Почтой - понедельник, среда и пятница. Срок хранения заказов на Новой Почте 5 дней, с момента получения смс о доставке в отделение.");?>");}
-				if(delivery == 3 || delivery == 5){ $('#d_text').html('<?=$this->trans->get('Доставка в пункты самовывоза с понедельника по пятницу.');?>'); }	 //
-				if(delivery == 9) { $('#d_text').html("<?=$this->trans->get("После проверки заказа менеджер свяжется с Вами");?>"); }
+				if(delivery == 4) { $('#d_text').html('<?=$this->trans->get('Отправка заказов Укрпочтой - вторник и четверг.');?>'); $('#dop_t').show();	}
+				if(delivery == 8 || delivery == 16) { $('#d_text').html("<?=$this->trans->get("Отправка заказов Новой Почтой - понедельник, среда и пятница. Срок хранения заказов на Новой Почте 5 дней, с момента получения смс о доставке в отделение.");?>"); $('#dop_t').show();}
+				if(delivery == 3){ $('#d_text').html('<?=$this->trans->get('Доставка в пункты самовывоза с понедельника по пятницу.');?>'); $('#dop_t').show(); }	 //
+				if(delivery == 9) { $('#d_text').html("<?=$this->trans->get("После проверки заказа менеджер свяжется с Вами");?>"); $('#dop_t').show(); }
 								});	
+                                                                $('.select2').select2();
 				
 }); //exit ready
-			
-		function myNP (x) {
-                //console.log(x);
-	$('#sklad_np_leb').fadeIn(50);
-	$('#k_np_w').fadeIn(50);
-        
+	
+         function refresh(evt){
+        if(!evt){
+            var args = {};
+        }else{
+            //console.log(evt.params.data);
+            var args = evt.params.data;
+        }
         $.ajax({
-                url: '/shop/novapochta/',
-                type: 'POST',
-                dataType: 'json',
-                data: 'warehouses='+x+'&metod=getframe_np',
-                success: function (data) {
-                    console.log(data);
-                    $('#sklad').html(data);
+         type: 'POST',
+         url: '/shop/justin/',
+         dataType: 'json',
+         data: {id:args.id, metod: 'search_depart'},
+         success: function(data) {
+             $('#branch').empty().select2({data : data});
+             //console.log('Yay! '+data);
+         }
+     });
+        }
+ function myNP (x) {
+     var lang = "<?=Registry::get('lang')?>";
+         if(lang == 'uk'){ lang  = 'ua';}
+         let np = new NP('920af0b399119755cbca360907f4fa60', lang);
+        var response = np.getWarehouses(x, 0);
+                   
+                    if(response.success){
+    var text = '';
+    for(var k in response.data){
+        if(lang == "ru"){
+        text+='<option data-id ="'+response.data[k].Ref+'" value="'+response.data[k].DescriptionRu+'">'+response.data[k].DescriptionRu+'</option>';
+    }else{
+        text+='<option data-id ="'+response.data[k].Ref+'" value="'+response.data[k].Description+'">'+response.data[k].Description+'</option>';
+    }
+    }
+    }else{
+        text += '<option data-id ="'+response.data[k].Ref+'" value="'+response.data[k].Description+'">'+response.data[k].Description+'</option>';
+        return response.errors;
+    }
+    // console.log(response);
+     $('#sklad').html(text);
                     $('#k_np_g').fadeOut(1);
                     $('#sklad_np_leb').fadeOut(1);
                     $('#sklad').fadeIn(10);
-                },
-                error: function (e){
-                    console.log(e);
-                }
-        });
 		return false;
 }			
 </script>

@@ -12,12 +12,41 @@ class ArticlesController extends controllerAbstract
      * для вызова в get нужно создать url /product/id/1
      * @return карточка_товара
      */
+     //public function init() {
+       // parent::init();
+        
+   // }
+    /**
+     * Карточка товара
+     * url - /product/id/
+     */
     public function articleAction()
 	{
+        $this->view->css = [
+            '/js/slider-fhd/slick.css',
+           // '/css/cloudzoom/cloudzoom.css',
+            '/css/jquery.lightbox-0.5.css',
+            '/css/catalog/catalog.css?v=1.3', 
+            '/js/gallery/lightgallery.css',
+            '/js/owl/owl-carousel.css',
+            '/js/jetzoom/jetzoom.css',
+             '/css/article/article.css', 
+        ];
+        $this->view->scripts = [
+            // '/js/filter.js',
+            '/js/desires.js',
+            '/js/call/jquery.mask.js',
+           // '/js/cloud-zoom.1.0.2.js',
+            '/js/jquery.lightbox-0.5.js',
+            '/js/slider-fhd/slick.min.js',
+            '/js/gallery/lightgallery.js',
+            '/js/owl/owl.carousel.min.js',
+            '/js/jetzoom/jetzoom.js',
+            '/js/jquery.cycle.all.js',
+            
+        ];
 		$article = wsActiveRecord::useStatic('Shoparticles')->findById($this->get->getId());
                     if(!$article){ $this->_redirect('/404/'); }
-                   
-
 		if ($this->get->metod == 'getbrand') {
 			$text = '<div class="brand_info" ><p>';
 
@@ -27,21 +56,20 @@ class ArticlesController extends controllerAbstract
 			$text .= '<p><p class="strong">' . $article->article_brand->getName() . '</p>' . $article->article_brand->getText() . '</p></div>';
 			die($text);
 		}
-                
     $this->view->g_url = $article->getPath(); 
-$name = ucfirst($article->getModel()) . ' ' .trim($article->getBrand()).' '.$this->trans->get('color').' '.mb_strtolower($article->getColorName()->getName());
+$name = ucfirst($article->getModel()) . ' ' .trim($article->getBrand()).' '.$this->trans->get('color').' '.mb_strtolower(@$article->getColorName()->getName());
 $title = $name;
-if($article->sizes->count() == 1){
-   $title.= ' размер '.$article->sizes[0]->size->size.' артикул - '.$article->sizes[0]->code; 
+//if($article->sizes->count() == 1){
+   
     
-} 
-$title.=' '.$this->trans->get('price').' '.$article->getPriceSkidka().'грн. '.Config::findByCode('website_title')->getValue(); 
-                
+//} 
+$title.=' '.$this->trans->get('price').' '.$article->getPriceSkidka().'грн. ';
+$title.= 'размер '.$article->sizes[0]->size->size.' артикул - '.$article->sizes[0]->code; 
+$title.=' '.Config::findByCode('website_title')->getValue(); 
+
 		$this->cur_menu->setName($name);
                 $this->cur_menu->setPageTitle($title);
                 $this->cur_menu->setMetatagDescription($title.' '.$this->trans->get('description_exit'));
-                
-		
                 if (strcasecmp($article->getActive(), 'y') != 0){
                     $this->view->active = 0;
                         }else{
@@ -68,32 +96,40 @@ $title.=' '.$this->trans->get('price').' '.$article->getPriceSkidka().'грн. '
                                 $_SESSION['hist'][] = $article->getId();
                             }
                         }
-		
-		if (isset($error)) {
-			$this->view->error = $error;
-		}
-
 		$this->view->shop_item = $article;
 		$this->view->category = $article->getCategory();
-
-		echo $this->render('article/article.tpl.php');
-
+                $this->view->similar = $this->similar($article); // Похожие товары
+                if(/*$this->ws->getCustomer()->isAdmin()*/true){
+                    echo $this->render('article/article.tpl1.php');
+                }else{
+                    echo $this->render('article/article.tpl.php');
+                }
+		
                 if ($this->get->metod == 'frame') { die(); }
-
 	}
-        
+        /**
+         * Похожие товары
+         * @param type $article
+         * @return type
+         */
+        function similar($article){
+         return    wsActiveRecord::useStatic('Shoparticles')->findAll(['category_id'=>$article->getCategoryId(), 'status'=>3, 'stock not like "0"',  'id !='.$article->getId()],['ctime'=>'ASC'], [0,10]);
+        }
+        /**
+         * Быстрый просмотр товара
+         */
          public function quikviewAction() 
                  {
-             $article = wsActiveRecord::useStatic('Shoparticles')->findById($this->get->getId());
+         
+                $article = wsActiveRecord::useStatic('Shoparticles')->findById($this->get->getId());
                     if(!$article->id){
                         die(json_encode(array('error'=>1, 'message'=>'Непредвиденная ошибка')));
                         }
-                        $article->setViews($article->getViews() + 1);
-			$article->save();
-                        
+                $article->setViews($article->getViews() + 1);
+		$article->save(); 
                 $this->view->shop_item = $article;
 		$this->view->category = $article->getCategory();
-                $title = ucfirst($article->getModel()) . ' ' .trim($article->getBrand()).' '.$this->trans->get('color').' '.mb_strtolower($article->getColorName()->getName());; 
+                $title = ucfirst($article->getModel()) . ' ' .trim($article->getBrand()).' '.$this->trans->get('color').' '.mb_strtolower($article->getColorName()->getName());
                 die(json_encode(['title'=>$title, 'data'=>$this->render('article/quik_article.tpl.php')]));
                 }
         /**
@@ -110,7 +146,8 @@ $title.=' '.$this->trans->get('price').' '.$article->getPriceSkidka().'грн. '
 			$error = self::articlepost($article, $_POST);
 
 	if (count($error) == 0) {
-$change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], isset($_POST['artikul'])?$_POST['artikul']:0);
+           
+$change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], isset($_POST['artikul'])?$_POST['artikul']:0, $this->ws->getCustomer()->getIsLoggedIn()?$this->ws->getCustomer():false);
 
 		if ($change['status']) {
 			$messeg = $this->trans->get('ТОВАР ДОБАВЛЕН В КОРЗИНУ');
@@ -147,12 +184,16 @@ $change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], isset
         }
 
         /**
-         * отобраные по id товары
+         * отобраные по id товары с акции
          * @return представление с содержимим товаров
          * для вызова в get нужно создать url /articles/id/1,2,3...
          */
         public function articlesAction()
         {
+            $this->view->scripts = [
+                 '/js/filter.js',
+            '/js/jquery.cycle.all.js'
+                ];
            // var_dump($this->get);
             $page_onpage_order_by = FilterController::page_order_by();
            if($this->get->id){
@@ -163,11 +204,9 @@ $change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], isset
                  $this->view->g_url = $act->getPathFind();
            }
             $param = [];
-            if($this->get->categories) {
-           $param['categories'] = explode(',', $this->get->categories);
-           
-       }
-       
+
+       //  if($this->ws->getCustomer()->isAdmin()){l($this->get);}
+            
        if($this->get->brands) {
            foreach (explode(',', $this->get->brands) as $v){
             if ($v) {
@@ -209,19 +248,33 @@ $change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], isset
                     $search_result = Filter::getArticlesList($this->get->id, $param, $page_onpage_order_by['order_by'],  $page_onpage_order_by['page'], $page_onpage_order_by['onPage']);
                     
                 } elseif ($this->get->option){
-                 
-                     $search_result = Filter::getArticlesOptionList($act, $param,  $page_onpage_order_by['order_by'],  $page_onpage_order_by['page'], $page_onpage_order_by['onPage']);
-                   
+                 $meta_param = [
+                     'option' => $act,
+           'filter' => $param,
+           'order_by' => $page_onpage_order_by['order_by'],
+           'page' => $page_onpage_order_by['page'],
+           'Onpage' => $page_onpage_order_by['onPage']
+       ];
+                     $search_result = Filter::getArticlesOptionList($meta_param);
+                  
+                      $this->cur_menu->nofollow = 1; 
+                   $this->cur_menu->setName($act->option_text);
+                   $this->cur_menu->setPageTitle('Акции: '.$act->option_text);
+                   $this->cur_menu->setMetatagDescription($act->option_text.' '.Translator::get('description_exit'));
+                     
                 }else{
                     
                       $search_result = [];
                 }
+                 
 
-        $this->view->filters = $search_result['parametr'];
+       // $this->view->filters = $search_result['parametr'];
         $this->view->result_count = $search_result['count'];
         $this->view->total_pages = $search_result['pages'];
         $this->view->articles = $search_result['articles'];
 	$this->view->result = $this->view->render('finder/list.tpl.php');
             echo $this->render('finder/result.tpl.php');
         }
+        
+      
 }
