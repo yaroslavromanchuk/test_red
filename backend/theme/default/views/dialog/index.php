@@ -1,0 +1,1 @@
+<iframe  style="min-height: 800px" class="w-100" src="<?=$this->files?>views/dialog/dialog.php?type=0&fldr=/&akey=dsflFWR9u2xQa" frameborder="0" ></iframe>
