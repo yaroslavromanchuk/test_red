@@ -48,13 +48,22 @@ body {
         background-position: 50% 0%;
         background-repeat: no-repeat;
 	background-size: cover;
-	/*
-        background-image: url(/img/fon/admin/autumn.jpg);
-        background-image: url(/img/fon/admin/winter2018.1.jpg);
-        */
-        background-image: url(/img/fon/admin/osen4.jpg);
+	
+        background-image: url(/img/fon/admin/vesna.jpg);
+       /*
+       background-image: url(/img/fon/admin/autumn.jpg);
+       background-image: url(/img/fon/admin/winter_2018_4.jpg);*/
+        
+       /* background-image: url(/img/fon/admin/osen4.jpg);
+ */
 	z-index: 1;
 } 
+@media (min-width: 1200px){
+.container{
+    width: 1300px;
+}
+
+}
 
 .modal-backdrop {
   position: fixed;

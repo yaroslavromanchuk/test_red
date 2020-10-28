@@ -66,6 +66,193 @@ if(true){ ?>
     <div class="row row-sm mg-x-0">
      <div class="col-sm-12">
      <div class="card p-3">
+          <h6 class="card-body-title mb-2">Активные заказы</h6>
+          <div class="row">
+ <?php if(count($this->orders_days_active['koll'])){ ?>
+          <div class="col-sm-6 col-xl-3">
+            <div class="card pd-20 bg-primary">
+              <div class="d-flex justify-content-between align-items-center mg-b-10">
+                <h6 class="tx-11 tx-uppercase mg-b-0 tx-spacing-1 tx-white">за сегодня</h6>
+                <a href="" class="tx-white-8 hover-white" data-toggle="modal" data-target="#days"><i class="icon ion-android-more-horizontal"></i></a>
+              </div><!-- card-header -->
+              <div class="d-flex align-items-center justify-content-between">
+                <span class="sparkline2"><?=implode(',', $this->orders_days_active['koll'])?></span>
+              </div><!-- card-body -->
+	<h5 class="mg-b-0 tx-white tx-lato tx-bold"><?php
+				$am = 0;
+				$dep = 0;
+				$am_dep = 0;
+                                $bon = 0;
+				foreach($this->orders_days_active['am'] as $k => $koll){
+				$am += $koll;
+				}
+				foreach($this->orders_days_active['dep'] as $k => $koll){
+				$dep += $koll;
+				}
+                                foreach($this->orders_days_active['bon'] as $k => $koll){
+				$bon += $koll;
+				}
+				echo Number::formatFloat($am+$dep+$bon, 2).' грн.';
+				?></h5>
+				 <div class="d-flex align-items-center justify-content-between mg-t-15 bd-t bd-white-2 pd-t-10">
+                <div>
+                  <span class="tx-11 tx-white-6">Депозит</span>
+                  <h6 class="tx-white mg-b-0"><?=Number::formatFloat($dep,2)?> грн.</h6>
+                </div>
+                                     <div>
+                  <span class="tx-11 tx-white-6">Бонусы</span>
+                  <h6 class="tx-white mg-b-0"><?=Number::formatFloat($bon,2)?> грн.</h6>
+                </div>
+                <div>
+                  <span class="tx-11 tx-white-6">Денежные средства</span>
+                  <h6 class="tx-white mg-b-0"><?=Number::formatFloat($am,2)?> грн.</h6>
+                </div>
+              </div><!-- -->
+            </div><!-- card -->
+          </div><!-- col-3 -->
+<?php }
+
+if(count($this->orders_week_active['koll'])){	?>
+          <div class="col-sm-6 col-xl-3 mg-t-20 mg-sm-t-0">
+            <div class="card pd-20 bg-info">
+              <div class="d-flex justify-content-between align-items-center mg-b-10">
+                <h6 class="tx-11 tx-uppercase mg-b-0 tx-spacing-1 tx-white">за неделю</h6>
+                <a href="" class="tx-white-8 hover-white" data-toggle="modal" data-target="#week"><i class="icon ion-android-more-horizontal"></i></a>
+              </div><!-- card-header -->
+              <div class="d-flex align-items-center justify-content-between">
+                <span class="sparkline2"><?=implode(',', $this->orders_week_active['koll'])?></span>
+                
+              </div><!-- card-body -->
+			  <h5 class="mg-b-0 tx-white tx-lato tx-bold"><?php
+				$am = 0;
+				$dep = 0;
+				$am_dep = 0;
+                                $bon = 0;
+				foreach($this->orders_week_active['am'] as $k => $koll){
+				$am += $koll;
+				}
+				foreach($this->orders_week_active['dep'] as $k => $koll){
+				$dep += $koll;
+				}
+                                foreach($this->orders_week_active['bon'] as $k => $koll){
+				$bon += $koll;
+				}
+				echo Number::formatFloat($am+$dep+$bon, 2).' грн.';
+				?></h5>
+              <div class="d-flex align-items-center justify-content-between mg-t-15 bd-t bd-white-2 pd-t-10">
+                <div>
+                  <span class="tx-11 tx-white-6">Депозит</span>
+                  <h6 class="tx-white mg-b-0"><?=Number::formatFloat($dep,2)?> грн.</h6>
+                </div>
+                                    <div>
+                  <span class="tx-11 tx-white-6">Бонусы</span>
+                  <h6 class="tx-white mg-b-0"><?=Number::formatFloat($bon,2)?> грн.</h6>
+                </div>
+                <div>
+                  <span class="tx-11 tx-white-6">Денежные средства</span>
+                  <h6 class="tx-white mg-b-0"><?=Number::formatFloat($am,2)?> грн.</h6>
+                </div>
+              </div><!-- -->
+            </div><!-- card -->
+          </div><!-- col-3 -->
+<?php }
+        if(count($this->orders_month_active['koll'])){ ?>
+          <div class="col-sm-6 col-xl-3 mg-t-20 mg-xl-t-0">
+            <div class="card pd-20 bg-purple">
+              <div class="d-flex justify-content-between align-items-center mg-b-10">
+                <h6 class="tx-11 tx-uppercase mg-b-0 tx-spacing-1 tx-white">за месяц</h6>
+                <a href="" class="tx-white-8 hover-white" data-toggle="modal" data-target="#month"  ><i class="icon ion-android-more-horizontal"></i></a>
+              </div><!-- card-header -->
+              <div class="d-flex align-items-center justify-content-between">
+                <span class="sparkline2" ><?=implode(',', $this->orders_month_active['koll'])?></span>
+              </div><!-- card-body -->
+			   <h5 class="mg-b-0 tx-white tx-lato tx-bold"><?php
+				$am = 0;
+				$dep = 0;
+				$am_dep = 0;
+                                $bon = 0;
+				foreach($this->orders_month_active['am'] as $k => $koll){
+				$am += $koll;
+				}
+				foreach($this->orders_month_active['dep'] as $k => $koll){
+				$dep += $koll;
+				}
+				foreach($this->orders_month_active['bon'] as $k => $koll){
+				$bon += $koll;
+				}
+				echo Number::formatFloat($am+$dep+$bon, 2).' грн.';
+				?></h5>
+              <div class="d-flex align-items-center justify-content-between mg-t-15 bd-t bd-white-2 pd-t-10">
+                <div>
+                  <span class="tx-11 tx-white-6">Депозит</span>
+                  <h6 class="tx-white mg-b-0"><?=Number::formatFloat($dep,2)?> грн.</h6>
+                </div>
+                           <div>
+                  <span class="tx-11 tx-white-6">Бонусы</span>
+                  <h6 class="tx-white mg-b-0"><?=Number::formatFloat($bon,2)?> грн.</h6>
+                </div>
+                <div>
+                  <span class="tx-11 tx-white-6">Денежные средства</span>
+                  <h6 class="tx-white mg-b-0"><?=Number::formatFloat($am,2)?> грн.</h6>
+                </div>
+              </div><!-- -->
+            </div><!-- card -->
+          </div><!-- col-3 -->
+<?php }
+if(count($this->orders_year_active['koll'])){ ?>
+          <div class="col-sm-6 col-xl-3 mg-t-20 mg-xl-t-0">
+            <div class="card pd-20 bg-sl-primary">
+              <div class="d-flex justify-content-between align-items-center mg-b-10">
+                <h6 class="tx-11 tx-uppercase mg-b-0 tx-spacing-1 tx-white">за год</h6>
+                <a href="" class="tx-white-8 hover-white" data-toggle="modal" data-target="#year"><i class="icon ion-android-more-horizontal"></i></a>
+              </div><!-- card-header -->
+              <div class="d-flex align-items-center justify-content-between">
+                <span class="sparkline2"><?=implode(',', $this->orders_year_active['koll'])?></span>
+                
+              </div><!-- card-body -->
+			  <h5 class="mg-b-0 tx-white tx-lato tx-bold"><?php
+				$am = 0;
+				$dep = 0;
+				$am_dep = 0;
+                                  $bon = 0;
+				foreach($this->orders_year_active['am'] as $k => $koll){
+				$am += $koll;
+				}
+				foreach($this->orders_year_active['dep'] as $k => $koll){
+				$dep += $koll;
+				}
+				foreach($this->orders_year_active['bon'] as $k => $koll){
+				$bon += $koll;
+				}
+				echo Number::formatFloat($am+$dep+$bon, 2).' грн.';
+				?></h5>
+              <div class="d-flex align-items-center justify-content-between mg-t-15 bd-t bd-white-2 pd-t-10">
+                <div>
+                  <span class="tx-11 tx-white-6">Депозит</span>
+                  <h6 class="tx-white mg-b-0"><?=Number::formatFloat($dep,2)?> грн.</h6>
+                </div> 
+                    <div>
+                  <span class="tx-11 tx-white-6">Бонусы</span>
+                  <h6 class="tx-white mg-b-0"><?=Number::formatFloat($bon,2)?> грн.</h6>
+                </div>
+                <div>  
+                  <span class="tx-11 tx-white-6">Денежные средства</span>
+                  <h6 class="tx-white mg-b-0"><?=Number::formatFloat($am,2)?> грн.</h6>
+                </div>
+              </div><!-- -->
+            </div><!-- card -->
+          </div><!-- col-3 -->
+		   <?php }  ?> 
+		   </div>
+		   </div>
+		   </div>
+		   </div>
+    
+<?php }
+if(true){ ?>
+    <div class="row row-sm mg-x-0">
+     <div class="col-sm-12">
+     <div class="card p-3">
           <h6 class="card-body-title mb-2">Оплаченные заказы</h6>
           <div class="row">
  <?php if(count($this->orders_days_op['koll'])){ ?>
@@ -82,18 +269,26 @@ if(true){ ?>
 				$am = 0;
 				$dep = 0;
 				$am_dep = 0;
+                                 $bon = 0;
 				foreach($this->orders_days_op['am'] as $k => $koll){
 				$am += $koll;
 				}
 				foreach($this->orders_days_op['dep'] as $k => $koll){
 				$dep += $koll;
 				}
-				echo Number::formatFloat($am+$dep, 2).' грн.';
+				foreach($this->orders_days_op['bon'] as $k => $koll){
+				$bon += $koll;
+				}
+				echo Number::formatFloat($am+$dep+$bon, 2).' грн.';
 				?></h5>
 				 <div class="d-flex align-items-center justify-content-between mg-t-15 bd-t bd-white-2 pd-t-10">
                 <div>
                   <span class="tx-11 tx-white-6">Депозит</span>
                   <h6 class="tx-white mg-b-0"><?=Number::formatFloat($dep,2)?> грн.</h6>
+                </div>
+                                     <div>
+                  <span class="tx-11 tx-white-6">Бонусы</span>
+                  <h6 class="tx-white mg-b-0"><?=Number::formatFloat($bon,2)?> грн.</h6>
                 </div>
                 <div>
                   <span class="tx-11 tx-white-6">Денежные средства</span>
@@ -119,18 +314,26 @@ if(count($this->orders_week_op['koll'])){	?>
 				$am = 0;
 				$dep = 0;
 				$am_dep = 0;
+                                $bon = 0;
 				foreach($this->orders_week_op['am'] as $k => $koll){
 				$am += $koll;
 				}
 				foreach($this->orders_week_op['dep'] as $k => $koll){
 				$dep += $koll;
 				}
-				echo Number::formatFloat($am+$dep, 2).' грн.';
+				foreach($this->orders_week_op['bon'] as $k => $koll){
+				$bon += $koll;
+				}
+				echo Number::formatFloat($am+$dep+$bon, 2).' грн.';
 				?></h5>
               <div class="d-flex align-items-center justify-content-between mg-t-15 bd-t bd-white-2 pd-t-10">
                 <div>
                   <span class="tx-11 tx-white-6">Депозит</span>
                   <h6 class="tx-white mg-b-0"><?=Number::formatFloat($dep,2)?> грн.</h6>
+                </div>
+                             <div>
+                  <span class="tx-11 tx-white-6">Бонусы</span>
+                  <h6 class="tx-white mg-b-0"><?=Number::formatFloat($bon,2)?> грн.</h6>
                 </div>
                 <div>
                   <span class="tx-11 tx-white-6">Денежные средства</span>
@@ -154,19 +357,27 @@ if(count($this->orders_week_op['koll'])){	?>
 				$am = 0;
 				$dep = 0;
 				$am_dep = 0;
+                                $bon = 0;
 				foreach($this->orders_month_op['am'] as $k => $koll){
 				$am += $koll;
 				}
 				foreach($this->orders_month_op['dep'] as $k => $koll){
 				$dep += $koll;
 				}
-					echo Number::formatFloat($am+$dep, 2).' грн.';
+				foreach($this->orders_month_op['bon'] as $k => $koll){
+				$bon += $koll;
+				}
+				echo Number::formatFloat($am+$dep+$bon, 2).' грн.';
 				?></h5>
               <div class="d-flex align-items-center justify-content-between mg-t-15 bd-t bd-white-2 pd-t-10">
                 <div>
                   <span class="tx-11 tx-white-6">Депозит</span>
                   <h6 class="tx-white mg-b-0"><?=Number::formatFloat($dep,2)?> грн.</h6>
                 </div>
+                     <div>
+                  <span class="tx-11 tx-white-6">Бонусы</span>
+                  <h6 class="tx-white mg-b-0"><?=Number::formatFloat($bon,2)?> грн.</h6>
+                     </div>
                 <div>
                   <span class="tx-11 tx-white-6">Денежные средства</span>
                   <h6 class="tx-white mg-b-0"><?=Number::formatFloat($am,2)?> грн.</h6>
@@ -190,19 +401,27 @@ if(count($this->orders_year_op['koll'])){ ?>
 				$am = 0;
 				$dep = 0;
 				$am_dep = 0;
+                                  $bon = 0;
 				foreach($this->orders_year_op['am'] as $k => $koll){
 				$am += $koll;
 				}
 				foreach($this->orders_year_op['dep'] as $k => $koll){
 				$dep += $koll;
 				}
-				echo Number::formatFloat($am+$dep, 2).' грн.';
+				foreach($this->orders_year_op['bon'] as $k => $koll){
+				$bon += $koll;
+				}
+				echo Number::formatFloat($am+$dep+$bon, 2).' грн.';
 				?></h5>
               <div class="d-flex align-items-center justify-content-between mg-t-15 bd-t bd-white-2 pd-t-10">
                 <div>
                   <span class="tx-11 tx-white-6">Депозит</span>
                   <h6 class="tx-white mg-b-0"><?=Number::formatFloat($dep,2)?> грн.</h6>
                 </div>
+                  <div>
+                  <span class="tx-11 tx-white-6">Бонусы</span>
+                  <h6 class="tx-white mg-b-0"><?=Number::formatFloat($bon,2)?> грн.</h6>
+                     </div>
                 <div>
                   <span class="tx-11 tx-white-6">Денежные средства</span>
                   <h6 class="tx-white mg-b-0"><?=Number::formatFloat($am,2)?> грн.</h6>
@@ -267,7 +486,7 @@ if(count($this->orders_year_op['koll'])){ ?>
               <div class="card-body p-0">
                   <div class="row row no-gutters tx-center">
                       <div class="col-12 col-sm-10  tx-left">
-                            <p class="mg-b-20 mg-sm-b-30">Отображается средний чек (в грн.) за последние 30 дней.</p>
+                            <p class="mg-b-20 mg-sm-b-30">Отображается средний чек (в грн.) за последние 30 дней.<br> (деньги+депозит)</p>
                       </div>
                    <div class="col-6 col-sm-2">
                     <h4 class="tx-inverse tx-lato tx-bold mg-b-5 sr_chek"></h4>
@@ -393,7 +612,11 @@ if(count($this->orders_year_op['koll'])){ ?>
                   </div>
                     </div>
               <div class="card-body diagram_ostatki">
-		<canvas id="ostatki"  ></canvas>
+		<p>Остатки в единицах:</p>
+                  <canvas id="ostatki"  ></canvas>
+                <p>Остатки в грн.:</p>
+                <canvas id="ostatki_grn"  ></canvas>
+                
               </div><!-- list-group -->
              <div class="card-footer">
                  
@@ -403,83 +626,6 @@ if(count($this->orders_year_op['koll'])){ ?>
               </div><!-- card-footer -->
             </div><!-- card -->
           </div><!-- col-3 -->
-           <div class="col-sm-12 mg-t-20 mg-xl-t-0">
-            <div class="card overflow-hidden mg-t-20">
-                <div class="card-header bg-transparent pd-y-20 d-sm-flex align-items-center justify-content-between">
-                    <div class="mg-b-20 mg-sm-b-0">
-                  <h6 class="card-body-title">Сравнение остатков товара за период</h6>
-                  </div>
-                    </div>
-              <div class="card-body diagram_ostatki">
-		<div id="ostatki2"  ></div>
-                <div id="ostatki2_table"></div>
-              </div><!-- list-group -->
-             <div class="card-footer">
-               <form class="form-horizontal" name="procent-ostatka"  id="procent-ostatka">
-                   
-<fieldset>
-<!-- Form Name -->
-<!-- Text input-->
-<div class="form-row">
-<select name="cat_prognoz" id="cat_ostatoc_category" class="form-control form-control-sm select2" data-placeholder="Выберите категорию товара">
-            <option label="Категория"></option>
-            <option value="999">Главные категории</option>
-            <option value="888">Товары по гендеру</option>
-            <?php foreach (Shopcategories::find('Shopcategories', ['active'=> 1, 'parent_id'=>0, 'id not in (106, 85, 267, 146)']) as $cat ) {
-                ?>
-            <option value="<?=$cat->id?>"><?=$cat->getRoutez()?></option>
-                <?php  } ?>
-        </select>
-</div>
-<div class="form-row">
-    <legend>Интервалы:</legend>
-<div class="form-group col-md-6">
-  <label class="col-md-2 col-form-label" for="one-date-from">От</label>  
-  <div class="col-md-9">
-      <input id="one-date-from" name="one_date_from" type="date" onchange="$('#two-date-from').val(this.value)" placeholder="2019-04-05" class="form-control  form-control-sm" value="<?=date("Y-m-d", strtotime('-30 days'))?>" min="<?=date("Y-m-d", strtotime('-61 days'))?>" max="<?=date("Y-m-d", strtotime('-2 days'))?>" required="">
-  <span class="help-block">Выберите первую дата</span>  
-  </div>
-</div>
-<!-- Text input-->
-<div class="form-group col-md-6">
-  <label class="col-md-2 col-form-label" for="one-date-to">До</label>  
-  <div class="col-md-9">
-      <input id="one-date-to" name="one_date_to" type="date" placeholder="2019-05-05" onchange="$('#two-date-to').val(this.value)"  value="<?=date("Y-m-d")?>" min="<?=date("Y-m-d", strtotime('-60 days'))?>" max="<?=date("Y-m-d")?>" class="form-control form-control-sm" required="">
-  <span class="help-block">Выберите вторую дату</span>  
-  </div>
-</div>
-</div>
-<div class="form-row">
-    <legend>Сравнить с:</legend>
-<div class="form-group col-md-6">
-  <label class="col-md-2 col-form-label" for="one-date-from">От</label>  
-  <div class="col-md-9">
-      <input id="two-date-from" name="two_date_from" type="date" placeholder="2019-04-05" class="form-control form-control-sm" required="">
-  <span class="help-block">Выберите первую дата</span>  
-  </div>
-</div>
-<!-- Text input-->
-<div class="form-group col-md-6">
-  <label class="col-md-2 col-form-label" for="one-date-to">До</label>  
-  <div class="col-md-9">
-      <input id="two-date-to" name="two_date_to" type="date" placeholder="2019-05-05" class="form-control form-control-sm" required="">
-  <span class="help-block">Выберите вторую дату</span>  
-  </div>
-</div>
-</div>
-<div>
-    <input type="text" class="form-control form-control-sm" hidden  name="method"  value="sredniy_ostatok">
-    <!-- Button -->
-<div class="form-group col-md-12 text-center">
-    <button id="ostatoc-send" type="submit" name="ostatoc-send" class="btn btn-outline-primary">Построить</button>
-</div>
-</div>
-</fieldset>
-</form>
-              </div><!-- card-footer -->
-            </div><!-- card -->
-          </div><!-- col-3 -->
-          
           </div>
         <div  class="row row-sm mg-x-0 mg-t-20">
             <div class="col-12 my-1 text-center">
@@ -530,344 +676,7 @@ if(count($this->orders_year_op['koll'])){ ?>
             </div><!-- card -->
           </div><!-- col-6 -->
         </div>
-        <div class="row row-sm mg-x-0 mg-t-20">
-            <div class="col-12 my-1  text-center">
-                  <legend>ПРОГНОЗИРОВАНИЕ</legend>
-              </div>
-          <div class="col-xl-12 mg-t-20 mg-xl-t-0">
-            <div class="card overflow-hidden mg-t-20">
-                <div class="card-header bg-transparent pd-y-20 d-sm-flex align-items-center justify-content-between">
-                    <div class="mg-b-20 mg-sm-b-0">
-                  <h6 class="card-body-title">Прогнозы по категориям</h6>
-                  </div>
-                    <div>
-<form class="form-inline" name="form_prognoz" id="form_prognoz">
-  <div class="form-group">
-    <input type="date"  class="form-control form-control-sm" name="from_prognoz" id="from_prognoz" value="<?=date("Y-m-d", strtotime('-60 days'))?>" min="<?=date("Y-m-d", strtotime('-1 Year'))?>" max="<?=date("Y-m-d")?>" >
-    
-  </div>
-    
-  <div class="form-group">
-   <input type="date" class="form-control form-control-sm" id="to_prognoz" name="to_prognoz"  value="<?=date("Y-m-d")?>" min="<?=date("Y-m-d", strtotime('-60 days'))?>" max="<?=date("Y-m-d")?>">
-  </div>
-    <div class="form-group">
-        <?php
-         $mas = [];
-		foreach (Shopcategories::find('Shopcategories', ['active'=> 1, 'id not in (106)']) as $cat) {
-                    $mas[$cat->getId()] = $cat->getRoutez();
-                }
-                asort($mas);
-?>
-        <select name="cat_prognoz" id="cat_prognoz" class="form-control form-control-sm select2" data-placeholder="Выберите категорию товара">
-            <option label="Категория"></option>
-            <?php foreach ($mas as $key => $value) {
-                if(strripos($value, 'SALE') === FALSE){
-                ?>
-            <option value="<?=$key?>"><?=$value?></option>
-                <?php } } ?>
-        </select>
-    </div>
-    <div class="form-group">
-        <select name="interval_prognoz" id="interval_prognoz" class="form-control form-control-sm select2" data-placeholder="Выберите интервал">
-            <option label="Интервал"></option>
-            <option value="1" selected>Недели</option>
-            <option value="2">Дни</option>
-        </select>
-    </div>
-    <div class="form-group">
-    <button type="submit" name="toChart" class="btn btn-primary ">Построить</button>
-    
-    </div>
-</form>
-                        </div>
-                    </div>
-              <div class="card-body diagram_prognoz">
-                <!--  <button type="button" onclick=" $(this).hide('slow'); ostatki()" class="btn btn-outline-primary">Отобразить</button>-->
-                <div id="prognoz"></div>
-              </div><!-- list-group -->
-             <div class="card-footer text-right">
-                 <button type="button" onclick="ToExcel($('#form_prognoz').serialize());" name="toExcel" class="btn btn-primary btn-sm">Скачать категории по грейдам</button>
-    <button type="button" onclick="testik_dey($('#form_prognoz').serialize());" name="toExcelDey" class="btn btn-primary btn-sm">Скачать прогноз категорий по дням</button>
-    <button type="button" onclick="balance_brand_in_category_to_excel($('#form_prognoz').serialize());" name="brandexcel" class="btn btn-primary btn-sm">Скачать буфер по брендам</button>
-             
-              </div><!-- card-footer -->
-            </div><!-- card -->
-          </div><!-- col-3 -->
-          </div>
-        <div class="row row-sm mg-x-0 mg-t-20">
-          <div class="col-xl-12 mg-t-20 mg-xl-t-0">
-            <div class="card overflow-hidden mg-t-20">
-                <div class="card-header bg-transparent pd-y-20 d-sm-flex align-items-center justify-content-between">
-                    <div class="mg-b-20 mg-sm-b-0">
-                  <h6 class="card-body-title">Прогнозы по брендам</h6>
-                  </div>
-                    <div>
-<form class="form-inline" name="form_prognoz_brand" id="form_prognoz_brand">
-  <div class="form-group">
-    <input type="date"  class="form-control form-control-sm" onchange="DistinctBrand();" name="from_prognoz_brand" id="from_prognoz_brand" value="<?=date("Y-m-d", strtotime('-60 days'))?>" min="<?=date("Y-m-d", strtotime('-1 Year'))?>" max="<?=date("Y-m-d")?>" >
-    
-  </div>
-    
-  <div class="form-group">
-      <input type="date" class="form-control form-control-sm" onchange="DistinctBrand();" id="to_prognoz_brand" name="to_prognoz_brand"  value="<?=date("Y-m-d")?>" min="<?=date("Y-m-d", strtotime('-60 days'))?>" max="<?=date("Y-m-d")?>">
-  </div>
-    <div class="form-group">
-        <select name="brand_prognoz" id="brand_prognoz" class="form-control form-control-sm " data-placeholder="Выберите категорию товара">
-            <option label="Бренд"></option>
-        </select>
-    </div>
-    <div class="form-group">
-        <select name="interval_prognoz_brand" id="interval_prognoz_brand" class="form-control form-control-sm select2" data-placeholder="Выберите интервал">
-            <option label="Интервал"></option>
-            <option value="1" selected>Недели</option>
-            <option value="2">Дни</option>
-        </select>
-    </div>
-    <div class="form-group">
-    <button type="submit" name="toChartBrand" class="btn btn-primary">Построить</button>
-   <!-- <button type="button" onclick="ToExcel($('#form_prognoz').serialize());" name="toExcel" class="btn btn-primary btn-sm">Скачать</button>
-    <button type="button" onclick="testik_dey($('#form_prognoz').serialize());" name="toExcelDey" class="btn btn-primary btn-sm">Скачать по дням</button>-->
-    
-    </div>
-</form>
-                        </div>
-                    </div>
-              <div class="card-body diagram_prognoz">
-                <!--  <button type="button" onclick=" $(this).hide('slow'); ostatki()" class="btn btn-outline-primary">Отобразить</button>-->
-                <div id="prognoz_brand"></div>
-              </div><!-- list-group -->
-              <div class="card-footer text-right">
-                <button type="button" onclick="balance_brand_all_to_excel($('#form_prognoz_brand').serialize());" name="brandallexcel" class="btn btn-primary btn-sm">Скачать прогноз</button>
-              </div><!-- card-footer -->
-            </div><!-- card -->
-          </div><!-- col-3 -->
-          </div>
-        <!--Оборачиваемость-->
-        <div class="row row-sm mg-x-0 mg-t-20">
-            <div class="col-sm-12">
-        <div class="card  p-4 ">
-            <div class="card-header bg-transparent pd-y-20 d-sm-flex align-items-center justify-content-between">
-                <div class="mg-b-20 mg-sm-b-0">
-          <h6 class="card-body-title mb-2">Оборачиваемость</h6>
-          </div>
-            <div class="input-group  ">
-                   <div class="input-group-prepend">
-    <span class="input-group-text" id="">От</span>
-  </div>
-    <input type="date"  class="form-control form-control-sm" name="from_prognoz" id="from_oborot" value="<?=date("Y-m-d", strtotime('-60 days'))?>"  max="<?=date("Y-m-d")?>" >
-   <input type="date" class="form-control form-control-sm" id="to_oborot" name="to_prognoz"  value="<?=date("Y-m-d")?>"  max="<?=date("Y-m-d")?>">
-  <div class="input-group-append">
-    <span class="input-group-text" id="">До</span>
-  </div>
-    </div>
-          </div>
-            <div class="card-body">
-        <div class="row row-sm ">
-             <div class="col-sm-12 mg-t-20 mg-xl-t-0">
-            <div class="card overflow-hidden mg-t-20">
-                <div class="card-header bg-transparent pd-y-20 d-sm-flex align-items-center justify-content-between">
-                    <div class="mg-b-20 mg-sm-b-0">
-                  <h6 class="card-body-title">Общая</h6>
-                  <span class="mg-b-20 mg-sm-b-30">Вся товарная группа</span>
-                  </div>
-                    </div>
-              <div class="card-body diagram_ostatki">
-		<div id="oborot"></div>
-              </div>
-                <div class="card-footer">
-                    <form class="form-inline" name="form_oborot_all" id="form_oborot_all">
-   <input type="text" class="form-control form-control-sm" hidden  name="method"  value="oborot_all">
-    <div class="form-group">
-    <button type="submit" name="oborot_go" class="btn btn-primary btn-sm">Построить</button> </div>
-</form>
-                </div>
-            </div><!-- card -->
-          </div><!-- col-3 -->
-             <div class="col-sm-12 mg-t-20 mg-xl-t-0">
-            <div class="card overflow-hidden mg-t-20">
-                <div class="card-header bg-transparent pd-y-20 d-sm-flex align-items-center justify-content-between">
-                    <div class="mg-b-20 mg-sm-b-0">
-                  <h6 class="card-body-title">Главные категории</h6>
-                  <span class="mg-b-20 mg-sm-b-30">Товары по категориям</span>
-                  </div>
-                    </div>
-              <div class="card-body diagram_ostatki">
-		<div id="oborot_root"></div>
-              </div>
-                <div class="card-footer">
-              <form class="form-inline" name="form_oborot_root" id="form_oborot_root">
-  <div class="form-group">
-      <select name="zone"  data-placeholder="Зона" class="form-control form-control-sm select2">
-           <option label="Зона"></option>
-           <option value="0">Все</option>
-            <option value="28">Красная</option>
-            <option value="21">Синяя</option>
-            <option value="1">Зеленая</option>
-      </select>
-   <input type="text" class="form-control form-control-sm" hidden  name="method"  value="oborot_root_category">
-   <input type="text" class="form-control form-control-sm" hidden  name="cat_prognoz"  value="0">
-  </div>
-    <div class="form-group">
-    <button type="submit" name="oborot_go_root" class="btn btn-primary btn-sm">Построить</button> </div>
-</form>
-                
-                
-              </div><!-- card-footer -->
-          </div>
-        </div>
-          <div class="col-xl-12 mg-t-20 mg-xl-t-0">
-            <div class="card overflow-hidden mg-t-20">
-                <div class="card-header bg-transparent pd-y-20 d-sm-flex align-items-center justify-content-between">
-                    <div class="mg-b-20 mg-sm-b-0">
-                  <h6 class="card-body-title">Подкатегории</h6>
-                  <span class="mg-b-20 mg-sm-b-30">Товары по подкатегориям</span>
-                  </div>
-                    </div>
-              <div class="card-body diagram_ostatki">
-		<div id="oborot_category"></div>
-              </div>
-                <div class="card-footer">
-              <form class="form-inline" name="form_oborot_category" id="form_oborot_category">
-  <div class="form-group">
-        <select name="cat_prognoz" id="cat_oborot_category" class="form-control form-control-sm select2" data-placeholder="Выберите категорию товара">
-            <option label="Категория"></option>
-            <?php foreach (Shopcategories::find('Shopcategories', ['active'=> 1, 'parent_id'=>0, 'id not in (106, 85, 267, 146)']) as $cat ) {
-                ?>
-            <option value="<?=$cat->id?>"><?=$cat->getRoutez()?></option>
-                <?php  } ?>
-        </select>
-   <input type="text" class="form-control form-control-sm" hidden  name="method"  value="oborot_category">
-  </div>
-    <div class="form-group" >
-         <select name="zone"  data-placeholder="Зона" class="form-control form-control-sm select2">
-           <option label="Зона"></option>
-           <option value="0">Все</option>
-            <option value="28">Красная</option>
-            <option value="21">Синяя</option>
-            <option value="1">Зеленая</option>
-      </select>
-        </div>
-    <div class="form-group">
-    <button type="submit" name="oborot_go_category" class="btn btn-primary btn-sm">Построить</button> </div>
-</form>
-                
-                
-              </div><!-- card-footer -->
-          </div>
-        </div>
-         <div class="col-sm-12 mg-t-20 mg-xl-t-0">
-            <div class="card overflow-hidden mg-t-20">
-                <div class="card-header bg-transparent pd-y-20 d-sm-flex align-items-center justify-content-between">
-                    <div class="mg-b-20 mg-sm-b-0">
-                  <h6 class="card-body-title">Бренды</h6> 
-                  <span class="mg-b-20 mg-sm-b-30">Товары по брендам</span>
-                  </div>
-                    </div>
-              <div class="card-body diagram_ostatki_brand">
-		<div id="oborot_brand"></div>
-              </div>
-                <div class="card-footer">
-              <form class="form-inline" name="form_oborot_brand" id="form_oborot_brand">
-  <div class="form-group">
-      <select name="zone"  data-placeholder="Зона" class="form-control form-control-sm select2">
-           <option label="Зона"></option>
-           <option value="0">Все</option>
-            <option value="28">Красная</option>
-            <option value="21">Синяя</option>
-            <option value="1">Зеленая</option>
-      </select>
-   <input type="text" class="form-control form-control-sm" hidden  name="method"  value="oborot_brand">
-  </div>
-    <div class="form-group">
-    <button type="submit" name="oborot_go_brand" class="btn btn-primary btn-sm">Построить</button> </div>
-</form>
-                
-                
-              </div><!-- card-footer -->
-          </div>
-        </div>
-          <div class="col-sm-12 mg-t-20 mg-xl-t-0">
-            <div class="card overflow-hidden mg-t-20">
-                <div class="card-header bg-transparent pd-y-20 d-sm-flex align-items-center justify-content-between">
-                    <div class="mg-b-20 mg-sm-b-0">
-                  <h6 class="card-body-title">Грейды</h6> 
-                  <span class="mg-b-20 mg-sm-b-30">Товары по грейдам</span>
-                  </div>
-                    </div>
-              <div class="card-body diagram_ostatki_brand">
-		<div id="oborot_graid"></div>
-              </div>
-                <div class="card-footer">
-              <form class="form-inline" name="form_oborot_graid" id="form_oborot_graid">
-  <div class="form-group">
-      <select name="zone"  data-placeholder="Зона" class="form-control form-control-sm select2">
-           <option label="Зона"></option>
-           <option value="0">Все</option>
-            <option value="28">Красная</option>
-            <option value="21">Синяя</option>
-            <option value="1">Зеленая</option>
-      </select>
-   <input type="text" class="form-control form-control-sm" hidden  name="method"  value="oborot_graid">
-  </div>
-    <div class="form-group">
-    <button type="submit" name="oborot_go_brand" class="btn btn-primary btn-sm">Построить</button> </div>
-</form>
-                
-                
-              </div><!-- card-footer -->
-          </div>
-        </div>
-            
-              
-            </div>
-            </div>
-          </div>
-                </div>
-          </div>
-         <!--/Оборачиваемость-->
-         <!--Проценти-->
-<div class="row row-sm mg-x-0 mg-t-20">
-    <div class="col-sm-12">
-        <div class="card  p-4 ">
-            <div class="card-header bg-transparent pd-y-20 d-sm-flex align-items-center justify-content-between">
-                <div class="mg-b-20 mg-sm-b-0">
-          <h6 class="card-body-title mb-2">Продажи по процентам</h6>
-          </div>
-            <div class="input-group  ">
-            <div class="input-group-prepend">
-    <span class="input-group-text" id="">От</span>
-  </div>
-    <input type="date"  class="form-control form-control-sm" name="from_procent" id="from_procent" value="<?=date("Y-m-d", strtotime('-60 days'))?>" min="<?=date("Y-m-d", strtotime('-1 Year'))?>" max="<?=date("Y-m-d")?>" >
-   <input type="date" class="form-control form-control-sm" id="to_procent" name="to_procent"  value="<?=date("Y-m-d")?>" min="<?=date("Y-m-d", strtotime('-6 month'))?>" max="<?=date("Y-m-d")?>">
-  <div class="input-group-append">
-    <span class="input-group-text" id="">До</span>
-  </div>
-    </div>
-          </div>
-            <div class="card-body">
-        <div class="row row-sm ">
-             <div class="col-sm-12 mg-t-20 mg-xl-t-0">
-            <div class="card overflow-hidden mg-t-20">
-                <div class="card-header bg-transparent pd-y-20 d-sm-flex align-items-center justify-content-between">
-                    <div class="mg-b-20 mg-sm-b-0">
-                  <h6 class="card-body-title">Общая</h6>
-                  <span class="mg-b-20 mg-sm-b-30">Вся товарная группа</span>
-                  </div>
-                    </div>
-              <div class="card-body diagram_ostatki111">
-		<div id="oborot111"></div>
-              </div>
-                <div class="card-footer">
-                    <button type="button" name="procent" onclick="ProcentToExcel(this);" class="btn btn-primary btn-sm">Скачать</button>
-                </div>
-            </div><!-- card -->
-          </div><!-- col-3 -->
-          </div>
-                </div>
-        </div>
-    </div>
-</div>
-         
+
         <div class="row row-sm mg-x-0 mg-t-20">
               
 <div class="col-xl-3 d-none">
@@ -1009,9 +818,7 @@ if(count($this->orders_year_op['koll'])){ ?>
             </div><!-- card -->
           </div><!-- col-6 -->
         </div><!-- row -->
-  <script src="<?=$this->files?>views/template/js/resize_sensor.js"></script>
-	   
-	   
+  <script src="<?=$this->files?>views/template/js/resize_sensor.js"></script>   
     <script src="<?=$this->files?>views/template/lib/jquery.sparkline.bower/jquery.sparkline.min.js"></script>
    <script src="<?=$this->files?>views/template/lib/d3/d3.js"></script>
    <script src="<?=$this->files?>views/template/lib/chart.js/chart.js"></script>
@@ -1020,80 +827,9 @@ if(count($this->orders_year_op['koll'])){ ?>
    <script src="<?=$this->files?>views/template/lib/flot/jquery.flot.pie.js"></script>	
     <script src="<?=$this->files?>views/template/lib/raphael/raphael.min.js"></script>
  <script src="<?=$this->files?>views/template/lib/morris.js/morris.js"></script>   
-  <script src="<?=$this->files?>views/template/js/home.js?v=4.3.6"></script>   
+  <script src="<?=$this->files?>views/template/js/home.js?v=4.6.4"></script>   
 <script>
-function nTime(){
-$(".m_time").hide();
-$(".n_time").show();
-return false;
-}
-function mTime(){
-$(".n_time").hide();
-$(".m_time").show();
-return false;
-}
-function naTime(){
-$(".m_a_time").hide();
-$(".n_a_time").show();
-return false;
-}
-function maTime(){
-$(".n_a_time").hide();
-$(".m_a_time").show();
-return false;
-}
-
-$(function(){
-
-$('#days').on('shown.bs.modal', function () {
-$('.sparkline_days').html($('.days').text());
-  $('.sparkline_days').sparkline('html', {
-    type: 'bar',
-    barWidth: 30,
-    height: 200,
-    barColor: '#0083CD',
-    lineColor: 'rgba(255,255,255,0.5)',
-    chartRangeMin: 0,
-    chartRangeMax: 10
-  });
-});
-$('#week').on('shown.bs.modal', function () {
-$('.sparkline_week').html($('.week').text());
-  $('.sparkline_week').sparkline('html', {
-    type: 'bar',
-    barWidth: 30,
-    height: 200,
-    barColor: '#0083CD',
-    lineColor: 'rgba(255,255,255,0.5)',
-    chartRangeMin: 0,
-    chartRangeMax: 10
-  });
-});
-$('#month').on('shown.bs.modal', function () {
-$('.sparkline_month').html($('.month').text());
-  $('.sparkline_month').sparkline('html', {
-    type: 'bar',
-    barWidth: 30,
-    height: 200,
-    barColor: '#6e42c1',
-    lineColor: 'rgba(255,255,255,0.5)',
-    chartRangeMin: 0,
-    chartRangeMax: 10
-  });
-});
-$('#year').on('shown.bs.modal', function () {
-$('.sparkline_year').html($('.year').text());
-  $('.sparkline_year').sparkline('html', {
-    type: 'bar',
-    barWidth: 30,
-    height: 200,
-    barColor: '#2b333e',
-    lineColor: 'rgba(255,255,255,0.5)',
-    chartRangeMin: 0,
-    chartRangeMax: 10
-  });
-});
-	new Morris.Bar({
+ new Morris.Bar({
     element: 'brand_sub',
     data: [
   { y: 'Подписались', a: <?=$this->res_brand_sub['sub']?>},
@@ -1107,399 +843,4 @@ gridTextSize: 14,
 hideHover: 'auto',
 resize: true
   });
-
-});
-/**
- * 
- * @type type
- */
-
-
-$("#procent-ostatka").submit(function(){
-
-    var f = $(this).serializeArray();
-        console.log(f);
-       // console.log(f.one-date-from);
-   // alert(f);
-    var f1 = new Date($('#one-date-from').val());
-   var t1 = new Date($('#one-date-to').val());
-   var f2 = new Date($('#two-date-from').val());
-   var t2 = new Date($('#two-date-to').val());
-   
-   if(f1 > t1){
-       alert('Не правильно указана дата');
-       return false;
-   }else if(f2 > t2){
-        alert('Не правильно указана дата сравнения');
-       return false;
-   }else if(f2 >= f1  || t2 >= t1){
-       alert('Дата сравнения должна быть меньше первой даты');
-       return false;
-   }
-
-   procent_ostatka($(this).serialize());
-    return false;
-});
-
-
-$("#form_prognoz").submit(function(e){
-    console.log($(this).serialize());
-    prognoz($(this).serialize());
-    return false;
-});
-$("#form_prognoz_brand").submit(function(e){
-    console.log($(this).serialize());
-    prognozBrand($(this).serialize());
-    return false;
-});
-$("#form_oborot_all").submit(function(e){
-    var form = $(this).serialize();
-    var from = $('#from_oborot').val();
-    var to = $('#to_oborot').val();
-    form+='&cat_prognoz=267&from_prognoz='+from+'&to_prognoz='+to;
-
-    oborot_all(form);
-    return false;
-});
-
-$("#form_oborot_root").submit(function(e){
-    var form = $(this).serialize();
-    var from = $('#from_oborot').val();
-    var to = $('#to_oborot').val();
-    form+='&from_prognoz='+from+'&to_prognoz='+to;
- console.log(form);
-   //  $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
-               
-  
-  // var ar = [14,15,33,59,146,54];
-  oborot_category(form, 'oborot_root');
-   //   oborot_root(form, ar, 0); 
-    return false;
-});
-$("#form_oborot_brand").submit(function(e){
-    var form = $(this).serialize();
-    var from = $('#from_oborot').val();
-    var to = $('#to_oborot').val();
-    form+='&from_prognoz='+from+'&to_prognoz='+to;
- console.log(form);
-   //  $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
-  oborot_brand(form, 'oborot_brand');
-    return false;
-});
-$("#form_oborot_graid").submit(function(e){
-    var form = $(this).serialize();
-    var from = $('#from_oborot').val();
-    var to = $('#to_oborot').val();
-    form+='&from_prognoz='+from+'&to_prognoz='+to;
- console.log(form);
-   //  $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
-  oborot_graid(form, 'oborot_graid');
-    return false;
-});
-
-$("#form_oborot_category").submit(function(e){
-   // var form_array  = $(this).serializeArray();
-    var form = $(this).serialize();
-    //console.log(form_array);
-    var from = $('#from_oborot').val();
-    var to = $('#to_oborot').val();
-    form+='&from_prognoz='+from+'&to_prognoz='+to;
-    console.log(form);
-    oborot_category(form, 'oborot_category');
-    return false;
-});
-function oborot_category(form, element){
-  //  console.log(form);
-   // console.log(element);
-    //return false;
-    
-    if(element == 'oborot_category'){
-         var cat = $('#cat_oborot_category option:selected').text();
-    }else{
-        var cat = 'Главные категории';
-    }
-   
-    console.log(cat);
-            //var date =[];
-		$.ajax({
-                beforeSend: function(){
-                    $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
-                },
-                url: '/admin/home/',
-                type: 'POST',
-                dataType: 'json',
-                data: form,
-                success: function (res) {
-			console.log(res);
-                        //  date = res;
-                },
-		error: function (res) {
-			console.log(res);
-		}
-            }).done(function(date) {
-                if(date.length > 0){
-                 chart.addSeries({data: date[0].niz, name:'21', type: 'area', zIndex: 4,color: '#23bf08', marker: {enabled: false}});
-                 chart.addSeries({data: date[0].norma, name:'28', type: 'area', zIndex: 3, color: '#17f2f4',  marker: {enabled: false}});
-                 chart.addSeries({data: date[0].verch, name:'45', type: 'area', zIndex: 2,color: '#ff0018', marker: {enabled: false}});
-                 chart.xAxis[0].setCategories(date[0].x);
-                 var z = 5;
-                for(var k in date){
-                    chart.addSeries({data: date[k].oborot, name:date[k].cat,  type: 'spline', zIndex: z});
-                    z++;
-                }
-            }
-                console.log(date);
-                    $('.modal-backdrop').hide();
-                    $('#foo').detach();
-                      });
-                      
-     
-var chart =  new  Highcharts.Chart({
-title: {
-        text: cat
-            },
-  chart: {
-    renderTo: element
-  },
-
-    xAxis: {
-    labels: {
-      rotation: 90
-    }, 
-    title:{
-         text: 'Недели'
-    }
-            },
-    yAxis: {
-                title: {
-                    text: 'Дни'
-                },
-                 categories: [0]
-            },
-    tooltip: {
-        shared: true
-    }
-});
-     
-
-return false;
-
-}
-function oborot_brand(form, element){
-  //  console.log(form);
-   // console.log(element);
-    //return false;
-    
-   // if(element == 'oborot_brand'){
-       //  var cat = $('#cat_oborot_category option:selected').text();
-    //}else{
-        var cat = 'Бренды';
-   // }
-   
-    console.log(cat);
-            //var date =[];
-		$.ajax({
-                beforeSend: function(){
-                    $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
-                },
-                url: '/admin/home/',
-                type: 'POST',
-                dataType: 'json',
-                data: form,
-                success: function (res) {
-			console.log(res);
-                        //  date = res;
-                },
-		error: function (res) {
-			console.log(res);
-		}
-            }).done(function(date) {
-                if(date.length > 0){
-                    var l = date[0].verch.length;
-                   
-                 chart.addSeries({data: date[0].niz, name:date[0].niz_m, type: 'area', zIndex: 4,color: '#23bf08', marker: {enabled: false}});
-                 chart.addSeries({data: date[0].norma, name:date[0].norma_m, type: 'area', zIndex: 3, color: '#17f2f4',  marker: {enabled: false}});
-                // chart.addSeries({data: date[0].verch, name:date[0].verch_m, type: 'area', zIndex: 2,color: '#ff0018', marker: {enabled: false}});
-                 chart.xAxis[0].setCategories(date[0].x);
-                 var z = 5;
-                 var verch = 0;
-                 for(var v in date){
-                    if(date[v].verch_m > verch){
-                      verch = date[v].verch_m;
-                    }
-                 }
-                 var vv = [];
-                  for(i=0;i<l;i++){
-                      vv.push(verch);
-                  }
-                  chart.addSeries({data: vv, name: verch, type: 'area', zIndex: 2,color: '#ff0018', marker: {enabled: false}});
-                  
-                for(var k in date){
-                    
-                    chart.addSeries({data: date[k].oborot, name:date[k].cat,  type: 'spline', zIndex: z});
-                    z++;
-                }
-                
-            }
-                console.log(date);
-                    $('.modal-backdrop').hide();
-                    $('#foo').detach();
-                      });
-                      
-     
-var chart =  new  Highcharts.Chart({
-title: {
-        text: cat
-            },
-  chart: {
-    renderTo: element
-  },
-
-    xAxis: {
-    labels: {
-      rotation: 90
-    }, 
-    title:{
-         text: 'Недели'
-    }
-            },
-    yAxis: {
-                title: {
-                    text: 'Дни'
-                },
-                 categories: [0]
-            },
-    tooltip: {
-        shared: true
-    }
-});
-     
-
-return false;
-
-}
-function oborot_graid(form, element){
-  //  console.log(form);
-   // console.log(element);
-    //return false;
-    
-   // if(element == 'oborot_brand'){
-       //  var cat = $('#cat_oborot_category option:selected').text();
-    //}else{
-        var cat = 'Грейды';
-   // }
-   
-    console.log(cat);
-            //var date =[];
-		$.ajax({
-                beforeSend: function(){
-                    $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
-                },
-                url: '/admin/home/',
-                type: 'POST',
-                dataType: 'json',
-                data: form,
-                success: function (res) {
-			console.log(res);
-                        //  date = res;
-                },
-		error: function (res) {
-			console.log(res);
-		}
-            }).done(function(date) {
-                if(date.length > 0){
-                    var l = date[0].verch.length;
-                   
-                 chart.addSeries({data: date[0].niz, name:date[0].niz_m, type: 'area', zIndex: 4,color: '#23bf08', marker: {enabled: false}});
-                 chart.addSeries({data: date[0].norma, name:date[0].norma_m, type: 'area', zIndex: 3, color: '#17f2f4',  marker: {enabled: false}});
-                // chart.addSeries({data: date[0].verch, name:date[0].verch_m, type: 'area', zIndex: 2,color: '#ff0018', marker: {enabled: false}});
-                 chart.xAxis[0].setCategories(date[0].x);
-                 var z = 5;
-                 var verch = 0;
-                 for(var v in date){
-                    if(date[v].verch_m > verch){
-                      verch = date[v].verch_m;
-                    }
-                 }
-                 var vv = [];
-                  for(i=0;i<l;i++){
-                      vv.push(verch);
-                  }
-                  chart.addSeries({data: vv, name: verch, type: 'area', zIndex: 2,color: '#ff0018', marker: {enabled: false}});
-                  
-                for(var k in date){
-                    
-                    chart.addSeries({data: date[k].oborot, name:date[k].cat,  type: 'spline', zIndex: z});
-                    z++;
-                }
-                
-            }
-                console.log(date);
-                    $('.modal-backdrop').hide();
-                    $('#foo').detach();
-                      });
-                      
-     
-var chart =  new  Highcharts.Chart({
-title: {
-        text: cat
-            },
-  chart: {
-    renderTo: element
-  },
-
-    xAxis: {
-    labels: {
-      rotation: 90
-    }, 
-    title:{
-         text: 'Недели'
-    }
-            },
-    yAxis: {
-                title: {
-                    text: 'Дни'
-                },
-                 categories: [0]
-            },
-    tooltip: {
-        shared: true
-    }
-});
-     
-
-return false;
-
-}
-
-
-
-$("#form_analitics").submit(function(e){
-    analityks($('#from_analitic').val(), $('#to_analitic').val())
-    return false;
-});
-$('.articles').click(function(e){
-  if(e.target.id == 'h') {
-  $(".n_a_time").hide();
-$(".m_a_time").hide();
-}
-$('#'+e.target.id).addClass("active");
-  //rickshaw2(e.target.id);
-  console.log(e.target.id);
-  chartLine(e.target.id);
-});
-
-$('.order').click(function(e){
-$('#h').removeClass("active");
-$('#n').removeClass("active");
-$('#m').removeClass("active");
-  console.log(e.target.id);
-  if(e.target.id == 'h') {
-  $(".n_time").hide();
-$(".m_time").hide();
-}
-  $('#'+e.target.id).addClass("active");
-  rickshaw2(e.target.id);
-});
-
 </script>		

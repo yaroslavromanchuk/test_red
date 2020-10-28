@@ -22,6 +22,10 @@ class wsLanguage extends wsActiveRecord
 		if(!$l){$l = wsLanguage::getDefaultLang();}
 		return $l;
 	}
+        public static function findLangActive($lang = null)
+	{
+		return wsActiveRecord::useStatic(self::$_language_class)->findFirst(array('code'=> $lang));
+	}
 
 }
 

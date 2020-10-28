@@ -411,9 +411,11 @@ foreach ($shipment as $c) {
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         $response = curl_exec($ch);
+        $error = curl_error($ch);
         curl_close($ch);
         if (!$response) {
-            throw new MeestExpress_Exception('Empty response');
+           
+            throw new MeestExpress_Exception($error);
         }
 
         $xml = simplexml_load_string($response);

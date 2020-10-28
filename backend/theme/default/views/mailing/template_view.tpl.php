@@ -20,6 +20,7 @@
 	<tbody style="width:700px;">
 	<tr>
 	<?php 
+        $c = 0;
 foreach (wsActiveRecord::useStatic('Shopcategories')->findAll(array('parent_id'=>0, 'active'=>1, 'email IS NOT NULL')) as $menui) {?>
 <td style="padding:0;">
 <a href="https://<?=$dname.$menui->getPath()?>"  style="letter-spacing: -1px;text-decoration: none;
@@ -34,7 +35,7 @@ foreach (wsActiveRecord::useStatic('Shopcategories')->findAll(array('parent_id'=
     color: #605f60;"  target="_blank">
 <img src="https://<?=$dname.$this->files?>img/email/cat/<?=$menui->img_email?>.png" style="width:40px;margin-top: 5px;">
 <br><span style="margin-left: -5px;"><?=$menui->getEmail()?></span></a></td>
-						<?php } ?>
+						<?php $c++; } if($c<10) { ?>
 	<td style="padding:0;">
 	<a href="https://www.red.ua/brands/" style="letter-spacing: -1px;text-decoration: none;
     text-transform: uppercase;
@@ -47,6 +48,7 @@ foreach (wsActiveRecord::useStatic('Shopcategories')->findAll(array('parent_id'=
     font-weight: bold;
     color: #605f60;"   target="_blank"><img src="https://<?=$dname.$this->files?>img/email/cat/brands.png" style="width:40px;margin-top: 5px;"><br>Бренды</a>
 	</td>
+           <?php } ?>
 	</tr>
 	</tbody>
 	</table>

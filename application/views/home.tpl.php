@@ -2,21 +2,24 @@
 <html lang="<?=Registry::get('lang')?>">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta name="description" content="<?=htmlspecialchars($this->getCurMenu()->getMetatagDescription())?>"/>
-    <meta name="keywords" content="<?=htmlspecialchars($this->getCurMenu()->getMetatagKeywords())?>"/>
+   
+    
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="google-site-verification" content="fF5FKc114PdgDncp777ZVEV7Uz8XPu0jGfiG00kgvmQ" />
     <meta name="google-site-verification" content="5KsgGP4-JCTjV0dafIfi5_AI73MIryFuGqLvAgIthAI" />
+    <link rel="canonical" href="https://www.red.ua/">
     <title><?=Config::findByCode('home_title')->getValue()?></title>
+    <meta name="keywords"  itemprop="keywords" content="<?=htmlspecialchars($this->getCurMenu()->getMetatagKeywords())?>"/>
+    <meta name="description"  itemprop="description" content="<?=htmlspecialchars($this->getCurMenu()->getMetatagDescription())?>"/>
 	
-	
-	<link rel="alternate" hreflang="ru-UA" href="https://www.red.ua/ru<?=$_SERVER['REQUEST_URI']?>" />
+	<link rel="alternate" hreflang="ru-UA" href="https://www.red.ua/" />
 	<link rel="alternate" hreflang="uk-UA" href="https://www.red.ua/uk<?=$_SERVER['REQUEST_URI']?>" />
         <link rel="shortcut icon" href="/favicon.ico"/>	
         
-    <?php if($this->css){
-            foreach ($this->css as $css) { ?>
-                <link  rel="stylesheet" type="text/css" href="<?=$css?>?v=1.0" />
-            <?php }
+    <?php if($this->critical_css){
+            foreach ($this->critical_css as $css) { ?>
+                <link  rel="stylesheet" type="text/css" href="<?=$css?>?v=1.1" />
+            <?php }  
         }?>
 	
     <script src="/js/jquery-3.4.1.min.js"></script>
@@ -30,9 +33,35 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- End Google Tag Manager -->
 </head>
 <body>
- <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5DFS2PQ"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+     <script type="application/ld+json">
+ {
+     "@context":"http://schema.org",
+    "@type":"Organization",
+   "url":"https://www.red.ua/",
+ "name":"Интернет-магазин  RED: модная одежда!",
+"logo":"https://www.red.ua/img/logo/RED_Logo_min.png",
+"image":"https://www.red.ua/img/logo/RED_Logo_min.png",
+ "sameAs":[
+     "https://www.facebook.com/lifestyle.red.ua/",
+    "https://instagram.com/red_ua",
+   "https://www.youtube.com/user/SmartRedShopping",
+  "https://t.me/shop_red_ua"],
+"address":{
+   "@type":"PostalAddress",
+ "name":"RED",
+"addressRegion":"Киевская область",
+"addressLocality":"Киев",
+"postalCode":"04080",
+"telephone": ["+380442244000", "+380638093529", "+380674069080"],
+"email":"market@red.ua"
+},
+"contactPoint":[{
+       "@type":"ContactPoint",
+      "telephone":"+380442244000",
+     "contactType":"Контакт-центр"}]
+}</script>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5DFS2PQ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 <header>
 <?=$this->cached_top_menu?>
@@ -108,7 +137,7 @@ if ($c > 0) { ?>
 </div>
 <!--/ новый банер-->
 <?php } ?>
-<?php if(/*$this->ws->getCustomer()->getId() == 8005*/ true){ ?>
+<?php if(/*$this->ws->getCustomer()->getId() == 8005*/ false){ ?>
 <div class="row m-auto1 bg-dark">
     <div class="col-sm-12 col-md-12 col-lg-2 col-xl-2 text-center p-2">
         <a href="https://t.me/shop_red_ua" target="_blank" class="text-white">
@@ -121,9 +150,9 @@ if ($c > 0) { ?>
     </div>
 </div>
 <?php } ?>
-<?php if ($this->topproduct->count() > 5) { ?>
+<?php if (isset($this->topproduct) && $this->topproduct->count() > 5) { ?>
 <!--top articles-->
-<div class="row pop_t   revealator-zoomin revealator-duration10 revealator-once">
+<div class="row pop_t  ">
 <div class="block-title py-4 w-100">
 	<div class="vc_separator    vc_sep_pos_align_center vc_sep_color_black double-bordered-thick ">
 	<span class="vc_sep_holder vc_sep_holder_l"><span class="vc_sep_line"></span></span>
@@ -145,7 +174,7 @@ if ($c > 0) { ?>
 <?php
 $i = 0;
 foreach ($this->homeblock as $block) { ?>
-<div class=" col-xs-12 col-sm-6 col-md-3 p-1 <?php if($i<2){ echo 'revealator-slideright';}else{echo 'revealator-slideleft ';} ?> revealator-duration10 revealator-once">
+<div class=" col-xs-12 col-sm-6 col-md-3 p-1">
 <div class="column-inner">
 				 <a href="<?=$block->getUrl()?>">
 				 <img alt="<?=$block->getName()?>" src="<?=$block->getImage()?>" >
@@ -162,8 +191,8 @@ foreach ($this->homeblock as $block) { ?>
 <!--top categories-->
 <?php } ?>
 <!--one articles-->
-<?php if ($this->oneproduct->count() > 4) { ?>
-<div class="row  p_t  revealator-zoomin revealator-duration10 revealator-once">
+<?php if (isset($this->oneproduct) && $this->oneproduct->count() > 4) { ?>
+<div class="row  p_t">
 <div class="block-title py-4 w-100">
 	<div class="vc_separator    vc_sep_pos_align_center vc_sep_color_black double-bordered-thick ">
 	<span class="vc_sep_holder vc_sep_holder_l"><span class="vc_sep_line"></span></span>
@@ -195,7 +224,7 @@ foreach($this->blog as $b){ ?>
                <div class="blog-div-fon">
 			   <div class="post-image">
 			    <a href="<?=$b->getPath()?>">
-			   <img alt="<?=$b->getPostName()?>" src="/storage<?=$b->getImage()?>">
+			   <img alt="<?=$b->getPostName()?>" data-src="/storage<?=$b->getImage()?>">
 			   <span class="hover-overlay"></span>
 			   <span class="hover-readmore"><?=$this->trans->get('Смотреть далее');?>...</span>
 			   </a>
@@ -217,7 +246,7 @@ foreach($this->blog as $b){ ?>
 <?php } ?>
 <!--blog-->
 <!--brand-->
-<div class="row brand mt-2  revealator-slideup revealator-duration10 revealator-once" >
+<div class="row brand mt-2  " >
 <div class="new_brand_slider" >
 <div class="border-box">
 	<?php
@@ -239,8 +268,8 @@ LIMIT 8
 $cached_brands = wsActiveRecord::useStatic("Shoparticles")->findByQuery($sql);
       if($cached_brands){ foreach ($cached_brands as $brand) { ?>
 					<div class="brand_item" >
-						<a href="/all/articles/brands-<?=$brand->name?>/" >
-                                                    <img style="max-height: 65px;max-width: 150px;" src="<?=$brand->logo?>" alt="<?=$brand->name?>">
+						<a href="/all/articles/brands-<?=mb_strtolower($brand->name)?>/" >
+                                                    <img style="max-height: 65px;max-width: 150px;" data-src="<?=$brand->logo?>" alt="<?=$brand->name?>">
 						</a>
 					</div>
 					<?php 
@@ -270,20 +299,24 @@ if(!$this->ws->getCustomer()->isClosePuch()){ echo $this->puch; }
 <!--/пуш о смене email -->
 </div><!--end container-fluid div-->
 </section>
+<!--
 <script>
+ $(window).load(function() {
     window.rnt=window.rnt||function(){(rnt.q=rnt.q||[]).push(arguments)};
     rnt('add_event', {advId: 20676});
-    //<!-- EVENTS START -->
+    
 rnt('add_event', {advId: '20676', pageType:'home'});
 rnt('add_audience', {audienceId: '20676_254951d7-6d13-4ea2-a507-747c9e6fe802'});
-    //<!-- EVENTS FINISH -->
-</script>
+    
+    });
+</script>-->
 <!--footer--><?php echo $this->cached_bottom_menu; ?><!--footer-->
 
 <?php 
 if(Registry::get('device') != 'computer' or ($_COOKIE['mobil'] and $_COOKIE['mobil'] == 10) and false){ ?>
  <div id="slk" class="slk"><input type="button" name="mobi" class="btn btn-secondary btn-sm" onClick="setCooki(0);" value="<?=$this->trans->get('Мобильная версия');?>"><br></div>
 <?php } ?>
+ <!--
 <script>
     /* <![CDATA[ */
     var google_conversion_id = 1005381332;
@@ -295,7 +328,7 @@ if(Registry::get('device') != 'computer' or ($_COOKIE['mobil'] and $_COOKIE['mob
 <script   src="//www.googleadservices.com/pagead/conversion.js"></script>
 <noscript><div style="display:inline;">
 <img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/1005381332/?value=0&amp;label=1vqdCJyg5gMQ1M2z3wM&amp;guid=ON&amp;script=0"/>
-</div></noscript>
+</div></noscript>-->
 <?php
     if($this->scripts){
         foreach ($this->scripts as $scripts) { ?>
@@ -305,22 +338,58 @@ if(Registry::get('device') != 'computer' or ($_COOKIE['mobil'] and $_COOKIE['mob
 ?> 
 <script>
 $(document).ready(function(){
-var width = window.innerWidth;
-var w = 6;
-if(width <= 1200){w = 5;}
-if(width <= 1003) { w = 4;}
-if(width <= 993) { w = 3;}
-if(width <= 770) { w = 2;}
+    //$("head").append('<link rel="stylesheet"  href="/css/ionicons/3.0/css/ionicons.min.css">');
+        <?php
+                if($this->css){
+                    foreach ($this->css as $css) { ?>
+                    $("head").append('<link  rel="stylesheet"  href="<?=$css?>?v=1.1"   >');
+                    <?php }
+                }
+                ?>
+ 
 $('.top_articles').slick({
 	prevArrow: '<img src="#" style="background-image:url(/img/slider/p-n-b.png);" data-role="none" class="slick-prev-next prev" aria-label="Previous" tabindex="0" role="button">',
 nextArrow: '<img src="#" style="background-image:url(/img/slider/p-n-b.png);"  data-role="none" class="slick-prev-next next" aria-label="Next" tabindex="0" role="button">',
-      slidesToShow: w,
-	  slidesToScroll: w,
+      slidesToShow: 6,
+	  slidesToScroll: 6,
 	  autoplaySpeed: 4000,
 	  speed: 1000,
 	  easing: 'fade',
 	  autoplay: false,
+          responsive: [
+        {
+          breakpoint: 1024,
+          settings: {
+            slidesToShow: 4,
+            slidesToScroll: 2,
+            infinite: true,
+            dots: true
+          }
+        },
+        {
+          breakpoint: 600,
+          settings: {
+            slidesToShow: 2,
+            slidesToScroll: 2
+          }
+        },
+        {
+          breakpoint: 480,
+          settings: {
+            slidesToShow: 1,
+            slidesToScroll: 1
+          }
+        }
+      ]
 	  });  
+          /** код будет запущен когда страница будет полностью загружена, включая все фреймы, объекты и изображения **/
+[].forEach.call(document.querySelectorAll('img[data-src]'), function(img) {
+img.setAttribute('src', img.getAttribute('data-src'));
+img.onload = function() {
+img.removeAttribute('data-src');
+};
+});
+
 });
 function setUk(lang, ses, url) {
 if(lang !== ses){
@@ -346,6 +415,7 @@ function setCooki(e) {
         document.cookie = "mobil =" + e;
         location.reload();
 }
+
         jQuery.browser = {};
         (function () {
             jQuery.browser.msie = false;

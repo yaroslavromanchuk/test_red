@@ -29,9 +29,9 @@ class Shoparticlestop extends wsActiveRecord
         /**
          * 
          */
-        public function activeTopArticle(){
+        public static function activeTopArticle(){
             $date = date("Y-m-d H:i:s");
-          return  wsActiveRecord::useStatic('Shoparticlestop')->findAll([" ctime <= $date ", " $date <= utime "], ['id'=>'DESC'], ['limit'=>' 0, 1 ']);
+          return  wsActiveRecord::useStatic('Shoparticlestop')->findAll([" ctime <= '$date' ", " '$date' <= utime "], ['id'=>'DESC'], ['limit'=>' 0, 1 ']);
         }
         public function fromTop(){
             return $this->getId();

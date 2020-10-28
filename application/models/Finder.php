@@ -85,26 +85,26 @@ class Finder extends wsActiveRecord
        // }
 
 
-        if (count(@$addtional['categories'])) {
+        if (count($addtional['categories'])) {
    $where .= ' AND (ws_articles.category_id IN (' . implode(',', $addtional['categories']) . ') OR ws_articles.dop_cat_id IN (' . implode(',', $addtional['categories']) . '))';
         }
 
-        if (count(@$addtional['colors'])) {
+        if (count($addtional['colors'])) {
             $where .= ' AND ws_articles_sizes.id_color IN (' . implode(',', $addtional['colors']) . ')';
         }
 
-        if (count(@$addtional['sizes'])) {
+        if (count($addtional['sizes'])) {
             $where .= ' AND ws_articles_sizes.id_size IN (' . implode(',', $addtional['sizes']) . ')';
         }
 
-        if (count(@$addtional['labels'])) {
+        if (count($addtional['labels'])) {
             $where .= ' AND ws_articles.label_id IN ('.implode(',', $addtional['labels']).')';
         }
-		if (count(@$addtional['sezons'])) {
+		if (count($addtional['sezons'])) {
             $where .= ' AND ws_articles.sezon IN ('.implode(',', $addtional['sezons']).')';
         }
 
-        if (count(@$addtional['brands'])) {
+        if (count($addtional['brands'])) {
             $where .= ' AND ws_articles.brand_id IN ("' . implode('","', $addtional['brands']) . '")';
         }
       //  if (count(@$addtional['models'])) {
@@ -174,7 +174,7 @@ class Finder extends wsActiveRecord
 		$where .= ' AND `ws_articles`.`data_new` < "' . date('Y-m-d') . '" AND `ws_articles`.`data_new` >= "' .$c_d. '" ';
 		//var_dump($c_d);
 		}elseif ($category_id and $category_id != 267) {
-         if(count($category_kids) > 0 and @$category_kids[0]) $where .= ' AND (ws_articles.category_id IN (' . (implode(',', $category_kids)) . ') OR ws_articles.dop_cat_id IN (' . (implode(',', $category_kids)) . '))';
+         if(count($category_kids) > 0 and isset($category_kids[0])) { $where .= ' AND (ws_articles.category_id IN (' . (implode(',', $category_kids)) . ') OR ws_articles.dop_cat_id IN (' . (implode(',', $category_kids)) . '))'; }
         }
 	
 
@@ -200,32 +200,32 @@ class Finder extends wsActiveRecord
             }
         }
 
-        if (count(@$addtional['categories'])) {
+        if (count($addtional['categories'])) {
 			$where .= ' AND ( ws_articles.category_id IN (' . implode(',', $addtional['categories']) . ') OR ws_articles.dop_cat_id IN (' . implode(',', $addtional['categories']) . '))';
         }
 
-        if (count(@$addtional['colors'])) {
+        if (count($addtional['colors'])) {
             $where .= ' AND ws_articles_sizes.id_color IN (' . implode(',', $addtional['colors']) . ')';
         }
 
-        if (count(@$addtional['sizes'])) {
+        if (count($addtional['sizes'])) {
             $where .= ' AND ws_articles_sizes.id_size IN (' . implode(',', $addtional['sizes']) . ')';
         }
 
-        if (count(@$addtional['labels'])) {
+        if (count($addtional['labels'])) {
             $where .= ' AND ws_articles.label_id IN ('.implode(',', $addtional['labels']).')';
         }
-		if (count(@$addtional['sezons'])) {
+		if (count($addtional['sezons'])) {
             $where .= ' AND ws_articles.sezon IN ('.implode(',', $addtional['sezons']).')';
         }
 
-        if (count(@$addtional['brands'])) {
+        if (count($addtional['brands'])) {
             $where .= ' AND ws_articles.brand_id IN (' . implode(',', $addtional['brands']) . ')';
         }
        // if (count(@$addtional['models'])) {
             //$where .= ' AND ws_articles.model IN ("'.implode('","', $addtional['model']).'")';
        // }
-	   if (count(@$addtional['skidka'])) {
+	   if (count($addtional['skidka'])) {
             $where .= ' AND ws_articles.ucenka IN ("'.implode('","', $addtional['skidka']).'")';
         }
 

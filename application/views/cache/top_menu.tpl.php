@@ -100,8 +100,8 @@ $result = explode(',',$this->trans->get('Избранное,В избранно�
 			<div class="nav-link" style="padding-top: 0.2rem;padding-bottom: 0.2rem;">
 				<div class="btn-group" role="group" aria-label="Basic example">
 
-					<button type="button" class="btn btn-secondary btn-sm" <?=$_SESSION['lang'] == 'uk' ? disabled : ''?> name="uk" onclick="setUk('uk','<?=Registry::get('lang')?>','<?=$_SERVER['REQUEST_URI']?>');" >UA</button>
-					<button type="button" class="btn btn-secondary btn-sm" <?=$_SESSION['lang'] == 'ru' ? disabled : ''?> name="ru" onclick="setUk('ru','<?=Registry::get('lang')?>','<?=$_SERVER['REQUEST_URI']?>');" >RU</button>
+					<button type="button" class="btn btn-secondary btn-sm" <?=$_SESSION['lang'] == 'uk' ? 'disabled' : ''?> name="uk" onclick="setUk('uk','<?=Registry::get('lang')?>','<?=$_SERVER['REQUEST_URI']?>');" >UA</button>
+					<button type="button" class="btn btn-secondary btn-sm" <?=$_SESSION['lang'] == 'ru' ? 'disabled' : ''?> name="ru" onclick="setUk('ru','<?=Registry::get('lang')?>','<?=$_SERVER['REQUEST_URI']?>');" >RU</button>
 		
 				</div>
 			</div>
@@ -138,7 +138,7 @@ $result = explode(',',$this->trans->get('Избранное,В избранно�
 	
             <div class="desires_ok_div">
                 <div    id="desires" >
-	<?php if($_SESSION['desires'] or $des > 0 ){ ?>
+	<?php if(isset($_SESSION['desires']) or $des > 0 ){ ?>
             
 					<a href="<?=($_SESSION['lang']== 'uk')?'/uk':''?>/desires/" class="new_login_ok nav-link" data-placement="left"  data-tooltip="tooltip"  title="<?=$result[0]?>">
 					<img class="img_des" src="/img/top_menu/des_wite_all.png" alt="Избранное"/>

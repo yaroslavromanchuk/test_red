@@ -325,9 +325,9 @@ if(strripos($value, 'SALE') === FALSE){
 				<?php } ?></td>
             <td>
                 <?=$mas[$article->category_id]?>
-				<?php if($this->user->getId() == 8005 or $this->user->getId() == 1 or $this->user->getId() == 34608){ 
-				 if($article->dop_cat_id) { echo '<br><span style="font-size:9px;color:#af241b;">'.$mas[$article->dop_cat_id].'</span>';}
-				 } ?>
+				
+				<br><span style="font-size:9px;color:#af241b;"><?=$mas[$article->dop_cat_id]?></span>
+				
             </td>
         </tr>
     <?php

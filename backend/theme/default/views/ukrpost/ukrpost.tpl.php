@@ -79,43 +79,14 @@
 	<!--<a href="#" class="button" onclick="GoNp(); return false;" id="np_go" style="display:none;float: right;" >Сменить статус на "Отправлен Новой Почтой"</a>-->
 
      </div>
+    <div class="card-body">
     <?php
     
     if($this->shipments){
         $stat = ['CREATED'=>'Створено', 'REGISTERED'=>'Зареєстровано', 'DELIVERED'=>'Доставлено', 'FORWARDING'=>'Переадресація', 'RETURNING'=>'Повернення', 'RETURNED'=>'Повернено'];
         ?>
-    	<script>
-    var clik_ok = 0;
-    function chekAll() {
-		if($('.chekAll').is(":checked")){
-		$('.cheker').prop('checked', true);
-		}else{
-		$('.cheker').prop('checked', false);
-		}
-	var ck = $('#myTable').find('input[type=checkbox]:checked').length -1;
-	if(ck > 0) {
-	$("#np_go").show();
-	}else{
-            ck = 0;
-	$("#np_go").hide();
-	}
-	$("#ck_l").html(ck);
-//console.log(ck);
-        return false;
-    }
-		function chek_l(){
-		var ck = $('#myTable').find('input[type=checkbox]:checked').length;
-		if(ck > 0) {
-	$("#np_go").show();
-	}else{
-	$("#np_go").hide();
-	}
-	$("#ck_l").html(ck);
-	return false;
-	};
-	
-</script>
-    <table id="myTable" class="table table-hover table-bordered datatable1" data-page-length='50' >
+
+    <table id="myTable1" class="table table-hover table-bordered datatable1" data-page-length='50' >
             <thead>
 	<tr>
 	<!--<th><label class="ckbox" data-tooltip="tooltip" title="Выделить все заказы"><input onchange="chekAll();" class="chekAll" type="checkbox"/><span></span></label></th>-->
@@ -163,39 +134,97 @@
 //  echo '</pre>';
   
        } ?>
-        <?php if($this->all_order and false){ ?>
-	
+</div>
+    </div>
 
-	<table id="myTable" class="table table-hover table-bordered datatable1" >
+        <?php if($this->all_order){ ?>
+    	<script>
+    function chekAll() {
+		if($('.chekAll').is(":checked")){
+		$('.cheker').prop('checked', true);
+		}else{
+		$('.cheker').prop('checked', false);
+		}
+	var ck = $('#myTable').find('input[type=checkbox]:checked').length -1;
+	if(ck > 0) {
+	$("#np_go").show();
+	}else{
+            ck = 0;
+	$("#np_go").hide();
+	}
+	$("#ck_l").html(ck);
+//console.log(ck);
+        return false;
+    }
+		function chek_l(){
+		var ck = $('#myTable').find('input[type=checkbox]:checked').length;
+		if(ck > 0) {
+	$("#np_go").show();
+	}else{
+	$("#np_go").hide();
+	}
+	$("#ck_l").html(ck);
+	return false;
+	};
+	
+</script>
+	<div class="card pd-20 pd-sm-40 mt-3">
+    <div class="card-header">
+         <span id="ck_l" class="m-auto p-2">0</span>
+        <div class="btn-group m-auto" role="group" aria-label="Basic example">
+  <button type="button" onclick="GoUp(); return false;" id="np_go" style="display:none;" class="btn btn-secondary">Сменить статус на "Отправлен"</button>
+</div>
+    </div>
+<div class="card-body">
+	<table id="myTable" class="table table-hover table-bordered datatable111" >
             <thead>
 	<tr>
-	<th><label class="ckbox" data-tooltip="tooltip" title="Выделить все заказы"><input onchange="chekAll();" class="chekAll" type="checkbox"/><span></span></label></th>
+	<th>
+            <label class="ckbox" data-tooltip="tooltip" title="Выделить все заказы">
+                <input onchange="chekAll();" class="chekAll" type="checkbox"/><span></span>
+            </label>
+        </th>
 	<th>Заказ</th>
 	<th>Статус</th>
+        <th>ТТН</th>
 	<th>Оформлен</th>
 	<th>Отправлен</th>
-	<th>ТТН</th>
-	<th>Город</th>
+        <th>Тип</th>
+	<th>Адресс</th>
 	</tr>
             </thead>
             <tbody>
 	<?php
-	foreach ($this->all_order as $or){ ?>
+        $i = 0;
+	foreach ($this->all_order as $or){
+            $i++;
+            //if($or->customer->isAdmin()){ continue;}
+            ?>
 	<tr >
-        <td><?php if($or->nakladna){ ?>
-            <label class="ckbox"><input type="checkbox" class="order-item cheker" onclick="chek_l();" id="<?=$or->meest_id?>"  name="<?=$or->id?>"><span></span></label><?php } ?></td>
-	<td><?php if($or->nakladna){ echo $or->id; }else{ ?><a href="/admin/ukrpost/new-shipment/id/<?=$or->id?>/" target="blank"><?=$or->id?></a><?php } ?></td>
+        <td>
+            <?=$i?>
+            <?php if($or->nakladna){ ?>
+            <label class="ckbox">
+                <input type="checkbox" class="order-item cheker" onclick="chek_l();" id="<?=$or->meest_id?>"  name="<?=$or->id?>"><span></span></label>
+                    <?php } ?>
+        </td>
+	<td>
+            <?=$or->nakladna?$or->id:'<a href="/admin/ukrpost/new-shipment/id/'.$or->id.'/" target="blank">'.$or->id.'</a>'?>
+        </td>
 	<td><?=$or->getStat()->getName()?></td>
+        <td><?=$or->nakladna?$or->nakladna:''?></td>
 	<td><?=$or->date_create?></td>
-	<td><?php if($or->order_go != '0000-00-00 00:00:00') {echo $or->order_go;}?></td>
-	<td><?php if($or->nakladna) {echo $or->nakladna;}?></td>
-	<td><?=$or->city?></td>
+	<td><?=$or->order_go!='0000-00-00 00:00:00'?$or->order_go:''?></td>
+        <td><?=$or->payment_method->name?><?=$or->isPay()?></td>
+	<td><?=$or->address?></td>
 	</tr>
 	<?php } ?>
             </tbody>
 	</table>
+            </div>
+            </div>
         <?php } ?>
-</div>
+
  <script>
 
      //получение информации по посылке ukr почта
@@ -292,5 +321,19 @@ function deleteStickerSipment(e){
        
     return false;
 }
+	function GoUp(){
+            var mas = [];
+	 if ($('.order-item:checked').val()) {
+                // var id = '';
+                    jQuery.each($('.order-item:checked'), function () {
+                         mas.push($(this).attr('name'));
+                    });
+                    console.log(mas);
+                    window.location = '/admin/allstatus/id/' + mas.join(',') + '/status/13/';
+//return false;
+                }else{
+                      $('<div/>', {  class: 'alert alert-danger alert-dismissible fade show m-2', html: '<strong>Ошибка!</strong>  Вы не выбрали заказы для смены статуса.<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' }).appendTo('div.card-header');
+                }
+	}
 
     </script>

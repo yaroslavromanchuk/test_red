@@ -4,14 +4,13 @@
         <div class="btn-group m-auto" role="group" aria-label="Basic example">
   <button type="button" onclick="createRegistr(); return false;" class="btn btn-secondary">Создать Реестр</button>
   <a href="/admin/novapochta/list/" class="btn btn-secondary">Список реестров</a>
-  <button type="button" onclick="GoNp(); return false;" id="np_go" style="display:none;" class="btn btn-secondary">Сменить статус на "Отправлен Новой Почтой"</button>
+  <button type="button" onclick="GoNp(); return false;" id="np_go" style="display:none;" class="btn btn-secondary">Сменить статус на "Отправлен"</button>
 </div>
 	<!--<a  class="button" href="#">Создать/Печать реестр</a>-->
 	<!--<a href="#" class="button" onclick="GoNp(); return false;" id="np_go" style="display:none;float: right;" >Сменить статус на "Отправлен Новой Почтой"</a>-->
 
      </div>
      <div class="card-body">
-<?php $type = array(8 => 'Онлайн', 16 =>'Наложка'); ?>
 <div style="display:none;">
 <!--<input type="text" name="city" placeholder="Город"  id="city" autocomplete="off" value=""/>
 	<input type="text" name="cityx"  id="cityx"  value=""/>-->
@@ -78,34 +77,41 @@ if($this->all_order){ ?>
             </thead>
             <tbody>
 	<?php
-	foreach ($this->all_order as $or){ ?>
+        $i = 0;
+	foreach ($this->all_order as $or){ $i++; ?>
 	<tr >
-        <td><?php if($or->nakladna){ ?>
+        <td>
+            <?=$i?>
+            <?php if($or->nakladna){ ?>
         <label class="ckbox">
             <input type="checkbox" class="order-item cheker" onclick="chek_l();" id="<?=$or->meest_id?>"  name="<?=$or->id?>"><span></span>
         </label>
                 <?php } ?>
         </td>
-	<td><?php if($or->nakladna){
+	<td>
+            <?php if($or->nakladna){
           $uuid =   Shopordersmeestexpres::getUuid($or->meest_id)->ref;
             ?>
             <div class="btn-group" role="group" aria-label="Basic example">
-            <button class="btn bd bg-white tx-gray-600 btn-sm" onclick="window.open('https://my.novaposhta.ua/orders/printDocument/orders/<?=$uuid?>/type/pdf/apiKey/920af0b399119755cbca360907f4fa60', '_blank'); return false;" type="button">
+            <button class="btn bd bg-white tx-gray-600 btn-sm" onclick="window.open('https://my.novaposhta.ua/orders/printDocument/orders/<?=$uuid?>/type/pdf/apiKey/6007d99fef17e74a4cb6bc57c67557dd', '_blank'); return false;" type="button">
                 <i class="icon ion-ios-print-outline" data-tooltip="tooltip" data-original-title="Печать ТТН"></i><span>A4</span>
    </button>
-    <button class="btn bd bg-white tx-gray-600 btn-sm" onclick="window.open('https://my.novaposhta.ua/orders/printMarking100x100/orders/<?=$uuid?>/type/pdf/apiKey/920af0b399119755cbca360907f4fa60', '_blank'); return false;" type="button">
+    <button class="btn bd bg-white tx-gray-600 btn-sm" onclick="window.open('https://my.novaposhta.ua/orders/printMarking100x100/orders/<?=$uuid?>/type/pdf/apiKey/6007d99fef17e74a4cb6bc57c67557dd', '_blank'); return false;" type="button">
                 <i class="icon ion-ios-print-outline" data-tooltip="tooltip" data-original-title="Печать ТТН 100*100"></i><span>100/100</span>
    </button>
     <button class="btn bd bg-white tx-gray-600 btn-sm" onclick="deleteDoc('<?=$uuid?>', <?=$or->id?>);" type="button">
        <i class="icon icon ion-ios-trash-outline" data-tooltip="tooltip" data-original-title="Удалить ТТН"></i>
    </button>
             </div>
-         <?php   echo $or->id; }else{ ?><a href="/admin/novapochta/new/id/<?=$or->id?>/" target="blank"><?=$or->id?></a><?php } ?></td>
+         <?php   echo $or->id; }else{ ?>
+            <a href="/admin/novapochta/new/id/<?=$or->id?>/" target="blank"><?=$or->id?></a>
+                <?php } ?>
+        </td>
 	<td><?=$this->order_status[$or->status]?></td>
 	<td><?=$or->date_create?></td>
-	<td><?php if($or->order_go != '0000-00-00 00:00:00') {echo $or->order_go;}?></td>
-	<td><?php if($or->nakladna) {echo $or->nakladna;}?></td>
-	<td><?=$type[$or->delivery_type_id]?></td>
+	<td><?=$or->order_go!='0000-00-00 00:00:00'?$or->order_go:''?></td>
+	<td><?=$or->nakladna?$or->nakladna:''?></td>
+	<td><?=$or->payment_method->name?><?=$or->isPay()?></td>
 	<td><?=$or->city?></td>
 	<td><?=$or->sklad?></td>
 	</tr>
@@ -152,7 +158,7 @@ function deleteDoc(e, r){
                          mas.push($(this).attr('name'));
                     });
                     console.log(mas);
-                    window.location = '/admin/allstatus/id/' + mas.join(',') + '/status/6/';
+                    window.location = '/admin/allstatus/id/' + mas.join(',') + '/status/13/';
 //return false;
                 }else{
                       $('<div/>', {  class: 'alert alert-danger alert-dismissible fade show m-2', html: '<strong>Ошибка!</strong>  Вы не выбрали заказы для смены статуса.<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' }).appendTo('div.card-header');

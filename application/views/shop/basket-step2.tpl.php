@@ -517,6 +517,10 @@ if(true){
 <div class="col-sm-12 sv only_sv" id="pobedy" style="<?php if ($this->basket_contacts['delivery_type_id'] != 3){ echo 'display: none;';} ?> " >
 			<div class="panel panel-default sv only_sv">
 				<div class="row panel-body" style="background: white;">
+                                    <div class=" col-sm-12 alert alert-primary" role="alert">
+                                        <h4 class="alert-heading">Обратите внимание!</h4>
+<p>Для получения заказа в пункте самовывоза, его нужно оплатить в полном размере, после чего Вы сможете посмотреть и примерить товар. <br>Если товар не подошел, Вы сможете оформить возврат не выходя с пункта самовывоза или в течении 14 дней, и получить деньги обратно.</p>
+                                    </div>
 					<div class="col-sm-12 col-md-3 col-lg-3 col-xl-3 form-group sv only_sv">
 						<?=$this->trans->get('<p>г. Киев</p>
 							<p>проспект Победы, 98/2</p>
@@ -558,9 +562,10 @@ if(true){
 <div class="row form-group payment_panel" id="pay" style="display:none;">
 		<div class="col-xs-12 col-md-12 col-lg-12" >
 		<h3 class="card-title text-center"><?=$this->trans->get('Выберите способ оплаты')?></h3>
-		<p  class="alert alert-danger" ><?=$this->trans->get('По техническим причинам, онлайн оплата временно не доступна. Приносим свои извинения за временные неудобства')?>.</p>
+		<!--<p  class="alert alert-danger" ><?php //echo $this->trans->get('По техническим причинам, онлайн оплата временно не доступна. Приносим свои извинения за временные неудобства'); ?>.</p>-->
 <?php if($this->ws->getCustomer()->isBlockNpN()) { ?>
-<p id="text_np" class="text_np alert alert-danger" style="display: none;"><?=$this->trans->get('В связи с нарушением условий оплаты заказов, наложенный платеж для Вас временно не доступен.<br>Вы можете оплачивать заказы мгновенно онлайн с помощью Visa MasterCard и Приват24.
+<p id="text_np" class="text_np alert alert-danger" style="display: none;">
+    <?=$this->trans->get('В связи с нарушением условий оплаты заказов, наложенный платеж для Вас временно не доступен.<br>Вы можете оплачивать заказы мгновенно онлайн с помощью Visa MasterCard и Приват24.
 					<br>За детальной информацией обращайтесь в Call центр.<br>')?>
 					</p>
 <?php } if($this->ws->getCustomer()->isBlockCur()){ ?>
@@ -568,22 +573,26 @@ if(true){
 					<br>Вы можете оплачивать заказы мгновенно онлайн с помощью Visa MasterCard и Приват24.
 					<br>За детальной информацией обращайтесь в Call центр.<br>')?></p>
 <?php } if($this->ws->getCustomer()->isBlockM()){ ?>
-<p  id="text_mag" class="text_mag alert alert-danger" style="display: none;"><?=$this->trans->get('В связи с нарушением условий выкупа заказов, оплата наличными для Вас временно не доступна.
-					<br>Вы можете оплачивать заказы мгновенно онлайн с помощью Visa MasterCard и Приват24.
-					<br>За детальной информацией обращайтесь в Call центр.<br>')?></p>
+<p  id="text_mag" class="text_mag alert alert-danger" style="display: none;">
+    <?=$this->trans->get('В связи с нарушением условий выкупа заказов с пункта выдачи, оплата наличными для Вас временно не доступна.')?></p>
 <?php } if($this->ws->getCustomer()->isBlockOnline()){ ?>
 <p  class="alert alert-danger" ><?=$this->trans->get('По техническим причинам, онлайн оплаты, временно недоступны. Приносим свои извинения за временные неудобства.')?></p>
-    <?php } if($this->ws->getCustomer()->isBlockJustin()){ ?>
-        <p  id="text_justin" class="text_justin alert alert-danger" style="display: none;"><?=$this->trans->get('В связи с нарушением условий выкупа заказов, оплата наличными для Вас временно не доступна.
+    <?php }
+    if($this->ws->getCustomer()->isBlockJustin()){ ?>
+        <p  id="text_justin" class="text_justin alert alert-danger" style="display: none;">
+        <?=$this->trans->get('В связи с нарушением условий выкупа заказов, оплата наличными для Вас временно не доступна.
 					<br>Вы можете оплачивать заказы мгновенно онлайн с помощью Visa MasterCard и Приват24.
 					<br>За детальной информацией обращайтесь в Call центр.<br>')?></p>
         <?php } ?>
 <div class="btn-group payment_method_container"  data-toggle="buttons"  >
 <ul class="backet_ul" align="center">
 <li>
-<label id="l_nl" class="btn btn-default k_p s_m_p s_p_p jastin_p label_payment <?php if($this->ws->getCustomer()->isBlockCur()) { echo " hide_kur";}
-if($this->ws->getCustomer()->isBlockM()){ echo " hide_mag";} if($this->ws->getCustomer()->isBlockJustin()){ echo " hide_justin";} ?>" 
-style="<?php if (!in_array($this->basket_contacts['delivery_type_id'], array(3,9,5,18))){ echo ' display: none;';} ?>">
+<label id="l_nl" class="btn btn-default k_p s_m_p s_p_p jastin_p label_payment 
+<?php 
+if($this->ws->getCustomer()->isBlockCur()) { echo " hide_kur";}
+if($this->ws->getCustomer()->isBlockM()){ echo " hide_mag";}
+if($this->ws->getCustomer()->isBlockJustin()){ echo " hide_justin";} ?>" 
+style="<?php if (!in_array($this->basket_contacts['delivery_type_id'], array(3,9,18))){ echo ' display: none;';} ?>">
 							<div class="media">
 							<input class="payment_method" hidden name="payment_method_id" id="payment_method_1" value="1" type="radio" autocomplete="on">
 							<img class="align-self-center mr-2" src="/img/delivery/uah.png"/>
@@ -591,8 +600,9 @@ style="<?php if (!in_array($this->basket_contacts['delivery_type_id'], array(3,9
 							</div>
 						</label>
 </li>
+<?php if (!$this->ws->getCustomer()->isBlockNpN()){ ?>
 <li>
-<label id="l_np" class="btn btn-default np_p up_p label_payment <?php if ($this->ws->getCustomer()->isBlockNpN()){ echo " hide_np";} ?>" style="<?php
+<label id="l_np" class="btn btn-default np_p up_p label_payment " style="<?php
 		if (!in_array($this->basket_contacts['delivery_type_id'], array(4,8))){echo ' display: none;';}?>">
 		<div class="media">
 			<input class="payment_method" hidden name="payment_method_id" id="payment_method_3" value="3" type="radio" autocomplete="on">
@@ -601,7 +611,7 @@ style="<?php if (!in_array($this->basket_contacts['delivery_type_id'], array(3,9
 		</div>
 						</label> 
 </li>
-<?php 
+<?php }
 //if($this->ws->getCustomer()->getId() == 8005){
 if(false){
  ?>
@@ -617,13 +627,10 @@ if(false){
 						</label>
 </li>
 <?php } ?>
-<?php 
-//if($this->ws->getCustomer()->getId() == 8005){
-if(false){
- ?>
-<li <?=$this->ws->getCustomer()->isBlockOnline()?'class="hide_online"':''?>>
+<?php if(!$this->ws->getCustomer()->isBlockOnline() and Config::findByCode('pay_online')->getValue()){ ?>
+<li>
 <label id="l_vs" class="btn btn-default k_p s_m_p s_p_p np_p up_p jastin_p label_payment "  style="<?php
-	if (!in_array($this->basket_contacts['delivery_type_id'], array(4, 8, 9, 5, 3,18))){echo 'display: none;';} ?>">
+	if (!in_array($this->basket_contacts['delivery_type_id'], array(4, 8, 9, 3,18))){echo 'display: none;';} ?>">
 							<div class="media">
 							<input class="payment_method" hidden name="payment_method_id" id="payment_method_4" value="4" type="radio" autocomplete="on">
 							<img class="align-self-center mr-2" src="/img/delivery/vm.png"/>
@@ -632,9 +639,9 @@ if(false){
 						</label>
 </li>
 
-<li <?=$this->ws->getCustomer()->isBlockOnline()?'class="hide_online"':''?>>
+<li>
 <label id="l_privat" class="btn btn-default k_p s_m_p s_p_p np_p up_p jastin_p label_payment" style="<?php
-						if (!in_array($this->basket_contacts['delivery_type_id'], array(4, 8, 9, 5, 3,18))) {echo 'display: none;';} ?>">
+						if (!in_array($this->basket_contacts['delivery_type_id'], array(4, 8, 9, 3,18))) {echo 'display: none;';} ?>">
 					<div class="media">
 					<input class="payment_method" hidden name="payment_method_id" id="payment_method_6" value="6" type="radio" autocomplete="on">
 					<img class="align-self-center mr-2"  src="/img/delivery/p24.png"/>
@@ -838,6 +845,7 @@ var valid_uslug = true;
                                             $('.jastin_p').show();
                                             $('.hide_justin').hide();
                                             $('.text_justin').show();
+                                            $('.text_mag').hide();
                                     break;
                                     case '3': 
                                             $('.np_np').hide();

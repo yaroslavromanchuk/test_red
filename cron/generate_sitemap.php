@@ -1,4 +1,5 @@
 <?php
+//03:30
 require_once('cron_init.php');
 $summ = 0;
  $summ+=womenSitemap();
@@ -14,4 +15,4 @@ $summ+=saleSitemap();
  $summ+=brandsSitemap();
     
   updateSitemap();
-   Telegram::sendMessageTelegram(404070580, "Sitemap : ".$summ);//Yarik
+  // Telegram::sendMessageTelegram(404070580, "Sitemap : ".$summ);//Yarik

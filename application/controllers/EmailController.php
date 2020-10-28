@@ -300,5 +300,12 @@ foreach (wsActiveRecord::useStatic('Customer')->findAll(['segment_id' => $this->
         }  
         return true;
         }
+         public function cartAction(){
+        if($this->get->photo){
+            $track = substr($this->get->photo, 0, -4);
+            CartLog::open(['track'=>$track]);
+        }  
+        return true;
+        }
 
 }

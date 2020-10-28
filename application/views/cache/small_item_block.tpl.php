@@ -41,12 +41,12 @@ $param = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery('SELECT DIST
 	<div class="carousel-inner">
 	<a href="<?=$this->article->getPath()?>" class="img">
             <div class="carousel-item active">
-                <img src="<?=$this->article->getImagePath('detail')?>" alt="<?=htmlspecialchars($this->article->getTitle())?>">
+                <img data-src="<?=$this->article->getImagePath('detail')?>" src="/loader.gif" alt="<?=htmlspecialchars($this->article->getTitle())?>">
             </div>
         <?php foreach($this->article->getImages() as $image){
             if($image->image){  ?>
             <div class="carousel-item">
-                <img alt="<?=$image->title?>" class="catalog_img" title="<?=$image->title?>" data-src="<?=$image->getImagePath('detail')?>">
+                <img data-alt="<?=$image->title?>" class="catalog_img" title="<?=$image->title?>" src="/loader.gif" data-src="<?=$image->getImagePath('detail')?>">
             </div><?php } } ?>
 </a>
 	</div>
@@ -61,7 +61,7 @@ $param = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery('SELECT DIST
 	</div>
 	<?php }else{ ?>
 	<a href="<?=$this->article->getPath()?>" class="img" >
-	<img src="<?=$this->article->getImagePath('detail')?>" alt="<?=htmlspecialchars($this->article->getTitle())?>">
+	<img data-src="<?=$this->article->getImagePath('detail')?>" src="/loader.gif" alt="<?=htmlspecialchars($this->article->getTitle())?>">
 	</a>
 	<?php } ?>
 <p class="name"><span><?=$this->article->getModel()?></span></p>
@@ -69,7 +69,7 @@ $param = wsActiveRecord::useStatic('Shoparticlessize')->findByQuery('SELECT DIST
 <hr style="margin-bottom:  5px;">
 
 	<?php if($option->value and $option->type == 'final'){
-$price = $this->article->getPerc(100, 1);
+$price = $this->article->getPerc();
 $procent = (int)($this->article->getFirstPrice() - $price['price'])/$this->article->getFirstPrice()*100;
 
 	?>
@@ -95,7 +95,7 @@ $procent = (int)($this->article->getFirstPrice() - $price['price'])/$this->artic
 	<p class="price">
 		<?php
 $old_price = $this->article->getOldPrice();
-if($old_price > 0){ ?>
+if(!empty($old_price) && $old_price > 0){ ?>
 <span style="    padding: 0px 2px;
     background: #e40413;
     color: white;

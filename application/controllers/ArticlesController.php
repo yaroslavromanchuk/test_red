@@ -22,15 +22,141 @@ class ArticlesController extends controllerAbstract
      */
     public function articleAction()
 	{
+        $this->view->critical_css = [
+          //  '/css/catalog/catalog.css', 
+            '/css/article/article.css', 
+             '/js/gallery/lightgallery.css',
+        ];
+        $this->view->css = [
+          //  '/js/slider-fhd/slick.css',
+          //  '/css/cloudzoom/cloudzoom.css',
+           // '/css/jquery.lightbox-0.5.css',
+                //   '/js/gallery/lightgallery.css',
+                //  '/js/owl/owl-carousel.css',
+                //  '/js/jetzoom/jetzoom.css',
+             
+        ];
+        $this->view->scripts = [
+            // '/js/filter.js',
+            '/js/desires.js',
+            '/js/call/jquery.mask.js',
+           // '/js/cloud-zoom.1.0.2.js',
+          //  '/js/jquery.lightbox-0.5.js',
+         //   '/js/slider-fhd/slick.min.js',
+            '/js/gallery/lightgallery.js',
+            '/js/owl/owl.carousel.min.js',
+            '/js/jetzoom/jetzoom.js',
+           // '/js/jquery.cycle.all.js', 
+            
+        ];
+    //   if($this->ws->getCustomer()->id == 8005){ 
+           // l($this->get->count());
+           // l($this->get);
+          //  l($_GET);
+     // }
+          //  if($this->get->count() != 3){
+            //   $this->_redirect('/404/'); 
+          //  }
+		$article = wsActiveRecord::useStatic('Shoparticles')->findById($this->get->getId());
+                    if(!$article){
+                     // $red = wsActiveRecord::findByQueryFirstArray("SELECT * FROM ws_articles WHERE redirect = ".$this->get->getId());
+                      
+                       // if($red){
+                         //    $this->_redirect('/product/id/'.$red->url);
+                      //  }
+                        
+                        $this->_redirect('/404/');
+                        
+                        
+                    }
+                    if($article->stock == '0' && !$this->ws->getCustomer()->isAdmin()){
+                        if($article->category->controller){
+                       redirect301($article->getPathCategory());
+                        }else{
+                            redirect301('/new/all/');
+                        }
+                    }
+		if ($this->get->metod == 'getbrand') {
+			$text = '<div class="brand_info" ><p>';
+
+			if ($article->article_brand->getImage()) {
+				$text .= '<img src="' . $article->article_brand->getImage() . '" alt="' . $article->article_brand->getName() . '"></p>';
+			}
+			$text .= '<p><p class="strong">' . $article->article_brand->getName() . '</p>' . $article->article_brand->getText() . '</p></div>';
+			die($text);
+		}
+    $this->view->g_url = $url = $article->getPath(); 
+    if($url!= $_SERVER['PHP_SELF']){
+    $this->cur_menu->nofollow = 1;
+}
+$name = ucfirst($article->getModel()) . ' ' .trim($article->getBrand()).' '.$this->trans->get('color').' '.mb_strtolower(@$article->getColorName()->getName());
+$title = $name;
+//if($article->sizes->count() == 1){
+   
+    
+//} 
+$title.=' '.$this->trans->get('price').' '.$article->getPriceSkidka().'грн. ';
+$title.= 'размер '.$article->sizes[0]->size->size.' артикул - '.$article->sizes[0]->code; 
+$title.=' '.Config::findByCode('website_title')->getValue(); 
+
+		$this->cur_menu->setName($name);
+                $this->cur_menu->setPageTitle($title);
+                $this->cur_menu->setMetatagDescription($title.' '.$this->trans->get('description_exit'));
+                if (strcasecmp($article->getActive(), 'y') != 0){
+                    $this->view->active = 0;
+                        }else{
+                            $this->view->active = 1;
+                        }
+			//add view
+			$article->setViews($article->getViews() + 1);
+			$article->save();
+			//add history
+			if ($this->ws->getCustomer()->getIsLoggedIn()) {
+                            if(!Shoparticleshistory::find('Shoparticleshistory', ['customer_id'=>$this->ws->getCustomer()->getId(), 'article_id'=>$article->getId()])->count()){
+				$h = new Shoparticleshistory();
+				$h->setCustomerId($this->ws->getCustomer()->getId());
+				$h->setArticleId($article->getId());
+				$h->save();
+                            }
+                        }else{
+                            if(isset($_SESSION['hist'])){
+                                if(!in_array($article->getId(), $_SESSION['hist']))
+                                    {
+                                        $_SESSION['hist'][] = $article->getId();
+                                    }
+                            }else{
+                                $_SESSION['hist'][] = $article->getId();
+                            }
+                        }
+		$this->view->shop_item = $article;
+		$this->view->category = $article->getCategory();
+                $this->view->similar = $this->similar($article); // Похожие товары
+                if(/*$this->ws->getCustomer()->isAdmin()*/true){
+                    echo $this->render('article/article.tpl1.php');
+                }else{
+                    echo $this->render('article/article.tpl.php');
+                }
+		
+                if ($this->get->metod == 'frame') { die(); }
+	}
+        /**
+     * Карточка товара new
+     * url - /p/id/
+     */
+    public function articlAction()
+	{
+        $this->view->critical_css = [
+            '/css/catalog/catalog.css', 
+            '/css/article/article.css', 
+        ];
         $this->view->css = [
             '/js/slider-fhd/slick.css',
            // '/css/cloudzoom/cloudzoom.css',
             '/css/jquery.lightbox-0.5.css',
-            '/css/catalog/catalog.css?v=1.3', 
             '/js/gallery/lightgallery.css',
             '/js/owl/owl-carousel.css',
             '/js/jetzoom/jetzoom.css',
-             '/css/article/article.css', 
+             
         ];
         $this->view->scripts = [
             // '/js/filter.js',
@@ -45,18 +171,31 @@ class ArticlesController extends controllerAbstract
             '/js/jquery.cycle.all.js',
             
         ];
-		$article = wsActiveRecord::useStatic('Shoparticles')->findById($this->get->getId());
-                    if(!$article){ $this->_redirect('/404/'); }
-		if ($this->get->metod == 'getbrand') {
-			$text = '<div class="brand_info" ><p>';
+       // if($this->user->id == 8005){ 
+            l($this->get->count());
+           l($this->get);
+       // }
+         l($_SERVER['PHP_SELF']);
+            if($this->get->count() != 3){
+               $this->_redirect('/404/'); 
+            }
+            
+		$article = wsActiveRecord::useStatic('Shoparticles')->findUrl($this->get->getT());
+                    if(!$article){
+                     // $red = wsActiveRecord::findByQueryFirstArray("SELECT * FROM ws_articles WHERE redirect = ".$this->get->getId());
+                      
+                       // if($red){
+                         //    $this->_redirect('/product/id/'.$red->url);
+                      //  }
+                        
+                        $this->_redirect('/404/');
+  
+                    }
 
-			if ($article->article_brand->getImage()) {
-				$text .= '<img src="' . $article->article_brand->getImage() . '" alt="' . $article->article_brand->getName() . '"></p>';
-			}
-			$text .= '<p><p class="strong">' . $article->article_brand->getName() . '</p>' . $article->article_brand->getText() . '</p></div>';
-			die($text);
-		}
-    $this->view->g_url = $article->getPath(); 
+$this->view->g_url = $url = $article->getPath(); 
+if($url!= $_SERVER['PHP_SELF']){
+    $this->cur_menu->nofollow = 1;
+}
 $name = ucfirst($article->getModel()) . ' ' .trim($article->getBrand()).' '.$this->trans->get('color').' '.mb_strtolower(@$article->getColorName()->getName());
 $title = $name;
 //if($article->sizes->count() == 1){
@@ -113,7 +252,7 @@ $title.=' '.Config::findByCode('website_title')->getValue();
          * @return type
          */
         function similar($article){
-         return    wsActiveRecord::useStatic('Shoparticles')->findAll(['category_id'=>$article->getCategoryId(), 'status'=>3, 'stock not like "0"',  'id !='.$article->getId()],['ctime'=>'ASC'], [0,10]);
+         return    wsActiveRecord::useStatic('Shoparticles')->findAll(['category_id'=>$article->getCategoryId(), 'status'=>3, 'active'=>'y', 'stock not like "0"',  'id !='.$article->getId()],['ctime'=>'ASC'], [0,10]);
         }
         /**
          * Быстрый просмотр товара
@@ -190,9 +329,21 @@ $change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], isset
          */
         public function articlesAction()
         {
-            $this->view->scripts = [
+            $this->view->critical_css = [
+            //'/css/catalog/catalog.css', 
+            '/css/article/article.css', 
+        ];
+            $this->view->css = [
+            '/css/cloudzoom/cloudzoom.css',
+            '/css/jquery.lightbox-0.5.css',
+            '/js/select2/css/select2.min.css',
+        ];
+            $this->view->scripts = [ 
                  '/js/filter.js',
-            '/js/jquery.cycle.all.js'
+            '/js/jquery.cycle.all.js',
+                '/js/cloud-zoom.1.0.2.js',
+            '/js/jquery.lightbox-0.5.js',
+            '/lib/select2/js/select2.min.js'
                 ];
            // var_dump($this->get);
             $page_onpage_order_by = FilterController::page_order_by();
@@ -204,7 +355,7 @@ $change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], isset
                  $this->view->g_url = $act->getPathFind();
            }
             $param = [];
-
+ //if($this->ws->getCustomer()->id == 8005){ l($page_onpage_order_by); l($this->get); }
        //  if($this->ws->getCustomer()->isAdmin()){l($this->get);}
             
        if($this->get->brands) {
@@ -257,7 +408,7 @@ $change = $article->addToBasket((int)$_POST['size'], (int)$_POST['color'], isset
        ];
                      $search_result = Filter::getArticlesOptionList($meta_param);
                   
-                      $this->cur_menu->nofollow = 1; 
+                    $this->cur_menu->nofollow = 1; 
                    $this->cur_menu->setName($act->option_text);
                    $this->cur_menu->setPageTitle('Акции: '.$act->option_text);
                    $this->cur_menu->setMetatagDescription($act->option_text.' '.Translator::get('description_exit'));

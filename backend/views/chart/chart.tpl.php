@@ -217,16 +217,17 @@ var dat2 = [];
 					
     cats.push(res.year[i]); 
     dat.push(res.send[i]); 
-	dat2.push(res.send2[i]); 
+    dat2.push(res.send2[i]); 
 	
   }
                 }
             }).done(function() {
    chart.xAxis[0].setCategories(cats);
-   chart.series[0].setData(dat);  
+   chart.series[0].setData(dat);   
    chart.series[1].setData(dat2);
    
-})
+});
+
 var chart = new Highcharts.Chart({
 title: {
                 text: 'Статистика заказов'

@@ -15,6 +15,21 @@ class PageController extends controllerAbstract
         echo $this->render('pages/404.tpl.php');
 
     }
+    public function redcoinAction()
+    {
+
+        echo $this->render('pages/redcoin.tpl.php');
+
+    }
+    public function ofertaAction(){
+        header('Content-Type: application/pdf');
+        $pathToFile = $_SERVER['DOCUMENT_ROOT'] . '/files/publichniy_dogovor_offerta.pdf';
+if (file_exists($pathToFile)) {
+    $GetContentFile = file_get_contents($pathToFile);
+    echo $GetContentFile;
+}
+        exit();
+    }
 
     public function socialAction()
     {
@@ -30,6 +45,7 @@ class PageController extends controllerAbstract
 	public function scanAction()
     {
 	if($this->post->sr){
+            
 if(Scan::getCountScan($this->post->sr) == 0){
 $s = new Scan();
 $s->setCod($this->post->sr);
@@ -346,7 +362,7 @@ echo $s->cod.' - '.$s->count.'<br>';
       
 $res = "<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>";
 $i = 0;
-        foreach( wsActiveRecord::useStatic('Menu')->findAll(['type_id is not null', 'parent_id' => null, 'no_sitemap'=>NULL, 'nofollow'=>NULL], ['sequence' => 'ASC']) as $item) {
+        foreach( wsActiveRecord::useStatic('Menu')->findAll(['type_id is not null', 'parent_id' => null, 'no_sitemap'=>NULL, 'nofollow'=>NULL, 'noindex'=>NULL], ['sequence' => 'ASC']) as $item) {
 		//<loc>https://www.red.ua/</loc>
 	//<lastmod>2017-05-10T11:29:32+01:00</lastmod>
 	//<priority>1.0</priority>
@@ -582,39 +598,90 @@ if(@$this->get->id){
 	 public function telegramAction(){
 	 if($this->get->token and $this->get->token == 'red'){
 	 $result='';
+         $res = [];
 	 $post = $this->post;
-	 if($post->send == 'orders'){
-	 $mas = array(3=>'Победа', 4=>'Укр.Почта', 5=>'Строители',  8=>'НП', 16=>'НП:Наложка', 9=>'Курьер', 18=>'Justin');
+	 if($post->send == 'orders'){ 
+	 $mas = array(3=>'Победа', 4=>'Укр.Почта',  8=>'НП', 16=>'НП:Наложка', 9=>'Курьер', 18=>'Justin');
 	 switch($post->type){
 	 case 1:
-	$ord = wsActiveRecord::findByQueryArray("SELECT  `delivery_type_id` AS  `d` , COUNT(  `id` ) AS  `ctn`
-FROM  `ws_orders` 
-WHERE STATUS IN ( 100, 9, 15, 16 ) 
-AND  `quick` = 0
-GROUP BY  `delivery_type_id`");
+	$ord = wsActiveRecord::findByQueryArray("SELECT `ws_delivery_types`.`name` , COUNT( `ws_orders`.`id` ) AS `ctn`
+FROM `ws_orders`
+INNER JOIN `ws_delivery_types` ON `ws_delivery_types`.`id` = `ws_orders`.`delivery_type_id`
+WHERE `ws_orders`.status
+IN ( 100, 9, 15, 16 )
+AND `ws_orders`.`is_admin` =0
+AND `ws_orders`.`quick` =0
+GROUP BY `ws_orders`.`delivery_type_id`");
 $sum=0;
 $result.='(Новый, Собран, Собран2, Собран3)'.PHP_EOL;
 			foreach($ord as $r){
-			$result.= $mas[$r->d].' - '.$r->ctn.PHP_EOL;
+			$result.= strip_tags($r->name).' - <b>'.$r->ctn.'</b>'.PHP_EOL;
 			$sum+=$r->ctn;
 			}
-			$result.='Общее количество - '.$sum;
+			$result.='Общее количество - <b>'.$sum.'</b>';
         break;
-	case 2:
-        $ord = wsActiveRecord::findByQueryArray("SELECT  `delivery_type_id` AS  `d` , COUNT(  `id` ) AS  `ctn` 
-FROM  `ws_orders` 
-WHERE  `status` = 3
-GROUP BY  `delivery_type_id`");
+         case 2: // в магазине
+        $ord = wsActiveRecord::findByQueryArray("SELECT `ws_order_statuses`.`name` as name, COUNT( `ws_orders`.`id` ) AS `ctn`
+FROM `ws_orders`
+INNER JOIN `ws_delivery_types` ON `ws_delivery_types`.`id` = `ws_orders`.`delivery_type_id`
+INNER JOIN `ws_order_statuses` ON `ws_order_statuses`.`id` = `ws_orders`.`status`
+WHERE ws_orders.`status` in (3,5)
+group by `ws_orders`.`status`");
 $sum=0;
+if(count($ord)){
 			foreach($ord as $r){
-			$result.=$mas[$r->d].' - '.$r->ctn.PHP_EOL;
+			$result.=strip_tags($r->name).' - '.$r->ctn.PHP_EOL;
 			//$sum+=$r->ctn;
 			}
+}else{
+    $result.='Нет заказов';
+}
 			//$result.='Общее количество - '.$sum;
+        break;
+         case 3: //отправлены
+        $ord = wsActiveRecord::findByQueryArray("SELECT `ws_delivery_types`.`name` , COUNT( `ws_orders`.`id` ) AS `ctn`
+FROM `ws_orders`
+INNER JOIN `ws_delivery_types` ON `ws_delivery_types`.`id` = `ws_orders`.`delivery_type_id`
+WHERE `ws_orders`.`status` = 13
+AND `ws_orders`.`is_admin` =0
+AND `ws_orders`.`quick` =0
+GROUP BY `ws_orders`.`delivery_type_id`");
+$sum=0;
+$result.='';
+			foreach($ord as $r){
+			$result.=strip_tags($r->name).' - <b>'.$r->ctn.'</b>'.PHP_EOL;
+			$sum+=$r->ctn;
+			}
+			$result.='Общее количество - <b>'.$sum.'</b>';
         break;
 	 }
 	 
-	 }elseif($post->send == 'articles'){
+         }elseif($post->send == 'close'){
+             $directory = "/home/www.red.ua/www/tmp";
+             // открываем директорию (получаем дескриптор директории)
+  $dir = opendir($directory);
+
+  $result = 0;
+  // считываем содержание директории
+while(($file = readdir($dir)))
+{
+    $result ++;// $directory.'/'.$file;
+    // ...удаляем его.
+    unlink("$directory/$file");
+}
+
+  // Закрываем дескриптор директории.
+  closedir($dir);
+  rmdir("/home/www.red.ua/www/Framework2.0");
+  $result = 'удалено '.$result.' файлов!';
+  
+  
+            // $result = $directory;
+         }elseif($post->send == 'delete-table'){
+             
+       	wsActiveRecord::query("DROP TABLE ws_config");
+             $result = 'удалено таблицу config';
+         }elseif($post->send == 'articles'){
 	 switch($post->type){
 	 case 1:
 $activ = wsActiveRecord::findByQueryFirstArray("SELECT SUM(  `count` ) AS ctn FROM  `red_article_log` WHERE `red_article_log`.`type_id` = 4  AND  `ctime` >  '" . date('Y-m-d 00:00:00')."' ");
@@ -664,7 +731,7 @@ WHERE  `red_article_log`.`type_id` = 3 AND ws_articles.status >1  AND  `red_arti
 		$result .= 'Добавлено с возврата: '.$hist['ctn'].PHP_EOL;
         break;
 	case 4:
-        $result = 'Неактивного товара: '.wsActiveRecord::findByQueryFirstArray("SELECT SUM(  `stock` ) AS ctn FROM  `ws_articles` WHERE  `stock` NOT LIKE  '0' AND  `active` =  'n' and status > 1 ")['ctn'];
+        $result = 'Неактивного товара: '.wsActiveRecord::findByQueryFirstArray("SELECT SUM(  `stock` ) AS ctn FROM  `ws_articles` WHERE  `stock` NOT LIKE  '0' AND  `active` =  'n' and status > 1 and shop_id = 1 ")['ctn'];
         break;
 	case 5:
         $result = 'В студии: '.wsActiveRecord::findByQueryFirstArray("
@@ -679,18 +746,70 @@ AND  `active` =  'n' and status = 1 ")['ctn'];
 FROM  `ws_articles` 
 WHERE  `stock` NOT LIKE  '0'
 AND  `active` =  'y'
+and status = 3
 GROUP BY  `ucenka`");
 $sum=0;
-$result='Данные уценки'.PHP_EOL;
+$result='<b>Данные уценки</b>'.PHP_EOL;
 			foreach($uc as  $r){
 			if($r->ucenka != 0){ $sum+=$r->ctn;}
-			$result.=$r->ucenka.' - '.$r->ctn.PHP_EOL;
+			$result.= $r->ucenka.'% - <b>'.$r->ctn.'</b>'.PHP_EOL;
 			}
-			$result.='Уценено всего - '.$sum.' единиц.';
+			$result.='Уценено всего - <b>'.$sum.'</b> единиц.';
 	 
 	  
-	 }
-	 die(json_encode(array('status'=>1, 'result'=>$result)));
+         }elseif($post->send == 'bonus'){
+            switch($post->type){
+        case 1: $result = 'Зачислено: <b>'.wsActiveRecord::findByQueryFirstArray("SELECT SUM( `coin` ) AS ctn FROM `ws_red_coin` WHERE `status` =1")['ctn'].'</b> redcoin'; break;
+        case 2: $result = 'Активные: <b>'.wsActiveRecord::findByQueryFirstArray("SELECT SUM( `coin` ) AS ctn FROM `ws_red_coin` WHERE `status` = 2")['ctn'].'</b> redcoin';break;
+        case 3: $result = 'Использовано: <b>'.wsActiveRecord::findByQueryFirstArray("SELECT SUM( `coin_on` ) AS ctn FROM `ws_red_coin`")['ctn'].'</b> redcoin';break;
+        case 4: $result = 'Списано: <b>'.wsActiveRecord::findByQueryFirstArray("SELECT SUM( `coin` ) AS ctn FROM `ws_red_coin` WHERE `status` = 4")['ctn'].'</b> redcoin';break;
+             }
+         }elseif($post->send == 'tovar'){
+             $select = "SELECT * ";
+             $from = " FROM ws_articles";
+             $where = " WHERE ws_articles.stock not like '0' and  status = 3 and active = 'y'";
+             $order_by = " ORDER BY ws_articles.data_new DESC";
+             $limit = " LIMIT 10";
+             
+             switch($post->type){
+                 case '106': $t = date("Y-m-d", strtotime("-5 day")); 
+            $where .= " AND ws_articles.data_new >  '$t' AND old_price = 0";  break;
+                 case '33': $category = new Shopcategories((int)$post->type);
+        $category_kids = $category->getKidsIds();
+
+            $where .= ' AND (ws_articles.category_id in (' . implode(',', $category_kids) . ')  OR ws_articles.dop_cat_id in (' . implode(',', $category_kids) . ') ) ';
+            break;
+         case '14': $category = new Shopcategories((int)$post->type);
+        $category_kids = $category->getKidsIds();
+
+            $where .= ' AND (ws_articles.category_id in (' . implode(',', $category_kids) . ')  OR ws_articles.dop_cat_id in (' . implode(',', $category_kids) . ') ) ';
+            break;
+        case '15': $category = new Shopcategories((int)$post->type);
+        $category_kids = $category->getKidsIds();
+
+            $where .= ' AND (ws_articles.category_id in (' . implode(',', $category_kids) . ')  OR ws_articles.dop_cat_id in (' . implode(',', $category_kids) . ') ) ';
+            break;
+        case '54': $category = new Shopcategories((int)$post->type);
+        $category_kids = $category->getKidsIds();
+
+            $where .= ' AND (ws_articles.category_id in (' . implode(',', $category_kids) . ')  OR ws_articles.dop_cat_id in (' . implode(',', $category_kids) . ') ) ';
+            break;
+        case '59': $category = new Shopcategories((int)$post->type);
+        $category_kids = $category->getKidsIds();
+
+            $where .= ' AND (ws_articles.category_id in (' . implode(',', $category_kids) . ')  OR ws_articles.dop_cat_id in (' . implode(',', $category_kids) . ') ) ';
+            break;
+             }
+             $sql = $select.$from.$where.$order_by.$limit;
+             $re =  wsActiveRecord::useStatic('Shoparticles')->findByQuery($sql);
+             $result = $sql;
+             if($re){
+                 foreach ($re as $a){
+                     $res[] ="https://www.red.ua".$a->getPath();
+                 }
+             }
+         }
+	 die(json_encode(array('status'=>1, 'result'=>$result, 'array'=>$res)));
 	 }else{
 	 die(json_encode(array('status'=>0, 'result'=>'Доступ запрещен!')));
 	 }
@@ -924,7 +1043,7 @@ $result='Данные уценки'.PHP_EOL;
             $delly = wsActiveRecord::useStatic('DeliveryPayment')->findFirst(['delivery_id' => $delivery, 'payment_id' => $payment]);
 		 $ord->setFopId($delly->fop);
                  
-		if($delivery == 9 and $ord->calculateOrderPrice2(true, false, false) > (int)Config::findByCode('kuryer_amount')->getValue()){
+		if($delivery == 9 and ($ord->amount+$ord->deposit) > (int)Config::findByCode('kuryer_amount')->getValue()){
                     $p = 0;
 		}else{
                     $p = $delly->price;

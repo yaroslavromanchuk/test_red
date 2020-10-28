@@ -170,11 +170,11 @@ function getQuikArticle(id) {//bistriy prosmotr
                     console.log(data);
                 },
 		complete: function () {
-			$('a.cloud-zoom').lightBox({
+			/*$('a.cloud-zoom').lightBox({
 				fixedNavigation: true,
 				overlayOpacity: 0.6
 			});
-			$('.cloud-zoom, .cloud-zoom-gallery').CloudZoom();
+			$('.cloud-zoom, .cloud-zoom-gallery').CloudZoom();*/
 		}
 	});
 }
@@ -314,7 +314,7 @@ $("#qo").submit(function () { //bistriy zakaz
 				},
 				error: function (e) {
                                     console.log(e);
-					$('#qo-result').html('Извините, но при отправке заказа произошла ошибка, попробуйте позже');
+					$('#qo-result').html('<div class="alert alert-danger" role="alert">Извините, но при отправке заказа произошла ошибка, попробуйте позже</div>');
 					$('#qo-result').show();
 					$('#hide .modal-footer').hide();
 				}
@@ -447,9 +447,9 @@ function setCooki(e) {
         document.cookie = "mobil =" + e;
         location.reload();
 }
-
+/*
 document.addEventListener("DOMContentLoaded", function() {
-  var lazyloadImages = document.querySelectorAll("img.catalog_img");    
+  var lazyloadImages = document.querySelectorAll('img[data-src]');    
   var lazyloadThrottleTimeout;
   
   function lazyload () {
@@ -459,25 +459,80 @@ document.addEventListener("DOMContentLoaded", function() {
     
     lazyloadThrottleTimeout = setTimeout(function() {
         var scrollTop = window.pageYOffset;
-        lazyloadImages.forEach(function(img) {
+        [].forEach.call(document.querySelectorAll('img[data-src]'),    function(img) {
             if(img.offsetTop < (window.innerHeight + scrollTop)) {
-              img.src = img.dataset.src;
-              img.classList.remove('catalog_img');
+  img.setAttribute('src', img.getAttribute('data-src'));
             }
-        });
+  img.onload = function() {
+    img.removeAttribute('data-src');
+  };
+});
+
         if(lazyloadImages.length == 0) { 
-            
           document.removeEventListener("scroll", lazyload);
           window.removeEventListener("resize", lazyload);
           window.removeEventListener("orientationChange", lazyload);
         }
-    }, 20);
+    }, 50);
   }
 
   document.addEventListener("scroll", lazyload);
   window.addEventListener("resize", lazyload);
   window.addEventListener("orientationChange", lazyload);
+});*/
+$(window).load(function() {
+/** код будет запущен когда страница будет полностью загружена, включая все фреймы, объекты и изображения **/
+       [].forEach.call(document.querySelectorAll('img[data-src]'), function(img) {
+img.setAttribute('src', img.getAttribute('data-src'));
+img.onload = function() {
+img.removeAttribute('data-src');
+};
 });
+});
+
+
+var accept_cookies_button = document.getElementById('user-accept-cookies');
+var cookie_notice = document.querySelector('.user-cookie-notice');
+if (getCookie('cookie_consent') !== 'true' && cookie_notice !== null) {
+  cookie_notice.style.display = 'flex';
+}
+
+if (accept_cookies_button !== null) {
+  accept_cookies_button.addEventListener('click', function (e) {
+    if (getCookie('cookie_consent') !== 'true') {
+      setCookie('cookie_consent', 'true', 365);
+      cookie_notice.style.transition = 'opacity 1s ease';
+      cookie_notice.style.opacity = '0';
+
+      setTimeout(function () {
+        cookie_notice.style.visibility = 'hidden';
+      }, 1000)
+    }
+  })
+}
+
+function setCookie (cname, cvalue, exdays) {
+  var d = new Date();
+  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+  var expires = 'expires=' + d.toUTCString();
+  document.cookie = cname + '=' + cvalue + ';' + expires + ';path=/';
+}
+
+function getCookie (cname) {
+  var name = cname + '=';
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';')
+  for (var i = 0; i < ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return '';
+}
 
 
 

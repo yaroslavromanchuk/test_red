@@ -1,16 +1,5 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- * Description of Cart
- *
- * @author PHP
- */
 class Cart extends wsActiveRecord
 {
     protected $_table = 'ws_cart';
@@ -21,7 +10,7 @@ class Cart extends wsActiveRecord
          $this->_relations = [
              'item' => [
                  'type' => 'hasMany',
-                'class' => self::$_shopping_cart_item_class,
+                'class' => 'CartItem',
                 'field_foreign' => 'id_cart',
                 'orderby' => array('id' => 'ASC'),
                 'onDelete' => 'delete'
@@ -65,10 +54,21 @@ class Cart extends wsActiveRecord
              
            //  return true;
     }
+    /**
+     * Все корзины с наличием товара
+     * @return type
+     */
     public function allCart(){
-        $da = new DateTime('-1 days');
-        $date = $da->format('Y-m-d H:i:s');
-       return  wsActiveRecord::useStatic('Cart')->findAll(['ctime <= "'.$date.'"']);
+       // $da = new DateTime('-1 days');
+       // $date = $da->format('Y-m-d H:i:s');
+      // return  wsActiveRecord::useStatic('Cart')->findAll(['ctime <= "'.$date.'"']);
+        return  wsActiveRecord::useStatic('Cart')->findAll(['count > 0']);
+    }
+    public function allCartNoIthem(){
+       // $da = new DateTime('-1 days');
+       // $date = $da->format('Y-m-d H:i:s');
+      // return  wsActiveRecord::useStatic('Cart')->findAll(['ctime <= "'.$date.'"']);
+        return  wsActiveRecord::useStatic('Cart')->findByQuery("");
     }
 
 
@@ -91,11 +91,20 @@ class Cart extends wsActiveRecord
 
     public function clearCart(){
         if($this->id){
-            //print_r($this);
-            @$this->destroy();
-            //die();
+          $item = $this->item;
+       
+      if($item->count()){
+          foreach ($item as $it){
+              $it->clearCartIthem();
+          }
+      }
+      $this->count = 0;
+      $this->email = 0;
+      $this->cem = 0;
+      $this->total_price = 0;
+      $this->save();
         }
-        return false;
+        return true;
     }
     
     static function view_cart($id = false){
@@ -152,41 +161,15 @@ class Cart extends wsActiveRecord
      */
     public static function getArticles($article, $item, $param = []){
         
-                $skidka = 0;
-                $kupon = 0;
-                $event_skidka = 0;
-                $now_orders = 0;
-                $sum_order = 0;
-                
-                if(isset($param['skidka'])){
-                     $skidka = $param['skidka'];
-                }
-                if(isset($param['kupon'])){
-                  $kupon = $param['kupon'];
-                }
-                if(isset($param['event_skidka'])){
-                  $event_skidka =  $param['event_skidka'];
-                }
-                if(isset($param['now_orders'])){
-                   $now_orders = $param['now_orders'];
-                }
-                if(isset($param['sum_order'])){
-                     $sum_order = $param['sum_order'];
-                }
-               /* if ($customer->getIsLoggedIn()) {
-                    $skidka = $customer->getDiscont(false, 0, true);
-                    $event_skidka = EventCustomer::getEventsDiscont($customer->getId());
-                    $now_orders = $customer->getSumOrderNoNew();
-                    }*/
-                  // echo $event_skidka;
-                   // echo $skidka;
-                    
-                    
+             
                 $arr = [];
         	$size = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(['id_article' => $article->getId(), 'id_size' => $item['size'], 'id_color' => $item['color']]);             
         
-                $price = $article->getPerc(($now_orders+$sum_order), $item['count'], $skidka, $event_skidka, $kupon, $sum_order);
+             //   l($promo);
+                $price = $article->getPerc($param);
+               
                 
+                $arr['shop_id'] = $article->shop_id;
                 $arr['id'] =  $article->getId();
                 $arr['path'] =  $article->getPath();
                 $arr['img'] =  $article->getImagePath('listing');
@@ -194,7 +177,9 @@ class Cart extends wsActiveRecord
                 $arr['title'] = htmlspecialchars($article->getTitle());
                 //$arr['article_id'] =  $article->getId();
                 $arr['color'] =  $size->color->name;
+                $arr['id_color'] =  $size->id_color;
                 $arr['size'] =  $size->size->size;
+                $arr['id_size'] =  $size->id_size;
                 $arr['size_count'] =  $size->count;
                 $arr['comment'] =  $price['comment']?$price['comment']:'';
                 $arr['first_price'] =  $article->getFirstPrice();
@@ -238,10 +223,68 @@ class Cart extends wsActiveRecord
             315,
             357,
             158,
-            55
+            55,
+            358,
+            359,
+            360,
+            361,
+            362,
+            363,
+            364,
+            365
         ];
         if (in_array($cat, $arr)) { return true; }
         return false;
+    }
+    
+    /**
+     * Все корзины с наличием товара
+     * @return type
+     */
+    public function getCartForEmail(){
+       
+        $da = new DateTime('-1  hour');
+        $date = $da->format('Y-m-d H:i:s');
+       return  wsActiveRecord::useStatic('Cart')->findAll(['ctime <= "'.$date.'"', 'email'=>0, 'count > 0', 'cem < 2'],['ctime'=>'ASC'],[0,30]);
+      // return  wsActiveRecord::useStatic('Cart')->findAll(['id_user' => 8005],[],[0,10]);
+    }
+    
+    public function sendEmailCart($track){
+        $e = new EncodeDecode();
+        $h =  $e->encode($this->hash_id);
+       
+
+        $view = new View();
+         $view->track_open = 'https://www.red.ua/email/cart/?photo='.$track.'.jpg';
+       $link =  'https://www.red.ua/basket/l/'.$h.'/?utm_source=returnbasket&utm_medium=email&utm_content=Return_Basket&utm_campaign=Return_Basket&track_cart='.$track;
+       $view->cart = $this;
+       $view->link = $link;
+       $view->email = $this->user->email;
+       $view->track = '/l/'.$h.'/?utm_source=returnbasket&utm_medium=email&utm_content=Return_Basket&utm_campaign=Return_Basket';
+        $msg =  $view->render('email/new_bek.template.tpl.php');	
+       // $fn = md5(date('Y-m-d H:i:s').$this->user->id);
+          // $file = "/cart/{$fn}.html";
+          // $fp =  fopen(INPATH."email".$file,"w");//если файла info.txt не существует, создаем его
+           
+          // fwrite($fp, $msg);//записываем в файл
+          // fclose($fp);//закрываем файл.
+           EmailLog::add($this->user->getFirstName().', у вас незавершена покупка!', $msg, 'cart', $this->user->id);
+        SendMail::getInstance()->sendEmail($this->user->email, $this->user->getFirstName(), $this->user->getFirstName().', у вас незавершена покупка!', $msg);
+            return true;
+        
+    }
+    public static function sumCartSession(){
+        $sum = 0;
+            if(!empty($_SESSION['basket'])){
+                foreach ($_SESSION['basket'] as  $item) {
+                    $article = new Shoparticles((int)$item['article_id']);
+                $price = $article->getPerc();
+                    
+                   $sum += (int)(!empty($price['option_price']) ? $price['option_price'] : $price['price']);
+                }
+            }
+        //  l($sum);
+        return $sum;
     }
     
 }

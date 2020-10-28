@@ -36,7 +36,7 @@
                 <select class="form-control select2" data-placeholder="Brands" multiple name="brands" id="brands">
                     <?php
 				$asc = explode(',' , $this->get->brands);
-                                ksort($this->filters['brands']);
+                             //   ksort($this->filters['brands']);
                         foreach ($this->filters['brands'] as $cat) { ?>
                     <option <?php if ($this->get->brands == urldecode($cat['name'])){ ?> selected <?php }elseif(in_array(urldecode($cat['name']), $asc)){ ?> selected <?php } ?>  value="<?=$cat['name']?>"><?=$cat['title']?></option>
                         <?php } ?>

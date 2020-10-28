@@ -9,7 +9,7 @@ class wsLog extends wsActiveRecord
 	{
 		$logger = new wsLog();
 		$logger->setHashVisit(isset($_SESSION['v']) ? $_SESSION['v'] : '');
-		$logger->setUrl($_SERVER['REQUEST_URI']);
+		$logger->setUrl(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '');
 		$logger->setReffererUrl(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '');
 		$logger->setTimestamp(date('Y-m-d H:i:s'));
 		$logger->setPriorityName($type);
@@ -18,7 +18,7 @@ class wsLog extends wsActiveRecord
 		$logger->save();
                 
                 if($type == 'EMERG'){
-                   Telegram::sendMessageTelegram(404070580, 'ERROR!'.PHP_EOL.'URL:'.$_SERVER['REQUEST_URI'].PHP_EOL.'Message:'.$message);
+                   Telegram::sendMessageTelegram(404070580, 'ERROR RED.UA!'.PHP_EOL.'URL:'.$_SERVER['REQUEST_URI'].PHP_EOL.'Message:'.$message);
                 }
 	}
         

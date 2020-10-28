@@ -335,7 +335,7 @@ $arr = array_unique($mas);
 	<?=$this->trans->get('Цена')?> 
                             
 <?php         
-  $price   = $this->getShopItem()->getPerc(100, 1);
+  $price   = $this->getShopItem()->getPerc();
             $pric = explode(',', trim(Number::formatFloat($price['price'], 2)));
 				echo $pric[0];
 ?>
@@ -473,7 +473,7 @@ if($this->ws->getCustomer()->getIsLoggedIn() and wsActiveRecord::useStatic('Desi
 	<?=$this->trans->get('Цена')?> 
                             
 <?php         
-  $price   = $this->getShopItem()->getPerc(100, 1);
+  $price   = $this->getShopItem()->getPerc();
             $pric = explode(',', trim(Number::formatFloat($price['price'], 2)));
 				echo $pric[0];
 ?>

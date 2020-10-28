@@ -252,7 +252,7 @@ $(".s-b").slideDown();
         });
     });
 </script>
-<?php if(!$this->user->isPointIssueAdmin()){ ?>
+<?php if($this->user->isSuperAdmin()){ ?>
 <div class="panel panel-default" style="margin-bottom:5px;">
   <div class="panel-body" style="padding: 10px;">
 <label>Действия над заказами:</label><br>
@@ -645,10 +645,11 @@ location.reload();
                ?>
                 </td>
                 <td>
-                 <?php if($order->admin){?>
+                 <?php if($order->admin){ ?>
                     <span style="font-size: 12px;color: red;">(<?=$admin[$order->admin]?>)</span><br>
                 <?php } ?>   
         <?=$order->getStat()->getName()?>
+                   
                     <?php if ($order->getComlpect()) { ?>
                         Совмещенный заказ
                     <?php } ?>
@@ -659,6 +660,7 @@ location.reload();
                         <b>Нет необходимости подтверждать заказ по телефону</b>
                     <?php }
 ?>
+                         <?php if($order->isActiya()){ echo '<br><img src="/backend/img/icons/ac.gif" style="width:70px">';}?>
                 </td>
                 <td><?=$order->getId()?><?php if ($order->getOldid()) echo ' / '.$order->getOldid(); ?></td>
                 <td style="width: 105px;"><?=date("d-m-Y H:i", strtotime($order->getDateCreate()));?></td>

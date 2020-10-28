@@ -206,7 +206,9 @@ plugins: [
 	    image_advtab: true,
             
             external_filemanager_path:"/backend/scripts/filemanager/",
-	   filemanager_title:"Responsive Filemanager" ,
+	   filemanager_title:"Responsive Filemanager",
+           filemanager_subfolder: "page/",
+           filemanager_access_key: "yarik",
 	   external_plugins: { "filemanager" : "/backend/scripts/filemanager/plugin.min.js"},
 	   convert_urls: false
  });

@@ -141,8 +141,10 @@ plugins: [
 	   toolbar2: "| responsivefilemanager | link unlink anchor | image  media | forecolor backcolor  | fontsizeselect | preview | code",
 	    image_advtab: true,
             
-            external_filemanager_path:"/backend/scripts/filemanager/",
+           external_filemanager_path:"/backend/scripts/filemanager/",
 	   filemanager_title:"Responsive Filemanager" ,
+           filemanager_subfolder: "images/RED_ua/blog/",
+           filemanager_access_key: "nia",
 	   external_plugins: { "filemanager" : "/backend/scripts/filemanager/plugin.min.js"},
 	   convert_urls: false
  });

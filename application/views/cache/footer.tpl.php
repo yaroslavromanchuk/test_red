@@ -1,4 +1,19 @@
-<link rel="stylesheet" type="text/css" href="/css/footer.css?v=1.3" />
+<link rel="stylesheet" type="text/css" href="/css/footer.css?v=1.4" />
+<div class="user-cookie-notice bg-dark" style="display:none" >
+    <div class="user-cookie-wrap container">
+        <?=$this->trans->get('_cookie')?>
+        <div class="user-cookie-buttons">
+            <button class="btn btn-outline-light user-cookie-btn" id="user-accept-cookies">
+                <span>
+                    <?=$this->trans->get('_cookie_ok')?>
+                </span>
+            </button>
+            <a class="user-cookie-link" href="/privacy-policy/" target="_blank">
+                <?=$this->trans->get('_cookie_info')?>
+            </a>
+        </div>
+    </div>
+</div>
 <footer>
 <div class="row footer m-auto">
 <div class="col-xs-12 col-sm-6 col-md-3">
@@ -38,25 +53,29 @@
 <div class="footer-soc">
 <span><?=$this->trans->get('Присоединяйтесь к нашим группам в социальных сетях. Еще больше общения, еще ярче эмоции, еще интереснее посты')?>!
 </span><br><br>
-<a href="https://www.facebook.com/lifestyle.red.ua/"><img alt="lifestyle" src="/img/footer/facebuk.png"></a>
-<a href="http://instagram.com/red_ua"><img alt="red_ua" src="/img/footer/instagram.png"></a>
-<a href="https://www.youtube.com/user/SmartRedShopping"><img alt="SmartRedShopping" src="/img/footer/youtube.png"></a>
+<a href="https://www.facebook.com/lifestyle.red.ua/"><img alt="lifestyle" src="/img/footer/facebuk.webp"></a>
+<a href="http://instagram.com/red_ua"><img alt="red_ua" src="/img/footer/instagram.webp"></a>
+<a href="https://www.youtube.com/user/SmartRedShopping"><img alt="SmartRedShopping" src="/img/footer/youtube.webp"></a>
 </div>
 </div>
 </div>
 <div  style="text-align:center;">
 	<span class="copirite">&copy; <a href="/">Интернет-магазин RED.UA</a>, <?=date('Y');?></span>
-	<img style="-webkit-filter: grayscale(100%);margin-left: -15%;" src="/img/icons/payment_logo.png" alt="payment">
+	<img style="-webkit-filter: grayscale(100%);margin-left: -15%;" src="/img/icons/payment_logo.webp" alt="payment">
 	<?php
 //d($this->get, false);
 	if($this->get->controller == 'Home'){ ?><span class="copirite" style="left: 20px;">Раскрутка сайта — <a href="https://aweb.ua/">Aweb.ua</a></span><?php } ?>
 </div>
 </footer>
 <p id="back-top"><a href="#top"><span></span></a></p>
+<!--
 <script src="//uaadcodedsp.rontar.com/rontar_aud_async.js"></script>
+-->
 <script>
+     $(window).load(function() {
 window.rnt=window.rnt||function(){(rnt.q=rnt.q||[]).push(arguments)};
 rnt('add_event', {advId: 20676});
 rnt('add_event', {advId: '20676', pageType:'home'});
 rnt('add_audience', {audienceId: '20676_254951d7-6d13-4ea2-a507-747c9e6fe802'});
+     });
 </script>

@@ -1,7 +1,9 @@
 <div class="row mx-auto">
 <?php
-if($this->news){
-foreach($this->news as $new) { ?>
+if($this->news->count() > 0){
+foreach($this->news as $new) {
+    if($new->id == 194){ continue;}
+    ?>
 <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 p-2">
 <div class="bg-white p-3 h-100 text-center">
 	<h2><?=$new->option_text?></h2>

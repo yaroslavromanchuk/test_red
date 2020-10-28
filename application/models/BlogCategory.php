@@ -18,7 +18,7 @@ class BlogCategory extends wsActiveRecord
              * Все категории
              * @return type
              */    
-	public function getAllCategory(){
+	public static function getAllCategory(){
       
         return wsActiveRecord::useStatic('BlogCategory')->findAll();
         }

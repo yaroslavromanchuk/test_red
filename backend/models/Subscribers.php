@@ -19,10 +19,10 @@ class Subscribers  extends Emailpost
      * @return type
      */
     public function ListSaveSubscriders($segment_id) {
-       return  wsActiveRecord::useStatic('Emailpost')->findAll(['segment_id'=>$segment_id]);
+       return  wsActiveRecord::useStatic('Emailpost')->findAll(['segment_id'=>$segment_id], ['id'=>'DESC'], [0, 40]);
     }
     public function ListSaveSubscridersSegment($segment_id) {
-       return  wsActiveRecord::useStatic('Emailpost')->findAll(['segment_customer'=>$segment_id]);
+       return  wsActiveRecord::useStatic('Emailpost')->findAll(['segment_customer'=>$segment_id], ['id'=>'DESC'], [0, 40]);
     }
     /**
      * Сохранить рассылку

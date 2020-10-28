@@ -78,7 +78,7 @@ if ($this->saved){ ?>
         </tr> 
 		
 		<tr>
-			<td class="kolom1">Украинская версия <br>Картинка <br> Центральные: 270px X 180px <br /> Боковые: 320px X 390px <br />Большой баннер: 1003px X 370px</td>
+			<td class="kolom1">Украинская версия <br>Картинка <br> Блок на главной: 600px X 800px <br />Большой баннер: 1500px X 380px</td>
 			<td>
                 <label>
                     <input name="image_uk" type="file" class="form-control-1" id="fileField"/>
@@ -90,7 +90,7 @@ if ($this->saved){ ?>
         </tr>
 		<?php }?>
         <tr>
-            <td class="kolom1">Русская версия<br>Картинка <br /> Центральные: 270px X 180px <br /> Боковые: 320px X 390px <br />Большой баннер: 1003px X 370px</td>
+            <td class="kolom1">Русская версия<br>Картинка <br /> Блок на главной: 600px X 800px <br />Большой баннер: 1500px X 380px</td>
             <td>
                 <label>
                     <input name="image" type="file" class="form-control-1" id="fileField"/>

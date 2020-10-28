@@ -39,10 +39,8 @@
                 <select name="brand_id" class="form-control select2-show-search"  id="brand_id" data-placeholder="Выберите Бренд">
                     <option value="">Выберите бренд</option>
                     <?php
-                    
-                  
                 foreach (Brand::find('Brand', ['hide'=>1]) as $b) { ?>
-                    <option value="<?=$b-id?>" <?php if($b->id == $this->footer_text->brand_id){echo 'selected';} ?> ><?=$b->name?></option>
+                    <option value="<?=$b->id?>" <?php if($b->id == $this->footer_text->brand_id){echo "selected";} ?> ><?=$b->name?></option>
                  <?php   } ?>
                 </select>
                         </div>
@@ -89,10 +87,43 @@
                 </select>
                         </div>
                         </div>
+                    <div class="col-sm-12 col-md-6">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+    <label class="sr-only1" for="name">Тайтл</label>
+    <input type="text" class="form-control" id="title" name="title" placeholder="Заглавие" value="<?=$this->footer_text->title?>" >
+  </div>
+                            </div>
+                            <div class="col-sm-12">
+                                 <div class="form-group">
+                    <label class="sr-only1" for="text">Описание:</label>
+                        <textarea name="description" cols="50" rows="3" class="form-control"  ><?=$this->footer_text->description?></textarea>
+            </div> 
+                            </div>
+                        </div>
+                       
+                        </div>
+                     <div class="col-sm-12 col-md-6">
+                         <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+    <label class="sr-only1" for="name">Тайтл укр:</label>
+    <input type="text" class="form-control" id="title_uk" name="title_uk" placeholder="Заглавие" value="<?=$this->footer_text->title_uk?>" >
+  </div>
+                            </div>
+                            <div class="col-sm-12">
+                                 <div class="form-group">
+                    <label class="sr-only1" for="text">Описание укр:</label>
+                        <textarea name="description_uk" cols="50" rows="3" class="form-control"  ><?=$this->footer_text->description_uk?></textarea>
+            </div> 
+                            </div>
+                        </div>
+                        </div>
                     <div class="col-sm-12 col-md-12 col-lg-12">
                          <div class="form-group">
                     <label class="sr-only1" for="text">Текст:</label>
-                        <textarea name="text" cols="80" rows="5" class="form-control"  ><?=$this->footer_text->text?></textarea>
+                        <textarea name="text" cols="80" rows="5" class="form-control textarea"  ><?=$this->footer_text->text?></textarea>
 
 
             </div>
@@ -100,7 +131,7 @@
                     <div class="col-sm-12 col-md-12 col-lg-12">
                          <div class="form-group">
                     <label class="sr-only1" for="text">Текст укр:</label>
-                        <textarea name="text_uk" cols="80" rows="5" class="form-control"  ><?=$this->footer_text->text_uk?></textarea>
+                        <textarea name="text_uk" cols="80" rows="5" class="form-control textarea"  ><?=$this->footer_text->text_uk?></textarea>
 
 
             </div>
@@ -118,7 +149,7 @@
 <script src="<?=$this->files?>scripts/tinymce/tinymce.min.js"></script>
 <script>
 tinymce.init({
-		selector: "textarea",
+		selector: ".textarea",
 		//width: 750,
 		height: 400,
 		language : 'ru',

@@ -4,18 +4,28 @@ class Router {
 
 	static public function route() {
             
-             $redirect = wsActiveRecord::useStatic('Redirect')->findFirst([" url LIKE  '".$_SERVER['PHP_SELF']."'"]);
-                if($redirect->to_url){
+           if(empty($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) != 'xmlhttprequest') {
+    // не ajax запрос
+  if(strpos($_SERVER['PHP_SELF'], 'ajaxsearch')) {
+     header("HTTP/1.1 301 Moved Permanently"); 
+    header("Location: /",TRUE,301);
+    exit();
+  }
+    $redirect = wsActiveRecord::useStatic('Redirect')->findFirst([' url LIKE  "'.(string)$_SERVER['PHP_SELF'].'" ']);
+   
+                if(!empty($redirect->to_url)){
                      header("HTTP/1.1 301 Moved Permanently"); 
 			header("Location: $redirect->to_url",TRUE,301);
 			exit();
                 }
+
+       }
             
                   $i = 0;
                 $get = $_GET;
                 
 	$rout = $_SERVER['REQUEST_URI'];
-	$route = explode('/', substr($get['route'],1));
+	$route = isset($get['route']) ? explode('/', substr($get['route'],1)) : [];
                 //redirect no "/"
        // echo $_SERVER['PHP_SELF'];
         
@@ -87,7 +97,7 @@ class Router {
                     
                     }
    		
-		if($_SESSION['lang'] == 'uk' and $route[$i] != 'uk'){
+		if(isset($_SESSION['lang']) && $_SESSION['lang'] == 'uk' && $route[$i] != 'uk'){
 			
                     if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) != 'xmlhttprequest') {
 			
@@ -104,18 +114,30 @@ class Router {
 			
 			Registry::set('lang_id', $l->getId());
 			Registry::set('lang', strtolower($l->getCode()));
-			$_SESSION['lang'] = strtolower($l->getCode());
-			setcookie('lang', strtolower($l->getCode()));
+                        
+                        if(empty($_SESSION['lang'])){
+                            $_SESSION['lang'] = strtolower($l->getCode());
+                        }elseif(isset($_SESSION['lang']) && $_SESSION['lang'] != $route[$i]){
+                             $ur = substr($_SERVER['PHP_SELF'],3);
+                                    header("HTTP/1.1 301 Moved Permanently"); 
+                                    header("Location: $ur",TRUE,301);
+                                exit();
+                            unset($route[$i]);
+                        }
+			//$_SESSION['lang'] = strtolower($l->getCode());
+			//setcookie('lang', strtolower($l->getCode()));
                         if($route[$i]== 'ru'){
-                           $ur = substr($_SERVER['PHP_SELF'],3);
-                      header("HTTP/1.1 301 Moved Permanently"); 
-			header("Location: $ur",TRUE,301);
-			exit();
+                                    $ur = substr($_SERVER['PHP_SELF'],3);
+                                    header("HTTP/1.1 301 Moved Permanently"); 
+                                    header("Location: $ur",TRUE,301);
+                                exit();
                             unset($route[$i]);
                         }else{
                             $i++;//i = 1
                             
                         }
+                        
+                        
 			$route = array_values($route);
 			if(!count($route) || !$route[$i]){ $route[$i] = 'homepage';}
                 }else{
@@ -131,7 +153,7 @@ class Router {
                       header("HTTP/1.1 301 Moved Permanently"); 
 			header("Location: $ur",TRUE,301);
 			exit();
-                }elseif(self::first($route[$i+1])){
+                }elseif(isset($route[$i+1]) && self::first($route[$i+1])){
                 $ur = mb_strtolower($_SERVER['PHP_SELF']);
                     header("HTTP/1.1 301 Moved Permanently"); 
 			header("Location: $ur",TRUE,301);
@@ -241,23 +263,28 @@ class Router {
 		$new_get['controller'] = $controller;
 		$new_get['action'] = $action;
 
-                  $ff = [];
+                if($controller != 'Articles' && $action != 'article'){
+                    $ff = [];
                   foreach (explode('/', $_SERVER['PHP_SELF']) as $k => $f){
-                      if($f){ $ff[] = $f;}
+                      if($f){
+                          $ff[] = $f;
+                          
+                      }
                   }
-               //  l($ff);
-                  
-                   $filter = explode('-', $ff[$i+2]);
+           
+                 
+                   $filter = isset($ff[$i+2]) ? explode('-', $ff[$i+2]) : [];
                   // print_r($filter);
                    // $filter = explode('-', $route[$i+2]);
                 if(count($filter) > 0){
                     foreach ($filter as $k => $value) {
-                        if ($k % 2 == 0){
+                        if ($k % 2 == 0 && !empty($filter[($k+1)])){
                             $new_get[$value] = $filter[($k+1)];
                             
                         }
                     }
                     } 
+       }
 
 		$route = array_values($route);
                 
@@ -270,14 +297,14 @@ class Router {
 			}elseif(isset($new_get[$route[$j]]) && is_array($new_get[$route[$j]])){
                             $new_get[$route[$j]][] = $route[$j+1];
                         
-                        }else{
+                        }else if(isset($route[$j+1])){
                             $new_get[$route[$j]] = $route[$j+1];
                             
                         }
 			$j++;
 		}
 
-
+//if($controller != 'Articles' && $action != 'article'){
 		//parse old GET
 		foreach($old_get as $key=>$value) {
 			if(isset($new_get[$key]) && !is_array($new_get[$key])) {
@@ -290,6 +317,7 @@ class Router {
 				$new_get[$key] = $value;
                         }
 		}
+       // }
 
                 
 		//use only values with keys	

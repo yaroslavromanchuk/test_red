@@ -159,7 +159,7 @@ z-index:999;
     text-transform: uppercase;
     letter-spacing: .0625rem;
     font-weight: 500;
-    font-size: .75rem;
+    font-size: .70rem;
     color: #000000;
 }
 .inner-nav .sub-menu li > a > i,
@@ -210,35 +210,35 @@ background:#f00032;
     margin: 0;
 }
 .inner-nav .mega-menu.cat_106{
-background-image: url(/img/top_menu/cat/cat_106.png); background-position-x: 100%;
+background-image: url(/img/top_menu/cat/cat_106.webp); background-position-x: 100%;
     background-repeat: no-repeat;
 }
 .inner-nav .sub-menu.cat_14{
-background-image: url(/img/top_menu/cat/cat_14.png); background-position-x: 100%;background-position-y: 0%;    background-size: cover;
+background-image: url(/img/top_menu/cat/cat_14.webp); background-position-x: 100%;background-position-y: 0%;    background-size: cover;
     background-repeat: no-repeat;
 }
 .inner-nav .sub-menu.cat_15{
-background-image: url(/img/top_menu/cat/cat_15.png); background-position-x: 100%;background-position-y: 0%;    background-size: cover;
+background-image: url(/img/top_menu/cat/cat_15.webp); background-position-x: 100%;background-position-y: 0%;    background-size: cover;
     background-repeat: no-repeat;
 }
 .inner-nav .sub-menu.cat_33{
-background-image: url(/img/top_menu/cat/cat_33.png); background-position-x: 100%;background-position-y: 100%;background-size: cover;
+background-image: url(/img/top_menu/cat/cat_33.webp); background-position-x: 100%;background-position-y: 100%;background-size: cover;
     background-repeat: no-repeat;
 }
 .inner-nav .sub-menu.cat_35{
-background-image: url(/img/top_menu/cat/cat_35.png); background-position-x: 100%;background-position-y: 100%;    background-size: cover;
+background-image: url(/img/top_menu/cat/cat_35.webp); background-position-x: 100%;background-position-y: 100%;    background-size: cover;
     background-repeat: no-repeat;
 }
 .inner-nav .sub-menu.cat_56{
-background-image: url(/img/top_menu/cat/cat_56.png); background-position-x: 100%;background-position-y: 100%;    background-size: cover;
+background-image: url(/img/top_menu/cat/cat_56.webp); background-position-x: 100%;background-position-y: 100%;    background-size: cover;
     background-repeat: no-repeat;
 }
 .inner-nav .sub-menu.cat_59{
-background-image: url(/img/top_menu/cat/cat_59.png); background-position-x: 100%;background-position-y: 0%;    background-size: cover;
+background-image: url(/img/top_menu/cat/cat_59.webp); background-position-x: 100%;background-position-y: 0%;    background-size: cover;
     background-repeat: no-repeat;
 }
 .inner-nav .sub-menu.cat_249{
-background-image: url(/img/top_menu/cat/cat_249.png); background-position-x: 100%;background-position-y: 100%;    background-size: cover;
+background-image: url(/img/top_menu/cat/cat_249.webp); background-position-x: 100%;background-position-y: 100%;    background-size: cover;
     background-repeat: no-repeat;
 }
 .vc_sep_pos_align_center {

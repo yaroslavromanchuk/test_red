@@ -1,40 +1,51 @@
-<img src="<?=SITE_URL.$this->getCurMenu()->getImage()?>" class="page-img"/>
+<img src="<?=$this->getCurMenu()->getImage()?>" class="page-img"/>
 <h1><?=$this->getCurMenu()->getTitle()?></h1>
 <hr/>
 <?=$this->getCurMenu()->getPageBody()?>
-
 <p><a href="<?=$this->path?>event/id/">Новое событие</a></p>
 
 <table class="table">
+    <thead>
 		<tr>
-			<th >Действия</th>
+			<th>Действия</th>
 			<th>Название</th>
 			<th>Начало</th>
 			<th>Конец</th>
 			<th>Скидка</th>
-			<th>Клиентов</th>
+			<th>Клиентов/Заказов</th>
 			<th>Статус</th>
 			<th>Ссылка</th>
 		</tr>
+         </thead>
+                <tbody>
 	<?php
-		$row = 'row1';
-		foreach($this->getEvents() as $event ){
-			$row = ($row == 'row2') ? 'row1' : 'row2';?>
-		<tr class="<?=$row?>">
-			<td>
-                <a href="<?php echo $this->path;?>event/id/<?php echo $event->getId();?>/">
-                    <img src="<?php echo SITE_URL;?>/img/icons/edit-small.png" alt="Редактирование" />
-                </a>
-            </td>
-			<td><?php echo $event->getName();?></td>
-			<td><?php echo date('d-m-Y',strtotime($event->getStart()));?></td>
-			<td><?php echo date('d-m-Y',strtotime($event->getFinish()));?></td>
-			<td><?php echo $event->getDiscont();?>%</td>
-			<td><a href="/admin/usersevent/id/<?php echo $event->getId();?>"><?php echo $event->getCustomersCount();?></a></td>
-			<td><?php echo $event->getPublick()?'Запущена':'Остановлена';?></td>
-			<td><?php echo $event->getPath(); ?></td>
+		foreach($this->getEvents() as $event ){?>
+		<tr>
+                        <td>
+                            <a href="<?=$this->path?>event/id/<?=$event->getId()?>/">
+                                <img src="/img/icons/edit-small.png" alt="Редактирование" />
+                            </a>
+                        </td>
+			<td><?=$event->getName()?></td>
+			<td><?=date('d-m-Y',strtotime($event->getStart()))?></td>
+			<td><?=date('d-m-Y',strtotime($event->getFinish()))?></td>
+			<td><?=$event->getDiscont()?>%</td>
+			<td><a href="/admin/usersevent/id/<?=$event->getId()?>"><?=$event->getCustomersCount()?>/<?=$event->getOrdersCount()?></a></td>
+			<td><?=$event->getPublick()?'Запущена':'Остановлена'?></td>
+			<td><span class="src" id="<?=$event->id?>" data-tooltip="tooltip" data-original-title="Кликните для копирования ссылки"  ><?=$event->getPath()?></span></td>
 		</tr>
 	<?php
 		}
 	?>
+                </tbody>
     </table>
+<script> 
+$('.src').click(function() {
+	    var $temp = $("<input>");
+	    $("body").append($temp);
+	    $temp.val($(this).html()).select();
+	    document.execCommand("copy");
+	    $temp.remove();
+	    $(this).html('Тест скопирован!');
+	});
+</script> 

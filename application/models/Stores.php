@@ -4,7 +4,7 @@ class Stores extends wsActiveRecord
 protected $_table = 'ws_stores'; 
 	protected $_orderby = array('sort' => 'ASC'); 
 	
-	public function getAllSrores(){
+	public static function getAllSrores(){
 		
 		return wsActiveRecord::useStatic('Stores')->findAll(['type' => 'addres']);
 		

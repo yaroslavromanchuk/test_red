@@ -76,7 +76,7 @@ class wsCustomer extends wsActiveRecord
                 'orderby' => array('time_modified' => 'DESC')),
             
             'carts' => array(
-                'type' => 'hasMany',
+                'type' => 'hasOne',
                 'class' => self::$_shopping_cart_class,
                 'field_foreign' => 'id_user'
                 ),
@@ -86,6 +86,7 @@ class wsCustomer extends wsActiveRecord
             'visits' => array('type' => 'hasMany',
                 'class' => self::$_customer_visit_class,
                 'field_foreign' => 'customer_id'),
+            
             'orders' => array('type' => 'hasMany',
                 'class' => self::$_shop_orders_class,
                 'field_foreign' => 'customer_id'),
@@ -109,6 +110,11 @@ class wsCustomer extends wsActiveRecord
             'type' => 'hasOne',
             'class' => 'CustomersSegment',
             'field' => 'segment_id'
+                ],
+            'emails' => [
+                'type' => 'hasMany',
+                'class' => 'EmailLog',
+                'field_foreign' => 'customer_id'
                 ]
         );
     }
@@ -116,18 +122,95 @@ class wsCustomer extends wsActiveRecord
 
     function getCart()
     {
-        if ($this->isNew()){ return; }
-        
-        //return wsActiveRecord::useStatic(self::$_shopping_cart_class)->findFirst();
-        return $this->getCarts()->at(0);//->findFirst(array(), array('id' => 'DESC'));
+        if ($this->isNew()){ return false; }
+        return wsActiveRecord::useStatic('Cart')->findFirst(['id_user'=>$this->id]);
+       // return $this->getCarts();//->at(0);//->findFirst(array(), array('id' => 'DESC'));
     }
     function newCart(){
         if ($this->isNew()){ return; }
         $cart = new Cart();
         $cart->setIdUser($this->id);
+        $cart->setHashId($this->getHashUser());
         $cart->save();
-        
         $cart->updateCart();
+    }
+    function updateCartUserLogin(){
+        $cart = $this->getCart();
+        if($cart){
+        if($cart and $cart->item->count()){
+            foreach ($cart->item as $a){
+                $art = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(['code'=>$a->artikul]);
+                if($art->count){
+                    if(count($_SESSION['basket'])){
+                        $f = false;
+                        foreach ($_SESSION['basket'] as $s) {
+                            if($s['artikul'] == $art->code){ $f = true;}
+                        }
+                        if(!$f){
+                            $article = wsActiveRecord::useStatic('Shoparticles')->findById($art->id_article);
+                            $article->addToBasket($art->id_size, $art->id_color, $art->code, false);
+                        }
+                    }else{
+                    $article = wsActiveRecord::useStatic('Shoparticles')->findById($art->id_article);
+                    $article->addToBasket($art->id_size, $art->id_color, $art->code, false);
+                    }
+                }else{
+                    $a->destroy();
+                }
+            }
+            
+        }
+                }else{
+                    return false;
+                }
+    }
+     function updateCartUserBacket(){
+        $cart = $this->getCart();
+        if($cart){
+        $cart->setCtime(date("Y-m-d H:i:s"));
+        $cart->save();
+        $b = [];
+        foreach ($_SESSION['basket'] as $k => $s) {$b[$k] = $s['artikul'];}
+        if($cart and $cart->item->count()){
+            foreach ($cart->item as $a){
+                if(in_array($a->artikul, $b)){
+                    continue;
+                }else{
+                    $article = wsActiveRecord::useStatic('Shoparticles')->findById($a->article_id);
+                    $article->addToBasket($a->size, $a->color, $a->artikul, false);
+                }  
+            }
+        }
+        }else{
+            return false;
+        }
+        
+    }
+    function updateCartUserReturn(){
+        $cart = $this->getCart();
+        if($cart){
+        $cart->setCtime(date("Y-m-d H:i:s"));
+        $cart->save();
+        $b = [];
+        foreach ($_SESSION['basket'] as $k => $s) {
+           $b[$k] = $s['artikul'];
+            
+        }
+        if($cart and $cart->item->count() > 0){
+            $it = $cart->item;
+            foreach ($it as $a){
+               if(in_array($a->artikul, $b)){
+                   continue;
+                }else{
+                   $article = wsActiveRecord::useStatic('Shoparticles')->findById($a->article_id);
+                    $article->addToBasket($a->size, $a->color, $a->artikul);
+               }  
+            }
+        }
+        }else{
+            return false;
+        }
+        
     }
 
     /*
@@ -166,11 +249,7 @@ class wsCustomer extends wsActiveRecord
 
     public function loginByUsername($email, $password)
     {
-	//if(strlen($password) == 32){
-	//$hashed_password = $password;
-	//}else{
-        $hashed_password = wsCustomer::cryptPassword($password);
-		//}
+        //$hashed_password = wsCustomer::cryptPassword($password);
 
        // $webshop = Registry::get('webshop');
 		if (isset($_SESSION['j25k17l2517'])) {
@@ -194,7 +273,32 @@ class wsCustomer extends wsActiveRecord
 				return false;
 			}
 		}else{
-			if ($user = wsActiveRecord::useStatic(self::$_customer_class)->findFirst(array('username' => $email, 'password' => $hashed_password))) {
+			if ($user = wsActiveRecord::useStatic(self::$_customer_class)->findFirst(array('username' => $email, 'password' => wsCustomer::cryptPassword($password)))) {
+				if (!$user->getHashId()) {
+					$user->setHashId(md5($this->getUsername() . time()));
+					$user->save();
+				}
+				$user->setHashVisit($this->getHashVisit());
+				$user->setHashMachine($user->getHashMachine());
+				$user->setVisitTime(date("Y-m-d H:i:s"));
+				$user->save();
+                                
+				$this->import($user);
+
+				$this->setIsNew(false);
+				$this->setIsLoggedIn(true);
+				$this->setHashUser($this->getHashId());
+                                $this->updateCartUserLogin();
+				return true;
+			} else {
+				$this->setIsLoggedIn(false);
+				return false;
+			}
+		}
+    }
+    public function loginAdminByUsername($username)
+    {
+        if ($user = wsActiveRecord::useStatic(self::$_customer_class)->findFirst(array('username' => $username))) {
 				if (!$user->getHashId()) {
 					$user->setHashId(md5($this->getUsername() . time()));
 					$user->save();
@@ -213,7 +317,29 @@ class wsCustomer extends wsActiveRecord
 				$this->setIsLoggedIn(false);
 				return false;
 			}
-		}
+    }
+    public function loginByHash($hash)
+    {
+        if ($user = wsActiveRecord::useStatic(self::$_customer_class)->findFirst(array('hash_id' => $hash))) {
+				//if (!$user->getHashId()) {
+				//	$user->setHashId(md5($this->getUsername() . time()));
+				//	$user->save();
+				//}
+				$user->setHashVisit($this->getHashVisit());
+				$user->setHashMachine($user->getHashMachine());
+				$user->setVisitTime(date("Y-m-d H:i:s"));
+				$user->save();
+				$this->import($user);
+
+				$this->setIsNew(false);
+				$this->setIsLoggedIn(true);
+				$this->setHashUser($this->getHashId());
+                                $this->updateCartUserReturn();
+				return true;
+			} else {
+				$this->setIsLoggedIn(false);
+				return false;
+			}
     }
 
     function logout()
@@ -359,16 +485,20 @@ class wsCustomer extends wsActiveRecord
     //for admin
     public function isAdmin()
     {
-        if ($this->getCustomerTypeId() > 1)
-        {return true;}
-        else
-        {return false;}
+        if ($this->getCustomerTypeId() > 1){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public function isSuperAdmin()//все выше пользователя и админа
     {
-        if ($this->getCustomerTypeId() > 2){ return true; }  
-        return false;
+        if ($this->getCustomerTypeId() > 2){
+            return true;
+        }else{  
+            return false;
+        }
     }
 	 public function isDeveloperAdmin()//разработчик
     {
@@ -418,7 +548,7 @@ class wsCustomer extends wsActiveRecord
             }
         }*/
 
-        $r = wsActiveRecord::useStatic('wsRight')->findFirst(array('customer_id' => $this->getId(), 'name' => $right));
+        $r = wsActiveRecord::useStatic('wsRight')->findFirst(['customer_id' => $this->getId(), 'name' => $right]);
         if (!$r) {
             //autocreate right entry
             $r = new self::$_right_class();

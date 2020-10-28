@@ -1,5 +1,5 @@
 <!DOCTYPE html">
-<html lang="en">
+<html lang="ru">
 <head>
 	<meta name="robot" content="no-index,no-follow"/>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -9,7 +9,7 @@
 	<link rel="stylesheet" type="text/css" href="<?=$this->files?>css/bs/css/bootstrap.css?v=1.4.7">
         
         <link href="<?=$this->files?>views/template/lib/select2/css/select2.min.css" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="<?=$this->files?>css/layout.css?v=2.9.5">
+	<link rel="stylesheet" type="text/css" href="<?=$this->files?>css/layout.css?v=2.9.6">
 	<link rel="stylesheet" type="text/css" href="<?=$this->files?>css/Ionicons/css/ionicons.css">
 	
 	<link href="<?=$this->files?>css/font-awesome/css/font-awesome.css" rel="stylesheet">
@@ -106,7 +106,9 @@ left:5px;
      </div>
 
 </nav>
-   
+  <!-- <div style="display: none; position: fixed; top: 15px; left: 20px;z-index: 1031;">
+       На сайте: <span class="badge badge-primary badge-pill" id="user_site"></span>
+   </div>-->
 <div id="container" class="container">
     
 <?=$this->message;?>
@@ -127,7 +129,7 @@ left:5px;
      $(function(){
 
         'use strict';
-
+        // F1();
         $('.select2').select2({
           minimumResultsForSearch: Infinity
         });
@@ -150,6 +152,14 @@ $('#myModalMessage').on('hidden.bs.modal', function (event) {
 // функции 
 });	*/
  });
+ function F1(){
+        $.get('/ajax/usersite/', function(data){
+        $('#user_site').html(data);
+       });
+        setTimeout(F1, 2000); // Запускаем эту же функцию 2-й раз, потом 3-й, 4-й и так до бесконечности
+        return false;
+    }
+ 
 //открытие всплывающего окна нова почта
 function fopen(header = '', body = '', footer = ''){
 if(body) $('#popup').html(body);

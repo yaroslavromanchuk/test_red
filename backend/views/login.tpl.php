@@ -10,12 +10,12 @@
    <title><?php echo 'Система Управления Сайтом '.$this->website->getSite()->getName();?></title>
 
     <!-- vendor css -->
-    <link href="<?=$this->files?>views/template/lib/font-awesome/css/font-awesome.css" rel="stylesheet">
-    <link href="<?=$this->files?>views/template/lib/Ionicons/css/ionicons.css" rel="stylesheet">
+    <link href="<?=$this->files?>lib/font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="<?=$this->files?>lib/Ionicons/css/ionicons.css" rel="stylesheet">
 
 
     <!-- Starlight CSS -->
-	<link rel="stylesheet" href="<?=$this->files?>views/template/css/starlight.css">
+	<link rel="stylesheet" href="<?=$this->files?>theme/starlight/css/starlight.css">
     
   </head>
   <body>
@@ -48,9 +48,9 @@
       </div><!-- login-wrapper -->
     </div><!-- d-flex -->
 
-    <script src="<?=$this->files?>views/template/lib/jquery/jquery.js"></script>
-    <script src="<?=$this->files?>views/template/lib/popper.js/popper.js"></script>
-    <script src="<?=$this->files?>views/template/lib/bootstrap/bootstrap.js"></script>
+    <script src="<?=$this->files?>lib/jquery/jquery.js"></script>
+    <script src="<?=$this->files?>lib/popper.js/popper.js"></script>
+    <script src="<?=$this->files?>lib/bootstrap/bootstrap.js"></script>
 
   </body>
 </html>

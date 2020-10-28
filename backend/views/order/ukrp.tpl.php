@@ -5,7 +5,7 @@
 	<meta name="robot" content="no-index,no-follow"/>
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<script src="<?=$this->files?>scripts/jquery.js" type="text/javascript" charset="utf-8"></script>
+	<script src="<?=$this->files?>scripts/jquery.js"  charset="utf-8"></script>
 </head>
 <style type="text/css">
     body {font-size: 10px;font-family: Verdana}
@@ -21,7 +21,7 @@
 </style>
 <body onload="window.print()">
 <?php 
-$z = 3;//3
+$z = 2;//3   
 require_once("QRCode/qrcode.php");
 for ($step = 0; $step < $z; $step++) {
 $cod ='%';
@@ -150,7 +150,7 @@ if($skid_show == 100){
 		
 		
 				//$z = chr(10);
-		$cod.=$article_rec->artikul.'/'.$article_rec->getCount().'/'.$sk.'&';
+		$cod.=$article_rec->getCode().'/'.$article_rec->getCount().'/'.$sk.'&';
 		
         ?>
         <tr>
@@ -161,8 +161,8 @@ if($skid_show == 100){
             </td>
             <td class="border_all <?php echo($i == $c) ? 'tt_border_bottom' : ''?>" align="center">
 				<?php if($article_rec->getCount()) {?>
-				<img src="/images/barcodeimage.php?text=<?=$article_rec->artikul?>" alt="Barcode Image" />
-				<br><?=$article_rec->artikul?>
+				<img src="/images/barcodeimage.php?text=<?=$article_rec->getCode()?>" alt="Barcode Image" />
+				<br><?=$article_rec->getCode()?>
 				<?php } ?>
             </td>
             <td class="border_all <?php echo($i == $c) ? 'tt_border_bottom' : ''?>" align="center">
@@ -200,7 +200,8 @@ echo $skid_show ? '<span '.$st.'>'.$skid_show.' %</span>' : '';
     //$to_pay = $this->getOrder()->calculateOrderPrice2(true, true); //общая сумма к оплате
 	
 	 $to_pay = Number::formatFloat($this->order->amount, 2);
-   $t_minus = $t_real_price - $this->getOrder()->getAmount();
+         
+   $t_minus = $t_real_price - ($this->getOrder()->getAmount()-$this->getOrder()->dop_summa-$this->getOrder()->getDeliveryCost());//общая скидка
 
         $kop = round(($to_pay - toFixed($to_pay)) * 100, 0);
         ?>
@@ -247,7 +248,7 @@ echo $skid_show ? '<span '.$st.'>'.$skid_show.' %</span>' : '';
 			</td>
 			<td class="border_all border_right" align="right" colspan="2">
 				<i>
-				<?=$to_pay?>
+				<?=Number::formatFloat(($this->order->amount-$this->getOrder()->dop_summa-$this->getOrder()->getDeliveryCost()), 2)?>
 		</i>
 			</td>
 		</tr>
@@ -260,6 +261,17 @@ echo $skid_show ? '<span '.$st.'>'.$skid_show.' %</span>' : '';
             <td colspan="6" align="right"><i>Депозит</i></td>
             <td class="border_all border_right" align="right" colspan="2">
                 <i><?php echo Number::formatFloat($this->getOrder()->getDeposit(), 2)?></i>
+            </td>
+        </tr>
+    <?php } ?>
+    
+    <?php if ($this->getOrder()->getDopSumma() > 0) { ?>
+        <tr>
+            <td colspan="6" align="right" ><span class="fnt_size_1">Дополнительная оплата</span><br>
+            <i><?=$this->getOrder()->getCommentDopSumm()?></i>
+            </td>
+            <td class="border_all border_right" align="right" colspan="2">
+                <i><?php echo Number::formatFloat($this->getOrder()->getDopSumma(), 2)?></i>
             </td>
         </tr>
     <?php } ?>
@@ -321,7 +333,7 @@ echo $skid_show ? '<span '.$st.'>'.$skid_show.' %</span>' : '';
 		$cod.='USL0000004/1/&';
 		$qr = new qrcode();
 		$qr->text($cod);
-		echo "<p id='qr".$this->order->getId()."' hidden><img src='".$qr->get_link(140)."' border='0'/></p>";
+		echo "<p id='qr".$this->order->getId()."' hidden><img src='".$qr->get_link(140)."' style='max-width: 140px;' border='0'/></p>";
 		//echo $cod;
 				}?>
 <div style='page-break-after: always;'></div>
@@ -395,8 +407,8 @@ foreach ($this->getOrder()->getArticles() as $main_key => $article_rec) {
 	</td>
 	<td class="border" align="center" >
 	<?php if($article_rec->getCount()) { ?>
-				<img src="/images/barcodeimage.php?text=<?=$article_rec->artikul?>" alt="Barcode Image" />
-				<br><?=$article_rec->artikul?>
+				<img src="/images/barcodeimage.php?text=<?=$article_rec->getCode()?>" alt="Barcode Image" />
+				<br><?=$article_rec->getCode()?>
 				<?php } ?>
 				</td>
 	<td class="border" align="center"> ___ шт.</td>

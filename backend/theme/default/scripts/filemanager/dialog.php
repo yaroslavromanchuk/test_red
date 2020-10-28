@@ -3,7 +3,7 @@ $time = time();
 $config = include 'config/config.php';
 //TODO switch to array
 extract($config, EXTR_OVERWRITE);
-/*
+
 if (USE_ACCESS_KEYS == TRUE){
 	if (!isset($_GET['akey'], $access_keys) || empty($access_keys)){
 		die('Access Denied!');
@@ -14,7 +14,7 @@ if (USE_ACCESS_KEYS == TRUE){
 	if (!in_array($_GET['akey'], $access_keys)){
 		die('Access Denied!');
 	}
-}*/
+}
 
 $_SESSION['RF']["verify"] = "RESPONSIVEfilemanager";
 

@@ -26,8 +26,8 @@ class Brands extends Brand{
             34608 => 'R',//D,E,R,W Аня
            // 8005 => 'J'
         ];
-        $id = $this->user->id;
-        return wsActiveRecord::useStatic('Brand')->findAll(["greyd is NULL"], ['name' => 'ASC'], [0,$limit]);
+       // $id = $this->user->id; "greyd is NULL",
+        return wsActiveRecord::useStatic('Brand')->findAll(['hide'=>1], ['name' => 'ASC'], [0,$limit]);
     }
     /**
      * Редактирование бренда

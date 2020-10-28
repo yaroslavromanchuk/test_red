@@ -124,4 +124,8 @@ class SQLLogger {
 	public function reportShort() {
 		return array('time' => $this->formatTime($this->_totaltime), 'count' => count($this->data));
 	}
+        
+      //  public function sendLog(){
+            
+      //  }
 }

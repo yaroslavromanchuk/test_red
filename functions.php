@@ -8,6 +8,17 @@
         if (headers_sent()) {
             die("<script>document.location.href='$url';</script>\n");
         } else {
+          
+            header("Location: $url");
+        }
+        die();
+    }
+     function redirect301($url)
+    {
+        if (headers_sent()) {
+            die("<script>document.location.href='$url';</script>\n");
+        } else {
+            header("HTTP/1.1 301 Moved Permanently"); 
             header("Location: $url");
         }
         die();
@@ -32,7 +43,12 @@
         }
     }
 
-
+/**
+ * Чтение файла
+ * @param type $filename
+ * @param type $name
+ * @param string $ftype
+ */
     function get_file($filename, $name = '', $ftype = '')
     {
 
@@ -79,7 +95,11 @@
             exit;
         }
     }
-
+    /**
+     * Запись лога в файл
+     * @param type $file - путь к файлу
+     * @param type $text - содержимое
+     */
     function do_log($file, $text)
     {
         file_put_contents(LOG_FOLDER . $file, $text, FILE_APPEND);
@@ -160,7 +180,11 @@
 
         return $body;
     }
-
+    /**
+     * Вывод на екран дебага
+     * @param type $data - содержимое
+     * @param type $die - (true - die() - по умолчанию, false - продолжить выполнение)
+     */
     function d($data, $die = true)
     {
         if (FORME) {
@@ -170,7 +194,23 @@
             }
         }
     }
-
+    /**
+     * Отображение лога на екран
+     * @param type $data
+     */
+    function l($data){
+		echo '<pre>';
+		print_r($data);
+                echo '</pre>';
+	}
+        /**
+         * Обрезка фото 
+         * @param type $folder
+         * @param type $file
+         * @param type $size
+         * @param type $quality
+         * @return boolean
+         */
     function resizeImage($folder, $file, $size, $quality)
     {
         require_once('upload/class.upload.php');
@@ -189,265 +229,175 @@
             } else {
                 return false;
             }
-        } else
-            return false;
+        }else{ return false; }
 
         return true;
     }
 
+    /**
+     * Новая валидация email через filter_var
+     * @param type $email
+     * @return type
+     */
 function isValidEmailNew($email)
   {
-      return preg_match('/^(?:[\w\!\#\$\%\&\'\*\+\-\/\=\?\^\`\{\|\}\~]+\.)*[\w\!\#\$\%\&\'\*\+\-\/\=\?\^\`\{\|\}\~]+@(?:(?:(?:[a-zA-Z0-9_](?:[a-zA-Z0-9_\-](?!\.)){0,61}[a-zA-Z0-9_-]?\.)+[a-zA-Z0-9_](?:[a-zA-Z0-9_\-](?!$)){0,61}[a-zA-Z0-9_]?)|(?:\[(?:(?:[01]?\d{1,2}|2[0-4]\d|25[0-5])\.){3}(?:[01]?\d{1,2}|2[0-4]\d|25[0-5])\]))$/', $email);
+    return filter_var($email, FILTER_VALIDATE_EMAIL);
+    //  return preg_match('/^(?:[\w\!\#\$\%\&\'\*\+\-\/\=\?\^\`\{\|\}\~]+\.)*[\w\!\#\$\%\&\'\*\+\-\/\=\?\^\`\{\|\}\~]+@(?:(?:(?:[a-zA-Z0-9_](?:[a-zA-Z0-9_\-](?!\.)){0,61}[a-zA-Z0-9_-]?\.)+[a-zA-Z0-9_](?:[a-zA-Z0-9_\-](?!$)){0,61}[a-zA-Z0-9_]?)|(?:\[(?:(?:[01]?\d{1,2}|2[0-4]\d|25[0-5])\.){3}(?:[01]?\d{1,2}|2[0-4]\d|25[0-5])\]))$/', $email);
   }
-  function isValidEmailRu($email){
+  
+function isValidEmailRu($email){
   if(stristr($email, '.ru')) {
     return false;
   }
-  else{
   return true;
   }
+  function isValidEmailRed($email){
+      if(strpos($email, 'red.ua')){
+          return false;
+      }
+      return true;
   }
-/*
-$countries=array(
-            '--' => 'None',
-            'AF' => 'Afganistan',
-            'AL' => 'Albania',
-            'DZ' => 'Algeria',
-            'AS' => 'American Samoa',
-            'AD' => 'Andorra',
-            'AO' => 'Angola',
-            'AI' => 'Anguilla',
-            'AQ' => 'Antarctica',
-            'AG' => 'Antigua and Barbuda',
-            'AR' => 'Argentina',
-            'AM' => 'Armenia',
-            'AW' => 'Aruba',
-            'AU' => 'Australia',
-            'AT' => 'Austria',
-            'AZ' => 'Azerbaijan',
-            'BS' => 'Bahamas',
-            'BH' => 'Bahrain',
-            'BD' => 'Bangladesh',
-            'BB' => 'Barbados',
-            'BY' => 'Belarus',
-            'BE' => 'Belgium',
-            'BZ' => 'Belize',
-            'BJ' => 'Benin',
-            'BM' => 'Bermuda',
-            'BT' => 'Bhutan',
-            'BO' => 'Bolivia',
-            'BA' => 'Bosnia and Herzegowina',
-            'BW' => 'Botswana',
-            'BV' => 'Bouvet Island',
-            'BR' => 'Brazil',
-            'IO' => 'British Indian Ocean Territory',
-            'BN' => 'Brunei Darussalam',
-            'BG' => 'Bulgaria',
-            'BF' => 'Burkina Faso',
-            'BI' => 'Burundi',
-            'KH' => 'Cambodia',
-            'CM' => 'Cameroon',
-            'CA' => 'Canada',
-            'CV' => 'Cape Verde',
-            'KY' => 'Cayman Islands',
-            'CF' => 'Central African Republic',
-            'TD' => 'Chad',
-            'CL' => 'Chile',
-            'CN' => 'China',
-            'CX' => 'Christmas Island',
-            'CC' => 'Cocos (Keeling) Islands',
-            'CO' => 'Colombia',
-            'KM' => 'Comoros',
-            'CG' => 'Congo',
-            'CD' => 'Congo, the Democratic Republic of the',
-            'CK' => 'Cook Islands',
-            'CR' => 'Costa Rica',
-            'CI' => 'Cote d\'Ivoire',
-            'HR' => 'Croatia (Hrvatska)',
-            'CU' => 'Cuba',
-            'CY' => 'Cyprus',
-            'CZ' => 'Czech Republic',
-            'DK' => 'Denmark',
-            'DJ' => 'Djibouti',
-            'DM' => 'Dominica',
-            'DO' => 'Dominican Republic',
-            'TP' => 'East Timor',
-            'EC' => 'Ecuador',
-            'EG' => 'Egypt',
-            'SV' => 'El Salvador',
-            'GQ' => 'Equatorial Guinea',
-            'ER' => 'Eritrea',
-            'EE' => 'Estonia',
-            'ET' => 'Ethiopia',
-            'FK' => 'Falkland Islands (Malvinas)',
-            'FO' => 'Faroe Islands',
-            'FJ' => 'Fiji',
-            'FI' => 'Finland',
-            'FR' => 'France',
-            'FX' => 'France, Metropolitan',
-            'GF' => 'French Guiana',
-            'PF' => 'French Polynesia',
-            'TF' => 'French Southern Territories',
-            'GA' => 'Gabon',
-            'GM' => 'Gambia',
-            'GE' => 'Georgia',
-            'DE' => 'Germany',
-            'GH' => 'Ghana',
-            'GI' => 'Gibraltar',
-            'GR' => 'Greece',
-            'GL' => 'Greenland',
-            'GD' => 'Grenada',
-            'GP' => 'Guadeloupe',
-            'GU' => 'Guam',
-            'GT' => 'Guatemala',
-            'GN' => 'Guinea',
-            'GW' => 'Guinea-Bissau',
-            'GY' => 'Guyana',
-            'HT' => 'Haiti',
-            'HM' => 'Heard and Mc Donald Islands',
-            'VA' => 'Holy See (Vatican City State)',
-            'HN' => 'Honduras',
-            'HK' => 'Hong Kong',
-            'HU' => 'Hungary',
-            'IS' => 'Iceland',
-            'IN' => 'India',
-            'ID' => 'Indonesia',
-            'IR' => 'Iran (Islamic Republic of)',
-            'IQ' => 'Iraq',
-            'IE' => 'Ireland',
-            'IL' => 'Israel',
-            'IT' => 'Italy',
-            'JM' => 'Jamaica',
-            'JP' => 'Japan',
-            'JO' => 'Jordan',
-            'KZ' => 'Kazakhstan',
-            'KE' => 'Kenya',
-            'KI' => 'Kiribati',
-            'KP' => 'Korea, Democratic People\'s Republic of',
-            'KR' => 'Korea, Republic of',
-            'KW' => 'Kuwait',
-            'KG' => 'Kyrgyzstan',
-            'LA' => 'Lao People\'s Democratic Republic',
-            'LV' => 'Latvia',
-            'LB' => 'Lebanon',
-            'LS' => 'Lesotho',
-            'LR' => 'Liberia',
-            'LY' => 'Libyan Arab Jamahiriya',
-            'LI' => 'Liechtenstein',
-            'LT' => 'Lithuania',
-            'LU' => 'Luxembourg',
-            'MO' => 'Macau',
-            'MK' => 'Macedonia, The Former Yugoslav Republic of',
-            'MG' => 'Madagascar',
-            'MW' => 'Malawi',
-            'MY' => 'Malaysia',
-            'MV' => 'Maldives',
-            'ML' => 'Mali',
-            'MT' => 'Malta',
-            'MH' => 'Marshall Islands',
-            'MQ' => 'Martinique',
-            'MR' => 'Mauritania',
-            'MU' => 'Mauritius',
-            'YT' => 'Mayotte',
-            'MX' => 'Mexico',
-            'FM' => 'Micronesia, Federated States of',
-            'MD' => 'Moldova, Republic of',
-            'MC' => 'Monaco',
-            'MN' => 'Mongolia',
-            'MS' => 'Montserrat',
-            'MA' => 'Morocco',
-            'MZ' => 'Mozambique',
-            'MM' => 'Myanmar',
-            'NA' => 'Namibia',
-            'NR' => 'Nauru',
-            'NP' => 'Nepal',
-            'NL' => 'Netherlands',
-            'AN' => 'Netherlands Antilles',
-            'NC' => 'New Caledonia',
-            'NZ' => 'New Zealand',
-            'NI' => 'Nicaragua',
-            'NE' => 'Niger',
-            'NG' => 'Nigeria',
-            'NU' => 'Niue',
-            'NF' => 'Norfolk Island',
-            'MP' => 'Northern Mariana Islands',
-            'NO' => 'Norway',
-            'OM' => 'Oman',
-            'PK' => 'Pakistan',
-            'PW' => 'Palau',
-            'PA' => 'Panama',
-            'PG' => 'Papua New Guinea',
-            'PY' => 'Paraguay',
-            'PE' => 'Peru',
-            'PH' => 'Philippines',
-            'PN' => 'Pitcairn',
-            'PL' => 'Poland',
-            'PT' => 'Portugal',
-            'PR' => 'Puerto Rico',
-            'QA' => 'Qatar',
-            'RE' => 'Reunion',
-            'RO' => 'Romania',
-            'RU' => 'Russian Federation',
-            'RW' => 'Rwanda',
-            'KN' => 'Saint Kitts and Nevis',
-            'LC' => 'Saint LUCIA',
-            'VC' => 'Saint Vincent and the Grenadines',
-            'WS' => 'Samoa',
-            'SM' => 'San Marino',
-            'ST' => 'Sao Tome and Principe',
-            'SA' => 'Saudi Arabia',
-            'SN' => 'Senegal',
-            'SC' => 'Seychelles',
-            'SL' => 'Sierra Leone',
-            'SG' => 'Singapore',
-            'SK' => 'Slovakia (Slovak Republic)',
-            'SI' => 'Slovenia',
-            'SB' => 'Solomon Islands',
-            'SO' => 'Somalia',
-            'ZA' => 'South Africa',
-            'GS' => 'South Georgia and the South Sandwich Islands',
-            'ES' => 'Spain',
-            'LK' => 'Sri Lanka',
-            'SH' => 'St. Helena',
-            'PM' => 'St. Pierre and Miquelon',
-            'SD' => 'Sudan',
-            'SR' => 'Suriname',
-            'SJ' => 'Svalbard and Jan Mayen Islands',
-            'SZ' => 'Swaziland',
-            'SE' => 'Sweden',
-            'CH' => 'Switzerland',
-            'SY' => 'Syrian Arab Republic',
-            'TW' => 'Taiwan, Province of China',
-            'TJ' => 'Tajikistan',
-            'TZ' => 'Tanzania, United Republic of',
-            'TH' => 'Thailand',
-            'TG' => 'Togo',
-            'TK' => 'Tokelau',
-            'TO' => 'Tonga',
-            'TT' => 'Trinidad and Tobago',
-            'TN' => 'Tunisia',
-            'TR' => 'Turkey',
-            'TM' => 'Turkmenistan',
-            'TC' => 'Turks and Caicos Islands',
-            'TV' => 'Tuvalu',
-            'UG' => 'Uganda',
-            'UA' => 'Ukraine',
-            'AE' => 'United Arab Emirates',
-            'GB' => 'United Kingdom',
-            'US' => 'United States',
-            'UM' => 'United States Minor Outlying Islands',
-            'UY' => 'Uruguay',
-            'UZ' => 'Uzbekistan',
-            'VU' => 'Vanuatu',
-            'VE' => 'Venezuela',
-            'VN' => 'Viet Nam',
-            'VG' => 'Virgin Islands (British)',
-            'VI' => 'Virgin Islands (U.S.)',
-            'WF' => 'Wallis and Futuna Islands',
-            'EH' => 'Western Sahara',
-            'YE' => 'Yemen',
-            'YU' => 'Yugoslavia',
-            'ZM' => 'Zambia',
-            'ZW' => 'Zimbabwe'
-            );
-*/
+  
+  function exception_handler($exception)
+{
+      bug::add_exception($exception);
+  if (Cfg::getInstance()->getValue('is_live')) {
+      $exceptionContent = "Uncaught exception '" . get_class($exception)
+                        . "' with message '{$exception->getMessage()}'\n"
+                        . "File: {$exception->getFile()}, "
+                        . "line {$exception->getLine()}\n"
+                        . "Trace\n"
+                        . preg_replace('/(\#[0-9]+ )/', '\n', $exception->getTraceAsString())
+                        . "\n";
+
+   
+        wsLog::add($exceptionContent, 'EMERG');
+        header("Location: /");
+     die();
+   }
+
+/*    echo '<fieldset style="font-family:verdana;font-size:11px;line-height:2em">'
+         . '<legend>PHP Exception</legend>'
+         . "Uncaught exception '" . get_class($exception)
+         . "' with message <strong>'{$exception->getMessage()}'</strong><br />\n"
+         . "File: <strong>{$exception->getFile()}</strong>, "
+         . "line <strong>{$exception->getLine()}</strong><br />\n";
+
+    echo "Trace<br />\n<ol start='0'>"
+         . preg_replace('/(\#[0-9]+ )/', '</li><li>', $exception->getTraceAsString())
+         . "</li></ol>";
+    echo '</fieldset>';*/
+ return true;
+}
+
+function error_handler($errno, $errstr, $errfile, $errline)
+{
+    bug::add_error($errno, $errstr, $errfile, $errline);
+	if ($errno == E_STRICT) {return;}
+	if (error_reporting() == 0) {return;}
+	global $isAdmin;
+	if ($errno!=8){
+            $exceptionContent = "FATAL ERROR #" .$errno. ' '
+						. " with message: '{$errstr}'\n"
+						. "File: {$errfile}, "
+						. "line {$errline}\n";
+	ob_end_clean();
+	if (!$isAdmin) {
+		if (Cfg::getInstance()->getValue('is_live')) {
+				wsLog::add($exceptionContent, 'EMERG');
+				header("Location: /status/");
+				exit;
+		}
+		}else{ throw new ErrorException($exceptionContent);}
+	}
+    return true;
+}
+function num2strm($num)
+        {
+		$nul='нуль';
+        $ukr = array(
+            array( //one_nine
+                array('', 'один', 'два', 'три', 'чотири', 'п\'ять', 'шість', 'сім', 'вісім', 'дев\'ять'),
+                array('', 'одна', 'дві', 'три', 'чотири', 'п\'ять', 'шість', 'сім', 'вісім', 'дев\'ять'),
+            ),
+            array( //teen
+                'десять', 'одинадцять', 'дванадцять', 'тринадцать', 'чотирнадцять', 'п\'ятнадцять', 'шістнадцять', 'сімнадцять', 'вісімнадцять', 'дев\'ятнадцять'
+            ),
+            array( //tenth
+                2 => 'двадцять', 'тридцять', 'сорок', 'п\'ятьдесят', 'шістьдесят', 'сімдесять', 'вісімьдесят', 'дев\'яносто'
+            ),
+            array( //hundred
+                '', 'сто', 'двісти', 'триста', 'чотириста', 'п\'ятсот', 'шістсот', 'сімсот', 'вісімсот', 'дев\'ятсот'
+            ),
+            array( //scales
+                array('триліон', 'триліона', 'триліонів', 0),
+                array('мільйард', 'мільйарда', 'мільйардів', 0),
+                array('мільйон', 'мільйона', 'мільйонів', 0),
+                array('тисяча', 'тисячі', 'тисяч', 1),
+                array('', '', '', 0)
+            ),
+            array('Вкажіть число (до 15 цифр)') //number_not_set
+        );
+
+        $num = is_numeric(trim($num)) ? (string)$num : 0;
+
+        list($one_nine, $teen, $tenth, $hundred, $scales, $number_not_set) = $ukr;
+
+        // массив будующего числа
+        $out = array();
+
+        // обробатываем числа не больше 15 знаков
+        if (strlen(trim($num)) <= 15) {
+			if (intval($num) > 0) {
+
+				// формируем число с нулями перед ним и длиной 15 сиволов
+				$num = sprintf("%015s", trim($num));
+
+				// обробатываем по 3 символа
+				foreach (str_split($num, 3) as $k => $v) {
+
+					// пропускаем 000
+					if (!intval($v)) continue;
+
+					list($num1, $num2, $num3) = array_map('intval', str_split($v, 1));
+
+					// диапазон 1-999
+					$out[] = $hundred[$num1]; // диапазон 100-900
+					if ($num2 > 1)
+						$out[] = $tenth[$num2] . ' ' . $one_nine[$scales[$k][3]] [$num3]; // диапазон 20-99
+					elseif ($num2 > 0)
+						$out[] = $teen[$num3]; // диапазон 10-19
+					else $out[] = $one_nine[$scales[$k][3]] [$num3]; // диапазон 1-9
+
+					// тысячи, милионы ... и склонения
+					$n = $v % 10;
+					$n2 = $v % 100;
+					if ($n2 > 10 && $n2 < 20) $out[] = $scales[$k][2];
+					elseif ($n > 1 && $n < 5) $out[] = $scales[$k][1];
+					elseif ($n == 1) $out[] = $scales[$k][0];
+					else $out[] = $scales[$k][2];
+
+				}
+			}
+			elseif (intval($num) == 0) {
+				$out[] = $nul;
+			}
+        } else $out[] = $number_not_set[0];
+
+        return implode(' ', $out);
+    }
+    
+	function morph($n, $k)
+                {
+		$unit=array(
+			array('гривня'  ,'гривні'  ,'гривень'    ,0),
+			array('копійка' ,'копійки' ,'копійок',	 1),
+		);
+
+		$n = abs(intval($n)) % 100;
+		if ($n>10 && $n<20) return $unit[$k][2];
+		$n = $n % 10;
+		if ($n>1 && $n<5) return $unit[$k][1];
+		if ($n==1) return $unit[$k][0];
+		return $unit[$k][2];
+	}

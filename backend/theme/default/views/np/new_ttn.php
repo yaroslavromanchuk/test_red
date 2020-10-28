@@ -23,7 +23,7 @@ echo '<input type="text" hidden id="name" value="'.$name.'">';
  
  <div class="card-body">
   <div class="row">
-  <div class="col-sm-12 col-md-12 col-lg-12">
+  <div class="col-sm-12 col-md-12 col-lg-12 text-center">
 
  <div class="form-group" style="display:  inline-block;">
     <label for="order" class="ct-110 control-label">Заказ:</label>
@@ -67,12 +67,16 @@ echo '<input type="text" hidden id="name" value="'.$name.'">';
 <input type="text" hidden name="recipient" id="Recipient" value="<?=$uuid_branch?>" >
       </div>
 
-		<div class="form-group">
+	<div class="form-group">
      <label class="form-control-label">Получатель: <span class="tx-danger">*</span></label>
-	 <div>
-<input class="form-control" type="text" autocomplete="off" name="recipientname_np" id="RecipientName_np" value="" style="width:85%; float:left;" required>
-<input type="text" hidden name="recipientname" id="RecipientName" value="" ><input type="button" class="btn btn-small btn-default" data-placement="right"  data-tooltip="tooltip" title="Добавить новый контакт" value="+" id="new_contr"><input type="button" style="display:none;" class="btn btn-small btn-default" data-placement="right"  data-tooltip="tooltip" title="Редактировать контакт" value="..." id="update_contr">
+<div class="input-group">
+<input class="form-control" type="text" autocomplete="off" name="recipientname_np" id="RecipientName_np" value=""  required>
+<div class="input-group-append">
+<input type="text" hidden name="recipientname" id="RecipientName" value="" >
+<input type="button" class="btn btn-outline-secondary" data-placement="right"  data-tooltip="tooltip" title="Добавить новый контакт" value="+" id="new_contr">
+<input type="button" style="display:none;" class="btn btn-outline-secondary" data-placement="right"  data-tooltip="tooltip" title="Редактировать контакт" value="..." id="update_contr">
 </div>
+         </div>
       </div>
 		<div class="form-group">
      <label class="form-control-label">Телефон: <span class="tx-danger">*</span></label>
@@ -80,30 +84,58 @@ echo '<input type="text" hidden id="name" value="'.$name.'">';
       </div>
 	</div>
 	
-	<div class="col-sm-12 col-md-12 col-lg-6" style="    text-align: left;">
+	<div class="col-sm-12 col-md-12 col-lg-3" style="    text-align: left;">
 	<div class="form-group">
      <label class="form-control-label">Масса: <span class="tx-danger">*</span></label>
-<input class="form-control" type="text" name="weight" id="weight"  value="1" required>
+     <select class="form-control"  name="weight" id="weight" required >
+         <option value="1" selected >1кг</option>
+         <option value="1.5" >1.5кг</option>
+         <option value="0.10" >0.10кг(коробки)</option>
+     </select>
+
       </div>
-	  	<div class="form-group">
-     <label class="form-control-label">Тип посылки: <span class="tx-danger">*</span></label>
-	 <div>
-<select name="сargoеype" id="сargoеype" class="form-control " style="width: 50%;    float: left;" data-placement="right" required  data-tooltip="tooltip" title="Посылка <= 30кг. Груз > 30кг." ><option value="Parcel" >Посылка</option><option  value="Cargo">Груз</option></select><input type="text" name="s" id="s" placeholder="Ш" class="form-control " style="width:50px;    float: left;"><input type="text" name="d" id="d" class="form-control" style="width:50px;    float: left;" placeholder="Д"><input type="text" name="v" id="v" placeholder="В" class="form-control " style="width:50px;">
-      </div>
-	  </div>
+	  	
 <div class="form-group">
      <label class="form-control-label">Сумма: <span class="tx-danger">*</span></label>
 <input class="form-control " type="text" name="cost" required id="cost" value="<?=$or->amount;?>" >
       </div>
-	  <div class="form-group">
+            <div class="form-group">
+                 <label class="form-control-label">Платит за доставку:</label>
+                <div>
+            <label class="rdiobox"><input name="PayerType" checked type="radio" value="Recipient"><span>Получатель</span></label>
+            <label class="rdiobox"><input name="PayerType" type="radio" value="Sender"><span>Отправитель</span></label>
+            </div>
+            </div>
+	</div>
+           <div class="col-sm-12 col-md-12 col-lg-3" style="    text-align: left;">
+               <div class="form-group">
+                    <input class="form-control" type="text" hidden name="сargoеype" id="сargoеype"  value="Parcel">
+     <label class="form-control-label">Коробка:</label>
+	 <div>
+<select  id="box" class="form-control" placeholder="Размер коробки"  >
+    <option label="Коробка"></option>
+    <option value="36" >36/20/20</option>
+    <option  value="38">38/28/23</option>
+     <option  value="40">40/40/40</option>
+</select>
+             <input type="text" name="s" hidden id="s" placeholder="Ш" class="form-control " >
+             <input type="text" name="d" hidden id="d" class="form-control"  placeholder="Д">
+             <input type="text" name="v" hidden id="v" placeholder="В" class="form-control " >
+      </div>
+	  </div>
+               <div class="form-group">
      <label class="form-control-label">Мест: <span class="tx-danger">*</span></label>
 <input class="form-control " type="text" name="seatsamount" required id="seatsamount" value="1">
       </div>
-	</div>
+           </div>
+
 </div>
    </div>
+      <div class="col-sm-12 text-center mt-3">
+          <input  type="button" style="cursor: pointer;"  class="btn btn-lg btn-outline-dark m-auto"  value="Создать посылку" id="new_ttn">
+
+      </div>
  </div>
-<input  type="button"  class="btn btn-lg btn-outline-dark" data-placement="top"  data-tooltip="tooltip" title="Создать накладную" value="Создать" id="new_ttn">
 <p align="center" id="pageslist"></p>
 <div id="alert"></div>
 </div>
@@ -135,16 +167,23 @@ $('#new_ttn').click(function(){
 	if($('#сargoеype').val()) { dat+='&сargoеype='+$('#сargoеype').val(); $('#сargoеype').removeClass("red_error"); }else{$('#сargoеype').addClass("red_error"); $('#сargoеype').focus(); valid = false;}
 	if($('#volumegeneral').val()) {
 	dat+='&volumegeneral='+$('#volumegeneral').val();
-	$('#v').removeClass("red_error"); $('#s').removeClass("red_error"); $('#d').removeClass("red_error");
-	}else{
-	$('#v').addClass("red_error"); $('#s').addClass("red_error"); $('#d').addClass("red_error"); valid = false;
-	}
+	//$('#v').removeClass("red_error"); $('#s').removeClass("red_error"); $('#d').removeClass("red_error");
+	}//else{
+	//$('#v').addClass("red_error"); $('#s').addClass("red_error"); $('#d').addClass("red_error"); valid = false;
+	//}
 	if($('#cost').val()) { dat+='&cost='+$('#cost').val(); $('#cost').removeClass("red_error"); }else{$('#cost').addClass("red_error"); $('#cost').focus(); valid = false;}
 	if($('#seatsamount').val()) { dat+='&seatsamount='+$('#seatsamount').val(); $('#seatsamount').removeClass("red_error"); }else{$('#seatsamount').addClass("red_error"); $('#seatsamount').focus(); valid = false;}
-	//console.log(dat);
+	
+        if($("input[name='PayerType']:checked").val()){
+            dat+='&payer_type='+$("input[name='PayerType']:checked").val(); $("input[name='PayerType']").removeClass("red_error");
+        }else {
+            $("input[name='PayerType']").addClass("red_error"); $("input[name='PayerType']").focus(); valid = false;
+        }
+        //console.log(dat);
 	if(valid == true){ 
 	//if(false){
 	console.log(dat);
+       // return false;
 	var url = '/admin/novapochta/?';
 	$.ajax({
 		beforeSend: function( data ) {
@@ -156,7 +195,7 @@ $('#new_ttn').click(function(){
                 data: dat,
                 success: function (res) {
 				$('#pageslist').html('');
-				//console.log(res);
+				console.log(res);
 				//console.log(res.errors.length);
 				if(res.errors.length == 0){
 				if(res.data[0].Ref){
@@ -164,7 +203,9 @@ $('#new_ttn').click(function(){
    // setTimeout(function(){$('#alert').html('')}, 5000);
 				//$('#popup').html(res.data[0].IntDocNumber);
 				//window.open("https://my.novaposhta.ua/orders/printDocument/orders/"+res.data[0].Ref+"/type/html/apiKey/1e594a002b9860276775916cdc07c9a6");//, '_blank'
-				window.location.replace("https://my.novaposhta.ua/orders/printMarking100x100/orders/"+res.data[0].Ref+"/type/pdf/apiKey/920af0b399119755cbca360907f4fa60");//, '_blank'
+//console.log(res.print.data[0]);	
+window.location.replace(res.print.data[0]);
+   // window.location.replace("https://my.novaposhta.ua/orders/printMarking100x100/orders/"+res.data[0].Ref+"/type/pdf/apiKey/920af0b399119755cbca360907f4fa60");//, '_blank'
                                 }
 				}else{
                                 $('#new_ttn').show();
@@ -183,9 +224,26 @@ $('#new_ttn').click(function(){
 	//редактировать контакт
 	$('#update_contr').click(function(){
 	var name = $('#RecipientName_np').val().split(' ');
+        if(typeof name[0] !== "undefined"){
+             var last = name[0];
+        }else{
+             var last =  '';
+        }
+        if(typeof name[1] !== "undefined"){
+             var first = name[1];
+        }else{
+             var first =  '';
+        }
+        if(typeof name[2] !== "undefined"){
+             var midl = name[2];
+        }else{
+             var midl =  '';
+        }
+       
+        //console.log(name);
 	var ref = $('#RecipientName').val();
 	var pho = $('#Phones').val();
-	$('#popup').html('<p>Редактирование контактной особы:</p><form action="" method="POST" id="myform" align="center"><input type="text" hidden name="ref" id="ref" value="'+ref+'"><input type="text" placeholder="Фамілія"  name="lastname" id="LastName" value=""  class="form-control input"><input type="text" placeholder="Ім`я"  name="firstname" id="FirstName" value=""  class="form-control input"><input type="text"  placeholder="По батькові" name="middlemame" id="MiddleName" value=""  class="form-control input"><input type="text" placeholder="Телефон"  name="phone" id="Phone" value="'+pho+'"  class="form-control input"><br><input type="button" class="button" value="Редактировать" id="go_update_contr"></form>');
+	$('#popup').html('<p>Редактирование контактной особы:</p><form action="" method="POST" id="myform" align="center"><input type="text" hidden name="ref" id="ref" value="'+ref+'"><input type="text" placeholder="Фамілія"  name="lastname" id="LastName" value="'+last+'"  class="form-control input"><input type="text" placeholder="Ім`я"  name="firstname" id="FirstName" value="'+first+'"  class="form-control input"><input type="text"  placeholder="По батькові" name="middlemame" id="MiddleName" value="'+midl+'"  class="form-control input"><input type="text" placeholder="Телефон"  name="phone" id="Phone" value="'+pho+'"  class="form-control input"><br><input type="button" class="button" value="Редактировать" id="go_update_contr"></form>');
 	fopen();
 	$('#go_update_contr').click(function(){
 	//var f = $('#myform').serialize();
@@ -341,6 +399,32 @@ $('#RecipientName_np').autocomplete({
 		}
 });
 
+$("#box").change(function() { 
+    $(this).val();
+    switch($(this).val()){
+        case '36' : 
+            $("#volumegeneral").val((36*20*20)/1000000); 
+            $('#weight option[value="0.10"]').prop('selected', true); 
+            $("#s").val(36);$("#d").val(20);$("#v").val(20);
+            break;
+            case '38' : 
+                $("#volumegeneral").val((38*28*23)/1000000); 
+                $('#weight option[value="0.10"]').prop('selected', true); 
+                $("#s").val(38);$("#d").val(28);$("#v").val(23);
+                break;
+                case '40' : 
+                    $("#volumegeneral").val((40*40*40)/1000000); 
+                    $('#weight option[value="0.10"]').prop('selected', true);
+                    $("#s").val(40);$("#d").val(40);$("#v").val(40);
+                    break;
+                default : 
+                    $("#volumegeneral").val(0.0004); 
+                    $('#weight option[value="1"]').prop('selected', true);
+                    $("#s").val('');$("#d").val('');$("#v").val('');
+                    break;
+    }
+    return true;
+});
 $("#s").keyup(function(e){
 if($("#d").val() && $("#v").val()){
 var m = $("#d").val()*$("#v").val()*$(this).val();

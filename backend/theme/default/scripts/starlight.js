@@ -6,7 +6,7 @@
   // when top level menu have a class of .show-sub
   $('.show-sub + .sl-menu-sub').slideDown();
 
-
+ 
 
   // This will collapsed sidebar menu on left into a mini icon menu
   $('#btnLeftMenu').on('click', function(){
@@ -170,8 +170,8 @@
 
     });
   });
-   $('.datatable1').DataTable({
-          //responsive: true,
+  var t =  $('.datatable1').DataTable({
+         // responsive: true,
           language: {
             searchPlaceholder: 'Поиск в таблице...',
             sSearch: '',
@@ -185,7 +185,14 @@
             next:       "Следующая",
             last:       "Последняя"
         },
-          }
+          },
+          columnDefs: [ {
+            searchable: true,
+            orderable: false,
+            targets: 0
+        } ],
+        order: [[ 1, 'asc' ]]
         });
+       
 
 });

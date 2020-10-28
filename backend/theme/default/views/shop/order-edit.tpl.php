@@ -4,7 +4,7 @@
         <div class="view_detaly" style="cursor: pointer;display: inline-flex;" data-placement="bottom"  data-tooltip="tooltip"  data-original-title="Показать детали" >
     <div class="d-flex" style="display: inline-flex;">
 <i class=" ion-calendar tx-30 pd-5" style="float:left;"></i>
-<p style="font-size: 20px;color: white;padding: 5px;margin: 0 5px;">Заказ <span id="get_order_id"><?=$this->getOrder()->getId()?></span> <?=$this->order->stat->name?></p>
+<p style="font-size: 20px;color: white;padding: 5px;margin: 0 5px;">Заказ №<span id="get_order_id"><?=$this->getOrder()->getId()?></span> от <?=$this->getOrder()->shop->getName()?> (<?=$this->order->stat->name?>)</p>
     </div>
     <div class="d-flex" style="display: inline-flex;">
 <i class="icon ion-settings white tx-30 pd-5 " ></i>
@@ -29,7 +29,7 @@
 </script>
 </div>
 <?php if ($this->errordell) { ?>
-    <div id="errormessage"><img src="<?=SITE_URL;?>/img/icons/error.png" alt=""   class="page-img"/>
+    <div id="errormessage"><img src="/img/icons/error.png" alt=""   class="page-img"/>
         <h1>Ошибки при удалении товара:</h1>
         <p><?=$this->errordell?></p>
     </div>
@@ -45,7 +45,7 @@
 <?php
 if($this->user->id == 8005){
 
-    
+    echo $this->getOrder()->getOrderAmountCoin();
 }
 //$order_owner = new Customer($this->getOrder()->getCustomerId());
 if ($this->getOrder()->customer->getAdminComents()) { ?>
@@ -447,7 +447,10 @@ if(page != null){
     </div>
  <form method="post" action="" class="form-horizontal1">
  <div class="panel panel-success" style="margin-top:15px;">
- <div class="panel-heading"><h3 id="555" class="panel-title">Товары в заказе</h3></div>
+     <div class="panel-heading"><h3 id="555" class="panel-title">Товары в заказе</h3><span style="position: relative;
+    float: right;
+    margin-top: -20px;
+    font-weight: 900;">Callback: <?=$this->order->getOrderAmountMinusCoin()?> redcoin</span></div>
  <div class="panel-body">
 <?php if($this->getOrder()->getDeposit() > 0) { echo '<p style="padding: 5px;border-radius: 2px;background: #37d011;width: 200px;color: #040404;font-size: 16px;margin: 5px auto;"><b>Присутствует депозит!</b></p>';} ?>
 
@@ -533,7 +536,7 @@ $.ajax({
 			},
 			error: function(e) {
 			console.log(e);
-			alert('Что-то пошло нетак! Заказ не добавлен, внесите изменения и попробуйте снова!');
+			alert('Что-то пошло нетак! Обновите страницу и попробуйте снова!');
 			}
 		});
 		
@@ -567,7 +570,10 @@ return false;
 				</td>
 				<?php
 					$price_real = (int)$article_rec->getOldPrice() ? $article_rec->getOldPrice() : $article_rec->getPrice();
-						$t_real_price += $price_real * $article_rec->getCount();
+					
+                                        
+                                       // $t_real_price += $price_real * $article_rec->getCount();
+                                        $t_real_price += $article_rec->getPrice() * $article_rec->getCount();
 						
 						$price_show = $article_rec->getPerc($this->order->getAllAmount());
 						$sum_skudka += $price_show['minus'];
@@ -642,8 +648,8 @@ return false;
 		</td>
     </tr>
 <tr>
-    <td colspan="4"><strong>Всего</strong></td>
-    <td colspan="2"><strong><?php echo Number::formatFloat($t_real_price); ?> грн</strong></td>
+    <td colspan="4"><strong>Всего за товар</strong></td>
+    <td colspan="2"><strong><?php echo Number::formatFloat($t_real_price);?> грн</strong></td>
 </tr>
 <tr>
     <td colspan="4"><strong>Доставка</strong></td>
@@ -656,39 +662,36 @@ return false;
     <!-- <td class="column-euro"><strong></strong></td> -->
     <td colspan="2"><strong><?=$this->getOrder()->customer->getDiscont($this->getOrder()->getId())?> %</strong></td>
 </tr>
+<!--
 <tr>
     <td colspan="4"><strong>Сумма скидки</strong></td>
-    <td colspan="2"><strong><?=Number::formatFloat($sum_skudka)?> грн.</strong></td>
+    <td colspan="2"><strong><?php //Number::formatFloat($sum_skudka)?> грн.</strong></td>
 
-</tr>
+</tr>-->
 <?php if ($this->getOrder()->getKuponPrice() > 0) { ?>
     <tr>
         <td colspan="4"><strong>Скидка по купону</strong></td>
         <td colspan="2"><strong><?=$this->getOrder()->getKuponPrice()?>%</strong></td>
     </tr>
 <?php } ?>
-<?php if ($this->getOrder()->getBonus() > 0) { ?>
     <tr>
         <td colspan="4"><strong>Бонусная скидка</strong></td>
-        <td colspan="2"><strong><?=$this->getOrder()->getBonus()?>грн.</strong></td>
+        <td><strong><?=Number::formatFloat($this->getOrder()->getBonus())?> redcoin</strong></td>
+        <td> <?php
+        if($this->getOrder()->shop_id == 1 && $this->getOrder()->date_create > '2020-03-01 00:00:00' && $this->getOrder()->deposit == 0){
+        $b = $this->getOrder()->customer->getSummCoin('active');
+      //  echo $b;
+//$summ = 0;
+      //  foreach ($this->getOrder()->articles as $art){
+       //        $summ+=$art->price*$art->count; 
+          //  }
+          //  echo $summ;
+        if($t_real_price < $this->getOrder()->bonus || $b > 0){ ?>
+              <a class="btn btn-primary btn-sm " style="color: white" href="/admin/updatebonus/id/<?=$this->getOrder()->getId()?>/">Обновить бонус (<?=Number::formatFloat($b)?>) redcoin</a> 
+        <?php }
+        } ?></td>
     </tr>
-<?php } ?>
-    <?php if($this->getOrder()->customer->getBonus() > 0){?>
-    <tr>
-        <td colspan="4"><strong>У пользователя есть бонус</strong></td>
-        <td colspan="4"><strong><?=$this->getOrder()->customer->getBonus()?> грн. </strong>
-        <?php if(!$this->getBonus()){?>
-            <a href="/admin/updatebonus/id/<?=$this->getOrder()->getId()?>/">Использовать бонус</a> 
-            <?php } ?>
-        </td>
-    </tr>
-   <?php } ?>
-<tr>
-    <td colspan="4"><strong>Всего со скидкой и доставкой</strong></td>
-    <td colspan="2"><strong><?php
-      echo Number::formatFloat($SumOrder, 2);
-            ?> грн</strong></td>
-</tr>
+
 <?php if ($this->getOrder()->getDeposit() > 0) { ?>
     <tr>
         <td colspan="4"><strong>Депозит</strong></td>
@@ -698,13 +701,17 @@ return false;
 
 <tr>
     <td colspan="4"><strong>У пользователя на депозите</strong></td>
-    <td colspan="4"><strong><?=$this->getOrder()->customer->getDeposit()?$this->getOrder()->customer->getDeposit():0?> грн</strong>   
-<?php if($this->getOrder()->customer->getDeposit() and $this->getOrder()->getDeposit() == 0){ ?>
-        <a href="/admin/usedeposit/id/<?=$this->getOrder()->getId()?>/">Использовать депозит</a> 
-<?php }elseif($this->getOrder()->getDeposit() > 0){ ?>
-<a href="/admin/unusedeposit/id/<?=$this->getOrder()->getId()?>/" onclick="return confirm('При отмене депозита сума депозита вернется на счет клиента, а сумма заказа изменится. Продолжить ?')">Отменить
-            депозит</a><?php } ?>
+    <td><strong><?=$this->getOrder()->customer->getDeposit()?$this->getOrder()->customer->getDeposit():0?> грн</strong>   
     </td>
+    <td><?php if($this->getOrder()->customer->getDeposit() and $this->getOrder()->getDeposit() == 0 and $this->getOrder()->bonus == 0){ ?>
+        <a class="btn btn-success btn-sm " style="color: white" href="/admin/usedeposit/id/<?=$this->getOrder()->getId()?>/">Использовать депозит</a> 
+<?php }elseif($this->getOrder()->getDeposit() > 0){ ?>
+<a  class="btn btn-danger btn-sm " style="color: white" href="/admin/unusedeposit/id/<?=$this->getOrder()->getId()?>/" onclick="return confirm('При отмене депозита сумма депозита вернется на счет клиента, а сумма заказа изменится. Продолжить ?')">Отменить
+            депозит</a><?php } ?></td>
+</tr>
+<tr>
+    <td colspan="4"><strong>Всего к оплате</strong></td>
+    <td colspan="2"><strong><?=Number::formatFloat($SumOrder, 2)?> грн</strong></td>
 </tr>
 </tbody>
 </table>
@@ -714,13 +721,13 @@ return false;
  <div class="row">
 	  <label  class="control-label col-md-1 col-lg-1 col-xl-1">Печать:</label>
 	   <div class="col-md-11 col-lg-11 col-xl-11">
-	 <ul class="btn-group btn-group-sm">
-			<li class="btn btn-default"><a target="_blank" href="/admin/generateorder/id/<?=$this->getOrder()->getId()?>/type/1/" >Счет Магазин</a></li>
-			<li class="btn btn-default"><a target="_blank" href="/admin/generateorder/id/<?=$this->getOrder()->getId()?>/type/2/" >Счет Укрпочта</a> </li>
+	 <ul class="btn-group btn-group-lg">
+             <li class="btn btn-primary"><a target="_blank" onclick="setLang('uk')" href="/uk/admin/generateorder/id/<?=$this->getOrder()->getId()?>/" >Счёт</a></li>
+			<!--<li class="btn btn-default"><a target="_blank" href="/admin/generateorder/id/<?=$this->getOrder()->getId()?>/type/2/" >Счет Укрпочта</a> </li>
 			<li class="btn btn-default"><a target="_blank" href="/admin/generateorder/id/<?=$this->getOrder()->getId()?>/type/3/" >Счет Новая почта</a> </li>
 			<li class="btn btn-default"><a target="_blank" href="/admin/generateorder/id/<?=$this->getOrder()->getId()?>/type/4/" >Счет Курьер</a> </li>
-                        <li class="btn btn-default"><a target="_blank" href="/admin/generateorder/id/<?=$this->getOrder()->getId()?>/type/5/" >Justin</a> </li>
-			<li class="btn btn-default"><a target="_blank" href="/admin/masgeneratechek/ids/<?=$this->getOrder()->getId()?>">Чек</a></li>
+                        <li class="btn btn-default"><a target="_blank" href="/admin/generateorder/id/<?=$this->getOrder()->getId()?>/type/5/" >Justin</a> </li>-->
+			<li class="btn btn-success"><a onclick="setLang('uk')" target="_blank" href="/uk/admin/masgeneratechek/ids/<?=$this->getOrder()->getId()?>">Чек</a></li>
                         
   </ul>
 	   </div>
@@ -743,8 +750,6 @@ return false;
   </li>
   <?php } ?>
   </ul>
-
-  
 </div>
 </div>
 </div>

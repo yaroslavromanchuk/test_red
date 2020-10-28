@@ -18,13 +18,14 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
 	<link rel="shortcut icon" href="/favicon.ico"/>
+         <link rel="canonical" href="https://www.red.ua/">
 	<title><?=Config::findByCode('home_title')->getValue()?></title>
 
 	<link rel="stylesheet" type="text/css" href="/css/bs/css/bootstrap.min.css?v=1.0"/>
         <link rel="stylesheet" type="text/css" href="/css/Ionicons/css/ionicons.min.css"/>
 		<!--<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.3.31"/>-->
                 <link rel="stylesheet" type="text/css" href="/css/style_new.css?v=1.4"/>
-                <link rel="stylesheet" type="text/css" href="/css/mobi/common_home.css?v=1.6"/>
+                <link rel="stylesheet" type="text/css" href="/css/mobi/common_home.css?v=1.7"/>
 	
 	<script  src="/mobil/mjs/jquery.min.js"></script>
 	
@@ -59,6 +60,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 	<script  src="/css/bs/js/bootstrap.min.js?v=1.0"></script>
     <script src="/mobil/mjs/common.js"></script>
      <script>
+         $(window).load(function() {
+/** код будет запущен когда страница будет полностью загружена, включая все фреймы, объекты и изображения **/
+       [].forEach.call(document.querySelectorAll('img[data-src]'), function(img) {
+img.setAttribute('src', img.getAttribute('data-src'));
+img.onload = function() {
+img.removeAttribute('data-src');
+};
+});
+});
         jQuery.browser = {};
         (function () {
             jQuery.browser.msie = false;

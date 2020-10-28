@@ -6,7 +6,7 @@
 		<base href="https://<?=$dname?>/" target="_blank" />
     </head>
 	<body style="font-family: Verdana,Tahoma,Arial;font-size:14px">
-	<table  style="width:700px;background: black;" align="center" border="0" cellpadding="0" cellspacing="0">
+	<table  style="max-width:700px;background: black;" align="center" border="0" cellpadding="0" cellspacing="0">
 	<tr>
 	<td style="border-bottom: 2px solid #e30613;padding:10px;">
 	<span  style="text-align:left;">
@@ -61,9 +61,8 @@ foreach (wsActiveRecord::useStatic('Shopcategories')->findAll(array('parent_id'=
 	</tr>
 	</table>
 	
-<table style="width:700px;" align="center"><tr><td><?=$this->content?></td></tr></table>
-
-<table  align="center" border="0" cellpadding="0" cellspacing="0" style="font-size:12px;color:#6c6c6c;width:700px;">
+<table style="max-width:700px;" align="center"><tr><td><?=$this->content?></td></tr></table>
+<table  align="center" border="0" cellpadding="0" cellspacing="0" style="font-size:12px;color:#6c6c6c;max-width:700px;">
 <tr style="background: #ededed;">
 <td  style="width: 33.33333333%;padding-top:10px;padding-left:10px;"><b>CALL-ЦЕНТР</b></td>
 <td  style="width: 33.33333333%;padding-top:10px;padding-left:10px;"><b>КОНТАКТЫ</b></td>

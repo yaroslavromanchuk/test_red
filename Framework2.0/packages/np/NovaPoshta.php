@@ -15,8 +15,13 @@ class NovaPoshta{
 	 * @var string $key
 	 * @see https://my.novaposhta.ua/settings/index#apikeys
 	 */
-	protected $key = '920af0b399119755cbca360907f4fa60';
+	protected $key = '6007d99fef17e74a4cb6bc57c67557dd';//2fe6dfb917685d85bc6e83e5781486e3 - Цибуля  6007d99fef17e74a4cb6bc57c67557dd - Кук
 	
+        /**
+         *
+         * @var type 
+         */
+        protected $ref = 'df32b679-f0f4-11ea-8513-b88303659df5'; //- контагент отправитель
 	/**
 	 * @var bool $throwErrors Throw exceptions when in response is error
 	 */
@@ -66,13 +71,16 @@ class NovaPoshta{
 	 * @param bool $connectionType Connection type (curl | file_get_contents)
 	 * @return NovaPoshtaApi2 
 	 */
-	function __construct($key, $language = 'ru', $throwErrors = FALSE, $connectionType = 'curl') {
+	/*function __construct($key, $language = 'ru', $throwErrors = FALSE, $connectionType = 'curl') {
 		$this->throwErrors = $throwErrors;
 		return $this	
 			->setKey($key)
 			->setLanguage($language)
 			->setConnectionType($connectionType)
 			->model('Common');
+	}*/
+        function __construct($language = 'ru') {
+		return $this->setLanguage($language);
 	}
 	
 	/**
@@ -95,6 +103,25 @@ class NovaPoshta{
 		return $this->key;
 	}
 	
+        /**
+	 * Setter for key property
+	 * 
+	 * @param string $ref NovaPoshta API ref sender
+	 * @return NovaPoshtaApi2
+	 */
+	function setRef($ref) {
+		$this->ref = $ref;
+		return $this;
+	}
+	
+	/**
+	 * Getter for key property
+	 * 
+	 * @return string
+	 */
+	function getRef() {
+		return $this->ref;
+	}
 	/**
 	 * Setter for $connectionType property
 	 * 
@@ -350,11 +377,14 @@ if($err) {
 	}
         
 	function getWarehouses1($cityRef, $findByString = '') {
-		return $this->request('Address', 'getWarehouses', array(
+		return $this->request(
+                        'Address',
+                        'getWarehouses',
+                        [
 			'CityRef' => $cityRef,
 			'FindByString' => (string)$findByString,
 			'Page' => 0,
-		));
+		]);
 	}
 	
 	
@@ -367,11 +397,11 @@ if($err) {
 	 */
 	function getWarehouses($cityRef, $page = 0) {
 		return $this->request(
-                        'Address',
+                        'AddressGeneral',
                         'getWarehouses', 
                         [
 			'CityRef' => $cityRef,
-			'Page' => $page,
+			'Page' => $page   
 		]
                         );
 	}
@@ -669,26 +699,17 @@ if($err) {
 		return $this->request('Counterparty', 'getCounterparties', $params);
 	}
 	//����� �������
-	function newContactPerson($LastName='', $FirstName='', $MiddleName='', $Phone=''){
-	return $this->model('ContactPerson')->save(array(
-	'CounterpartyRef' => 'ea1b5c6e-3875-11e6-a54a-005056801333',
-	'LastName' =>$LastName,
-	'FirstName' =>$FirstName,
-	'MiddleName' =>$MiddleName,
-	'Phone' =>$Phone,
-	));
+	function newContactPerson($param = []){
+	return $this->model('ContactPerson')->save(array_merge(['CounterpartyRef' => $this->ref], $param));
 	}
 	//������������� �������
-	function updateContactPerson($ref, $LastName='', $FirstName='', $MiddleName='', $Phone=''){
-	return $this->model('ContactPerson')->update(array(
-	'CounterpartyRef' => 'ea1b5c6e-3875-11e6-a54a-005056801333',
-	'Ref' => $ref,
-	'LastName' =>$LastName,
-	'FirstName' =>$FirstName,
-	'MiddleName' =>$MiddleName,
-	'Phone' =>$Phone,
-	));
+	function updateContactPerson($param = []){
+	return $this->model('ContactPerson')->update(array_merge(['CounterpartyRef' => $this->ref], $param));
 	}
+        
+        function updateCounterparty($param = []){
+            return $this->model('Counterparty')->update($param);
+        }
 	
 	/**
 	 * cloneLoyaltyCounterpartySender() function of model Counterparty
@@ -871,10 +892,12 @@ if($err) {
 			throw new \Exception('Weight is required filed for new Internet document');
 		if ( ! $params['Cost'])
 			throw new \Exception('Cost is required filed for new Internet document');
-		( ! $params['DateTime']) AND $params['DateTime'] = date('d.m.Y');
+                
+                if(!$params['DateTime']){ $params['DateTime'] = date('d.m.Y');}
+                
 		( ! $params['ServiceType']) AND $params['ServiceType'] = 'WarehouseWarehouse';
 		( ! $params['PaymentMethod']) AND $params['PaymentMethod'] = 'Cash';
-		( ! $params['PayerType']) AND $params['PayerType'] = 'Recipient';
+                if(!$params['PayerType']){$params['PayerType'] = 'Recipient';}
 		( ! $params['SeatsAmount']) AND $params['SeatsAmount'] = '1';
 		( ! $params['CargoType']) AND $params['CargoType'] = 'Cargo';
 		( ! $params['VolumeGeneral']) AND $params['VolumeGeneral'] = '0.0004';
@@ -998,7 +1021,7 @@ if($err) {
 	 * @param string $type (pdf|html|html_link|pdf_link)
 	 * @return mixed
 	 */
-	function printDocument($documentRefs, $type = 'html') {
+	function printDocument($documentRefs, $type = 'html_link') {
 		$documentRefs = (array) $documentRefs;
 		// If needs link
 		if ($type == 'html_link' OR $type == 'pdf_link')
@@ -1021,12 +1044,13 @@ if($err) {
 		// If needs data
 		return $this->request('InternetDocument', 'printMarkings', array('DocumentRefs' => $documentRefs, 'Type' => $type));
 	}
+        
         function printMarking100x100($documentRefs, $type = 'pdf') {
-		$documentRefs = (array) $documentRefs;
+		$documentRefs = (array)$documentRefs;
 		// If needs link
 		if ($type == 'html_link' OR $type == 'pdf_link'){ return $this->printGetLink('printMarking100x100', $documentRefs, $type); }
 		// If needs data
-		return $this->request('InternetDocument', 'printMarkings', array('DocumentRefs' => $documentRefs, 'Type' => $type));
+		return $this->request('InternetDocument', 'printMarking100x100', array('DocumentRefs' => $documentRefs, 'Type' => $type));
 	}
 	//создать новый реестр  $documentRefs - массив рефов накладных
 	function newRegistr($documentRefs, $ref = '') {

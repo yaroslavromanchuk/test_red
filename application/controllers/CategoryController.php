@@ -8,11 +8,13 @@ class CategoryController extends controllerAbstract
     //put your code here   
     	public function categoryAction()
         {
+             $this->view->critical_css = [
+           '/css/catalog/catalog.css', 
+        ];
             $this->view->css = [
             '/css/cloudzoom/cloudzoom.css',
             '/css/jquery.lightbox-0.5.css',
                         '/js/select2/css/select2.min.css',
-                        '/css/catalog/catalog.css', 
         ];
             $this->view->scripts = [
                  '/js/filter.js',

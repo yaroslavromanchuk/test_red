@@ -95,40 +95,32 @@ class Orm_Statement extends Zend_Db_Select
 	public function execute()
 	{	
 		$query = ($this->_query ? $this->_query : $this->__toString() ). ';';
-/*
-		if (($_SERVER['REMOTE_ADDR'] == '91.225.165.62')||($_SERVER['REMOTE_ADDR'] == '127.0.0.1')) {
-
-			$fp = fopen("sql.log", "a");
-			$log = $query.' ('.$this->_class_name.')';
-			$test = fwrite($fp, $log);
-			fclose($fp);
-
-		echo '<pre>'.$query.'</pre>';
-		}
-*/
 		//log query
-		if($this->sqllog)
-			$this->sqllog->log($this->_class_name, $query);
-		try
-		{
-			if(PDO)
-			{
+		if ($this->sqllog) {
+                $this->sqllog->log($this->_class_name, $query);
+                
+                }
+                try {
+			if (PDO) {
 				$this->pdo_statement = $this->_adapter->prepare($query);
 				$this->pdo_statement->execute();
+			} else {
+                            $result = mysql_query($query, $this->_db);
+                            if (!$result) {
+                                Telegram::sendMessageTelegram(404070580, 'ERROR RED.UA!'.PHP_EOL.'URL:'.$_SERVER['REQUEST_URI'].PHP_EOL.'Message:' .$query.' '. $this->_db);
+                           //throw new RuntimeException($query.' '.mysql_error($this->_db)); 
+                            }
+				  $this->_last_result = $result;
 			}
-			else
-			{
-				$this->_last_result = @mysql_query($query,$this->_db);
-			}
-		}
-		catch (Exception $e)
-		{
-			$message = $e->getMessage() . " (" . $query .  " - " . $this->_class_name . ")";
-			throw new Orm_Exception($message);
-		}
+                } catch (Exception $e){
+                     bug::add_exception($e);
+                }
+		
+		
 		$this->reset();
-		if($this->sqllog)
-			$this->sqllog->done($this->getAffectedRows());
+		if($this->sqllog) { 
+                    $this->sqllog->done($this->getAffectedRows());
+                }
 		return $this->getAffectedRows();
 	}	
 
@@ -140,10 +132,11 @@ class Orm_Statement extends Zend_Db_Select
 	public function getColumn($num = 0)
 	{
 		$this->execute();
-		if(PDO)
+		if(PDO) {
 			return $this->pdo_statement->fetchAll(PDO::FETCH_COLUMN, $num);
-		else
+                } else {
 			throw new Orm_Exception('G');
+                }
 	}
 	
 	/**
@@ -157,11 +150,11 @@ class Orm_Statement extends Zend_Db_Select
 		if (PDO)
 		{
 			$res = $this->pdo_statement->fetchAll();
-			return @$res[0];
+                        return !empty($res[0]) ? $res[0] : [];
 		}
 		else
 		{
-			return @mysql_fetch_assoc($this->_last_result);
+			return mysql_fetch_assoc($this->_last_result);
 		}		
 	}
 
@@ -176,12 +169,13 @@ class Orm_Statement extends Zend_Db_Select
 		if(PDO)
 		{
 			$res = $this->pdo_statement->fetchAll();
-			return @$res[0]->$var_name;
-		}
-		else
-		{
-			$res = @mysql_fetch_row($this->_last_result);
-			return $res[0];
+			return !empty($res[0]) ? $res[0]->$var_name : '';
+		} else {
+                 if(!empty($this->_last_result)){
+                    $res = mysql_fetch_row($this->_last_result);
+                   return !empty($res[0]) ? $res[0] : [];
+                }
+			return false;
 		}
 	}
 	
@@ -193,12 +187,15 @@ class Orm_Statement extends Zend_Db_Select
 	public function getResults()
 	{
 		$this->execute();
-		if(PDO)
+		if(PDO) {
 			return $this->pdo_statement->fetchAll();
-		else {
-			$ret = array();
-			while ( $row = @mysql_fetch_object($this->_last_result) )
+                } else {
+			$ret = [];
+                        if(!empty($this->_last_result)){
+                            while ( $row = mysql_fetch_object($this->_last_result) ) {
 				$ret[] = $row;
+                            }
+                        }
 			return $ret;
 		}
 	}
@@ -210,10 +207,11 @@ class Orm_Statement extends Zend_Db_Select
 	 */
 	public function getAffectedRows()
 	{
-		if(PDO)
+		if(PDO) {
 			return $this->pdo_statement->rowCount();
-		else
-			return @mysql_affected_rows();
+                } else {
+			return mysql_affected_rows();
+                }
 	}
 	
 	/**
@@ -246,22 +244,18 @@ class Orm_Statement extends Zend_Db_Select
     {
     	if (is_array($conditions))
     	{
-    		foreach ($conditions as $s_key => $s_value)
-    		{
-    			if ($s_key && !is_numeric($s_key))
-    			{
+    		foreach ($conditions as $s_key => $s_value) {
+    			if ($s_key && !is_numeric($s_key)) {
 					if ($s_value === null)
 						$expr = $this->rquote($s_key) . ' IS NULL';
 					else
 						$expr = $this->rquote($s_key) . ' = ?';
 	    			parent::where($expr, $s_value);
-    			}
-    			else 
+    			} else {
     				parent::where($s_value);
+                        }
     		}
-    	}
-    	else 
-    	{
+    	} else {
     		parent::where($conditions, $value);
     	}
 

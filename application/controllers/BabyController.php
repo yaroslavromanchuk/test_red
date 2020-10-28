@@ -16,80 +16,90 @@ class BabyController extends controllerAbstract
     private $parent_category = 59;
       public function init() {
         parent::init();
+         $this->view->critical_css = [
+           '/css/catalog/catalog.css', 
+        ];
         $this->view->css = [
             '/css/cloudzoom/cloudzoom.css',
-            '/css/jquery.lightbox-0.5.css',
+           // '/css/jquery.lightbox-0.5.css',
                         '/js/select2/css/select2.min.css',
-                        '/css/catalog/catalog.css', 
         ];
         $this->view->scripts = [
             '/js/filter.js',
             '/js/jquery.cycle.all.js',
-            '/js/cloud-zoom.1.0.2.js',
-            '/js/jquery.lightbox-0.5.js',
+          //  '/js/cloud-zoom.1.0.2.js',
+          //  '/js/jquery.lightbox-0.5.js',
             '/lib/select2/js/select2.min.js'
         ];
     }
     public function indexAction(){
         $this->view->category = $category = new Shopcategories($this->parent_category);
-         FilterController::getFilter($category);
+          $this->getFilter($category);
     }
     public function odezhdaAction() {
       // var_dump($this->get);
          $this->view->category = $category = new Shopcategories($this->parent_category);
-         FilterController::getFilter($category);
+          $this->getFilter($category);
     }
     public function beljoAction() { 
                 $this->view->category = $category = new Shopcategories(163);
-         FilterController::getFilter($category);  
+          $this->getFilter($category);  
     }   
     public function bluzyrubashkiAction(){
         $this->view->category = $category = new Shopcategories(273);
-        FilterController::getFilter($category);  
+         $this->getFilter($category);  
     }
     public function dzhemperyreglanyAction(){
         $this->view->category = $category = new Shopcategories(274);
-        FilterController::getFilter($category);  
+         $this->getFilter($category);  
     }
     public function futbolkimaikiAction(){
         $this->view->category = $category = new Shopcategories(275);
-        FilterController::getFilter($category);  
+         $this->getFilter($category);  
     }
     public function platjaAction(){
         $this->view->category = $category = new Shopcategories(276);
-        FilterController::getFilter($category);  
+         $this->getFilter($category);  
     }
     public function verhnjajaodezhdaAction(){
         $this->view->category = $category = new Shopcategories(277);
-        FilterController::getFilter($category);  
+         $this->getFilter($category);  
     }
     public function pidzhakiAction(){
         $this->view->category = $category = new Shopcategories(278);
-        FilterController::getFilter($category);  
+         $this->getFilter($category);  
     }
     public function brjukilosinyAction(){
         $this->view->category = $category = new Shopcategories(279);
-        FilterController::getFilter($category);  
+         $this->getFilter($category);  
     }
     public function shortykapriAction(){
         $this->view->category = $category = new Shopcategories(280);
-        FilterController::getFilter($category);  
+         $this->getFilter($category);  
     }
     public function jubkiAction(){
         $this->view->category = $category = new Shopcategories(281);
-        FilterController::getFilter($category);  
+         $this->getFilter($category);  
     }
     public function dzhinsyAction(){
         $this->view->category = $category = new Shopcategories(282);
-        FilterController::getFilter($category);  
+         $this->getFilter($category);  
     }
     public function kostjumykomplektyAction(){
         $this->view->category = $category = new Shopcategories(283);
-        FilterController::getFilter($category);  
+         $this->getFilter($category);  
     }
     public function pizhamyAction(){
         $this->view->category = $category = new Shopcategories(336);
-        FilterController::getFilter($category);  
+         $this->getFilter($category);  
+    }
+    public function halatyAction(){
+        $this->view->category = $category = new Shopcategories(364);
+         $this->getFilter($category);  
+    }
+    public function noskiAction(){
+        $this->view->category = $category = new Shopcategories(365);
+         $this->getFilter($category);  
     }
     
         

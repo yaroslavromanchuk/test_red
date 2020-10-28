@@ -10,10 +10,16 @@ class Shoparticles extends wsActiveRecord
     protected function _defineRelations()
     {
         $this->_relations = array(
+            'shop' => [
+                'type' => 'hasOne',
+                'class' => 'Shop',
+                'field' => 'shop_id'
+            ],
 	'category' => array(
             'type' => 'hasOne',
             'class' => self::$_shop_categories_class,
-            'field' => 'category_id'),
+            'field' => 'category_id'
+            ),
         'color_name' => array(
                 'type' => 'hasOne',
                 'class' => 'Shoparticlescolor',
@@ -71,10 +77,39 @@ class Shoparticles extends wsActiveRecord
                 'type' => 'hasOne',
                 'class' => 'Brand',
                 'field' => 'brand_id'
-            ]
+            ],
+            'ostatok' => [
+                'type' => 'hasMany',
+                'class' => 'BalanceArticles',
+                'field_foreign' => 'id_article',
+                'orderby' => array('id' => 'ASC'),
+                'onDelete' => 'delete'],
+            'orders' => [
+                'type' => 'hasMany',
+                'class' => 'Shoporderarticles',
+                'field_foreign' => 'article_id',
+                'orderby' => array('id' => 'ASC'),
+                'onDelete' => 'delete'],
+            'returns' => [
+                'type' => 'hasMany',
+                'class' => 'ShoporderarticlesVozrat',
+                'field_foreign' => 'article_id',
+                'orderby' => array('id' => 'ASC'),
+                'onDelete' => 'delete']
         );
     }
-	
+    /**
+     * Кешбек по товару
+     * @return boolean
+     */
+        public function getCashback(){
+            if($this->cashback > 0){ return $this->cashback;}
+            return false;
+        }
+        /**
+         * Напоминалка по размеру
+         * @return type
+         */
     public function getRemind(){
         return wsActiveRecord::useStatic('Shoparticlessize')->findByQuery("SELECT count( id ) as ctn FROM  `ws_articles_sizes` WHERE `count` = 0 and `id_article` =".$this->getId())->at(0)->ctn;
     }
@@ -93,7 +128,14 @@ class Shoparticles extends wsActiveRecord
          */
 	public function getOptions()
 	{
-           if (/*!$this->getSkidkaBlock()*/true) { 
+            $brand = [1504];
+             if(in_array($this->brand_id, $brand)){ return false; }
+          //  if($this->brands->greyd == 4){ return false;}
+        //if($this->old_price == 0.00){ return false; }
+            $nacladna = [82214,82175,82113,83278,83276];//82215,82098,82099,82097,82217,82216,82100,
+            if(in_array($this->code, $nacladna)){ return false; }
+            
+           if (/*!$this->getSkidkaBlock()*/true){ 
 	$dat = date('Y-m-d');
           //$dat = date('Y-m-d', strtotime('+3 days'));
 
@@ -101,21 +143,54 @@ class Shoparticles extends wsActiveRecord
 FROM  `ws_articles_option` 
 JOIN  `ws_articles_options` ON  `ws_articles_option`.`id` =  `ws_articles_options`.`option_id` 
 WHERE  `ws_articles_option`.`status` = 1
-AND  `ws_articles_option`.`start` <=  '$dat'
-AND  `ws_articles_option`.`end` >=  '$dat'
+AND  `ws_articles_option`.`start` <=  '{$dat}'
+AND  `ws_articles_option`.`end` >=  '{$dat}'
 AND (
- `ws_articles_options`.`article_id` = $this->id
-OR  `ws_articles_options`.`category_id` = $this->category_id
-OR  `ws_articles_options`.`brand_id` = $this->brand_id
-OR  `ws_articles_options`.`sezon_id` = $this->sezon
-)";
+ `ws_articles_options`.`article_id` = {$this->id}
+OR  `ws_articles_options`.`category_id` = {$this->category_id}
+OR  `ws_articles_options`.`brand_id` = {$this->brand_id}
+OR  `ws_articles_options`.`sezon_id` = {$this->sezon}
+)"
+. "order by `ws_articles_option`.`value` DESC LIMIT 1";
+
 	$option = (object)wsActiveRecord::findByQueryFirstArray($sql);
-	if ($option){ 
-            return $option;
+	if (isset($option->komu)){
+                switch ($option->komu){
+                   case 'all': return  $option;
+                   case 'user': 
+                       if($this->website->getCustomer()->getIsLoggedIn()){
+                       return $option;
+                   }
+                   return false;
+                   case 'email':
+                       if(isset($_COOKIE["utm_email_track"]) && $_COOKIE["utm_email_track"] == $option->email){
+                           return $option;
+                       }
+                       return false;
+                     case 'promo':
+                     //  if(isset($_SESSION["promo"]) && $_SESSION["promo"] == $option->promo){
+                      //     return $option;
+                      // }
+                       return false;
+                   default : return false;
+                }
+                
+               
+           // return $option;
         }
+         return false;
            }
 	return false;
 	}
+        public function getPathCategory(){
+           return $this->category->getPath();
+           
+        }
+        public function setPath(){
+            $this->url = $this->_generateUrl($this->id.'-'.$this->model.'-'.$this->brand);
+            $this->save();
+        }
+           
     /**
      * формирование ссылки на карточку товара
      * @return url "/product/id/(id-товара)/(название товра)"
@@ -487,6 +562,7 @@ OR  `ws_articles_options`.`sezon_id` = $this->sezon
             $res['message'] = 'Этот товар еще не активен! Попробуйте заказать пожже.';
             return $res;
             }
+            
     $basket = & $_SESSION['basket'];
 
 	if($flag == 1) { $basket = []; } //если 1, очистить корзину, это быстрый заказ
@@ -523,6 +599,7 @@ OR  `ws_articles_options`.`sezon_id` = $this->sezon
                 }
             
                 $basket[] = [
+                'shop_id' => $this->shop_id,
                 'article_id' => $this->getId(),
                 'price' => ceil($this->getRealPrice()),
                 'count' => 1,//$count,
@@ -664,6 +741,35 @@ OR  `ws_articles_options`.`sezon_id` = $this->sezon
 
     }
     
+     /**
+     * @Shoparticles::getPercNew() - стоимость товара(бонусная система)
+     * 
+     * @param type $all_orders_amount - сумма всех придведущих заказов
+     * @param type $count - количество товара в корзине
+     * @param type $skidka - скидка клиента
+     * @param type $event_skidka - дополнительная скидка
+     * @param type $kupon - промокод
+     * @param type $sum_order - сумма текущего заказа
+     * 
+     * @return array ['option_id','minus','price','option_price','comment','skidka', 'skidka_block']
+     * option_id - ид акции в которой учавствует товар
+     * option_price - стоимость товара по условиям акции
+     * minus - сумма скидки на товар
+     * price - цена товара за которую покупает клиент
+     * comment - коментарий к товару
+     * skidka - процент скидки на данный товар
+     * skidka_block - уведомляет что этот товар заблокироован на скидки
+     */
+    public function getPercNew()
+    {
+        $price = $this->price;
+        $minus = $this->old_price?$this->old_price-$price:0;
+        $comment = '';
+        $skidka = 0;
+       // $skidka_block = $this->skidka_block;
+        return ['price'=>$this->price, 'minus'=>$minus, 'skidka' => $skidka, 'skidka_block' => $this->skidka_block, 'comment'=> $comment];
+    }
+    
     /**
      * @Shoparticles::getPerc() - стоимость товара
      * 
@@ -683,207 +789,90 @@ OR  `ws_articles_options`.`sezon_id` = $this->sezon
      * skidka - процент скидки на данный товар
      * skidka_block - уведомляет что этот товар заблокироован на скидки
      */
-    public function getPerc1($all_orders_amount, $count = 1, $skidka = 0, $event_skidka = 0, $kupon = '', $sum_order = 0)
-    {
-        /*
-        * сумма скидки на товар
-        */
-        $minus = 0.00;
-        /*
-         * стоимость товара в заказе
-         */
-        $price = $this->getPrice()*$count;
-        /**
-         * коментарий к товару
-         */
-	$coment = ''; 
-        /**
-        * скидка на товар %
-        */
-	$pr_skidka = 0;
-        /**
-         * Общий процент
-         */
-        $procent = 0;
-        /**
-         * доп. скидка
-         * @$dop_ck
-         */
-        $dop_ck  = $event_skidka;
-        if($dop_ck > 0){
-             $coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;font-size: 10px;">- '.$dop_ck.'% дополнительная скидка</div>';
-        }
-        
-        if($this->getOptions()){
-                    
-                    switch ($this->getOptions()->type){
-                        
-                        case 'final':
-                         $coment = '<div class="alert alert-success" style="padding: 5px;margin-top: 10px;font-size: 10px;">'.$this->getOptions()->option_text.'</div>';
-                         $mas['option_id'] = $this->getOptions()->id;
-                         $mas['price'] = ceil($this->getPrice() *(1-$this->getOptions()->value/100)*$count);
-                         
-                         if($kupon != ''){
-                             $kod = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$kupon));
-                             if($kod and $kod->all == 1 and $sum_order >= $kod->min_sum){
-                                    $mas['price'] = ceil($mas['price'] * (1-$kod->skidka/100));
-                                    $coment .= '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка '.$kod->skidka.'% по промокоду.</div>';
-					}
-                         }
-                         if($dop_ck > 0){
-                             $mas['price'] = ceil($mas['price'] *(1-$dop_ck/100));
-                              $coment .= '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;font-size: 10px;">- '.$dop_ck.'% дополнительная скидка</div>';
-                         }
-                        
-                         $mas['minus'] = FLOOR($price - $mas['price']);
-                         $mas['option_price'] = ceil($this->getPrice() *(1-$this->getOptions()->value/100));  
-                         $mas['comment'] = $coment;
-                            return $mas;
-                            
-                        case 'dop':
-                            if($sum_order > $this->getOptions()->min_summa){
-                            $mas['option_id'] = $this->getOptions()->id; 
-                            $dop_ck += $this->getOptions()->value;  
-                            $coment .= '<div class="alert alert-success" style="padding: 5px;margin-top: 10px;font-size: 10px;">'.$this->getOptions()->option_text.'</div>';
-                            }
-                            break;
-                    }
-                    
-                }
-	
-            if (/*!$this->getSkidkaBlock() and*/true) {   
-                
-                
-		$kod = false;
-		
-	if($kupon !=''){
-	$kod = wsActiveRecord::useStatic('Other')->findFirst(array("cod"=>$kupon));
-	if($kod->count_order){ // esli est ogranichenie po koll zakazov
-	$k = wsActiveRecord::useStatic('Shoporders')->count(array('customer_id' => $this->ws->getCustomer()->getId(), "kupon LIKE  '".$kod->cod."' ") );
-	if($k){
-	if((int)$k >= (int)$kod->count_order){
-	$kod = false;
-	$coment = '<div class="alert alert-danger" style="padding: 5px;margin-top: 10px;">Вами превышен лимит использования этого промокода.</div>';
-	}
-	}
-
-	}
-	if($kod->category_id and $kod->category_id != $this->category_id){ // kod deistvuet na opredelennu kategoriyu 
-	$kod = false;
-	$coment .= '<div class="alert alert-danger" style="padding: 5px;margin-top: 10px;">На этот товар промокод не распространяется.</div>';
-	}
-	}
-		
-                if((int)$this->getOldPrice() == 0) {
-                    if ($skidka != 0) {
-                      //  echo $price;
-                        $minus = FLOOR((($price / 100) * ($skidka + $dop_ck)));
-                        $price -= $minus;
-			//echo $this->getPrice();
-                        $pr_skidka +=($skidka+$dop_ck);
-			//
-					if($kod and $kod->new_cust_plus == 1){
-						if($sum_order >= $kod->min_sum){
-						$m = FLOOR(($price / 100) * $kod->skidka);
-						$minus += $m;
-						$price -= $m;
-						$coment .= '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка '.$kod->skidka.'% по промокоду.</div>';
-						$pr_skidka += $kod->skidka;
-						//kupon
-						}
-			}
-//
-                    }else{
-                        if ($all_orders_amount <= 700) {
-                            $minus = FLOOR(($price / 100) * $dop_ck);
-                            $price -= $minus;
-                            $pr_skidka += $dop_ck;
-                        } elseif ($all_orders_amount > 700 && $all_orders_amount <= 5000) { //5%
-                            $minus = FLOOR(($price / 100) * (5+$dop_ck));
-                            $price -= $minus;
-                            $pr_skidka += 5+$dop_ck;
-                        } elseif ($all_orders_amount > 5000 && $all_orders_amount <= 12000) { //10%
-                            $minus = FLOOR(($price / 100) * (10+$dop_ck));
-                            $price -= $minus;
-                            $pr_skidka += 10+$dop_ck;
-                        } elseif ($all_orders_amount > 12000) { //15%
-                            $minus = FLOOR(($price / 100) * (15+$dop_ck));
-                            $price -= $minus;
-                            $pr_skidka += 15+$dop_ck;
-                        }
-						//
-					if($kod and $kod->new_sum_plus == 1){
-					if($sum_order >= $kod->min_sum){
-					$m = FLOOR(($price / 100) * $kod->skidka);
-						$minus += $m;
-						$price -= $m;
-						$coment .= '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка '.$kod->skidka.'% по промокоду.</div>';
-						$pr_skidka += $kod->skidka;
-						//kupon
-}
-}
-//
-						
-                    }
-                }else{
-                    if($skidka > $this->getUcenka()){
-                        $minus = FLOOR(($this->getOldPrice() / 100) * $skidka);
-                        
-                        $price =($this->getOldPrice()- $minus)*$count;
-			$pr_skidka +=$skidka;
-                       // $dop_ck += ($skidka-$this->ucenka);
-                    }else{
-			
-                    $minus += FLOOR(($this->getOldPrice() - $this->getPrice()));
-                    }
-                        if($dop_ck){
-					$m = FLOOR((($price / 100) * $dop_ck));
-						$minus += $m;
-						$price -= $m;
-						//$coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка по промокоду.</div>';
-						$pr_skidka += $dop_ck;
-			}
-				
-				//kupon
-			if($kod and $kod->ucenka == 1 and $sum_order >= $kod->min_sum){
-				$m = FLOOR((($price / 100) * $kod->skidka));
-						$minus += $m;
-						$price -= $m;
-						$coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка '.$kod->skidka.'% по промокоду.</div>';
-						$pr_skidka += $kod->skidka;
-						//kupon
-			}
-//
- 
-                }
-
-					if($kod and $kod->all == 1 and $sum_order >= $kod->min_sum){
-						$m = FLOOR((($price / 100) * $kod->skidka));
-						$minus += $m;
-						$price -= $m;
-				$coment .= '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;">На этот товар действует скидка '.$kod->skidka.'% по промокоду.</div>';
-				$pr_skidka += $kod->skidka;
-						//kupon
-					}
-		
-				
-     
-			
-		}else{
-		$mas['skidka_block'] = 1;
-		}
-                
-                
-        $mas['price'] = ceil($price); 
-        $mas['minus'] = FLOOR($minus);
-	$mas['comment'] = $coment;
-	$mas['skidka'] = $pr_skidka;
-		
-        return $mas;
-    }
     
- public function getPerc($all_orders_amount, $count = 1, $skidka = 0, $event_skidka = 0, $kupon = '', $sum_order = 0)
+    public function getPerc($promo = [])
     {
+        $mas = [];
+        
+        $kupon_val =  count($promo)>0?$promo['value']:0;
+        $kupon = count($promo)>0?$promo['cod']:0;
+        $skidka = 0;
+        $price = ceil($kupon_val>0?$this->price*(1-$kupon_val/100):$this->price);
+        $minus = ($this->old_price > 0)?$this->old_price-$price:0;
+        $comment =  $kupon_val?'<div class="alert alert-success" style="padding: 5px;margin-top: 10px;font-size: 10px;">'.$kupon_val.'% промокод: "<b>'.$kupon.'</b>"</div>':'';
+        
+                 
+        if($this->getOptions()){
+                    switch ($this->getOptions()->type){
+                        case 'final':
+                         $mas['option_id'] = $this->getOptions()->id;
+                         $mas['price'] = ceil($this->price *(1-($this->getOptions()->value+$kupon_val)/100));
+                         $mas['minus'] = FLOOR($this->price - $mas['price']);
+                         $mas['option_price'] = $mas['price'];//ceil($this->getPrice() *(1-$this->getOptions()->value/100));  
+                         $mas['comment'] = '<div class="alert alert-success" style="padding: 5px;margin-top: 10px;font-size: 10px;">'.$this->getOptions()->option_text.'</div>';
+                         if($kupon_val){ $mas['comment'] = $mas['comment'].='<div class="alert alert-success" style="padding: 5px;margin-top: 10px;font-size: 10px;">'.$kupon_val.'% промокод: "<b>'.$kupon.'</b>"</div>'; }
+                         $mas['skidka_block'] = 1;
+                        // $mas['kupon'] = $kupon;
+                         
+                        return $mas;  
+                        case 'dop':
+                           // if($sum_order > $this->getOptions()->min_summa){
+                            $mas['option_id'] = $this->getOptions()->id; 
+                            $skidka = $this->getOptions()->value;  
+                            $comment = '<div class="alert alert-success" style="padding: 5px;margin-top: 10px;font-size: 10px;">'.$this->getOptions()->option_text.'</div>';
+                            if($kupon_val){ $comment.='<div class="alert alert-success" style="padding: 5px;margin-top: 10px;font-size: 10px;">'.$kupon_val.'% промокод: "<b>'.$kupon.'</b>"</div>'; }
+                            $price = ceil($this->price *(1-($this->getOptions()->value+$kupon_val)/100));
+                            $minus = FLOOR($this->price - $price);
+                            $mas['option_price'] = $price;
+//  }
+                            break;
+                    } 
+                } 
+        
+        
+        $mas['price'] = $price;
+        $mas['minus'] = $minus;
+        $mas['skidka'] = $skidka;
+        $mas['skidka_block'] = $this->skidka_block;
+        $mas['comment'] = $comment;
+       // $mas['kupon'] = $kupon;
+        return $mas;
+      //  return ['price'=>$this->price, 'minus'=>$minus, 'skidka' => $skidka, 'skidka_block' => $this->skidka_block, 'comment'=> $comment];
+    }
+    /**
+     * @Shoparticles::getPerc() - стоимость товара
+     * 
+     * @param type $all_orders_amount - сумма всех придведущих заказов
+     * @param type $count - количество товара в корзине
+     * @param type $skidka - скидка клиента
+     * @param type $event_skidka - дополнительная скидка
+     * @param type $kupon - промокод
+     * @param type $sum_order - сумма текущего заказа
+     * 
+     * @return array ['option_id','minus','price','option_price','comment','skidka', 'skidka_block']
+     * option_id - ид акции в которой учавствует товар
+     * option_price - стоимость товара по условиям акции
+     * minus - сумма скидки на товар
+     * price - цена товара за которую покупает клиент
+     * comment - коментарий к товару
+     * skidka - процент скидки на данный товар
+     * skidka_block - уведомляет что этот товар заблокироован на скидки
+     */
+ public function getPerc2($all_orders_amount, $count = 1, $skidka = 0, $event_skidka = 0, $kupon = '', $sum_order = 0)
+    {
+     
+    
+     $mas = [];
+     
+      if(date('Y-m-d') > '2020-02-29'){
+        $price = $this->price;
+        $minus = $this->old_price > 0?$this->old_price-$price:0;
+        $comment = '';
+        $skidka = 0;
+       // $skidka_block = $this->skidka_block;
+        return ['price'=>$this->price, 'minus'=>$minus, 'skidka' => $skidka, 'skidka_block' => $this->skidka_block, 'comment'=> $comment];
+         
+     }
         /*
         * сумма скидки на товар
         */
@@ -904,9 +893,26 @@ OR  `ws_articles_options`.`sezon_id` = $this->sezon
          * доп. скидка
          * @$dop_ck
          */
+        if($this->brand_id == 1504){
+            
+	$mas['comment'] = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;font-size: 10px;"><h5 class="alert-heading">Обратите внимание!</h5><p>На этот товар действует <b>только скидка клиента</b>, другие скидки не действуют!</p></div>';
+$mas['skidka'] = $skidka;
+        if($skidka != 0){
+            //$mas['skidka'] = $skidka;
+                     $price = ceil($this->getPrice() *(1-$skidka/100));
+                     $minus = FLOOR($this->getPrice() - $price);
+                }else{
+                    $price = $this->getPrice();
+                    $minus = 0;
+                }
+        $mas['price'] = ceil($price); 
+        $mas['minus'] = $minus;
+        return $mas;
+        }
+        
         $dop_ck  = $event_skidka;
         if($dop_ck > 0){
-             $coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;font-size: 10px;">- '.$dop_ck.'% дополнительная скидка</div>';
+             $coment = '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;font-size: 10px;">- '.$dop_ck.'% дополнительная скидка, скидка единоразовая при отмене или возврате заказа, скидка аннулируется!</div>';
         }
         
         $kod = false;
@@ -932,12 +938,13 @@ OR  `ws_articles_options`.`sezon_id` = $this->sezon
         if($this->getOptions()){
                     switch ($this->getOptions()->type){
                         case 'final':
-                         $coment = '<div class="alert alert-success" style="padding: 5px;margin-top: 10px;font-size: 10px;">'.$this->getOptions()->option_text.'</div>';
+                         $coment .= '<div class="alert alert-success" style="padding: 5px;margin-top: 10px;font-size: 10px;">'.$this->getOptions()->option_text.'</div>';
                          $mas['option_id'] = $this->getOptions()->id;
                         
                          if($dop_ck > 0){
+                             //$coment .= '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;font-size: 10px;">- '.$dop_ck.'% дополнительная скидка</div>';
                              $dop_ck+=$this->getOptions()->value;
-                              $coment .= '<div class="alert alert-info" style="padding: 5px;margin-top: 10px;font-size: 10px;">- '.$dop_ck.'% дополнительная скидка</div>';
+                              
                          }else{
                              $dop_ck = $this->getOptions()->value;
                          }
@@ -949,6 +956,7 @@ OR  `ws_articles_options`.`sezon_id` = $this->sezon
                          $mas['minus'] = FLOOR($this->getPrice() - $mas['price']);
                          $mas['option_price'] = $mas['price'];//ceil($this->getPrice() *(1-$this->getOptions()->value/100));  
                          $mas['comment'] = $coment;
+                         $mas['skidka_block'] = 1;
                             return $mas;
                             
                         case 'dop':
@@ -1081,14 +1089,11 @@ OR  `ws_articles_options`.`sezon_id` = $this->sezon
         $cache = Registry::get('cache');
 	$cache->setEnabled(true);
         $view = Registry::get('View');
-        $cache_name = 'one_product_item_' .$this->getId().'_REDUA_site_'.Registry::get('lang');
+        $cache_name = 'one_product_item_' .$this->id.'_REDUA_site_'.Registry::get('lang');
         $article_item = $cache->load($cache_name);
         if (!$article_item || $rewrite) {
             $view->article = $this;
-           // $label = false;
-           // if($this->getLabelId() != 0){ $label = $this->label->getImage();}
-           // $view->label = $label;
-            $article_item = $view->render('/cache/small_item_block_temp.tpl.php');//$view->render('/cache/small_item_block.tpl.php');
+           $article_item = $view->render('/cache/small_item_block_temp.tpl.php');//$view->render('/cache/small_item_block.tpl.php');
             $cache->save($article_item, $cache_name, [$cache_name], false);
        }
         return $article_item;
@@ -1111,7 +1116,7 @@ OR  `ws_articles_options`.`sezon_id` = $this->sezon
           //  if($this->getLabelId() != 0){ $label = $this->label->getImage();}
            // $view->label = $label;
             $article_item = $view->render('/cache/item_block.tpl.php');
-           // $cache->save($article_item, $cache_name, [$cache_name], false);
+            $cache->save($article_item, $cache_name, [$cache_name], false);
        }
        
         return $article_item;
@@ -1142,7 +1147,7 @@ OR  `ws_articles_options`.`sezon_id` = $this->sezon
         return true;
     }
     /**
-     * Сколько раз заказівался этот товар
+     * Сколько раз заказывался этот товар
      * @return type
      */
     public function ArtycleBuyCount()

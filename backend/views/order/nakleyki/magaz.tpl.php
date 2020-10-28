@@ -1,6 +1,6 @@
 <html>
     <head>
-        <link rel="stylesheet" type="text/css" href="<?=$this->files;?>views/order/nakleyki/nakleyka.css?v=1.0">
+        <link rel="stylesheet" type="text/css" href="<?=$this->files;?>views/order/nakleyki/nakleyka.css?v=1.1">
     </head>
 <body onload="window.print()">
 <?php

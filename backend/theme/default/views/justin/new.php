@@ -49,25 +49,12 @@
         </div>
         <div class="col-sm-12 col-lg-6">
         <div class="row m-auto" >
-           <!-- <div class="col-2">
-                <div class="form-group">
-                    <label class="form-control-label">Город: <span class="tx-danger">*</span></label>
-                    <select class="form-control select2-show-search" name="city" id="city" data-placeholder="Выберите город" required tabindex="-1" >
-                        <option label="Выберите город"></option>
-                        <?php
-                        foreach ($this->list as $c) { ?>
-                        <option value="<?=$c->uuid?>"><?=$c->name_ru?></option>
-                        <?php }
-                        ?>
-                    </select>
-                </div>
-            </div>-->
            
             <div class="col-6">
                 <div class="form-group">
                     <label class="form-control-label">Вес посылки: <span class="tx-danger">*</span></label>
                     <input type="text" required class="form-control" value="" name="weight">
-                    <input type="text" hidden="true" value="0" name="volume">
+                    <input type="text" hidden="true" value=1 name="volume">
                 </div>
             </div>
             <div class="col-6">
@@ -83,7 +70,7 @@
             <div class="col-6">
                 <div class="form-group">
                     <label class="form-control-label">Оценка: <span class="tx-danger">*</span></label>
-                    <input type="text" required class="form-control" value="<?=$this->order->getAmount()?>" name="declared_cost">
+                    <input type="text" required class="form-control" value="<?=$this->order->FirstPriceOrder()?>" name="declared_cost">
                     <input type="text" hidden="true" value="0" name="delivery_amount">
                     <input type="text" hidden="true" value="0" name="redelivery_amount"> 
                 </div>
@@ -97,9 +84,17 @@
                     <input type="text" hidden="true" value="<?php if($this->order->liqpay_status_id == 3){ echo 0;}else{ echo 1;}?>" name="redelivery_payment_payer">
                     
                     <input type="text" hidden="true" value="false" name="delivery_payment_is_required">
-                    <input type="text" hidden="true" value="0" name="delivery_payment_payer">
+                    <!--<input type="text" hidden="true" value="0" name="delivery_payment_payer">-->
                      <input type="text" hidden="true" value="<?php if($this->order->liqpay_status_id == 3) { echo 'false';}else{ echo 'true';}?>" name="order_payment_is_required">
                 </div>
+              <div class="form-group">
+                 <label class="form-control-label">Платит за доставку:</label>
+                <div>
+            <label class="rdiobox"><input name="delivery_payment_payer" checked type="radio" value="0"><span>Отправитель</span></label>
+            <label class="rdiobox"><input name="delivery_payment_payer"  type="radio" value="1"><span>Получатель</span></label>
+            
+            </div>
+            </div>
             </div>
              <div class="col-12">
                 <div class="form-group">
@@ -156,17 +151,22 @@
         $('form').submit(function() {
      var theForm = $(this);
      console.log(theForm.serializeArray());
+    // return false;
       $.ajax({
          type: 'POST',
          url: '/admin/justin/new/add/1/',
-        // dataType: 'json',
+         dataType: 'json',
          data: theForm.serialize(),
          beforeSend: function(){
              $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
          },
          success: function(data) {
-             $('.card-footer').html(data);
-             window.location = data;
+             console.log(data);
+              $('.card-footer').html(data.text);
+             if(data.result){ 
+                  window.location = data.text;
+             }
+              $('#foo').detach();
          },
          error: function(e){
              $('#foo').detach();

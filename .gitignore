@@ -1,7 +1,6 @@
 *.xls
 *.xlsx
 .htaccess
-Telegram/
 _intro/
 blog1/
 files/
@@ -19,3 +18,4 @@ html/
 Naked.png
 1x1.png
 .DS_Store
+session.txt

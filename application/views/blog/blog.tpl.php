@@ -7,7 +7,65 @@ $desctop = false;
 }
  //echo $this->getCurMenu()->getPageBody();
  ?>
+<style>
+    .blog .card .maska{
+       background-color: rgba(238, 0, 0, 0.98);
+   position: absolute;
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: all 0.15s ease-in 0s;
+    }
+    .blog .card .maska:hover{
+       opacity: 0.4;
+       
+    }
+    
+    .time_name::after {
+    position: relative;
+    display: block;
+    height: 2px;
+    top: -28px;
+    content: "";
+    background: rgb(224, 13, 53);
+    margin-left: 0;
+    width: 10%;
+    left: -5px;
+    }
+    
+  /*  .blog .card-img-top:hover{
+     
+            -webkit-filter: hue-rotate(50deg);
+    }*/
+</style>
+<div class="container">
+    <div class="row blog">
+       <?php foreach ($this->blog as $value) { ?>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 p-4">
+            <a href="<?=$value->getPath()?>">
+        <div class="card">
+    <img class="card-img-top" src="/storage<?=$value->getImage()?>" alt="Card image cap">
+    <div class="maska"></div>
+    <div class="card-body" style="position: absolute;
+         padding-bottom: 0;
+    bottom: -30px;
+    background: white;
+    width: 96%;
+    right: -25px;">
+      <h5 class="card-title mb-4"><?=$value->getPostName();?></h5>
+      <p class="time_name mb-2">
+      <span style="color: darkgrey;font-size: 12px;margin-left: 1%;margin-right: 1%;"><?=date('d.m.Y', strtotime($value->getUtime()))?></span>|
+			<span style="color: darkgrey;font-size: 12px;margin-left: 1%;margin-right: 1%;"><?=$value->getAutor();?></span>
+                        </p>
+    </div>
+  </div>
+                </a>
+        </div>
+       <?php } ?>
+    </div>
 <div class="row mx-auto">
+    <!--
 <div class="col-xl-2 col-lg-2  d-none d-lg-block d-xl-block p-2">
     <div class="card">
         <div class="card-header w-100">
@@ -32,9 +90,9 @@ $desctop = false;
 				</ul>
         </div>
                                 </div>
-</div>
-<div class="col-md-12 col-xl-8 col-lg-8 p-2">
-     <div class="card">
+</div>-->
+<div class="col-md-12 col-xl-12 col-lg-12 p-0">
+   <!--  <div class="card">
          <div class="card-header w-100">
     <h6 class="title text-uppercase font-weight-bold text-center mb-0">
         <div class="btn-group" role="group" aria-label="Basic example">
@@ -45,8 +103,9 @@ $desctop = false;
 </div>
     </h6>
   </div>
-         <div class="card-body">
-    <div class="row m-auto">
+     </div>-->
+   <!--
+    <div class="row m-auto d-none">
 		<style>
 		.media p{width:100%;}
 		p img{display:none;}
@@ -56,17 +115,18 @@ $desctop = false;
                 }
 		</style> 
 <?php
+if(false){
 $i = 0;
 foreach ($this->blog as $value) { ?>
-                <div class="col-md-12 <?php if($i != 0){ echo ' revealator-zoomin revealator-duration5  revealator-once';}?> ">
+                <div class="col-md-12 card mb-4">
 		<div class="row my-4">
                     <?php if($i % 2 === 0){ ?> 
-                        <div class="col-md-6 media text-right">
+                        <div class="col-md-5 media text-right">
 			<a href="<?=$value->getPath()?>">
 			<img src="/storage<?=$value->getImage()?>">
 			</a>
 			</div>
-			<div class="col-md-6">
+			<div class="col-md-7">
                             <div>
                         <span style="color: darkgrey;font-size: 12px;margin-left: 1%;margin-right: 1%;"><?=$value->getUtime();?></span>|
 			<span style="color: darkgrey;font-size: 12px;margin-left: 1%;margin-right: 1%;"><?=$value->getAutor();?></span>
@@ -80,7 +140,7 @@ foreach ($this->blog as $value) { ?>
                         </div>
 			</div>
                         <?php }else{ ?>
-                    <div class="col-md-6">
+                    <div class="col-md-7">
                         <div>
                         <span style="color: darkgrey;font-size: 12px;margin-left: 1%;margin-right: 1%;"><?=$value->getUtime();?></span>|
 			<span style="color: darkgrey;font-size: 12px;margin-left: 1%;margin-right: 1%;"><?=$value->getAutor();?></span>
@@ -94,7 +154,7 @@ foreach ($this->blog as $value) { ?>
 			</a>
                         </div>
 			</div>
-                        <div class="col-md-6 media text-right">
+                        <div class="col-md-5 media text-right">
 			<a href="<?=$value->getPath()?>">
 			<img src="/storage<?=$value->getImage()?>">
 			</a>
@@ -104,11 +164,11 @@ foreach ($this->blog as $value) { ?>
 			
 			</div>
 </div>					
-			<?php $i++;	} ?>
+			<?php $i++;	} } ?>
+</div>-->
+         
 </div>
-         </div>
-    </div>
-</div>
+    <!--
 <div class="col-lg-2 col-xl-2 d-none d-lg-block d-xl-block  text-center">
     <div class="card">
          <div class="card-header w-100">
@@ -126,7 +186,7 @@ foreach ($this->blog as $value) { ?>
         </div>
         </div>
     
-	</div>
+	</div>-->
 </div>
 
 			<?php 
@@ -199,6 +259,7 @@ echo '<li class="page-skip"><a href="?page='.$i.'" style="text-decoration: none;
 <?php
 }
 ?>
+    </div>
 <script>
 (function(d, s, id) {
                 var js, fjs = d.getElementsByTagName(s)[0];

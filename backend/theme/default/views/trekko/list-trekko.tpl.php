@@ -32,6 +32,7 @@
         ?>
              <tr class="<?=$row?>">
 		<td>
+                    <?=$count?>
                      <label class="ckbox">
                          <input type="checkbox" class="order-item cheker" id="<?=$or->id?>" name="item_<?=$or->id?>"/><span></span>
                      </label>
@@ -46,7 +47,7 @@
                 <td><?=$or->date_create?></td>
 		<td><?=$or->delivery_date?></td>
 		<td><?=$or->delivery_interval?></td>
-		<td><?=$or->getPaymentMethod()->getName()?></td>
+		<td><?php  echo $or->payment_method->name; echo $or->isPay();?></td>
             </tr>
         <?php } 
 		}
@@ -140,9 +141,8 @@ function chekAll() {
                             $('#foo').detach();
 			///$('#save').attr('value', 'Создать');
 			},
-			error: function(e, b) {
+			error: function(e) {
 			console.log(e);
-                        console.log(b);
 			alert('Что-то пошло нетак! Заказ не добавлен, внесите изменения и попробуйте снова!');
                         return false;
 			}

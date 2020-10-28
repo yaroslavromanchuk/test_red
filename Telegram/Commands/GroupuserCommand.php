@@ -18,6 +18,7 @@ use Longman\TelegramBot\Entities\InlineKeyboard;
 use Longman\TelegramBot\Conversation;
 use Longman\TelegramBot\Request;
 
+
 /**
  * User "/keyboard" command
  *
@@ -78,62 +79,60 @@ class GroupuserCommand extends UserCommand
 	- г. Борисполь, ул. Киевский Шлях, 67. ТЦ "PARK TOWN", 2 этаж.'. PHP_EOL .'Тел: (044) 220-15-05, (063) 746-53-59
 		';
      $data['reply_markup'] = ['keyboard' => [['Интернет Магазин','Розничные Магазины']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
-	 return Request::sendMessage($data);
         break;
 	case "Интернет Магазин":
 		$data['text'] = 'Что Вас интересует?';
-		$data['reply_markup'] = ['keyboard' => [['Сайт','Пункты самовывоза'],['Выбрать раздел']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
+		$data['reply_markup'] = ['keyboard' => [['Сайт','Пункт самовывоза'],['Выбрать раздел']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
 		/*$data['text'] = 'Жми на ссылку для перехода на сайт?';
         $data['reply_markup'] = new InlineKeyboard([['text' => 'RED.UA', 'url' => 'https://www.red.ua'],'resize_keyboard' => true, 'one_time_keyboard' => true, 'selective' => false]);*/
-		return Request::sendMessage($data);
         break;
 		//--Раздел
 		//Подразделение
     case "Сайт":
 		$data['text'] = 'Что смотрим?';
         $data['reply_markup'] = ['keyboard' => [['Контакты','Отзывы','BLOG'],['Товары','Акции','Соц.сети'],['Выбрать подразделение']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
-		return Request::sendMessage($data);
         break;
-	case "Пункты самовывоза":
-		$data['text'] = 'Какой пункт самовывоза интересует?';
-        $data['reply_markup'] = ['keyboard' => [['ул. Строителей, 40','проспект Победы, 98/2'],['Выбрать подразделение']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
-			return Request::sendMessage($data);
+	case "Пункт самовывоза":
+            $data['text'] = 'Режим работы: Пн-Вс: 11:00- 21:00'. PHP_EOL .'Телефоны: (068) 605-04-60, (050) 611-82-13';
+		//$data['text'] = 'Какой пункт самовывоза интересует?';
+       // $data['reply_markup'] = ['keyboard' => [['ул. Строителей, 40','проспект Победы, 98/2'],['Выбрать подразделение']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
+			
        break;
 	   //--Подразделение
 	   //контакты пунктов самовывоза
 	   case "ул. Строителей, 40":
 		$data['text'] = 'Режим работы: Пн-Вс: 10:00- 20:00'. PHP_EOL .'Телефоны: (063) 010-34-53, (098) 634-26-82';
        // $data['reply_markup'] = ['keyboard' => [['ул. Строителей, 40','проспект Победы, 98/2'],['Выбрать подразделение']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
-			return Request::sendMessage($data);
+			
        break;
 	   case "проспект Победы, 98/2":
 		$data['text'] = 'Режим работы: Пн-Вс: 11:00- 21:00'. PHP_EOL .'Телефоны: (068) 605-04-60, (050) 611-82-13';
        // $data['reply_markup'] = ['keyboard' => [['ул. Строителей, 40','проспект Победы, 98/2'],['Выбрать подразделение']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
-			return Request::sendMessage($data);
+			
        break;
 		//--контакты пунктов самовывоза
 		//обратные переходы
 	case "Выбрать раздел":
 		$data['text'] = 'Что Вас интересует?';
          $data['reply_markup'] = ['keyboard' => [['Интернет Магазин','Розничные Магазины'],['Выбрать раздел']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
-		   return Request::sendMessage($data);
+		   
         break;
 		case "Выбрать подразделение":
 		$data['text'] = 'Что Вас интересует?';
-        $data['reply_markup'] = ['keyboard' => [['Сайт','Пункты самовывоза'],['Выбрать раздел']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
-		   return Request::sendMessage($data);
+        $data['reply_markup'] = ['keyboard' => [['Сайт','Пункт самовывоза'],['Выбрать раздел']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
+		   
         break;
 		case "Выход с категорий":
 		$data['text'] = 'Что смотрим?';
        $data['reply_markup'] = ['keyboard' => [['Контакты','Отзывы','BLOG'],['Товары','Акции','Соц.сети'],['Выбрать подразделение']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
-		   return Request::sendMessage($data);
+		   
         break;
 		//--обратные переходы
 		//меню категорий сайта
 		case "Контакты":
 		$data['text'] = 'Режим работы: Пн-Пт: 09:00-18:00, Сб-Вс: Выходные;'. PHP_EOL .'Телефон: (044) 224-40-00 (063) 809-35-29 (067) 406-90-80;'. PHP_EOL .'Email: market@red.ua';
         $data['reply_markup'] = ['keyboard' => [['Контакты','Отзывы','BLOG'],['Товары','Акции','Соц.сети'],['Выбрать подразделение']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
-		return Request::sendMessage($data);
+		
         break;
 		case "Отзывы":
 		$data['parse_mode'] = 'HTML';
@@ -143,7 +142,7 @@ class GroupuserCommand extends UserCommand
 		$data['text'] .= $item->pubDate.' : '.$item->name.PHP_EOL.$item->review.PHP_EOL;
 		}
        // $data['reply_markup'] = ['keyboard' => [['Контакты','Отзывы','BLOG'],['Товары','Акции','Соц.сети'],['Выбрать подразделение']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
-		return Request::sendMessage($data);
+		
         break;
 		case "BLOG":
 		$data['parse_mode'] = 'HTML';
@@ -160,7 +159,7 @@ class GroupuserCommand extends UserCommand
 		$data['parse_mode'] = 'HTML';
 		$data['text'] = 'Выбери категорию';
         $data['reply_markup'] = ['keyboard' => [['Новинки','Обувь','Аксессуары'],['Женское','Мужское','Детское'],['Выход с категорий']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
-		return Request::sendMessage($data);
+		
         break;
 		case "Акции":
 		$data['text'] = 'Для получения статуса заказа, отправте сообщение в формате: "111111 статус" где "111111" - номер заказа.';
@@ -173,86 +172,89 @@ class GroupuserCommand extends UserCommand
 		'resize_keyboard' => true,
 		'one_time_keyboard' => true,
 		'selective' => false]);*/
-		return Request::sendMessage($data);
+		
 		break;
-		case "статус1":
+	case "статус1":
 		$html=simplexml_load_file('https://www.red.ua/statusorder?id='.$st[0]);
 		$data['text'] = $html->status;
-		return Request::sendMessage($data);
+		
 		break;
-		case "Соц.сети":
+	case "Соц.сети":
 		$data['parse_mode'] = 'HTML';
 		$data['text'] = '<a href="https://www.facebook.com/lifestyle.red.ua/">www.facebook.com</a>';
-		$z = Request::sendMessage($data);
+		Request::sendMessage($data);
 		$data['text'] = '<a href="https://www.instagram.com/red_ua/">www.instagram.com</a>';
-		$x = Request::sendMessage($data);
+		Request::sendMessage($data);
 		$data['text'] = '<a href="https://www.youtube.com/user/SmartRedShopping">www.youtube.com</a>';
-		$c = Request::sendMessage($data);
+		Request::sendMessage($data);
 		break;
 		//--меню категорий сайта
 		//категории товаров
-		case "Новинки":
+	case "Новинки":
 		$data['parse_mode'] = 'HTML';
-		$html=simplexml_load_file('https://www.red.ua/articlelist/?id=106');
-        foreach ($html->offers->offer as $item) {
-		$data['text'] = '<a href="'.$item->url.'">Купить</a>';
-		//$imag['photo'] = Request::encodeFile($item->picture);
-		//$imag['caption'] = $item->title.' ( '.$item->vendor.' ) '.$item->price.' грн.';
-		//$b =  Request::sendPhoto($imag);
-		$с = Request::sendMessage($data);
-        	}
+            $html = $this->get_url(array('send'=>'tovar', 'type'=>106));
+         foreach ($html->array as $a){
+            $data['text'] = $a;
+            Request::sendMessage($data);
+          }
+          // $data['text'] = $html->result;
         break;
 		case "Обувь":
 		$data['parse_mode'] = 'HTML';
-		$html=simplexml_load_file('https://www.red.ua/articlelist/?id=33');
-        foreach ($html->offers->offer as $item) {
-		$data['text'] = '<a href="'.$item->url.'">Купить</a>';
-		$с = Request::sendMessage($data);
-        	}
+                    $html = $this->get_url(array('send'=>'tovar', 'type'=>33));
+                  //  $data['text'] = $html->result;
+          foreach ($html->array as $a){
+            $data['text'] = $a;
+           Request::sendMessage($data);
+           }
         break;
 		case "Аксессуары":
 		$data['parse_mode'] = 'HTML';
-		$html=simplexml_load_file('https://www.red.ua/articlelist/?id=54');
-        foreach ($html->offers->offer as $item) {
-		$data['text'] = '<a href="'.$item->url.'">Купить</a>';
-		$с = Request::sendMessage($data);
-        	}
+                      $html = $this->get_url(array('send'=>'tovar', 'type'=>54));
+          foreach ($html->array as $a){
+            $data['text'] = $a;
+            Request::sendMessage($data);
+           }
+
         break;
 		case "Женское":
 		$data['parse_mode'] = 'HTML';
-		$html=simplexml_load_file('https://www.red.ua/articlelist/?id=14');
-        foreach ($html->offers->offer as $item) {
-		$data['text'] = '<a href="'.$item->url.'">Купить</a>';
-		$с = Request::sendMessage($data);
-        	}
+            $html = $this->get_url(array('send'=>'tovar', 'type'=>14));
+          foreach ($html->array as $a){
+            $data['text'] = $a;
+            Request::sendMessage($data);
+           }
+
         break;
 		case "Мужское":
 		$data['parse_mode'] = 'HTML';
-		$html=simplexml_load_file('https://www.red.ua/articlelist/?id=15');
-        foreach ($html->offers->offer as $item) {
-		$data['text'] = '<a href="'.$item->url.'">Купить</a>';
-		$с = Request::sendMessage($data);
-        	}
+                    $html = $this->get_url(array('send'=>'tovar', 'type'=>15));
+          foreach ($html->array as $a){
+            $data['text'] = $a;
+            Request::sendMessage($data);
+           }
+		
         break;
 		case "Детское":
 		$data['parse_mode'] = 'HTML';
-		$html=simplexml_load_file('https://www.red.ua/articlelist/?id=59');
-        foreach ($html->offers->offer as $item) {
-		$data['text'] = '<a href="'.$item->url.'">Купить</a>';
-		$с = Request::sendMessage($data);
-        	}
+                     $html = $this->get_url(array('send'=>'tovar', 'type'=>59));
+          foreach ($html->array as $a){
+            $data['text'] = $a;
+            Request::sendMessage($data);
+           }
         break;
 		//--категории товаров
 	case "Главная":
 		$data['text'] = 'Что будем делать дальше?';
        $data['reply_markup'] = ['keyboard' => [['Интернет Магазин','Розничные Магазины']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
-	   return Request::sendMessage($data);
         break;
     default:
 		$data['text'] = 'Я не очень умный бот(((. Я понимаю только команды с панели ниже.';
        //$data['reply_markup'] = ['keyboard' => [['Интернет Магазин','Розничные Магазины']], 'resize_keyboard' => true, 'one_time_keyboard' => true, 'selective' => false ];
-		return Request::sendMessage($data);
+		
 }
+$data['parse_mode'] = 'HTML';
+return Request::sendMessage($data);
 	
 
     }

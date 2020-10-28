@@ -16,11 +16,11 @@
 	<tr>
 		<td>Бренд:</td>
 		<td>
-		<select name="brand" class="form-control select2-show-search"  aria-hidden="true" tabindex="-1" >
+		<select name="brand_id" class="form-control select2-show-search"  aria-hidden="true" tabindex="-1" >
 			<option value="">Виберите бренд</option>
 			<?php foreach (wsActiveRecord::useStatic('Brand')->findAll() as $b) {
 				if ($b->getName() != '') { ?>
-			<option value="<?=$b->getName()?>" <?php if ($_GET['brand'] == $b->getName()) echo 'selected="selected"';?>><?=$b->getName()?></option>
+			<option value="<?=$b->id?>" <?php if (isset($_GET['brand_id']) && $_GET['brand_id'] == $b->id) echo 'selected="selected"';?>><?=$b->getName()?></option>
 			<?php } } ?>
 		</select>
 		</td>
@@ -44,7 +44,7 @@
 		<td>
 		<?php
 		$mas = array();
-		foreach ($this->categories as $cat) {$mas[$cat->getId()] = $cat->getRoutez();}
+		foreach ($this->categories as $cat) { $mas[$cat->getId()] = $cat->getRoutez();}
 			asort($mas);
 			?>
 	<select name="id" id="select" class="form-control input select2-show-search" style="max-width: 180px;">
@@ -289,7 +289,7 @@ if(strripos($value, 'SALE') === FALSE){
 			<i class="icon ion-clock bleak tx-30 pd-5 history" alt="История" data-id="<?=$article->getId()?>" data-placement="left" title="Смотреть историю"  data-tooltip="tooltip" ></i>
             </td>
             <td>
-<img class="img_pre" rel="#imgiyem<?=$article->getId(); ?>"src="<?=$article->getImagePath('small_basket'); ?>" alt="<?=htmlspecialchars($article->getTitle()); ?>"/>
+<img class="img_pre" rel="#imgiyem<?=$article->getId(); ?>"src="<?=$article->getImagePath('small_basket'); ?>" style="max-width: 36px" alt="<?=htmlspecialchars($article->getTitle()); ?>"/>
                 <div class="simple_overlay" id="imgiyem<?=$article->getId(); ?>" style="position: fixed;top: 20%;left: 45%;z-index:100">
                     <img src="<?=$article->getImagePath('detail'); ?>" alt="<?=htmlspecialchars($article->getTitle()); ?>"/>
                 </div><br>

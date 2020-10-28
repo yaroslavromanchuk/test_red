@@ -7,7 +7,9 @@
 <p>Рассылка будет отправлена <?php $cc = wsActiveRecord::useStatic('Customer')->count(array('time_zone_id' => 5)); echo $cc;?> пользователям.</p>
 <input type="hidden" id="all_subject" name="all_subject" value="<?=$cc?>"/> 
 <div class="alert alert-success saved" role="alert"></div>
-
+<div class="alert alert-danger errors" role="alert">
+    
+</div>
 
 <div class="mailing_start" style="display: none;">
 	<img src="/img/loading_trac.png" width="20" alt="loading"/> Рассылка стартовала, подождите...<br/>
@@ -54,7 +56,7 @@
   
 <?php if ($this->errors) { ?>
     <div id="conf-error-message">
-        <p><img src="<?=SITE_URL;?>/img/icons/remove-small.png" class="iconnew" alt=""/>Возникли ошибки при
+        <p><img src="/img/icons/remove-small.png" class="iconnew" alt=""/>Возникли ошибки при
             отправке:</p>
         <ul>
             <?php foreach ($this->errors as $error) { ?>
@@ -106,24 +108,32 @@ var new_data = data + '&from=' + send_phone + '&count=' + count + '&go='+go;
         }
 		
 		function sendMailTest(url, data, test) {
-var new_data = data + '&test='+ test;
-			surl = url+"&"+new_data;
+var new_data = data + '&test='+test;
 //			console.log(surl);
             $.ajax({
-                url: surl,
+                url: url,
                 type: 'POST',
                 dataType: 'json',
                 data: new_data,
                 success: function (res) {
-				if(res.status == 'send'){ $('.saved').html('SMS на номер '+res.ms.phone+' - '+res.ms.status); $('.saved').show(); }
+		if(res.status == 'send' && res.sms){
+                    $('.saved').html('SMS на номер '+res.ms.phone+' - '+res.ms.status); $('.saved').show();
+                }else{
+                    var t = '';
+                    for(var key in res.ms[0]){
+                       t += res.ms[0][key]+'<br>';
+                    }
+                    $('.errors').html(t);
+                }
 				console.log(res);
 				//alert(res.ms);
 				
-				},
-				error: function (e) {
+		},
+		error: function (e) {
 				console.log(e);
-				}
+		}
             });
+            return false;
         }
 		
 		
@@ -133,7 +143,7 @@ var new_data = data + '&test='+ test;
             var data = $('#mail_form').serialize();
            sendMailTest(url, data, 1);
         });
-		$('#send_balance').click(function () {
+	$('#send_balance').click(function () {
             var url = '/admin/smsmailing/';
             var data = '?&balance=1';
            $.ajax({

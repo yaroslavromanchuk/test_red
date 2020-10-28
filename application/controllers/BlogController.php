@@ -46,21 +46,21 @@ public function init() {
             }
 		}else{
                     
-                    $this->cur_menu->setName($this->trans->get('blog_name'));
+        $this->cur_menu->setName($this->trans->get('blog_name'));
         $this->cur_menu->setPageTitle($this->trans->get('blog_title'));
         $this->cur_menu->setMetatagDescription($this->trans->get('blog_description')); 
                   //  $this->cur_menu->url = '';
                     
               
                     
-		$onPage = 10;
+		$onPage = 21;
 		$page = 1;
             if ((int)$this->get->page > 0) {
-                $this->cur_menu->nofollow = 1;
+                $this->cur_menu->noindex = 1;
                 $page = (int)$this->get->page;
             }
             if(isset($_GET['utm_source'])){
-                $this->cur_menu->nofollow = 1;
+                $this->cur_menu->noindex = 1;
             }
             
 	$this->view->onpage = $onPage;
@@ -105,7 +105,7 @@ public function init() {
         $onPage = 10;
 		$page = 1;
             if ((int)$this->get->page > 0) {
-                $this->cur_menu->nofollow = 1;
+                $this->cur_menu->noindex = 1;
                 $page = (int)$this->get->page;
             }
 	$this->view->onpage = $onPage;

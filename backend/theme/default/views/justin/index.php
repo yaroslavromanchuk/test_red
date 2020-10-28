@@ -1,16 +1,35 @@
 <div class="card pd-20 mb-2">
     <div class="card-body">
+        <div class="card-title">Загрузка реестров</div>
+ <form action="" method="POST"  enctype="multipart/form-data">
+<div class="form-layout">
+            <div class="row mg-b-25">
+		<div class="col-lg-6 mg-t-40 mg-lg-t-0">
+              <label class="custom-file">
+                 <input type="text" hidden="true" name="metod" value="load_excel">
+                <input type="file" name="load_excel_registr" class="custom-file-input">
+                <span class="custom-file-control custom-file-control-primary"></span>
+              </label>
+            </div>
+                    <button class="btn btn-info mg-r-5" name="close_article" type="submit">Загрузить</button>
+            </div>
+</div>
+</form> 
+</div>
+    </div>
+<div class="card pd-20 mb-2">
+    <div class="card-body">
         <div class="card-title">Просмотр оформленых посылок по датам.</div>
   <form name="list_order" method="POST" class="form-inline">
 
   <div class="form-group mx-sm-3 mb-2">
-    <label for="data" class="sr-only">Password</label>
+    <label for="data" class="sr-only"></label>
     <input type="date" class="form-control" name="list_orders"  >
   </div>
   <button type="submit" class="btn btn-primary mb-2">Смотреть</button>
       </form>
 </div>
-    <div class="card-footer">
+    <div class="card-footer list_order_day">
         
     </div>
     </div>
@@ -24,7 +43,7 @@
        <i class="icon ion-ios-print" data-tooltip="tooltip" data-original-title="Создать реестр выбраных посылок">Создать реестр</i>
    </button>
             <button class="btn bd bg-white tx-gray-600 reestr" style="display: none;" onclick="StatusToVproceseDostavki(); return false;" type="button">
-       <i class="icon ion-ios-print" data-tooltip="tooltip" data-original-title="Сменить статус на 'В процесе доставки'">Сменить статус</i>
+       <i class="icon ion-ios-print" data-tooltip="tooltip" data-original-title="Сменить статус на 'Отправлен'">Сменить статус на "Отправлен"</i>
    </button> 
             </div>
     </div>
@@ -45,9 +64,15 @@
 	</tr>
             </thead>
             <tbody>  
-    <?php foreach ($this->orders as $or){ ?>
+    <?php
+    $i = 0;
+    foreach ($this->orders as $or){
+        $i++;
+        ?>
                <tr >
-        <td><?php if($or->nakladna){ ?>
+        <td>
+            <?=$i?>
+            <?php if($or->nakladna){ ?>
         <label class="ckbox">
             <input type="checkbox" class="order-item cheker" onclick="chek_l();" id="<?=$or->id?>"  name="<?=$or->nakladna?>"><span></span>
         </label>
@@ -57,9 +82,7 @@
           //$uuid = JustinRequestDeliveryInfo::getDelivery($or->nakladna);
             ?>
             <div class="btn-group" role="group" aria-label="Basic example">
-           <!-- <button class="btn bd bg-white tx-gray-600 btn-sm" onclick="window.open('https://my.novaposhta.ua/orders/printDocument/orders/<?=$uuid?>/type/pdf/apiKey/920af0b399119755cbca360907f4fa60', '_blank'); return false;" type="button">
-                <i class="icon ion-ios-print-outline" data-tooltip="tooltip" data-original-title="Печать ТТН"></i><span>A4</span>
-   </button>-->
+           
     <button class="btn bd bg-white tx-gray-600 btn-sm" onclick="stickers(<?=$or->id?>);" type="button">
                 <i class="icon ion-ios-print-outline" data-tooltip="tooltip" data-original-title="Печать ТТН 100*100"></i><span></span>
    </button>
@@ -72,13 +95,14 @@
             </div>
          <?php   echo $or->id; 
          
-        }else{
-            ?><a href="/admin/justin/new/id/<?=$or->id?>/" target="blank"><?=$or->id?></a><?php } ?></td>
+        }else{ ?>
+            <a href="/admin/justin/new/id/<?=$or->id?>/" target="blank"><?=$or->id?></a>
+        <?php } ?></td>
         <td><?=$or->stat->name?></td>
 	<td><?=$or->date_create?></td>
 	<td><?php if($or->nakladna) { echo $or->nakladna;}?></td>
 	<td><?=$or->delivery_type->name?></td>
-        <td><?php  echo $or->payment_method->name; if($or->payment_method_id == 6 or $or->payment_method_id == 4){ if($or->liqpay_status_id == 3){ echo '<span style="color: #00da00;font-weight: bold;"> (оплачен)</span>';}else{ echo '<span style="color:red;    font-weight: bold;"> (не оплачен)</span>';} } ?></td>
+        <td><?php  echo $or->payment_method->name; echo $or->isPay();?></td>
 	<td><?=$or->sklad?></td>
 	</tr>    
     <?php } ?>
@@ -91,7 +115,7 @@
 <?php }?>
 <script>
     $(document).ready(function(){
-            $('form').submit(function() {
+            $('form[name="list_order"]').submit(function() {
      var theForm = $(this);
      console.log(theForm.serializeArray());
       $.ajax({
@@ -103,14 +127,14 @@
              $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
          },
          success: function(data) {
-             $('.card-footer').html(data);
+             $('.list_order_day').html(data);
              $('#foo').detach();
          },
          error: function(e){
              $('#foo').detach();
              
              console.log(e);
-              $('.card-footer').html(e);
+              $('.list_order_day').html(e);
              
          }
      });
@@ -250,3 +274,67 @@
         }
 	
 </script>
+<?php if(/*$this->user->id == 8005*/true){ ?>
+<div class="card pd-20 mb-2">
+    <div class="card-body">
+        <div class="card-title">Настройка</div>
+        <div class="body-content"></div>
+</div>
+    <div class="card-footer">
+        <button onclick="return Department();" class="btn btn-primary">Обновить отделения</button>
+       <!-- <button onclick="return Cities();" class="btn btn-primary">Обновить города</button>-->
+    </div>
+    </div>
+<script>
+    
+    function Cities(){
+    $.ajax({
+         type: 'POST',
+         url: '/admin/justin/',
+       //  dataType: 'json',
+         data: { refresh_cities : 1},
+         beforeSend: function(){
+             $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+         },
+         success: function(data) {
+             console.log(data);
+             $('.body-content').html(data);
+             $('#foo').detach();
+         },
+         error: function(e){
+             $('#foo').detach();
+             
+             console.log(e);
+                     //$('.card-footer').html(e);
+             
+         }
+     });
+     return false;
+}
+function Department(){
+    $.ajax({
+         type: 'POST',
+         url: '/admin/justin/',
+        // dataType: 'json',
+         data: { refresh_department : 1},
+         beforeSend: function(){
+             $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+         },
+         success: function(data) {
+             console.log(data);
+             $('.body-content').html(data);
+             $('#foo').detach();
+         },
+         error: function(e){
+             $('#foo').detach();
+             
+             console.log(e);
+                     //$('.card-footer').html(e);
+             
+         }
+     });
+     return false;
+}
+</script>
+<?php } ?>
+

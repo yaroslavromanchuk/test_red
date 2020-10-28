@@ -24,30 +24,28 @@
 </div>
 <p id="show_phones" style="display: none;font-size: 16px;font-weight: bold;">Список всех номеров на которые уже разослано:</p>
 <div id="send_phones" style="display: none; width: 960px; max-height: 120px; overflow-y: scroll;border: 1px dashed #C00000;padding: 5px 10px;"></div>
-
-<form method="POST" id="mail_form" action="<?=$this->path?>smsmailing/" target="_blank" class="form-horizontal " style="display:none">
+</div>
+<div class="panel-body">
 <div class="form-group">
-    <label for="sms" class="control-label  col-lg-2">Текст сообщения:</label>
-    <div class="col-lg-6">
-	<input name="subject" type="text" style="max-width: 550px;" placeholder="Введите сообщение" class="form-control input" id="sms" maxlength="67" value="<?=$this->post->subject; ?>"/>
-    </div>
+    <label for="type" class="ct-110 control-label">Рассылка:</label>
+    <div class="col-xs-8">
+        <select name="type" id="type" class="form-control input select2 " onChange=" return select_type(this);" data-placeholder="Выберите тип рассылки" tabindex="-1" aria-hidden="true">
+            <option label="Все"></option>
+                        <option value="order">Заказы</option>
+                      <option value="customer">Клиенты</option>
+                  </select>
+				  </div>
   </div>
-  <div class="form-group">
-    <label for="phone" class="control-label col-lg-2">Тест SMS:</label>
-    <div class="col-lg-6">
-	<input name="test_phone" type="text" readonly class="form-control input" id="phone" value="<?=$this->user->phone1;?>"/>
-	<input name="send_test" type="button" class="btn btn-small btn-default" id="send_test" value="Отправить"/>
-	
-	</div>
-	</div>
-	<div class="form-group">
-	<label for="phone" class="control-label col-lg-2">Все готово?</label>
-    <div class="col-lg-6">
-	<input type="button" id="send_all" class="btn btn-small btn-default" name="send_full" id="savepage" value="Отправить рассылку"/>
-	</div>
-	</div>
-	
-</form>
+  </div>
+ <div class="panel-body">
+ <div class="panel panel-default">
+
+<div class="panel-body" id="insert_form">
+
+</div>
+</div>
+</div>
+<div class="panel-body">
 <div class="form-group">
 	<label for="phone" class="control-label col-lg-2">Баланс:</label>
     <div class="col-lg-6">
@@ -73,6 +71,32 @@
 
 
 <script>
+function select_type(e){
+	//console.log(e);
+	var type = e.value;
+
+           $.ajax({
+                url: '/admin/smsmailing/',
+                type: 'POST',
+                dataType: 'json',
+                data: {type: e.value},
+                success: function (res) {
+				if(res.result){
+					
+					$('#insert_form').html(res.message); 
+					
+					}
+				console.log(res);
+				//alert(res.ms);
+				},
+				error: function (e) {
+				console.log(e);
+				}
+            });
+			return false;
+	
+	console.log(type);
+}
     $(document).ready(function () { 
 
         var count_phone = $('#all_subject').val();

@@ -14,10 +14,10 @@ echo "Всего заказов - ".$count = $this->getSubscribers()->count();
         <th>Действия</th>
         <th class="c-projecttitle">Имя</th>
         <th class="c-projecttitle">Е-мейл</th>
-		<th class="c-projecttitle">Дата</th>
+		<!--<th class="c-projecttitle">Дата</th>-->
 		<th class="c-projecttitle">Сума заказов</th>
 		<th class="c-projecttitle">Кол.</th>
-        <th class="c-clientname">Доставки</th>
+       <!-- <th class="c-clientname">Доставки</th>-->
     </tr>
     <?php
 	
@@ -26,14 +26,15 @@ echo "Всего заказов - ".$count = $this->getSubscribers()->count();
         $row = ($row == 'row2') ? 'row1' : 'row2';
         ?>
         <tr class="<?php echo $row;?>">
-            <td class="kolomicon"><a href="<?php echo $this->path;?>user/edit/id/<?php echo $sub->getCustomerId();?>/"><img
-                    src="<?php echo SITE_URL;?>/img/icons/edit-small.png" alt="Редактирование"/></a></td>
+            <td class="kolomicon"><a href="<?=$this->path?>user/edit/id/<?=$sub->getCustomerId()?>/"><img
+                    src="/img/icons/edit-small.png" alt="Редактирование"/></a></td>
             <td class="c-projecttitle"><?php echo $sub->getName();?></td>
             <td class="c-projecttitle"><?php echo $sub->getEmail();?></td>
-			<td class="c-projecttitle"><?php echo $sub->getDateCreate();?></td>
+			<!--<td class="c-projecttitle"><?php //echo $sub->getDateCreate();?></td>-->
 			<td class="c-projecttitle"><?php echo Shoparticles::showPrice($sub->getSumm()); ?></td>
             <td class="c-projecttitle"><?php echo $sub->getCount();?></td>
-			<td class="c-projecttitle"><?php if ($sub->getDeliveryTypeId()== 4) { echo 'Укрпочта'; } elseif($sub->getDeliveryTypeId()== 8) { echo 'Новая почта';} else{echo 'НП(Наложка)';} ?></td>
+		<!--	<td class="c-projecttitle"><?php// if ($sub->getDeliveryTypeId()== 4) { echo 'Укрпочта'; } elseif($sub->getDeliveryTypeId()== 8) { echo 'Новая почта';} else{echo 'НП(Наложка)';} ?></td>
+                        -->
         </tr>
         <?php
     }

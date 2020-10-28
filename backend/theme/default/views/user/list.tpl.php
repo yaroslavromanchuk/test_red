@@ -131,6 +131,7 @@
                     if ($_GET['sorting'] == 'c.deposit' && $_GET['direction'] == 'DESC') echo 'class="active"';?>/></a>
             </div>
         </th>
+        <th>История<br>писем</th>
     </tr>
 <?php
     $row = 'row1';
@@ -139,9 +140,8 @@
 ?>
         <tr class="<?php echo $row; ?>">
             <td class="kolomicon"><a href="<?php echo $this->path; ?>user/edit/id/<?php echo $sub->getId(); ?>/"><img
-                        src="<?php echo SITE_URL; ?>/img/icons/edit-small.png" alt="Редактирование"/></a>
-				<a href="https://www.red.ua/account/login/&j25k17l2517=&password=&login=<?php echo $sub->getEmail();
-                if ($sub->getEmail() != $sub->getUsername()) echo ' /<br>' . $sub->getUsername(); ?>">Login</a>
+                        src="/img/icons/edit-small.png" alt="Редактирование"/></a>
+                <a href="https://www.red.ua/account/login/j25k17l2517/1/username/<?=$sub->username?>/"  target="_blank">Login</a>
 			</td>
             <td class="c-projecttitle"><?php echo $sub->getFullname(); ?> <?php if ($sub->getCustomerStatusId() == 2 or $sub->bloсk_np_n == 1 or $sub->block_cur == 1 or $sub->block_m == 1) {
                     echo '<span style="color: red; font-weight: bold; cursor: pointer" onclick="$(this).parent().find(\'.ban_info\').slideToggle();">Бан</span>';
@@ -165,7 +165,7 @@
             <td class="c-projecttitle"><?php echo $sub->getOrderCount(); ?></td>
             <td class="c-projecttitle"><?php echo $sub->isUserTerms() ? date('d-m-Y', strtotime($sub->isUserTerms())) : 'Нет'; ?></td>
             <td class="c-projecttitle"><?php echo $sub->getDeposit(); ?></td>
-
+            <td><i class="icon ion-email tx-30 pd-5  " alt="письмо" onclick="return SearchMail1(<?=$sub->id?>);" data-id="<?=$sub->id?>" data-placement="left" title="" data-tooltip="tooltip" data-original-title="История отправленных писем пользователю. По умолчанию 30 последних!"></i></td>
         </tr>
     <?php
     }
@@ -184,4 +184,49 @@
 	  $('#cler').hide();
 	  });
    });
+   function SearchMail1(id){
+       $.ajax({
+			url: '/admin/nowamail/',
+			type: 'POST',
+			dataType: 'json',
+			data: {id: id, metod:'gel_email_customer'},
+			success: function (res) {
+				console.log(res);
+				fopen('История отправлленых писем пользователю ID:'+id, res.message, '<button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true">Закрыть</button>');
+                },
+				error: function(e){
+				console.log(e);
+				}
+		});
+       
+     //  var form ='<div class="form-group"><label for="recipient-name" class="col-form-label">Тема:</label><input type="text" class="form-control" id="email_subject"></div><div class="form-group"><label for="message-text" class="col-form-label">Сообщение:</label><textarea class="form-control" id="mesageemail"></textarea></div>';
+//var footer = '<button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true">Закрыть</button><button class="btn btn-primary" onclick="return go_email('+id+');" >Отправить</button>';
+
+//fopen('История отправлленых писем пользователю ID:'+id, form);
+		return false;
+   }
+  
+   function LoadGetForm(file){
+        $.ajax({
+			url: '/admin/nowamail/',
+			type: 'POST',
+			dataType: 'json',
+			data: {file: file, metod:'gel_email_customer_load_form'},
+                        beforeSend: function(){
+                            $("#result_load_form").html('<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div><br><div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div></div>');
+                    //$('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).html('body');
+                },
+			success: function (res) {
+                            $("#result_load_form").html(res);
+				//console.log(res);
+				//fopen('История отправлленых писем пользователю ID:'+id, res.message, '<button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true">Закрыть</button>');
+                },
+				error: function(e){
+				console.log(e);
+				}
+		});
+       return false;
+    
+}
+ 
 </script>

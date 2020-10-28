@@ -1,13 +1,18 @@
 <?php
     define('APP_DIR', dirname(__FILE__) . '/application');
     define('WEBSHOP_PATH', 'Framework2.0/');
-    $old_dr = $_SERVER['DOCUMENT_ROOT'];
+    $old_dr = dirname(__FILE__);// $_SERVER['DOCUMENT_ROOT'];
     //if(!$_SERVER['DOCUMENT_ROOT'])
     $_SERVER['DOCUMENT_ROOT'] = dirname(__FILE__);
-    define('INPATH', $_SERVER['DOCUMENT_ROOT'] . '/');
+    define('INPATH', $old_dr . '/');
+   // if(@$_SERVER['REMOTE_ADDR']){
+     //    define('FORME', in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '127.0.0.2', '91.225.165.62']));
+  //  }else{
+        define('FORME', false);
+   // }
+    
+   
 	//define('FORME', false);
-   // define('FORME', (in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '127.0.0.2', '91.225.165.62'))));
-	//define('FORME', true);
     //define('LOCAL', $_SERVER['REMOTE_ADDR'] == '127.0.0.1');
 	
     $sql_host = "localhost";
@@ -17,62 +22,56 @@
 
     //get current server
     //------------------------------------------
-    $server = str_replace('www.', '', $_SERVER["HTTP_HOST"]);
-    $url = str_replace($old_dr, '', $_SERVER['DOCUMENT_ROOT']);
+    //$server =  str_replace('www.', '', $_SERVER["HTTP_HOST"]);
+    //$url = str_replace($old_dr, '', $_SERVER['DOCUMENT_ROOT']);
     //define('SITE_URL', 'http://' . $server . $url );
     define('SITE_URL', '');
 
-    $config_values = array('default_language' => 'ru', 'is_live' => 1, 'site_id' => '1');
+    $config_values = ['default_language' => 'ru', 'is_live' => 1, 'site_id' => '1'];
 	
-	$site = array(
-	'from_name' => 'RED.UA', // from (��) ���
-	'from_email' => 'market@red.ua', // from (��) email �����
-	'smtp_mode' => 'disabled', // enabled or disabled (������� ��� ��������)
+	$site = [
+	'from_name' => 'RED.UA', //
+	'from_email' => 'market@red.ua', // from 
+	'smtp_mode' => 'enabled', // enabled or disabled 
 	'smtp_host' => 'mail.red.org.ua',
 	'smtp_port' => '25',
 	'smtp_username' => null,
 	'smtp_password' => null,
 	'smtp_secure' => "tls" // ssl or tls 
-	);
-	$pop3 = array(
+	];
+	$pop3 = [
 	'tval' => 10,
 	'do_debug' =>'1',
 	'host' => 'mail.red.ua',
 	'port' => '993',
 	'username' => 'php@red.ua',
 	'password' => 'KpbEJWMBr0'
-	);
-
-	
-	
-	
+	];
     // define additional include paths
     set_include_path(
-        $_SERVER['DOCUMENT_ROOT']
-            //. PATH_SEPARATOR
-            //.'../'
+            $old_dr
             . PATH_SEPARATOR
-            . $_SERVER['DOCUMENT_ROOT'] . '/Framework2.0'
+            . $old_dr . '/Framework2.0'
             . PATH_SEPARATOR
-            . $_SERVER['DOCUMENT_ROOT'] . '/Framework2.0/libraries'
+            . $old_dr . '/Framework2.0/libraries'
             . PATH_SEPARATOR
-            . $_SERVER['DOCUMENT_ROOT'] . '/Framework2.0/models'
+            . $old_dr . '/Framework2.0/models'
             . PATH_SEPARATOR
-            . $_SERVER['DOCUMENT_ROOT'] . '/Framework2.0/packages'
+            . $old_dr . '/Framework2.0/packages'
             . PATH_SEPARATOR
-            . $_SERVER['DOCUMENT_ROOT'] . '/application/packages'
+            . $old_dr . '/application/packages'
             . PATH_SEPARATOR
-            . $_SERVER['DOCUMENT_ROOT'] . '/application/libraries'
+            . $old_dr . '/application/libraries'
             . PATH_SEPARATOR
-            . $_SERVER['DOCUMENT_ROOT'] . '/application/models'
+            . $old_dr . '/application/models'
             . PATH_SEPARATOR
-            . $_SERVER['DOCUMENT_ROOT'] . '/application/controllers'
-			. PATH_SEPARATOR
-            . $_SERVER['DOCUMENT_ROOT'] . '/application/languages'
-			. PATH_SEPARATOR
-            . $_SERVER['DOCUMENT_ROOT'] . '/backend/models'
-			. PATH_SEPARATOR
-            . $_SERVER['DOCUMENT_ROOT'] . '/backend/controllers'
+            . $old_dr . '/application/controllers'
+            . PATH_SEPARATOR
+            . $old_dr . '/application/languages'
+            . PATH_SEPARATOR
+            . $old_dr . '/backend/models'
+            . PATH_SEPARATOR
+            . $old_dr . '/backend/controllers'
     //. PATH_SEPARATOR
     //. get_include_path()
     );
@@ -85,7 +84,6 @@
         'block_type_class' => 'wsBlockType',
         'block_position_class' => 'wsBlockPosition',
         'brand_class' => 'wsBrand',
-        'shopping_cart_item_class' => 'wsShoppingCartItem',
         'country_class' => 'wsCountry',
         'customer_class' => 'Customer',
         'customer_address_class' => 'wsCustomerAddress',
@@ -98,7 +96,8 @@
         'product_category_class' => 'wsProductCategory',
         'product_property_class' => 'wsProductProperty',
         'product_property_value_class' => 'wsProductPropertyValue',
-        'shopping_cart_class' => 'wsShoppingCart',
+        'shopping_cart_class' => 'Cart',
+        'shopping_cart_item_class' => 'CartItem',
         'supplier_class' => 'wsSupplier',
         'price_class' => 'wsPrice',
         'favorite_list_class' => 'wsFavoriteList',
@@ -145,9 +144,6 @@
         'shop_order_remarks_class' => 'Shoporderremarks'
     );
 
-    foreach ($model_substitute as $key => $value){
-    define(strtoupper($key), $value);
-    
-    }
+    foreach ($model_substitute as $key => $value){ define(strtoupper($key), $value); }
     define('DB_SUFFIX', '');
     define('PDO', 0);

@@ -80,7 +80,7 @@
 
 
         $to_pay_perc = $at->getProcent($now_orders, $skidka);
-        $price = $at->getPerc($now_orders, $article['count'], $skidka, $event_skidka);
+        $price = $at->getPerc();
         $to_pay += $price['price'];
         $to_pay_minus += $price['minus'];
 

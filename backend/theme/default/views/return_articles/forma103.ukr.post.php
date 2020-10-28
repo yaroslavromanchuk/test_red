@@ -74,13 +74,13 @@ foreach ($this->order as $r) {
 $adr ='';
 $adr_m = [];
 $ord->index?$adr_m[] = $ord->index:'';
-$ord->city?$adr_m[] = '  г. '.$ord->city:'';
-$ord->street?$adr_m[] ='  ул. '.$ord->street:'';
-if($ord->house) { $adr_m[] = '  д. '.$ord->house;}
+$ord->city?$adr_m[] = '  м. '.$ord->city:'';
+$ord->street?$adr_m[] ='  '.$ord->street:'';
+if($ord->house) { $adr_m[] = '  буд. '.$ord->house;}
 if($ord->flat) { $adr_m[] ='  кв. '.$ord->flat;}
 
 $or[$ord->customer_id]['adr'] = implode(",", $adr_m);//$adr;
-$or[$ord->customer_id]['name'] = $ord->getName().' '.$ord->getMiddleName();
+$or[$ord->customer_id]['name'] = $ord->getFullName();
 $or[$ord->customer_id]['phone'] = $ord->getTelephone();
         }
         

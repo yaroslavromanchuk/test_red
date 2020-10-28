@@ -6,11 +6,12 @@ $desctop = true;
 $desctop = false;
 }
  ?>
+<!--
 <script>
 $(function(){
 $(".zxz_post p img").each(function() {
 var img = this;
-$(this).replaceWith('<a href="'+img.src+'" class="im"><img src="'+img.src+'" width="50%"></a>');
+$(this).replaceWith('<a href="'+img.src+'" class="im"><img src="'+img.src+'" width="100%"></a>');
 });	
 $(".zxz_post p a.im").lightBox({
   //  overlayBgColor: '#FFF',
@@ -29,7 +30,8 @@ $(".zxz_post p a.im").lightBox({
    });
 });
 
-</script>
+</script>-->
+<div class="container">
 <div class="row mx-0">
     <?php 
 		$d = date("Y-m-d H:i:s");
@@ -58,7 +60,7 @@ $(".zxz_post p a.im").lightBox({
                                 </div>
 </div>
     
-<div class="col-md-12 col-lg-8 col-xl-8 ">
+<div class="col-md-12 col-lg-10 col-xl-10 ">
    <div class="card">
          <div class="card-header w-100">
     <h6 class="title text-uppercase font-weight-bold text-center mb-0">
@@ -88,7 +90,8 @@ $(".zxz_post p a.im").lightBox({
        </div>
     
     
-</div>			
+</div>	
+    <!--
 <div class="col-lg-2 col-xl-2 d-none d-lg-block d-xl-block">
     <div class="card">
          <div class="card-header w-100">
@@ -104,7 +107,8 @@ $(".zxz_post p a.im").lightBox({
 	<iframe id="fr" style="overflow: hidden; height: 100px; width: 198px; border: 0pt none;" src="https://www.youtube.com/subscribe_widget?p=SmartRedShopping"  scrolling="no" frameborder="0"></iframe>
 
         </div>
-        </div></div>			
+        </div></div>	-->		
+</div>
 </div>
 <script>
 (function(d, s, id) {

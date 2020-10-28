@@ -4,13 +4,17 @@ class HomeController extends controllerAbstract {
     
       public function init() {
         parent::init();
+        $this->view->critical_css = [
+            '/css/bs/css/bootstrap.min.css',
+            '/css/home/home.css',
+        ];
         $this->view->css = [
             '/js/slider-fhd/slick.css',
             //'/js/slider-fhd/slick-theme.css?v=1',
-            '/css/bs/css/bootstrap.min.css',
+            //'/css/bs/css/bootstrap.min.css',
             '/css/style_new.css',
             //'/css/new.css?v=1.3',
-            '/css/home/home.css',
+            //'/css/home/home.css',
           //  '/css/stores/fm.revealator.jquery.min.css'
         ];
         $this->view->scripts = [
@@ -42,8 +46,13 @@ class HomeController extends controllerAbstract {
 		
         $this->view->block6 = wsActiveRecord::useStatic('HomeBlock')->findAll(array("block = 6 and date <= '$today' and ( '$today' <= exitdate or exitdate = '0000-00-00 00:00:00') "), array(), array(0, (int)Config::findByCode('baner_to_home')->getValue()));
 
+        if(Registry::get('device') == 'computer'){
+            $lim = 3;
+        }else{
+            $lim = 6;
+        }
 		//blog
-		$this->view->blog = wsActiveRecord::useStatic('Blog')->findAll(array('public = 1 and ctime < "'.date("Y-m-d H:i:s").'" '), array(), array(0, 3));
+		$this->view->blog = wsActiveRecord::useStatic('Blog')->findAll(array('public = 1 and ctime < "'.date("Y-m-d H:i:s").'" '), array(), array(0, $lim));
 		//blog
 		
 		
@@ -53,10 +62,8 @@ class HomeController extends controllerAbstract {
 					WHERE ws_articles.active = 'y' and ws_articles.stock > 2 and ws_articles.old_price = 0 and ws_articles.status = 3  ORDER BY ws_articles.views DESC   LIMIT 0, 18";			
 		$top = wsActiveRecord::useStatic('Shoparticles')->findByQuery($sql);
                 */
-		if(/*$top->count() >= 10 and */false) {
-		//$this->view->topproduct = $top;
-		}else{
-                    $query = "SELECT * FROM  ws_articles
+		
+               /*     $query = "SELECT * FROM  ws_articles
 					WHERE stock > 2
 					AND active = 'y'
 					and ws_articles.status = 3
@@ -65,12 +72,12 @@ class HomeController extends controllerAbstract {
 					AND dop_cat_id NOT IN (54, 55, 163,84,315,314,249,306,297,307,296)
 					ORDER BY RAND ()  LIMIT 0, 10";
 			$this->view->topproduct = wsActiveRecord::useStatic('Shoparticles')->findByQuery($query);
-		}
+		*/
 		
 		
-	//topprodukt
+	//topprodukt 
 	//oneprodukt	
-		$query = "SELECT * FROM  ws_articles
+	/*	$query = "SELECT * FROM  ws_articles
 					WHERE stock like '1'
 					AND active = 'y'
 					and ws_articles.status = 3
@@ -78,6 +85,7 @@ class HomeController extends controllerAbstract {
 					AND dop_cat_id NOT IN (54, 55, 163,84,315,314,249,306,297,307,296)
 					ORDER BY RAND () DESC LIMIT 0, 20";
 		$this->view->oneproduct = wsActiveRecord::useStatic('Shoparticles')->findByQuery($query);
+                */
 	//oneprodukt
 	
 		//$this->view->news = News::findActiveNews(1);

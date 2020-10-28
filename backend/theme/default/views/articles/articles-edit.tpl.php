@@ -26,9 +26,26 @@
             <section >
               <p>Укажите параметры товара!</p>
 			  <div class="row mg-b-25">
-              <div class="form-group  col-sm-12 col-md-6 col-lg-4 col-xl-4">
+              <div class=" col-sm-12 col-md-6 col-lg-4 col-xl-4">
+                  <div class="form-group ">
                   <label class="form-control-label">Категория: <span class="tx-danger">*</span></label>
                   <select class="form-control select2-show-search" name="category" id="category" data-placeholder="Выберите категорию"  required>
+                    <option label="Выберите категорию"></option>
+					<?php if($this->categories){
+					$mas = array();
+					foreach($this->categories as $cat){ $mas[$cat->getId()] = $cat->getRoutez();}
+					asort($mas);
+				foreach($mas as $kay => $value){
+				if(strripos($value, 'SALE') === FALSE){  ?>
+             <option value="<?=$kay?>" <?=(!empty($_COOKIE['category']) && $_COOKIE['category'] == $kay)?'selected':''?> ><?=$value?></option>
+			 <?php }
+					}
+					}?>
+                  </select>
+                  </div>
+                  <div class="form-group ">
+                      <label class="form-control-label">Дополнительная Категория: </label>
+                  <select class="form-control select2-show-search" name="dop_cat_id" id="dop_cat_id" data-placeholder="Выберите доп. категорию"  >
                     <option label="Выберите категорию"></option>
 					<?php if($this->categories){
 					$mas = array();
@@ -41,8 +58,29 @@
 					}
 					}?>
                   </select>
+                  </div>
                 </div><!-- form-group -->
 					<script>
+                                            
+                                          $(function(){
+                                                if($( "#category" ).val()){
+                                                    $.ajax({
+            url: '/admin/articles-add/',
+            dataType: 'json',
+            type: 'POST',
+            data: "&method=opisanie&category=" + $( "#category" ).val(),
+            success:function(data){
+			if(data.status == 'ok'){
+			$('.text_opis').html(data.result);
+			console.log(data);
+			}
+            },
+			error:function(data){
+			console.log(data);
+			}
+        });
+                                                }
+                                            });
 	$( "#category" ).change(function() {
 $.ajax({
             url: '/admin/articles-add/',
@@ -61,7 +99,17 @@ $.ajax({
         });
 });
 </script>
-<div class="form-group  col-sm-12 col-md-6 col-lg-2 col-xl-2">
+<div class="col-sm-12 col-md-6 col-lg-2 col-xl-2">
+    <div class="form-group  ">
+                  <label class="form-control-label">Продавец: <span class="tx-danger">*</span></label>
+                  <select class="form-control select2" name="shop_id" id="shop_id" data-placeholder="Выберите продавца"  required>
+                    <option label="Выберите продавца"></option>
+					<?php foreach(wsActiveRecord::useStatic('Shop')->findAll(['active'=>1]) as $p){ ?>
+					<option value="<?=$p->getId()?>" <?php if(@$this->article->getShopId() and $p->getId() == $this->article->getShopId()){ echo 'selected'; }?> ><?=$p->getName()?></option>
+					<?php } ?>
+                  </select>
+                </div>
+<div class="form-group">
                   <label class="form-control-label">Бренд: <span class="tx-danger">*</span></label>
                   <select class="form-control select2-show-search" name="brand" id="brand" data-placeholder="Выберите бренд"  required>
                     <option label="Выберите бренд"></option>
@@ -74,7 +122,9 @@ $.ajax({
 					}?>
                   </select>
                 </div><!-- form-group -->
-		<div class="form-group  col-sm-12 col-md-6 col-lg-2 col-xl-2">
+		
+</div>
+<div class="form-group  col-md-6 col-lg-2 col-xl-2">
                   <label class="form-control-label">Пол: <span class="tx-danger">*</span></label>
                   <select class="form-control select2" name="size_type" id="size_type" data-placeholder="Выберите пол"  required>
                     <option label="Выберите пол"></option>
@@ -93,10 +143,9 @@ $.ajax({
 <div class="form-group  col-sm-12 col-md-6 col-lg-2 col-xl-2">
                   <label class="form-control-label">Модель:</label>
                   <select class="form-control select2" name="model_id" id="model_id" data-placeholder="Выберите модель">
-                    <option label="Выберите модель"></option>
                      <option>Без модели</option>
-					<?php foreach(Shoparticlesmodel::find('Shoparticlesmodel') as $s){ ?>
-					<option value="<?=$s->getId()?>" <?php if($this->article->model_id and $s->getId() == $this->article->model_id){ echo 'selected'; }?> ><?=$s->name?></option>
+					<?php foreach(wsActiveRecord::useStatic('Shoparticlesmodel')->findAll(['active'=>1]) as $s){ ?>
+                     <option value="<?=$s->getId()?>" <?php if($this->article->model_id and $s->getId() == $this->article->model_id){ echo 'selected'; }elseif(!empty($_COOKIE['model_id']) && $_COOKIE['model_id'] == $s->getId()){ echo 'selected';}?> ><?=$s->name?></option>
 					<?php } ?>
                   </select>
                 </div>
@@ -281,16 +330,18 @@ arr_op.push(span.innerHTML+': '+val);
               if(currentIndex === 0) {
                 var category = $('#category').parsley();
                 var brand = $('#brand').parsley();
+                var shop = $('#shop_id').parsley();
 				var size_type = $('#size_type').parsley();
 				var sezon = $('#sezon').parsley();
                               //  var model = $('#model_id').parsley();
-                if(category.isValid()  && size_type.isValid() && sezon.isValid() && brand.isValid()) {
+                if(category.isValid()  && size_type.isValid() && sezon.isValid() && brand.isValid() && shop.isValid()) {
 				return true;
                } else {
                  category.validate();
                  brand.validate();
 				 size_type.validate();
 				 sezon.validate();
+                                 shop.validate();
                                 
                }
               }
@@ -321,6 +372,7 @@ arr_op.push(span.innerHTML+': '+val);
                 if(long_t.isValid()) {
 				$(".list_save").html('');
 				$(".list_save").append('<li>Категория: '+$("#category option:selected").text()+'</li>');
+                                if($("#dop_cat_id option:selected").text()){ $(".list_save").append('<li>Доп. Категория: '+$("#dop_cat_id option:selected").text()+'</li>'); }
 					$(".list_save").append('<li>Пол: '+$("#size_type option:selected").text()+'</li>');
 					$(".list_save").append('<li>Сезон: '+$("#sezon option:selected").text()+'</li>');
 				$(".list_save").append('<li>Соответствие: '+$("#soot_rozmer option:selected").text()+'</li>');

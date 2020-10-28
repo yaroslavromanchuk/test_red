@@ -49,8 +49,8 @@ if ($this->saved) { ?>
     <div class="form-group">
     <label class="ct-150 control-label">ID/login:</label>
     <div class="col-xs-6">
-	<span><?=$this->sub->id.'/'.$this->sub->getUsername()?></span>
-         <?php if ($this->user->isDeveloperAdmin() and $this->sub->getCustomerTypeId() < 2) { ?>
+	<span><?=$this->sub->id.'/'.$this->sub->getUsername()?></span> 
+         <?php if (($this->user->isDeveloperAdmin() || $this->admin_rights[400]['view']) and $this->sub->getCustomerTypeId() < 2) { ?>
         <a href="/admin/adminedit/edit/<?=(int)$this->sub->getId()?>?new_admin=1" class="btn btn-sm btn-danger"
                    onclick="return confirm('Внимание, при переходе по этой ссылке пользователь станет администратором.')">В админы</a>
          <?php } ?>
@@ -386,7 +386,7 @@ if ($this->saved) { ?>
                     <label class="ct-150 control-label">Блок Justin:</label>
                     <div class="col-xs-1">
                         <label class="ckbox">
-                            <input type="checkbox"  name="bloсk_justin" id='bloсk_justin'  value="1" <?php if ($this->sub->bloсk_justin == 1) { ?>checked="checked"<?php } ?>>
+                            <input type="checkbox"  name="bloсk_justin" id="bloсk_justin"  value="1" <?=($this->sub->bloсk_justin == 1)?"checked":""?> >
                                 <span></span>
                         </label>
                         
@@ -411,6 +411,8 @@ if ($this->saved) { ?>
 <?php  //$orders = wsActiveRecord::useStatic('Shoporders')->findAll(array('customer_id' => $this->sub->getId()));
 $orders = wsActiveRecord::useStatic('Shoporders')->findByQuery('SELECT * FROM ws_orders WHERE customer_id ='.$this->sub->getId().' ORDER BY `ws_orders`.`id` DESC LIMIT 10');
 if ($orders->count() > 0) { ?>
+
+<a href="/admin/user/new_order/id/<?=$this->sub->getId()?>/" class="btn  btn-primary" target="_blank">Создать новый заказ</a>
 <!--
 <p> Оплатить заказы: </p>
 <input type="input" class="pay_orders_sum" name="pay_orders_sum" value="0"/> грн.
@@ -435,7 +437,7 @@ if ($orders->count() > 0) { ?>
     <?php foreach ($orders as $order) { ?>
     <tr>
         <td>
-            <a href="/admin/shop-orders/edit/id/<?=$order->getId()?>">
+            <a href="/admin/shop-orders/edit/id/<?=$order->getId()?>/">
                 <img width="24" height="24" alt="Редактировать" src="/img/icons/edit-small.png">
             </a>
         </td>

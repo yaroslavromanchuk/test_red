@@ -90,9 +90,13 @@ if($this->all_order){ ?>
           $uuid =   Shopordersmeestexpres::getUuid($or->meest_id)->ref;
             ?>
             <div class="btn-group" role="group" aria-label="Basic example">
-            <button class="btn bd bg-white tx-gray-600 btn-sm" onclick="window.open('https://my.novaposhta.ua/orders/printDocument/orders/<?=$uuid?>/type/html/apiKey/1e594a002b9860276775916cdc07c9a6', '_blank'); return false;" type="button">
-       <i class="icon ion-ios-print-outline" data-tooltip="tooltip" data-original-title="Печать ТТН"></i>
-   </button><button class="btn bd bg-white tx-gray-600 btn-sm" onclick="deleteDoc('<?=$uuid?>', <?=$or->id?>);" type="button">
+            <button class="btn bd bg-white tx-gray-600 btn-sm" onclick="window.open('https://my.novaposhta.ua/orders/printDocument/orders/<?=$uuid?>/type/pdf/apiKey/1e594a002b9860276775916cdc07c9a6', '_blank'); return false;" type="button">
+                <i class="icon ion-ios-print-outline" data-tooltip="tooltip" data-original-title="Печать ТТН"></i><span>A4</span>
+   </button>
+    <button class="btn bd bg-white tx-gray-600 btn-sm" onclick="window.open('https://my.novaposhta.ua/orders/printMarking100x100/orders/<?=$uuid?>/type/pdf/apiKey/1e594a002b9860276775916cdc07c9a6', '_blank'); return false;" type="button">
+                <i class="icon ion-ios-print-outline" data-tooltip="tooltip" data-original-title="Печать ТТН 100*100"></i><span>100/100</span>
+   </button>
+    <button class="btn bd bg-white tx-gray-600 btn-sm" onclick="deleteDoc('<?=$uuid?>', <?=$or->id?>);" type="button">
        <i class="icon icon ion-ios-trash-outline" data-tooltip="tooltip" data-original-title="Удалить ТТН"></i>
    </button>
             </div>
@@ -147,8 +151,9 @@ function deleteDoc(e, r){
                     jQuery.each($('.order-item:checked'), function () {
                          mas.push($(this).attr('name'));
                     });
-                    window.location = '/admin/allstatus/id/' + mas.join(',') + '/status/6';
-
+                    console.log(mas);
+                    window.location = '/admin/allstatus/id/' + mas.join(',') + '/status/6/';
+//return false;
                 }else{
                       $('<div/>', {  class: 'alert alert-danger alert-dismissible fade show m-2', html: '<strong>Ошибка!</strong>  Вы не выбрали заказы для смены статуса.<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' }).appendTo('div.card-header');
                 }

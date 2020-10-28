@@ -12,6 +12,11 @@ class Shoparticlesoption extends wsActiveRecord
 					'class'=>'Shoparticlesoptions',
 					'field_foreign'=>'option_id'
                                         ),
+                    'log' => array(
+                                        'type'=>'hasMany',
+					'class'=>'OptionLog',
+					'field_foreign'=>'option_id'
+                                        ),
 					);
 	}
 
@@ -35,20 +40,20 @@ class Shoparticlesoption extends wsActiveRecord
 	{
             // $dat = date("Y-m-d", strtotime('-1 days'));
             $dat = date('Y-m-d');
-		return Shoparticlesoption::find('Shoparticlesoption', ["status"=>1, "`start` <= '$dat'", "`end` >= '$dat'"], ['id'=>'DESC'], $limit);
+                return wsActiveRecord::useStatic('Shoparticlesoption')->findAll(["status"=>1, "`start` <= '{$dat}'", " '{$dat}' <= `end`", "komu != 'email'"], ['id'=>'DESC'], $limit);// Shoparticlesoption::find(, , ['id'=>'DESC'], $limit);
 	}
         /**
-         * Список всех акций
+         * Список всех акций кроме активных
          * @param type $limit - количество возвращаемых записей, по умолчанию 10 последних
          * @return array
          */
-	public static function findAllActiveOption($limit = 10)
+	public static function findAllActiveOption($limit = 20)
 	{
+            $dat = date('Y-m-d');
+       return wsActiveRecord::useStatic('Shoparticlesoption')->findAll([], ['id'=>'DESC'], $limit);
+		//$news_all = Shoparticlesoption::find('Shoparticlesoption', [""], ['id'=>'DESC'], $limit);
 
-        
-		$news_all = Shoparticlesoption::find('Shoparticlesoption', [], ['id'=>'DESC'], $limit);
-
-		return $news_all;
+		//return $news_all;
 	}
         
          /**
@@ -68,6 +73,47 @@ class Shoparticlesoption extends wsActiveRecord
           public function getPathFind()
                 {
                     return "/articles/option/".$this->id."/";
-                }	
+                }
+                
+        public function _beforeSave()
+                    {
+            $info = [];
+            if($this->id){
+             $param = ['option_id'=>$this->id, 'admin_id'=>Registry::get('Website')->getCustomer()->getId()];
+            $op = new Shoparticlesoption($this->id);
+            
+            
+            if($this->option_text != $op->option_text){ $info['Название'] = $op->option_text.' => '.$this->option_text; }
+            if($this->value != $op->value){ $info['Скидка'] =  $op->value.' => '.$this->value; }
+            if($this->min_summa != $op->min_summa){ $info['Мин.Сумма'] =  $op->min_summa.' => '.$this->min_summa; }
+            if($this->type != $op->type){ $info['Тип'] =  $op->type.' => '.$this->type; }
+            if($this->timer != $op->timer){ 
+                if($this->timer == 1){
+                $info['Таймер'] = 'Включен!';
+            }else{
+                 $info['Таймер'] = 'Выключен!';
+            }
+            }
+            if($this->action != $op->action){ $info['Сегмент'] = $op->action.' => '.$this->action; }
+             if($this->komu != $op->komu){ $info['Охват'] =  $op->komu.' => '.$this->komu; }
+             if($this->email != $op->email){ $info['Трекер'] =  $op->email.' => '.$this->email; }
+             if($this->start != $op->start){ $info['Начало'] =  $op->start.' => '.$this->start; }
+             if($this->end != $op->end){ $info['Окончание'] =  $op->end.' => '.$this->end; }
+             
+            if($this->status != $op->status){ 
+                if($this->status == 1){
+                $info['Активность'] = 'Активировано!';
+            }else{
+                 $info['Активность'] = 'Деактивировано!';
+            }
+            }
+            $param['info'] = serialize($info);
+            
+                    return OptionLog::add($param);
+            }
+            return true;
+            
+                    }
+
 	
 }

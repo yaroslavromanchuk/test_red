@@ -5,6 +5,7 @@
 				<form id="qo1"  method="post" class="disabled-while-empty" name="qo">
 				<div id="hide">
 				<input type="hidden" name="id" id="quik_order-id" value="<?=$this->getShopItem()->getId()?>">
+                                <input type="hidden" name="shop_id" id="quik_shop_id" value="<?=$this->getShopItem()->shop_id?>">
 						<div class="modal-header">
 							<h5 class="modal-title"><?=$this->trans->get('Быстрый заказ')?></h5>
 							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>

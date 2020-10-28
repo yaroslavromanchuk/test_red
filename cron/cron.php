@@ -1,4 +1,5 @@
 <?php 
+//03:00
 //error_reporting(E_ALL);
 //ini_set('display_errors',1);
 	$date_min = new DateTime("02:40"); // минимальное значение времени
@@ -6,18 +7,22 @@
        $date_now = new DateTime();
 if ($date_now >= $date_min && $date_now <= $date_max) {
 require_once('cron_init.php');
+//if(date("Y-m-d") == "2020-03-01"){ wsActiveRecord::query("UPDATE `red_site`.`ws_red_coin` SET `status` = '2'"); }
 $today = date("Y-m-d H:i:s");
-$days = array( 1 => 'Понедельник' , 'Вторник' , 'Среда' , 'Четверг' , 'Пятница' , 'Суббота' , 'Воскресенье' );		
-if($days[date('N')] == 'Вторник'){
-    Ucenka(); 
-    articleNoSkidkaBlock();
-}//выход с уценки
+$days = [1 => 'Понедельник' , 'Вторник' , 'Среда' , 'Четверг' , 'Пятница' , 'Суббота' , 'Воскресенье'];	
 
+//if($days[date('N')] == 'Вторник'){
+   // Ucenka(); 
+  //  articleNoSkidkaBlock();
+//}//выход с уценки
+ActiveBonusUser(); // Активация бонусов пользователей
 articleRavno(); //выравнивание количества размеров и общего количества
 fixedBalance(); //
 clearLog();	//
-clearUserCart();  //удалить старые корзины 
+//clearUserCart();  //удалить старые корзины  
 
+//
+//
 //ускоренная уценка
 if(false)
     { //уценка

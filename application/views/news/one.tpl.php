@@ -2,6 +2,7 @@
 <div class="col-xl-12 p-3">
         <div class="text-center p-3" >
         <?=$this->news->content?>
+            <p>Срок действия: <b><?=date("d.m.Y", strtotime($this->news->start)).' - '.date("d.m.Y", strtotime($this->news->end))?></b></p>
         </div>
 </div>
     <?php if($this->news->type != 'all'){ ?>

@@ -38,7 +38,8 @@ function Calculat(){
 var sum = 0.00;
 if ($('.order-item:checked').val() && $('#order_status').val() == 1) {
 jQuery.each($('.order-item:checked'), function () {
-sum += Number($('#s_'+$(this).attr('name').substr(0,$(this).attr('name').lastIndexOf("_"))).val());
+sum += Number($('#s_'+$(this).attr('name')).val());
+//sum += Number($('#s_'+$(this).attr('name').substr(0,$(this).attr('name').lastIndexOf("_"))).val());
                     });
 					sum+=Number($('#dop_suma').val());
 					sum = sum.toFixed(2);
@@ -79,7 +80,7 @@ return false;
 </div>
 <?php } ?>
 
-<form action="" method="post" class="form-horizontal" style="border: 0;padding: 0;">
+<form action="" method="post" class="form-horizontal was-validated" style="border: 0;padding: 0;">
 
 <div class="card pd-20 pd-sm-40 mt-2">
     <h6 class="card-body-title">Возврат по заказу <?=$this->getOrder()->getId()?></h6>
@@ -130,8 +131,8 @@ if ($price_real != ($price_show['price']/$article_rec->getCount())){
 echo '  <span style="text-decoration:line-through">'.$price_real.'</span></br>';
 }?>
 <?=$skid_show?'<span> - '.$skid_show.'% = </span>' : '=';?></br>
-<b><?=Number::formatFloat($price_show['price'])?> грн</b>
-<input type="text"  hidden id="<?='s_'.$article_rec->getArticleId()?>"value="<?=$price_show['price']?>">
+<b><?=Number::formatFloat($article_rec->getCount() > 1 ? ($price_show['price']/$article_rec->getCount())-$price_show['coin'] : $price_show['price']-$price_show['coin'])?> грн</b>
+<input type="text"  hidden id="<?='s_'.$article_rec->getArticleId()?>_<?=$article_rec->getCode()?>"value="<?=($price_show['price']-$price_show['coin'])?>">
 					</div>
 			 </li>
 			<?php 
@@ -163,15 +164,29 @@ if($this->vozrat->dop_suma > 0){ echo 'Дополнительно зачисле
 	<div class="form-group row">
     <label for="sposob" class="col-sm-3 col-form-label">Способ возврата:</label>
     <div class="col-sm-9">
-	 <select name="sposob" class="form-control select2" id="sposob">
+        <select name="sposob" class="form-control " required="true" id="sposob">
 	 <option  value="0">Выберите способ возврата</option>
 	 <option value="1" <?=$this->vozrat->sposob==1?"selected":''; ?>>На депозит</option>
 	 <option value="2" <?=$this->vozrat->sposob==2?"selected":''; ?>>Почтовый перевод</option>
-         <option value="3" <?=$this->vozrat->sposob==3?"selected":''; ?>>Возврат на карту/option>
+         <option value="3" <?=$this->vozrat->sposob==3?"selected":''; ?>>Возврат на карту</option>
+         <option value="4" <?=$this->vozrat->sposob==4?"selected":''; ?>>Онлайн по ФОП</option>
                 </select>
     </div>
   </div>
-			<?php }?>
+    <div class="form-group row type_pay " style='display: none;'>
+    <label for="type_pay" class="col-sm-3 col-form-label">Куда зачислить:</label>
+    <div class="col-sm-9">
+        <select name="type_pay" class="form-control" id="type_pay">
+            <option  >Способ</option>
+	 <option value="1" >На карту ПриватБанка</option>
+	 <option value="2" >На счёт</option>
+                </select>
+    </div>
+  </div>
+    <div id="dop_file">
+                            
+    </div>
+			<?php } ?>
 
   </div>
 		</div>
@@ -188,11 +203,13 @@ if($this->vozrat->dop_suma > 0){ echo 'Дополнительно зачисле
         <input type="text" readonly class="form-control-plaintext" id="date_create" value="<?=$this->vozrat->date_create?>">
     </div>
   </div>
-<div class="form-group row">
+<div class="form-group row ">
     <label for="order_status" class="col-sm-3 col-form-label">Статус:</label>
     <div class="col-sm-9">
-	 <select name="order_status" id="order_status" class="form-control select2" onChange="this.form.submit(); return false;">
-                    <?php foreach ($this->order_status as $key => $item) { ?>
+        <select name="order_status" id="order_status" class="form-control " >
+                    <?php
+                    //<!--onChange="this.form.submit(); return false;"-->
+                    foreach ($this->order_status as $key => $item) { ?>
                     <option value="<?=$key?>" <?=$key==$this->vozrat->status?"selected":''; ?>><?=$item?></option>
                     <?php } ?>
                 </select>
@@ -202,14 +219,15 @@ if($this->vozrat->dop_suma > 0){ echo 'Дополнительно зачисле
     <label for="sposob" class="col-sm-3 col-form-label">Способ возврата:</label>
     
     <div class="col-sm-9">
-         <select name="sposob_edit" class="form-control select2"  id="sposob_edit">
+         <select name="sposob_edit" class="form-control "  id="sposob_edit">
 	 <option value="1" <?=$this->vozrat->sposob==1?"selected":''; ?> >На депозит</option>
 	 <option value="2" <?=$this->vozrat->sposob==2?"selected":''; ?> >Почтовый перевод</option>
          <option value="3" <?=$this->vozrat->sposob==3?"selected":''; ?> >Возврат на карту</option>
+         <option value="4" <?=$this->vozrat->sposob==4?"selected":''; ?> >Онлайн по ФОП</option>
                 </select>
       
 	<span style="display: inline-flex;margin-top: 7px;">
-	<?php $sp = [1=>'На депозин', 2=>'Почтовый перевод', 3=>'Возврат на карту']; ?>
+	<?php $sp = [1=>'На депозин', 2=>'Почтовый перевод', 3=>'Возврат на карту', 4=>'Онлайн по ФОП']; ?>
 	<?=$sp[$this->vozrat->sposob]?></span>
         
     </div>
@@ -221,6 +239,9 @@ if($this->vozrat->dop_suma > 0){ echo 'Дополнительно зачисле
 	<input type="text" class="form-control input" value="<?=$this->vozrat->nakladna?>" name="nakladna" id="nakladna" placeholder="Номар накладной">
     </div>
   </div>
+                            <div class="form-group text-center">
+                                <button type="submit" class="btn btn-lg btn-success" name="save">Сохранить</button>
+                            </div>
   </div>
 		</div>
   </div>
@@ -237,9 +258,20 @@ $(document).ready(function () {
 $('#sposob').change(function () {
 var sum = 0.00;
 if($(this).val() > 0){
+    
+   
 if ($('.order-item:checked').val()) {
+     if($(this).val() == 4){
+        $('.type_pay').show();
+        $('#dop_file').html('');
+    }else{
+        $('.type_pay').hide();
+        $('#dop_file').html('');
+    }
 jQuery.each($('.order-item:checked'), function () {
-sum += Number($('#s_'+$(this).attr('name').substr(0,$(this).attr('name').lastIndexOf("_"))).val());
+//sum += Number($('#s_'+$(this).attr('name').substr(0,$(this).attr('name').lastIndexOf("_"))).val());
+sum += Number($('#s_'+$(this).attr('name')).val());
+console.log($(this).attr('name'));
 });
 sum+=Number($('#dop_suma').val());
 sum = sum.toFixed(2);
@@ -253,6 +285,51 @@ $('#sposob option[value="0"]').prop('selected', true);
 return false;
 }
 }
+});
+$('#type_pay').change(function () {
+    switch($(this).val()){
+        case '1': 
+            var el = '<div class="form-group row">\n\
+<label for="card" class="col-sm-3 col-form-label">№ картки:</label>\n\
+<div class="col-sm-9">\n\
+<input type="text" required class="form-control input" name="dop[№ картки:]" pattern="[0-9]{16}" placeholder="xxxxxxxxxxxxxxxx" id="card" value="">\n\
+</div>\n\
+</div>';
+         $('#dop_file').html(el); break;
+        case '2': 
+             var el = '<div class="form-group row">\n\
+     <label for="schet" class="col-sm-3 col-form-label">Рахунок:</label>\n\
+<div class="col-sm-9">\n\
+<input type="text" required ="true" class="form-control input" name="dop[Рахунок:]" pattern="UA[0-9]{27}"   id="schet" >\n\
+</div>\n\
+</div>\n\
+<div class="form-group row">\n\
+     <label for="bank_name" class="col-sm-3 col-form-label">Банк отримувача:</label>\n\
+<div class="col-sm-9">\n\
+<input type="text" required class="form-control input" name="dop[Банк отримувача:]" placeholder="АТ...." id="bank_name" >\n\
+</div>\n\
+</div>\n\
+<div class="form-group row">\n\
+     <label for="mfo" class="col-sm-3 col-form-label">МФО:</label>\n\
+<div class="col-sm-9">\n\
+<input type="text" required class="form-control input" name="dop[МФО:]" pattern="[0-9]{6}" placeholder="xxxxxx" id="mfo" >\n\
+</div>\n\
+</div>\n\
+<div class="form-group row">\n\
+     <label for="ipn" class="col-sm-3 col-form-label">ІПН:</label>\n\
+<div class="col-sm-9">\n\
+<input type="text" required  class="form-control input" name="dop[ІПН:]" pattern="[0-9]{10}" placeholder="xxxxxxxxxx" id="ipn" >\n\
+</div>\n\
+</div>\n\
+<div class="form-group row">\n\
+     <label for="ipn" class="col-sm-3 col-form-label">Призначення платежу:</label>\n\
+<div class="col-sm-9">\n\
+<input type="text"  class="form-control input" name="dop[Призначення платежу:]"  id="pr_pl" >\n\
+</div>\n\
+</div>';
+         $('#dop_file').html(el); break;
+        default : $('#dop_file').html(''); break;
+    }
 });
 
 $('#sposob_edit').change(function (e) {

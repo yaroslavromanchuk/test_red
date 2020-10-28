@@ -126,16 +126,37 @@ class Shopcategories extends wsActiveRecord
      */
     public function getRoute($links = 1)
     {
+       $em = [
+           14 => '👗',
+           15 => '👔',
+           33 => '👠',
+           59 => '🧸',
+           146 => '🔰',
+           54 => '💍',
+           299 => '💎',
+           85 => '🔥'
+       ];
+        
     	$p = $this->getParents();
     	$res = [];
-    	if($p and count($p) > 1){
-
+    	if($p and count($p) > 0){
+            $i = 2;
     	foreach($p as $parent){
-            $res[] = '<li class="breadcrumb-item" itemscope itemtype="http://data-vocabulary.org/Breadcrumb"><a itemprop="url" href="' . $parent->getPath() . '"><span itemprop="title">' . $parent->getName() . '</span></a></li>';
+            $res[] = '<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem"><a itemprop="item"  href="' . $parent->getPath() . '"><span itemprop="name">' . $parent->getName() .$em[$parent->id]. '</span><meta itemprop="position" content="'.$i.'" /></a></li>';
+      // $pp = $parent->getParents();
+         $i++;
+    //   if($pp and count($pp) > 1){
+     //      foreach($p as $par){
+    //        $res[] = '<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem"><a itemprop="item"  href="' . $par->getPath() . '"><span itemprop="name">' . $par->getName() . '</span><meta itemprop="position" content="'.$i.'" /></a></li>';
+    //       $i++;
+     //       }
+     //  }
+          
+            
         }
         
             }
-            $res[] = '<li class="breadcrumb-item active" aria-current="page" itemscope itemtype="http://data-vocabulary.org/Breadcrumb"><a itemprop="url" href="' . $this->getPath() . '"><span itemprop="title">' . $this->getName() . '</span></a></li>';
+            $res[] = '<li class="breadcrumb-item active" aria-current="page"  itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem"><a itemprop="item" href="' . $this->getPath() . '"><span itemprop="name">' . $this->getName() .$em[$this->id]. '</span><meta itemprop="position" content="'.$i.'" /></a></li>';
         
     	$ret = implode('', $res);
 
@@ -176,7 +197,7 @@ class Shopcategories extends wsActiveRecord
                      //   }
         }
 		$cat_text = 'category_id in (' . implode(', ', $ids) . ')';	
-		return wsActiveRecord::useStatic('Shoparticles')->count(['stock not like "0" ', 'status = 3 ', $cat_text]);
+		return wsActiveRecord::useStatic('Shoparticles')->count(['stock not like "0" ', 'status = 3 ', 'category_id in (' . implode(', ', $ids) . ')']);
 	}
         /**
          * Количество SKU с учетом фильтра

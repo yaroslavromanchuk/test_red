@@ -54,6 +54,26 @@
                         </select>
                 </div>
     </div>
+                 <div class="form-group">
+    <label class="col-sm-12 col-lg-2 control-label"  for="komu" data-placement="top" title="" data-tooltip="tooltip" data-original-title="Для кого предназначена акция?">Предназначена для:</label>
+   <div class="col-sm-12 col-lg-10">
+    <select name="komu" class="form-control" id="komu" required="true">
+                    <option value="">Для кого</option>
+                    <option value="all"  <?=$this->discounts->komu == 'all'?'selected':''?> >Для всех</option>
+                    <option value="user"  <?=$this->discounts->komu == 'user'?'selected':''?> >Авторизированые пользователи</option>
+                    <option value="email"  <?=$this->discounts->komu == 'email'?'selected':''?> >Рассылка</option>
+                    <option value="promo"  <?=$this->discounts->komu == 'promo'?'selected':''?> >Промокод</option>
+                        </select>
+   </div>
+    
+  </div>
+                <div id="dop_file" class="form-group">
+        <?php if($this->discounts->komu == 'email'){?>
+                    <label class="col-sm-12 col-lg-2 control-label" for="email">Track - с рассылки</label><div class="col-sm-12 col-lg-10"><input type="text" class="form-control" id="email" name="email"   placeholder="track" value="<?=$this->discounts->email?>" style="width: 200px;" required></div>
+            <?php }elseif($this->discounts->komu == 'promo'){?>
+                    <label class="col-sm-12 col-lg-2 control-label" for="promo">Промокод</label><div class="col-sm-12 col-lg-10"><input type="text" class="form-control" id="promo" name="promo"   placeholder="промокод" value="<?=$this->discounts->promo?>" style="width: 200px;" required></div>
+            <?php } ?>
+    </div>
      <div class="form-group">
          <label class="col-sm-2 col-lg-2 control-label" for="value">Активность</label>
         <div class="col-sm-1">
@@ -100,6 +120,17 @@
             </div>
             
       </div>
+        <script>
+          var email ='<label class="col-sm-12 col-lg-2 control-label" for="email">Track - с рассылки</label><div class="col-sm-12 col-lg-10"><input type="text" class="form-control" id="email" name="email"   placeholder="track" value="<?=$this->discounts->email?>" style="width: 200px;" required></div>';
+          var promo = '<label class="col-sm-12 col-lg-2 control-label" for="promo">Промокод</label><div class="col-sm-12 col-lg-10"><input type="text" class="form-control" id="promo" name="promo"   placeholder="промокод" value="<?=$this->discounts->promo?>" style="width: 200px;" required></div>';
+              $("#komu").change(function() {
+  switch($(this).val()){
+      case 'email': $('#dop_file').html(email);break;
+      case 'promo': $('#dop_file').html(promo); break;
+      default: $('#dop_file').html('');
+  }
+});
+        </script>
         <div class="row">
             <div class="col col-sm-12 col-md-12 col-lg-12">
 <?php
@@ -178,7 +209,13 @@ if($this->discounts->getOptions()){ ?>
                     <?php
                     
                     $mas = [];
-                foreach (Shopcategories::find('Shopcategories', ['active'=>1]) as $cat){ if($cat->getRoutezGolovna() != 'SALE'){ $mas[$cat->getId()] = $cat->getRoutez(); } }
+                foreach (Shopcategories::find('Shopcategories', ['active'=>1, 'id not in(85, 267, 106)']) as $cat){
+                    if($cat->getRoutezGolovna() != 'SALE'){
+                        $mas[$cat->getId()] = $cat->getRoutez(); 
+                        
+                    } 
+                    
+                    }
 			asort($mas);
                     
                     foreach ($mas as $k=>$c) { ?>
@@ -239,6 +276,8 @@ tinymce.init({
 	   
 	   external_filemanager_path:"/backend/scripts/filemanager/",
 	   filemanager_title:"Responsive Filemanager" ,
+           filemanager_subfolder: "images/RED_ua/news/",
+           filemanager_access_key: "nia",
 	   external_plugins: { "filemanager" : "/backend/scripts/filemanager/plugin.min.js"},
 	   convert_urls: false
 	 });

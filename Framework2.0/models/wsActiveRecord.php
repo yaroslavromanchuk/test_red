@@ -85,7 +85,7 @@ class wsActiveRecord extends Orm_ActiveRecord
 	protected function _generateUrl($shortcut) 
 	{
 		//return strtolower(preg_replace(array('/[^a-zA-Z0-9 -]/', '/[ -]+/', '/^-|-$/'), array('', '-', ''), $this->remove_accent($this->_translit(iconv('UTF-8','windows-1251', mb_strtolower($shortcut))))));
-                return strtolower(preg_replace(array('/[^a-zA-Z0-9 -]/', '/[ -]+/', '/^-|-$/'), array('', '-'), $this->remove_accent($this->_translit(iconv('UTF-8','windows-1251//TRANSLIT', mb_strtolower($shortcut))))));
+                return strtolower(preg_replace(array('/[^a-zA-Z0-9-]/', '/[-&]+/', '/^-|-$/'), array('', '-'), $this->remove_accent($this->_translit(iconv('UTF-8','windows-1251//TRANSLIT', mb_strtolower($shortcut))))));
 	}
 
 	/*
@@ -130,7 +130,6 @@ class wsActiveRecord extends Orm_ActiveRecord
 		"FC"=>"Eh",
 		"E0"=>"Ju",
 		"F1"=>"Ja",
-
 		"C1"=>"a",
 		"C2"=>"b",
 		"D7"=>"v",
@@ -165,14 +164,6 @@ class wsActiveRecord extends Orm_ActiveRecord
 		"C0"=>"ju",
 		"D1"=>"ja",
 		);
-
-		/*
-		$str = html_entity_decode($str);
-		$str = preg_replace("!<script[^>]{0,}>.*</script>!Uis", "", $str);
-		$str = strip_tags($str);
-		$str = preg_replace("![^абвгдеёжзийклмнопрстуфхцчшщьыъэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯa-z0-9 ]!i", " ", $str);
-		$str = preg_replace("![\s]{2,}!", " ", $str);*/
-		//$str = ;
 		$ns = convert_cyr_string(trim($str), "w", "k");
 		$b = '';
 		for ($i=0;$i<strlen($ns);$i++)

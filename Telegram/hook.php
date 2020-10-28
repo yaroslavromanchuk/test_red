@@ -7,9 +7,10 @@
  * Please note that if you open this file with your browser you'll get the "Input is empty!" Exception.
  * This is a normal behaviour because this address has to be reached only by the Telegram servers.
  */
-
+//require_once __DIR__ .'config.php';
 // Load composer
 require_once __DIR__ . '/vendor/autoload.php';
+
 
 // Add you bot's API key and name
 $bot_api_key  = '539849731:AAH9t4G2hWBv5tFpACwfFg3RqsPhK4NrvKI';
@@ -18,9 +19,13 @@ $bot_username = 'red_ua';
 // Define all IDs of admin users in this array (leave as empty array if not used)
 $admin_users = [
   //  123,
-	404070580,
-	396902554,
-	526708750,
+	404070580,//ya
+	396902554,//Ira
+	//526708750,//Olesya
+	530803601,//Kukovickiy
+	604788113, //Cholocsna,
+	748915200, //Lena,
+	948011761, //Sveta
 ];
 
 // Define all paths for your custom commands in this array (leave as empty array if not used)

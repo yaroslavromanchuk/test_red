@@ -29,57 +29,37 @@ for ($step = 0; $step < 2; $step++) {
     ?>
     <table border="0" cellpadding="3" cellspacing="0" width="250">
 	<tr>
-	<td colspan="6" style="text-align: center;" >
+            <td colspan="4"  style="text-align: center;"><img src="/img/logo/RED_Logo_RGB.png" style="padding-bottom: 5px;width: 100px;" alt=""/></td>
+	<td colspan="3" style="text-align: center;" >
 	<img src="/images/barcodeimage.php?text=<?=$this->order->getId()?>" alt="Barcode Image" />
 	</td>
 	</tr>
     <tr>
-        <td colspan="6" class="tt_border_bottom" style="text-align: center">
-            <strong>Интернет-магазин «RED.UA»</strong><br/>https://www.red.ua  
-            <strong>  E-mail: market@red.ua</strong><br><span>(044) 224-40-00, (063) 809-35-29, (067) 406-90-80</span>  
-        </td>
-    </tr>
-	<tr><td colspan="6"></td>
-	</tr>
-    <tr>
 	
-        <td colspan="6" align="center" class="fnt_size_3">
-            <strong>Товарный чек
-                № <?php
-				$res ='';
-					echo $this->order->getId();
-					if ($this->order->getComlpect()) {
-						$compl = explode(';', $this->order->getComlpect());
-						echo ' <span ><br>(';
-						$i=0;
-						foreach ($compl as $cmpl) {
-							if($i != 0)  $res .= ', ';
-							$res .= $cmpl;
-							$i++;
-						}
-						echo $res;
-						//echo $this->order->getComlpect();
-						echo ')</span>';
-					}
-?></strong>
+        <td colspan="7" align="center" class="fnt_size_3">
+        <strong>Супроводжуючий документ на товар № <?=$this->order->id?></strong>
+	<?=$this->order->getComlpect()?'<br><span>('.substr(implode(explode(";", $this->order->getComlpect()), ', '), 0, -2).')</span><br>':''?>
         </td>
     </tr>
     <tr>
-        <td colspan="6" align="center" class="fnt_size_1"><strong>от <?=$this->date_today?> года</strong></td>
+        <td colspan="7" align="center" class="fnt_size_1"><strong>від <?=$this->date_today?> року</strong></td>
     </tr>
     <tr>
-        <td colspan="6"><strong>Получатель: </strong> <?=$this->order->getName() . ' ' . $this->order->getMiddleName()?><br>
-            Контактный телефон: <?=$this->order->getTelephone()?>
+        <td colspan="7"><b>Отримувач:</b> <?=$this->order->getName() . ' ' . $this->order->getMiddleName()?>
+        </td>
+    </tr>
+        <tr>
+        <td colspan="7"><b>Контактний телефон:</b><?=$this->order->getTelephone()?>
         </td>
     </tr>
     <tr>
-        <td colspan="6"><strong>Коментарии к заказу: </strong><?=strip_tags($this->order->getDeliveryType()->getName())?></td>
+        <td colspan="7"><strong>Коментарі до замовлення: </strong><?=strip_tags($this->order->getDeliveryType()->getName())?></td>
     </tr>
     <tr>
-        <td colspan="6">
+        <td colspan="7">
                 <?php if ($this->getOrder()->getComments()) { ?>
                     <div class="comm_cli">
-                        <b>Комментарий клиента: </b>
+                        <b>Коментарі клієнта: </b>
                         <?=$this->getOrder()->getComments()?>
                     </div>
                 <?php } ?>
@@ -87,16 +67,17 @@ for ($step = 0; $step < 2; $step++) {
     </tr>
     <!-- TOVAR TITLES-->
     <tr>
-        <td class="border_all fnt_size_1" align="center"><strong>№</strong></td>
-        <td class="border_all" align="center"><strong>Наименование товара</strong></td>
-        <td class="border_all" align="center"><strong>К-во (ед.)</strong></td>
-        <td class="border_all" align="center"><strong>Цена</strong></td>
+        <td class="border_all" align="center"><strong>#</strong></td>
+        <td class="border_all" align="center"><strong>Назва товару</strong></td>
+        <td class="border_all" align="center"><strong>Ціна</strong></td>
         <td class="border_all" align="center"><strong>Скидка</strong></td>
-        <td class="border_all border_right" align="center"><strong>Сумма</strong></td>
+        <td class="border_all" align="center"><strong>redcoin</strong></td>
+         <td class="border_all" align="center"><strong>Кілл.(од.)</strong></td>
+        <td class="border_all border_right" align="center"><strong>Сума</strong></td>
     </tr>
     <!-- TOVAR -->
     <?php
-	$cod ='%';
+	
 	$sk = 0;
     $i = 1;
    // $to_pay = 0;
@@ -104,6 +85,21 @@ for ($step = 0; $step < 2; $step++) {
 	$price_real = 0;
 	$t_real_price = 0;
 	$price_show = 0;
+        $qr_cod = [];
+        $qr_cod[] = '%ID'.$this->order->customer->id;
+        $qr_cod[] ='ORDER'.$this->order->id;
+        $cod ='%ID'.$this->order->customer->id.'&ORDER'.$this->order->id.'&';
+        if($this->order->deposit > 0){
+           $cod.='DEPO'.Number::formatFloat($this->order->deposit).'&'; 
+           $qr_cod[] = 'DEPO'.Number::formatFloat($this->order->deposit);
+        }
+        if($this->order->bonus > 0){
+            $cod.='COIN'.Number::formatFloat($this->order->bonus).'&'; 
+            $qr_cod[] = 'COIN'.Number::formatFloat($this->order->bonus);
+        }
+        
+         $to_pay = $this->getOrder()->calculateOrderPrice2(); //общая сумма к оплате
+        
     foreach ($this->getOrder()->getArticles() as $main_key => $article_rec) {
         if ($article_rec->getCount()) {
 		
@@ -112,21 +108,21 @@ for ($step = 0; $step < 2; $step++) {
                     <td class="border_all " align="center"><strong><?=$i?></strong></td>
                     <td class="border_all " >
 						<b>
-<?php echo $article_rec->getTitle() . ', <br>' . wsActiveRecord::useStatic('Size')->findById($article_rec->getSize())->getSize() . ', ' . wsActiveRecord::useStatic('Shoparticlescolor')->findById($article_rec->getColor())->getName();?>
+<?php echo $article_rec->article_db->getTitle() . ', <br>' . wsActiveRecord::useStatic('Size')->findById($article_rec->getSize())->getSize() . ', ' . wsActiveRecord::useStatic('Shoparticlescolor')->findById($article_rec->getColor())->getName();?>
 							<br>
 							<?=$article_rec->getCode()?>
 							<br>
 							<font ><?=$article_rec->article_db->category->getRoutezGolovna()?></font>
 						</b>
                     </td>
-                    <td class="border_all" align="center"><strong>1</strong></td>
+                    
                     <td class="border_all " align="right">
 <?php
 $price_real = (int)$article_rec->getOldPrice() ? $article_rec->getOldPrice() : $article_rec->getPrice();//стартовая цена
 		//$t_real_price += $price_real;//сумируется стартовая цена
 	
 		$price_show = $article_rec->getPerc($this->order->getAllAmount());//вычисление цены и скидка на товар
-                $t_real_price +=$price_show['price']/$article_rec->getCount();// общая сумма заказа
+                $t_real_price +=($price_show['price']/$article_rec->getCount())-$price_show['coin'];// общая сумма заказа
 		$skid_show = round(((1 - (($price_show['price']/$article_rec->getCount())/ $price_real)) * 100), 2);//вычисление процента скидки по товару
 				
 		$sk = Number::formatFloat($skid_show, 2);
@@ -145,8 +141,10 @@ $st = (int)$article_rec->getOldPrice() ? 'style="font-weight: 600;"' : 'style="t
 					
 echo $skid_show ? '<span '.$st.'>'.ceil($skid_show).' %</span>' : '';?>
                     </td>
+                    <td class="border_all" align="center"><strong><?=Number::formatFloat($article_rec->coin?$article_rec->coin:'', 2)?></strong></td>
+                    <td class="border_all" align="center"><strong>1</strong></td>
                     <td class="border_all border_right" align="right">
-<strong><?=Number::formatFloat($article_rec->getCount() > 1 ? $price_show['price']/$article_rec->getCount() : $price_show['price']); ?></strong>
+<strong><?=Number::formatFloat($article_rec->getCount() > 1 ? ($price_show['price']/$article_rec->getCount())-$price_show['coin'] : $price_show['price']-$price_show['coin']); ?></strong>
                     </td>
                 </tr>
                 <?php
@@ -154,60 +152,65 @@ echo $skid_show ? '<span '.$st.'>'.ceil($skid_show).' %</span>' : '';?>
                 $to_pay_minus+=$price_show['minus']/$article_rec->getCount();
             }
 			$cod.=$article_rec->getCode().'/'.$article_rec->getCount().'/'.$sk.'&';
+                        $qr_cod[] =$article_rec->getCode().'/'.$article_rec->getCount().'/'.$sk;
         }
 		
     }
 	
 	//if($this->getOrder()->getBonus() > 0){ $bonus = true; }else{ $bonus = false; }
 	
-    $to_pay = $this->getOrder()->calculateOrderPrice2(); //общая сумма к оплате
+   
 	
 	//$to_pay_minus = $t_real_price - ($this->getOrder()->getAmount()-$this->getOrder()->dop_summa-$this->getOrder()->getDeliveryCost());//общая скидка
 	
-    $kop = round(($to_pay - toFixed($to_pay)) * 100, 0);//
+   // $kop = round(($to_pay - toFixed($to_pay)) * 100, 0);//
     ?>
     <tr>
-        <td colspan="4" class="tt_border_top" align="right"><strong>Итого:</strong></td>
+        <td colspan="5" class="tt_border_top" align="right"><strong>Всього:</strong></td>
         <td class="border_left border_right tt_border_top" align="right" colspan="2"><strong><?=Number::formatFloat($t_real_price, 2)?></strong></td>
     </tr>
-    <tr>
+   <!-- <tr>
         <td colspan="4" align="right"><i>Скидка клиента</i></td>
-        <td class="border_all border_right" align="right" colspan="2"><i><?=$this->order->getDiscont()?> %*</i></td>
-    </tr>
+        <td class="border_all border_right" align="right" colspan="2"><i><?php //$this->order->getDiscont()?> %*</i></td>
+    </tr>-->
 		    <?php
       if($this->getOrder()->getKuponPrice() > 0) {?>
      <tr>
-        <td colspan="4" align="right"><i style="font-weight: bold;">Код на скидку</i></td>
+        <td colspan="5" align="right"><i style="font-weight: bold;">Код на скидку</i></td>
         <td class="border_all border_right" align="right" colspan="2"><i style="font-weight: bold;"><?=$this->getOrder()->getKupon()?></i></td>
 	</tr>
     <tr>
-		<td colspan="4" align="right"><i style="font-weight: bold;">Скидка по коду</i></td>
+		<td colspan="5" align="right"><i style="font-weight: bold;">Скидка по коду</i></td>
         <td class="border_all border_right" align="right" colspan="2"><i style="font-weight: bold;"><?=$this->getOrder()->getKuponPrice()?> %</i></td>
 	</tr>
     <?php } ?>
-	<tr>
+	<!--<tr>
 		<td colspan="4" align="right"><i>Сумма общей скидки</i></td>
-		<td class="border_all border_right" align="right" colspan="2"><i><?=Number::formatFloat($to_pay_minus, 2)?></i></td>
-	</tr>
+		<td class="border_all border_right" align="right" colspan="2"><i><?php //Number::formatFloat($to_pay_minus, 2)?></i></td>
+	</tr>-->
 		<?php
-		$min_sum_bonus = Config::findByCode('min_sum_bonus')->getValue();
-		if($this->getOrder()->getBonus() > 0 and $to_pay >= $min_sum_bonus){?>
+		//$min_sum_bonus = Config::findByCode('min_sum_bonus')->getValue();
+		if($this->getOrder()->getBonus() > 0){ ?>
 	<tr>
-		<td colspan="4" align="right"><i>Бонусная скидка</i></td>
+		<td colspan="5" align="right"><b>Redcoin</b></td>
 		<td class="border_all border_right" align="right" colspan="2"><i><?=Number::formatFloat($this->getOrder()->getBonus(), 2)?></i></td>
 	</tr>
-	<?php } ?>
+                <?php }
+                if(false){
+                ?>
 	<tr>
-		<td colspan="4" align="right"><i>Стоимость с учетом скидок</i></td>
+		<td colspan="5" align="right"><i>Вартість із врахуванням кидок</i></td>
 		<td class="border_all border_right" align="right" colspan="2"><i>
-		<?=Number::formatFloat(($this->order->amount-$this->getOrder()->dop_summa-$this->getOrder()->getDeliveryCost()), 2)?>
+		<?=Number::formatFloat(($this->order->calculateOrderPrice2(true, true, false)), 2)?>
 		</i>
         </td>
         </tr>
+   
     <tr>
 	<td colspan="4" align="right" class="fnt_size_1">Доставка:</td>
         <td class="border_all border_right" align="right" colspan="2"><?=Number::formatFloat($this->getOrder()->getDeliveryCost(), 2);?></td>
     </tr>
+     <?php } ?>
     <?php  if ($this->getOrder()->getDeposit() > 0) { ?>
 	<tr>
 		<td colspan="4" align="right"><i>Депозит</i></td>
@@ -216,31 +219,31 @@ echo $skid_show ? '<span '.$st.'>'.ceil($skid_show).' %</span>' : '';?>
     <?php } ?>
     
     <tr>
-		<td colspan="4" class="border_none fnt_size_1" align="right"><strong style="text-transform: uppercase;">Всего к оплате:</strong><br/>
+		<td colspan="5" class="border_none fnt_size_1" align="right"><strong style="text-transform: uppercase;">Всього до сплати:</strong><br/>
             <span>Без ПДВ</span>
         </td>
         <td class="border_all border_right tt_border_bottom" align="right" colspan="2"><strong><?=$to_pay?></strong></td>
     </tr>
 	    <tr>
-        <td colspan="6" class="tt_border_bottom"><b>Удачных покупок!</b></td>
+        <td colspan="7" class="tt_border_bottom"><b>Вдалих покупок!</b></td>
     </tr>
-		<tr><td colspan="6">
+		<tr><td colspan="7">
             <br/>
-            <i>Всего наименований <strong><?php echo($i - 1) ?></strong>, на сумму <strong>
+            <i>Всього найменувань <strong><?php echo($i - 1) ?></strong>, на суму <strong>
                     <?php $sum = explode(',', $to_pay); echo $sum[0];?> грн.
                     <?php echo @$sum[1] ? @$sum[1] : '00' ?> коп.
-                    (<?=Plural::currency($to_pay, $kop)?>)</strong></i>
+                    (<?=Number::formatToStringUk((int)$to_pay)?>)</strong></i>
             <br/>
         </td>
     </tr>
-	<tr><td colspan="6" style="text-align: center;" class="qr<?=$this->getOrder()->getId()?>" ></td></tr>
+	<tr><td colspan="7" style="text-align: center;" class="qr<?=$this->getOrder()->getId()?>" ></td></tr>
 
     <tr>
-        <td colspan="6" style=" padding-bottom: 30px;">
-            Персональные данные (ФИО и адрес) Покупателя были переданы интернет-магазину RED.ua, с целью выполнения данного
-            заказа Покупателя, и в дальнейшем могут передаваться уполномоченным органам в установленном законом порядке.
-            Как субъект персональных данных Покупатель имеет все права, предусмотренные ст. 8 Закона Украины «О защите
-            персональных данных».
+        <td colspan="7" style=" padding-bottom: 30px;">
+            Персональні дані (ПІБ і адресу) Покупця були передані інтернет-магазину RED.ua, з метою виконання даного
+             замовлення Покупця, і в подальшому можуть передаватися уповноваженим органам в установленому законом порядку.
+             Як суб'єкт персональних даних Покупець має всі права, передбачені ст. 8 Закону України «Про захист
+             персональних даних».
         </td>
     </tr>
     </table>

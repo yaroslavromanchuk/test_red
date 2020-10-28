@@ -24,4 +24,3 @@ static function setToLog($search_world,$customer_id=0){
 }
 
     }
-?>

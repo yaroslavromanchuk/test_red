@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -12,25 +12,25 @@
 
 
     <!-- vendor css -->
-    <link href="<?=$this->files?>views/template/lib/font-awesome/css/font-awesome.css" rel="stylesheet">
-    <link href="<?=$this->files?>views/template/lib/Ionicons/css/ionicons.min.css" rel="stylesheet">
-    <link href="<?=$this->files?>views/template/lib/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet">
-    <link href="<?=$this->files?>views/template/lib/highlightjs/github.css" rel="stylesheet">
+    <link href="<?=$this->files?>lib/font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="<?=$this->files?>lib/Ionicons/css/ionicons.min.css" rel="stylesheet">
+    <link href="<?=$this->files?>lib/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet">
+    <link href="<?=$this->files?>lib/highlightjs/github.css" rel="stylesheet">
     
-   <!-- <link href="<?=$this->files?>views/template/lib/rickshaw/rickshaw.min.css" rel="stylesheet">-->
-   <link href="<?=$this->files?>views/template/lib/datatables/jquery.dataTables.css" rel="stylesheet">
-	<link href="<?=$this->files?>views/template/lib/select2/css/select2.min.css" rel="stylesheet">
-	<link href="<?=$this->files?>views/template/lib/spectrum/spectrum.css" rel="stylesheet">
+   <!-- <link href="<?=$this->files?>lib/rickshaw/rickshaw.min.css" rel="stylesheet">-->
+   <link href="<?=$this->files?>lib/datatables/jquery.dataTables.css" rel="stylesheet">
+	<link href="<?=$this->files?>lib/select2/css/select2.min.css" rel="stylesheet">
+	<link href="<?=$this->files?>lib/spectrum/spectrum.css" rel="stylesheet">
 	
-	<link href="<?=$this->files?>views/template/lib/morris.js/morris.css" rel="stylesheet">
+	<link href="<?=$this->files?>lib/morris.js/morris.css" rel="stylesheet">
 	
-	 <link href="<?=$this->files?>views/template/lib/jquery.steps/jquery.steps.css" rel="stylesheet">
-         <link href="<?=$this->files?>views/template/lib/summernote/summernote-bs4.css" rel="stylesheet">
-          <link href="<?=$this->files?>views/template/lib/SpinKit/spinkit.css?v=1.0" rel="stylesheet">
+	 <link href="<?=$this->files?>lib/jquery.steps/jquery.steps.css" rel="stylesheet">
+         <link href="<?=$this->files?>lib/summernote/summernote-bs4.css" rel="stylesheet">
+          <link href="<?=$this->files?>lib/SpinKit/spinkit.css?v=1.0" rel="stylesheet">
     <!-- Starlight CSS -->
-	<link rel="stylesheet" href="<?=$this->files?>views/template/css/starlight.css?v=2.5">
+	<link rel="stylesheet" href="<?=$this->files?>css/starlight.css?v=2.5">
     
-	<script src="<?=$this->files?>views/template/lib/jquery/jquery.js"></script>
+	<script src="<?=$this->files?>lib/jquery/jquery.js"></script>
     
 	
 	 
@@ -305,32 +305,32 @@
 
     </div><!-- sl-mainpanel -->
     <!-- ########## END: MAIN PANEL ########## -->
-	<script src="<?=$this->files?>views/template/lib/jquery-ui/jquery-ui.js"></script>
-<script src="<?=$this->files?>views/template/lib/popperjs/popper.js?v=1.0"></script>
-    <script src="<?=$this->files?>views/template/lib/bootstrap/bootstrap.js"></script>
+	<script src="<?=$this->files?>lib/jquery-ui/jquery-ui.js"></script>
+<script src="<?=$this->files?>lib/popperjs/popper.js?v=1.0"></script>
+    <script src="<?=$this->files?>lib/bootstrap/bootstrap.js"></script>
 	
 	
-	<script src="<?=$this->files?>views/template/lib/perfect-scrollbar/js/perfect-scrollbar.jquery.js"></script>
+	<script src="<?=$this->files?>lib/perfect-scrollbar/js/perfect-scrollbar.jquery.js"></script>
 	
 
-	<!--<script src="<?=$this->files?>views/template/lib/highlightjs/highlight.pack.js"></script>-->
+	<!--<script src="<?=$this->files?>lib/highlightjs/highlight.pack.js"></script>-->
         
-			<script src="<?=$this->files?>views/template/lib/datatables/jquery.dataTables.js"></script>
-			<script src="<?=$this->files?>views/template/lib/datatables-responsive/dataTables.responsive.js"></script>
-                                <script src="<?=$this->files?>views/template/lib/parsley.js/parsley.min.js?v=1.1"></script>
-	<script src="<?=$this->files?>views/template/lib/select2/js/select2.min.js"></script>
+			<script src="<?=$this->files?>lib/datatables/jquery.dataTables.js"></script>
+			<script src="<?=$this->files?>lib/datatables-responsive/dataTables.responsive.js"></script>
+                                <script src="<?=$this->files?>lib/parsley.js/parsley.min.js?v=1.1"></script>
+	<script src="<?=$this->files?>lib/select2/js/select2.min.js"></script>
 
-    <script src="<?=$this->files?>views/template/lib/spectrum/spectrum.js"></script>
+    <script src="<?=$this->files?>lib/spectrum/spectrum.js"></script>
 		
-		<script src="<?=$this->files?>views/template/lib/jquery.steps/jquery.steps.js"></script>
+		<script src="<?=$this->files?>lib/jquery.steps/jquery.steps.js"></script>
 		
-                <script src="<?=$this->files?>views/template/lib/summernote/summernote-bs4.min.js"></script>
+                <script src="<?=$this->files?>lib/summernote/summernote-bs4.min.js"></script>
                 
-<script src="<?=$this->files?>views/template/lib/highlightjs/highcharts.js"></script>
-<script src="<?=$this->files?>views/template/lib/highlightjs/exporting.js"></script>
-<script src="<?=$this->files?>views/template/lib/highlightjs/export-data.js?v=1.4"></script>
+<script src="<?=$this->files?>lib/highlightjs/highcharts.js"></script>
+<script src="<?=$this->files?>lib/highlightjs/exporting.js"></script>
+<script src="<?=$this->files?>lib/highlightjs/export-data.js?v=1.4"></script>
 	
-	<script src="<?=$this->files?>views/template/js/starlight.js?v=1"></script>
+	<script src="<?=$this->files?>scripts/starlight.js?v=1"></script>
 
 	<script>
 	  $(function(){

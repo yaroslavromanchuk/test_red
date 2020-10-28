@@ -71,7 +71,7 @@
             <?php
             $to_pay_perc = $article->getProcent($this->all_orders_amount); // процент скидки
             $total_price += $article->getPrice() * $article->getCount(); // обшая сумма
-            $price = $article->getPerc($this->all_orders_amount); // цена товара с кидкой
+            $price = $article->getPerc(); // цена товара с кидкой
             $to_pay += $price['price'];
             $to_pay_minus += $price['minus'];
 

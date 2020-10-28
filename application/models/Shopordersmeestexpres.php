@@ -4,7 +4,16 @@ class Shopordersmeestexpres extends wsActiveRecord
 	  protected $_table = 'ws_order_meestexpres';
         protected $_orderby = array('id' => 'DESC');
 	
-	
+	/**
+         * 
+         * @param type $type
+         * @param type $order
+         * @param type $city
+         * @param type $branch
+         * @param type $street
+         * @param type $massa
+         * @return type
+         */
 	public static function newPost($type, $order, $city, $branch, $street, $massa)
     {
 	
@@ -21,6 +30,14 @@ class Shopordersmeestexpres extends wsActiveRecord
 		return $post->getId();
 
     }
+    /**
+     * 
+     * @param type $order
+     * @param type $city
+     * @param type $branch
+     * @param type $type
+     * @return type
+     */
 	public static function newOrderNp($order, $city, $branch, $type = 0)
     {
         $post = new Shopordersmeestexpres();
@@ -33,7 +50,10 @@ class Shopordersmeestexpres extends wsActiveRecord
 		return $post->getId();
     }
     public function getUuid($id){
+        if(!empty($id)){
         return wsActiveRecord::useStatic('Shopordersmeestexpres')->findById($id);
+        }
+        return '';
     }
 
 	

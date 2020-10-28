@@ -23,7 +23,7 @@
   </div>
         <div class="form-group inline-block">
     <label class="sr-only1" for="action" data-placement="top" title="" data-tooltip="tooltip" data-original-title="Акция может действовать на товар, категорию или бренд (что-то одно!!!)">Распространяется на:</label>
-    <select name="action" class="form-control" id="action" required="">
+    <select name="action" class="form-control" id="action" required="true">
                     <option value="">Укажите на что акция</option>
                     <option value="article" >Товар</option>
                     <option value="category" >Категория</option>
@@ -32,6 +32,16 @@
                     <option value="all" >Общая информационная</option>
                         </select>
   </div>
+    <div class="form-group inline-block">
+    <label class="sr-only1" for="komu" data-placement="top" title="" data-tooltip="tooltip" data-original-title="Для кого предназначена акция?">Предназначена для:</label>
+    <select name="komu" class="form-control" id="komu" required="true">
+                    <option value="all" >Для всех</option>
+                    <option value="user" >Авторизированые пользователи</option>
+                    <option value="email" >Рассылка</option>
+                    <option value="promo" >Промокод</option>
+                        </select>
+  </div>
+    
         <div class="form-group ">     
   <div class="form-group radio-inline">
   <label data-placement="top" title="" data-tooltip="tooltip" data-original-title="Никакие другие скидки не действуют(клиентская и доп.скидки)" >
@@ -90,8 +100,10 @@
 foreach($this->discounts as $d){ ?>
 <tr>
 <td><a href="/admin/discounts/edit/<?=$d->id?>/">
-<i class="icon ion-clipboard bleak1 tx-30 pd-5" alt="Редактировать" data-placement="left" title="" data-tooltip="tooltip" data-original-title="Редактировать акцию"></i></a></td>
-<td><i class="icon ion-clock bleak tx-30 pd-5 history" alt="История" data-id="<?=$d->id?>" data-type="<?=$d->type?>" data-placement="top" title="" data-tooltip="tooltip" data-original-title="Смотреть детали"></i></td>
+<i class="glyphicon glyphicon-edit bleak1 tx-25 pd-5" alt="Редактировать" data-placement="left" title="" data-tooltip="tooltip" data-original-title="Редактировать акцию"></i></a></td>
+<td><i class="icon ion-clipboard  bleak tx-20 pd-5 result" alt="Результат" data-id="<?=$d->id?>" data-type="<?=$d->type?>" data-placement="top" title="" data-tooltip="tooltip" data-original-title="Смотреть детали"></i>
+<i class="icon ion-clock  tx-20 pd-5 history" alt="История" data-id="<?=$d->id?>" data-type="<?=$d->type?>" data-placement="right" title="" data-tooltip="tooltip" data-original-title="История"></i>
+</td>
 <td><?=$d->option_text?></td>
 <td><?=$d->value?> %</td>
 <td><?php if($d->type == 'final'){ echo 'финишная';}elseif($d->type == 'dop'){ echo 'дополнительная'; }else{ echo 'информационная';} ?></td>
@@ -119,16 +131,32 @@ foreach($this->discounts as $d){ ?>
 </div>
 
 <script>
-    $('.history').click(function (e) {
+    $('.result').click(function (e) {
+        
+    $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+              
 var id = e.target.attributes.getNamedItem("data-id").value;
 //var type = e.target.attributes.getNamedItem("data-type").value;
-$.get('/admin/discounts/?method=histoory&id='+id,
+$.get('/admin/discounts/?method=result&id='+id,
 function (data) {
+     $('#foo').detach();
    // console.log(data);
-fopen('Детали акции',data,'<button class="btn btn-secondary pd-x-20" id="to_excel" onclick="return to_excel();">Выгрузить в Excel</button><button class="btn btn-danger pd-x-20" data-dismiss="modal" aria-hidden="true">Закрыть</button>');
+fopen('Детали акции',data,'<button class="btn btn-secondary pd-x-20" id="to_excel" onclick="return download(rezultat_akcii);">Выгрузить в Excel</button><button class="btn btn-danger pd-x-20" data-dismiss="modal" aria-hidden="true">Закрыть</button>');
+    });	
+}); 
+    $('.history').click(function (e) {
+        $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+       
+var id = e.target.attributes.getNamedItem("data-id").value;
+//var type = e.target.attributes.getNamedItem("data-type").value;
+$.get('/admin/discounts/?method=history&id='+id,
+function (data) {
+     $('#foo').detach();
+    console.log(data);
+fopen('История',data);
     });	
 
-}); 
+});
 
 function to_excel(){
    // console.log('data');

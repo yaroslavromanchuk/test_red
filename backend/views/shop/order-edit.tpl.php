@@ -367,7 +367,20 @@ if(page != null){
     <div class="col-xs-6">
 	<input type="text" name="kupon_price" class="form-control input"  value="<?=$this->getOrder()->getKuponPrice()?>"/>
   </div>
-  </div><br>
+  </div>
+    <div class="form-group">
+    <label  class="ct-150 control-label">Доп.Сумма:</label>
+    <div class="col-xs-6">
+	<input type="text" name="dop_summa" class="form-control input"  value="<?=$this->getOrder()->getDopSumma()?>"/>
+  </div>
+  </div>
+    <div class="form-group">
+    <label  class="ct-150 control-label">За что доп.сумма:</label>
+    <div class="col-xs-6">
+	<input type="text" name="comment_dop_summ" class="form-control input"  value="<?=$this->getOrder()->comment_dop_summ?>"/>
+  </div>
+  </div>
+    <br>
   <div class="form-group">
     <div class="col-xs-offset-3 col-xs-11">
       <button type="submit"  class="btn btn-lg btn-primary"><span style="font-weight: bold;font-size: 18px;"><i class="glyphicon glyphicon-floppy-saved" aria-hidden="true"></i> Сохранить</span></button>
@@ -448,31 +461,32 @@ if(page != null){
         $sum_skudka = 0.00;
 	if ($this->getOrder()->getArticles()->count()) { ?>
         <?php 
-        foreach ($this->getOrder()->getArticles() as $main_key => $article_rec) {
-           // $article = new Shoparticles($article_rec->getArticleId());
-            ?>
+        foreach ($this->getOrder()->getArticles() as $main_key => $article_rec) {?>
 			<tr id="<?=$article_rec->getId()?>" <?php if($article_rec->article_db->getCategoryId() == 16){ echo 'style="background: rgba(210, 33, 33, 0.43);"';} ?>>
 				<td  colspan="2" class="text-center">
 					<img class="prev w100" rel="#miesart<?=$article_rec->getId(); ?>"
 						 src="<?=$article_rec->getImagePath('listing')?>"
 						 alt="<?=htmlspecialchars($article_rec->getTitle())?>"
 						 style="box-shadow: 0px 0px 20px #BBB;margin: 10px;cursor: pointer;"/>
+                                        <?php if($article_rec->skidka_block){ ?>
+                                        <span class="red" style="display:block;font-weight: bold;">LAST PRICE</span>
+                                        <?php } ?>
 
 					<div class="simple_overlay" id="miesart<?=$article_rec->getId(); ?>" style="position: absolute;  margin-left: 170px; margin-top: -170px;">
 						<img src="<?=$article_rec->getImagePath('detail');?>" alt="<?=htmlspecialchars($article_rec->getTitle());?>" style="max-width:300px;border-radius: 10px;"/>
 					</div><br>
 					<?php if($article_rec->getCount() > 0){ ?>
-					<a href="/admin/shop-articles/edit/id/<?=$article_rec->getArticleId();?>" title="Редактировать" data-placement="bottom"  data-tooltip="tooltip" style="display: inline-block;">
-						<img src="<?=SITE_URL?>/img/icons/edit-small.png" alt="Редактировать" class="img_return"/>
+					<a href="/admin/shop-articles/edit/id/<?=$article_rec->getArticleId()?>" title="Редактировать" data-placement="bottom"  data-tooltip="tooltip" style="display: inline-block;">
+						<img src="/img/icons/edit-small.png" alt="Редактировать" class="img_return"/>
 					</a>
 					<a href="<?=$this->path;?>shop-orders/adelete/id/<?=$article_rec->getId();?>/#flag=<?=$article_rec->getId();?>" onclick="return confirm('Удалить?');" style="display: inline-block;" data-placement="bottom"  data-tooltip="tooltip" data-original-title="Удалить на сайт">
-						<img src="<?=SITE_URL?>/img/icons/cantremove-small.png" alt="Удалить" class="img_return" />
+						<img src="/img/icons/cantremove-small.png" alt="Удалить" class="img_return" />
 					</a>
 					<a href="<?=$this->path;?>shop-orders/adeletenoshop/id/<?=$article_rec->getId();?>/" onclick="return dell(this);" data-original-title="Удалить без возврата на сайт" data-placement="bottom"  data-tooltip="tooltip" style="display: inline-block;">
-				<img src="<?=SITE_URL;?>/img/icons/remove-small.png" alt="Удалить" class="img_return"/>
+				<img src="/img/icons/remove-small.png" alt="Удалить" class="img_return"/>
 				</a>
 				<?php if($this->admin_rights['491']['right'] == 1){ ?>
-	<img src="<?=SITE_URL?>/img/icons/return.png" alt="Возврат" name="<?=$article_rec->getId();?>"   style="display: inline-block;" title="Возврат" class="img_return" data-placement="bottom"  data-tooltip="tooltip" onclick="return ret(this);"/>
+	<img src="/img/icons/return.png" alt="Возврат" name="<?=$article_rec->getId();?>"   style="display: inline-block;" title="Возврат" class="img_return" data-placement="bottom"  data-tooltip="tooltip" onclick="return ret(this);"/>
 					<?php }?>
 				
 					<?php } ?>
@@ -518,26 +532,24 @@ return false;
 }
 </script>
 				<td>
-					<?php echo 'Колл.: <b>' . $article_rec->getCount().'</b>'; ?>
-					<br><span style="color: #048;"><?=$article_rec->getCode()?></span>
-					<br><a href="<?=$article_rec->article_db->getPath()?>" target="_blank"><?=$article_rec->getTitle()?></a>
+					<?='Колл.: <b>' . $article_rec->getCount().'</b>'?>
 					<br><span style="color: #777;"><?=$article_rec->article_db->category->getRoutez()?></span>
+                                        <br><a href="<?=$article_rec->article_db->getPath()?>" target="_blank"><?=$article_rec->getTitle()?></a>
 					<br>Наличие:
-					<?php $art = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $article_rec->getArticleId(), 'id_size' => $article_rec->getSize(), 'id_color' => $article_rec->getColor()));
+<?php $art = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $article_rec->getArticleId(), 'id_size' => $article_rec->getSize(), 'id_color' => $article_rec->getColor()));
 						$cnt = $art->getCount();
 					if ((int)$cnt > 0) { ?>
 					<select name="count-<?=$article_rec->getId()?>"  class="count form-control input w150">
 					<?php
-		for ($i = 1; $i <= $cnt; $i++) echo ($i != $article_rec->getCount()) ? "<option value=\"{$i}\">{$i}</option>" : "<option value=\"{$i}\" selected=\"selected\">{$i}</option>";?>
+                                        for ($i = 1; $i <= $cnt; $i++){ echo ($i != $article_rec->getCount()) ? "<option value=\"{$i}\">{$i}</option>" : "<option value=\"{$i}\" selected=\"selected\">{$i}</option>"; }?>
 					</select><br>
 					<label><input type="checkbox" name="edit_count-<?= $article_rec->getId(); ?>" class="chek_edit"> Изменить</label>
-				<?php  } else echo 'Нет на складе';	?>
-				
-				
+				<?php  } else {echo 'Нет на складе';	}?>
 				</td>
 				<td>
 					<input type="hidden" class="hidden" value="<?=$article_rec->geArticletId() ?>">
 					<?=$article_rec->sizes->getSize().' / '.$article_rec->colors->getName()?>
+                                        <br><span class="text-primary"><?=$article_rec->getCode()?></span>
 					<input type="hidden" class="hidden"  name="size-<?=$article_rec->getId(); ?>"  value="<?=$article_rec->getSize()?>">
 					<input type="hidden" class="hidden"  name="color-<?=$article_rec->getId(); ?>"  value="<?=$article_rec->getColor()?>">
 				</td>
@@ -546,7 +558,7 @@ return false;
 						$t_real_price += $price_real * $article_rec->getCount();
 						
 						$price_show = $article_rec->getPerc($this->order->getAllAmount());
-							$sum_skudka += $price_show['minus'];
+						$sum_skudka += $price_show['minus'];
 						
 					if($article_rec->getCount() > 0){
 					$skid_show = round((1 - (($price_show['price']/$article_rec->getCount())/ $price_real)) * 100);
@@ -559,12 +571,16 @@ return false;
 						<span style="text-decoration:line-through"><?=$price_real?></span><br>
 					<?php } ?>
 	<?php if ($article_rec->getCount() > 0) { echo $skid_show ? '<span '.$st.'>'.$s_uc.' '.$skid_show.'%</span><br><br>' : ''; } ?>
-					<b><?=Number::formatFloat($price_show['price'])?> грн</b>
+					<b><?=Number::formatFloat($price_show['price']?$price_show['price']:$article_rec->price)?> грн</b>
 					
 					<?php /*@$price_show['comment']?'<br><span style="font-size:10px;color:red;">'.$price_show['comment'].'</span>':''*/ ?>
 					
-					<?=$article_rec->getOptionId()?'<br><span style="font-size:10px;color:red;">'.$article_rec->getOption()->option_text:''?>
-					
+					<?=$article_rec->getOptionId()?'<br><span style="font-size:10px;color:red;">'.$article_rec->getOption()->option_text.'</span>':''?>
+                                        <?=($article_rec->event_skidka and !$article_rec->getCount())?'<br><span style="font-size:10px;color:red;">доп. -'.$article_rec->event_skidka.'%</span>':''?>
+                                        <?php  if($article_rec->getOptionId() and $this->user->id == 8005){
+                                            ?>
+                                        <button onclick="dellAkciya(<?=$article_rec->getOptionId()?>,<?=$article_rec->getId()?>);" >отключить акцию</button>
+                                       <?php } ?>
 					<?php 
 					if($this->user->id == 8005){
                                           //echo  'tut'.print_r($article_rec->getOrders()->count());
@@ -587,11 +603,11 @@ return false;
 					
 				</td>
 				<td>
-				<img alt="История" src="/img/icons/histori.png"  data-id="<?=$article_rec->geArticletId()?>"   data-tooltip="tooltip" class="img_return history_article" data-original-title="История изменения товара">
+				<img alt="История" src="/img/icons/histori.png"  data-id="<?=$article_rec->getArticleId()?>"   data-tooltip="tooltip" class="img_return history_article" data-original-title="История изменения товара">
 					<?php if ($art_by = $article_rec->getOrders()->count()) { ?>
-                                <img alt="Покупки" src="/img/icons/shoppingcart.png"  data-id="<?=$article_rec->geArticletId()?>"   data-tooltip="tooltip" class="img_return shoping" data-original-title="Товар покупался <?=$art_by?> раз">
+                                <img alt="Покупки" src="/img/icons/shoppingcart.png"  data-id="<?=$article_rec->getArticleId()?>"   data-tooltip="tooltip" class="img_return shoping" data-original-title="Товар покупался <?=$art_by?> раз">
 					<?php } else { ?>
-					<img alt="Покупки" src="/img/icons/shoppingcart.png"  data-id="<?=$article_rec->geArticletId()?>"   data-tooltip="tooltip" class="img_return" data-original-title="Это первый заказ">
+					<img alt="Покупки" src="/img/icons/shoppingcart.png"  data-id="<?=$article_rec->getArticleId()?>"   data-tooltip="tooltip" class="img_return" data-original-title="Это первый заказ">
 					<span>Всего куплено: 0 шт.</span>
 					<?php } ?>
 				</td>
@@ -739,8 +755,20 @@ if(e.value > 0){
 		
 	return false;	
 }
-
 return false;
+}
+function dellAkciya(id_opt, article){
+	var data_to_post = new Object();
+        data_to_post.id = article;
+        data_to_post.addskidka = 'dell_sk';
+        data_to_post.option_id = id_opt;
+        $.post('<?=$this->path ."shop-orders/"?>', data_to_post, function(data){
+		console.log(data); 
+		document.location.reload(true);
+		} ,'json');
+		
+	return false;	
+
 }
 $('#go_transfer').click(function (e) {//форма отправки почтового перевода
 var form ='<div class="input-group"><span class="input-group-addon" id="basic-addon1">Сумма</span><input type="text" id="summa" class="form-control" placeholder="Сумма перевода" aria-describedby="basic-addon1"></div><div class="input-group"><span class="input-group-addon" id="basic-addon1">Индекс</span><input type="text" id="ind" class="form-control" placeholder="Почтовый индекс" aria-describedby="basic-addon1"></div><button type="button"  onclick="go_post_ukr(this);" class="btn btn-default"><i class="glyphicon glyphicon-plus-sign" aria-hidden="true"></i> Отправить письмо</button></div>';
@@ -1024,56 +1052,6 @@ $(document).ready(function () {
 
     });
 });
-/*
-    function loadArticles(category_id) {
-        var data_to_post = new Object();
-        data_to_post.id = category_id;
-        data_to_post.getarticles = '1';
-        $.post('<?=$this->path."shop-orders/"; ?>', data_to_post, function (data) {
-            createSelectList(data);
-        }, 'json');
-        $('#article_id').html('');
-        $('#option_id').html('');
-    }
-
-    function loadOptions(article_id) {
-        var data_to_post = new Object();
-        data_to_post.id = article_id;
-        data_to_post.getoptions = '1';
-        data_to_post.delivery_cost = '<?=Shoparticles::showPrice($this->getOrder()->getDeliveryCost())?>';
-        data_to_post.articles_count = '<?=$this->getOrder()->count()?>';
-        $.post('<?=$this->path ."shop-orders/"?>', data_to_post, function (data) {
-            createSelectList(data);
-        }, 'json');
-        $('#option_id').html('');
-    }
-
-    function createSelectList(data) {
-        if ('done' == data.result) {
-            out = '';
-            himg = '';
-            for (var i = 0; i < data.data.length; i++) {
-                if (data.data[i].img) {
-                    himg += '<img style="display: none;" id ="aih_' + data.data[i].id + '" src="' + data.data[i].img + '"  />';
-                }
-                out += '<option value="' + data.data[i].id + '">' + data.data[i].title + himg + '</option>';
-            }
-            if ('articles' == data.type) {
-                out = '<option value="0" selected>Выберите товар...</option>' + out;
-                $('#article_id').html(out);
-                $('#aih_box').html(himg);
-            } else {
-                out = '<option value="0" selected>Selecteer een optie...</option>' + out;
-                $('#option_id').html(out);
-            }
-        }
-    }*/
-	$('#article_id').hover(function () {
-		$('#aih_box img').hide();
-		$('#aih_box #aih_' + $(this).attr('value')).show();
-	}, function () {
-		$('#aih_box img').hide();
-	});
 
 </script>
 <script  src="<?=SITE_URL.$this->files; ?>scripts/tiny_mce/tiny_mce.js"></script>

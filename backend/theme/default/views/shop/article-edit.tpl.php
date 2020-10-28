@@ -93,10 +93,12 @@
     <label for="size_type" class="col-xs-4 control-label">Пол:</label>
     <div class="col-xs-8">
 	        <select name="size_type" class="form-control input" id="size_type">
-		 <option value="">Выбрать...</option>
-            <option value="1" <?php if ($this->article->getSizeType() == 1) { ?>selected="selected"<?php } ?> > Мужское</option>
-            <option value="2" <?php if ($this->article->getSizeType() == 2) { ?>selected="selected"<?php } ?> > Женское</option>
-			<option value="3"  <?php if ($this->article->getSizeType() == 3 or !$this->article->getSizeType()) { ?>selected="selected"<?php } ?> >Унисекс</option>
+		<option value="">Выбрать...</option>
+                <option value="1" <?php if ($this->article->getSizeType() == 1) { ?>selected="selected"<?php } ?> > Мужское</option>
+                <option value="2" <?php if ($this->article->getSizeType() == 2) { ?>selected="selected"<?php } ?> > Женское</option>
+                <option value="8" <?php if ($this->article->getSizeType() == 8) { ?>selected="selected"<?php } ?> > Дети</option>
+                <option value="7" <?php if ($this->article->getSizeType() == 7) { ?>selected="selected"<?php } ?> > Товары для дома</option>
+		<option value="3"  <?php if ($this->article->getSizeType() == 3 or !$this->article->getSizeType()) { ?>selected="selected"<?php } ?> >Унисекс</option>
         </select>
 		</div>
   </div>
@@ -106,10 +108,11 @@
 	<select name="sezon" class="form-control input" id="sezon">
 		<option value="" >Выбрать...</option>
 		<option value="1" <?php if ($this->article->getSezon() == 1) { ?>selected="selected"<?php } ?> >Лето</option>
-		<option value="2" <?php if ($this->article->getSezon() == 2) { ?>selected="selected"<?php } ?> >Осень-Весна</option>
+                <option value="6" <?php if ($this->article->getSezon() == 6) { ?>selected="selected"<?php } ?> >Осень</option>
+		<option value="2" <?php if ($this->article->getSezon() == 2) { ?>selected="selected"<?php } ?> >Весна</option>
 		<option value="3" <?php if ($this->article->getSezon() == 3) { ?>selected="selected"<?php } ?> >Зима</option>
 		<option value="4" <?php if ($this->article->getSezon() == 4) { ?>selected="selected"<?php } ?> >Всезезон</option>
-                <option value="4" <?php if ($this->article->getSezon() == 5) { ?>selected="selected"<?php } ?> >Демисезон</option>
+                <option value="5" <?php if ($this->article->getSezon() == 5) { ?>selected="selected"<?php } ?> >Демисезон</option>
 	</select>
 	</div>
   </div>
@@ -268,11 +271,38 @@ document.getElementById('img2').addEventListener('change', handleFileSelect, fal
       <div class="form-group"  >
     <label for="sostav" class="col-xs-4 control-label">Состав:</label>
     <div class="col-xs-8">
+        <?php if(false/*$this->user->id == 8005*/){ ?>
 	<button class="btn btn-small btn-default mg-b-5" type="button"  data-toggle="modal" data-target="#sostav_f"><i class="icon ion-compose tx-20 mr-5" aria-hidden="true"></i>Указать состав</button>
-	<?php if($this->user->id == 8005){ ?>
+	
 	<button class="btn btn-small btn-default mg-b-5" type="button"  data-toggle="modal" data-target="#opis_mod"><i class="icon ion-compose tx-20 mr-5" aria-hidden="true"></i>Заполнить описание</button>
-	<?php } ?>
+	
 	<textarea rows="4" cols="50" class="form-control input" id="sostav" name="sostav"><?php echo $this->article->getSostav(); ?></textarea>
+        <?php } ?>
+        <div class="row">
+                <?php $sostav_array = $this->article->sostav ? unserialize($this->article->sostav) : [];
+                if(count($sostav_array) > 0 && is_array($sostav_array)){
+                 
+                    $i = 1;
+                    foreach ($sostav_array as $name_sostav => $procent_sostava){ ?>
+                 <div class="col-sm-12 s_sost panel panel-success" style="padding: 0px;" data-id="<?=$i?>">
+                         
+                                <div class="input-group panel-body ">
+                                    <div>
+                                    <input type="text" style="width: 80%;" class="form-control sostav ui-autocomplete-input" name="sostav[<?=$i?>][name]" required="" value="<?=$name_sostav?>" autocomplete="off">
+                                    <input type="text" style="width: 20%;" class="form-control" name="sostav[<?=$i?>][value]" value="<?=$procent_sostava?>">
+                                    </div>
+                                    <span class="input-group-btn">
+                                        <a class="btn btn-danger" data-toggle="reroute" data-tag="dell">Удалить</a>
+                                    </span>
+                                </div>
+                           
+                        </div>
+                 <?php $i++;   }
+                 
+                    
+                } ?>
+                    <a class="btn btn-success" data-toggle="reroute" data-tag="add">+</a>
+             </div>
 			</div>
   </div>
       <div class="form-group"  >
@@ -837,6 +867,7 @@ document.getElementById('img2').addEventListener('change', handleFileSelect, fal
 </form>
 <p id="er" style="color: red;text-align: center;font-size: 20px;margin-top: -10px;"></p>
 </div>
+<?php //l($this->sost); ?>
 <script>
 var arr = [];
 var i = 0;
@@ -894,6 +925,39 @@ console.log(temp);
 </script>
 <script  src="<?=$this->files?>/scripts/jquery.autocomplete.js"></script>
 <script >
+     $(document).on('click', '[data-toggle=reroute]', function(e) {
+        console.log(this);
+        //add
+    if($(this).data().tag == 'add'){
+        var block = $(this).prev(".s_sost");
+        console.log(block);
+        if(block.length){
+          //  var id = block.data('id');
+            var id_new =  block.data('id')+1;
+        }else{
+            var id_new =  1;
+        }
+        if(!id_new){
+            id_new = 0;
+        }
+        console.log(id_new);
+        var el = '<div class="col-sm-12 panel panel-success" style="padding: 0px;" data-id="'+id_new+'"><div class="input-group panel-body"><input type="text" style="width:80%"  class="form-control sostav" name="sostav['+id_new+'][name]" required  ><input style="width:20%" type="text"  class="form-control" name="sostav['+id_new+'][value]" ><span class="input-group-btn"><a class="btn btn-danger" data-toggle="reroute" data-tag="dell">Удалить</a></span></div></div>';
+        
+      //  var block = $(this).prev(".col-sm-12");
+       // var cln = block.clone();
+//cln.find("input:first").val('');
+//$(this).before(cln);
+        $(this).before(el);
+        
+           
+            return false;
+            }else{
+         var block = $(this).parents(".col-sm-12:first");
+        console.log(block);
+     block.detach();
+     return false;
+            }
+    });
 /*$('#button111').on('click', function(){
 	if(validForm() != false) {
 	$(".form1").submit();
@@ -903,6 +967,14 @@ console.log(temp);
 });*/
 
     $(document).ready(function () {
+    
+     $('.sostav').autocomplete({
+                maxHeight: 400, // Максимальная высота списка подсказок, в пикселях
+    width: 300, // Ширина списка
+    zIndex: 9999, // z-index списка
+                source: <?=$this->sost?>
+                
+            });
 	//Add_sostav();
 	
 	

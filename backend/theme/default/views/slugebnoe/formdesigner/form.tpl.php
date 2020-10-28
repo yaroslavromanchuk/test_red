@@ -30,10 +30,76 @@ $f = wsActiveRecord::useStatic('FormsItem')->findFirst(['forms_id'=>1]);
 
     </div>
 </div>
+<div class="card mt-3">
+    <div class="card-body">
+      <fieldset>
+          <form id="trans" name="trans" method="post" >
+              <legend>Форма перевода</legend>
+              
+            <input type="text" hidden="true" value="trans" name="method" >
+            <div class="form-group">
+  <label class="col-md-2 control-label" for="from">С</label>
+  <div class="col-md-2">
+    <select id="from" name="from" class="form-control">
+      <option value="uk">Укр.</option>
+      <option value="ru">Рус.</option>
+      <option value="en">Eng.</option>
+    </select>
+  </div>
+</div>
+ <div class="form-group">
+  <label class="col-md-2 control-label" for="to">На</label>
+  <div class="col-md-2">
+    <select id="to" name="to" class="form-control">
+        <option value="ru">Рус.</option>
+      <option value="uk">Укр.</option>
+      <option value="en">Eng.</option>
+    </select>
+  </div>
+</div>
+            <div class="form-group">
+  <label class="col-md-4 control-label" for="text">Сообщение</label>  
+  <div class="col-md-4">
+  <input id="text" name="text" type="text" placeholder="введите сообщения для перевода" class="form-control input-md" required="">
+  </div>
+</div>
+           <div class="form-group">
+  <div class="col-md-4">
+  <input name="save" type="submit" class="form-control input-md">
+  </div>
+</div>
+        </form>
+      </fieldset>
+        <div id="res_trans"></div>
+    </div>
+</div>
 <script src="<?=$this->files?>lib/codemirror/lib/codemirror.js"></script>
 
 <script src="<?=$this->files?>lib/codemirror/mode/xml/xml.js" ></script>
 <script>
+    $("#trans").on("submit", function (e) {
+  e.preventDefault();
+
+  // собираем строку запроса
+ // var query = $(this).serialize(); // user=&s1=12&s2=foo
+
+  // удаляем пустые параметры
+ // query = query.replace(/([\w\-_]*=(&|$))/g, ''); // s1=12&s2=foo
+
+  // шлем на сервер
+  $.ajax({
+    type: 'POST',
+    url: '/admin/form-designer/',
+    data:  $(this).serialize() // site.ru?s1=12&s2=foo
+
+  }).done(function (r) {
+    //  alert(r);
+      $('#res_trans').html(r);
+    console.log(r); // ответ от сервера
+  }); 
+  return false;
+});
+
  $(function(){
      
 

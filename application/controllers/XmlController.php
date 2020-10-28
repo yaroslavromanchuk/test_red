@@ -19,7 +19,7 @@ class XmlController extends controllerAbstract{
        header('Content-Type: application/xml');
 $res = "<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>";
 $i = 0;
-        foreach( wsActiveRecord::useStatic('Menu')->findAll(['type_id is not null', 'parent_id' => null, 'no_sitemap'=>NULL, 'nofollow'=>NULL], ['sequence' => 'ASC']) as $item) {
+        foreach( wsActiveRecord::useStatic('Menu')->findAll(['type_id is not null', 'parent_id' => null, 'no_sitemap'=>NULL, 'nofollow'=>NULLL, 'noindex'=>NULL], ['sequence' => 'ASC']) as $item) {
 		//<loc>https://www.red.ua/</loc>
 	//<lastmod>2017-05-10T11:29:32+01:00</lastmod>
 	//<priority>1.0</priority>

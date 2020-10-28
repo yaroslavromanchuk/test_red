@@ -4,13 +4,6 @@ class Mimeg
 {
 
     public static function getrealpath($file_name){
-//		if (isset($_GET['adm'])) {
-/*
-			echo '<pre>';
-			print_r($filename);
-			echo '</pre>';
-*/
-//		}
         $filename_dest = '';
 
         $default = ['path', 'type', 'filename', 'id', 'width', 'height', 'crop', 'crop_coords', 'fill', 'fill_color', 'original'];
@@ -26,19 +19,23 @@ class Mimeg
         }
         
         foreach ($default as $item){
-            $get[$item] = $path_info[$item];
+            if(!empty($path_info[$item])){
+                $get[$item] = $path_info[$item];
+            }
+            
         }
-
+ if(!empty($get['original'])){
         $get['original'] = (int)$get['original'];
+ }
 
 
 
-        $get['width'] = (int)$get['width'];
-        $get['height'] = (int)$get['height'];
-        $get['crop'] = $get['crop'] ? (strtolower($get['crop']) === 'true' ? 't' : 'f') : FALSE;
-        $get['fill'] = $get['fill'] ? (strtolower($get['fill']) === 'true' ? 't' : 'f') : FALSE;
-        $get['fill_color'] = $get['fill_color'] ? explode('_', $get['fill_color']) : FALSE;
-        $get['crop_coords'] = $get['crop_coords'] ? explode('_', $get['crop_coords']) : FALSE;
+        $get['width'] = !empty($get['width']) ? (int)$get['width'] : 0;
+        $get['height'] = !empty($get['height']) ? (int)$get['height'] : 0;
+        $get['crop'] = !empty($get['crop']) ? (strtolower($get['crop']) === 'true' ? 't' : 'f') : FALSE;
+        $get['fill'] = !empty($get['fill']) ? (strtolower($get['fill']) === 'true' ? 't' : 'f') : FALSE;
+        $get['fill_color'] = !empty($get['fill_color']) ? explode('_', $get['fill_color']) : FALSE;
+         if(!empty($get['crop_coords'])){ $get['crop_coords'] = $get['crop_coords'] ? explode('_', $get['crop_coords']) : FALSE; }
 
         $filename_original = FALSE;
         $file = FALSE;
@@ -64,7 +61,9 @@ class Mimeg
                     }
         }
 
-
+ if(!file_exists($filename_original)){
+           return '/images/no_image.jpg';
+       }
 
         if ($file || $filename_original){
 
@@ -80,7 +79,7 @@ class Mimeg
                 $filename_original = substr($filename_original, 0, strripos($filename_original, 'flv')) . $ext;
             }
 
-            if ($get['original']) {
+            if (!empty($get['original'])) {
 
                // $filename_original_org = substr($filename_original, 0, strrpos($filename_original, '.')) . "_org.{$ext}";
                 
@@ -110,18 +109,22 @@ class Mimeg
             if ($get['fill_color']){
                 $filename_dest .= '_fc' . implode('_', $get['fill_color']);
             }
-            if ($get['crop_coords']){
+            if (!empty($get['crop_coords'])){
                 $filename_dest .= '_cc' . implode('_', $get['crop_coords']);
             }
 
 
             $filename_dest .= '.' . $ext;
+            
+            
             //sort cache by size
             if ($get['width'] || $get['height']){
                 $folder = '/files/'. $get['width'].'_'.$get['height'].'/';
                 $filename_dest = $folder.pathinfo($filename_dest, PATHINFO_BASENAME);
             }
         }
+     
+    
 
         return $filename_dest;
     }
@@ -176,6 +179,19 @@ class Mimeg
 
         $filename_dest = pathinfo($filename_original);
         $result = @unlink($folder.$filename_dest['filename'].'_w'.$w.'_h'.$h.'_cf_ft_fc255_255_255.'.strtolower($filename_dest['extension']));
+        //d($filename_dest);
+        return $result;
+    }
+    public static function deleteimgorg($filename_original){
+        //2b56eead95251c41f60aab4ba54c6013_w800_h600_cf_ft_fc255_255_255.jpg
+        $folder = $_SERVER['DOCUMENT_ROOT'].'/files/org/';
+        if (!file_exists($folder)){
+            mkdir($folder);
+        }
+        //d($filename_original);
+
+        $filename_dest = pathinfo($filename_original);
+        $result = @unlink($folder.$filename_dest['filename'].'.'.strtolower($filename_dest['extension']));
         //d($filename_dest);
         return $result;
     }

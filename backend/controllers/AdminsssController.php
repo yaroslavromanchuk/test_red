@@ -3601,9 +3601,9 @@ HAVING sum(ws_articles_sizes.count) <>stock ');
                         else $article->setNew(0);
                         unset($_POST['new']);
 						
-						if(isset($_POST['long_text']) and $_POST['long_text'] != '') $_POST['long_text_uk'] = $this->trans->translateuk($_POST['long_text'], 'ru', 'uk');
+						if(isset($_POST['long_text']) and $_POST['long_text'] != '') $_POST['long_text_uk'] = $this->trans->translate($_POST['long_text'], 'ru', 'uk');
 						
-						if(isset($_POST['sostav']) and $_POST['sostav'] != '') $_POST['sostav_uk'] = $this->trans->translateuk($_POST['sostav'], 'ru', 'uk');
+						if(isset($_POST['sostav']) and $_POST['sostav'] != '') $_POST['sostav_uk'] = $this->trans->translate($_POST['sostav'], 'ru', 'uk');
 
                         if (isset($_POST['price']))
                             $_POST['price'] = str_replace(',', '.', $_POST['price']);
@@ -3660,7 +3660,7 @@ HAVING sum(ws_articles_sizes.count) <>stock ');
                                        /* $article->setBrand($ifos['brand']);*/
 									   if(@$ifos['nakladna']){ $article->setCode($ifos['nakladna']); } 
                                         $article->setModel($ifos['model']);
-										$article->setModelUk($this->trans->translateuk($ifos['model'], 'ru', 'uk'));
+										$article->setModelUk($this->trans->translate($ifos['model'], 'ru', 'uk'));
                                         $article->setPrice($ifos['price']); 
 										 $article->setMinPrice($ifos['min_price']);
 										 $article->setMaxSkidka($ifos['max_skidka']);
@@ -16049,13 +16049,13 @@ $("#"+c.id).prop("checked", true);
 				
 	if(isset($this->post->sostav) and $this->post->sostav != ''){
 		$article->setSostav($this->post->sostav);
-		$article->setSostavUk($this->trans->translateuk($this->post->sostav, 'ru', 'uk'));
+		$article->setSostavUk($this->trans->translate($this->post->sostav, 'ru', 'uk'));
 	}else{
 	$errors[] = 'Вы не ввели состав товара!';
 	}
 if(isset($this->post->long_text) and $this->post->long_text != ''){
 		$article->setLongText($this->post->long_text);
-		$article->setLongTextUk($this->trans->translateuk($this->post->long_text, 'ru', 'uk'));
+		$article->setLongTextUk($this->trans->translate($this->post->long_text, 'ru', 'uk'));
 	}else{
 	$errors[] = 'Вы не ввели описание товара!';
 	}	
@@ -16140,7 +16140,7 @@ if(isset($this->post->long_text) and $this->post->long_text != ''){
 									
 									$art->setColorId($a['color_id']); 
 									$art->setModel($a['model']);
-									$art->setModelUk($this->trans->translateuk($a['model'], 'ru', 'uk'));
+									$art->setModelUk($this->trans->translate($a['model'], 'ru', 'uk'));
                                     $art->setPrice($a['price']); 
 									$art->setStock((int)$a['stock']);
 									$art->setActive('n');
@@ -16212,7 +16212,7 @@ if(isset($this->post->long_text) and $this->post->long_text != ''){
 									
 									$art->setColorId($a['color_id']); 
 									$art->setModelUk($a['model']);
-									$art->setModel($this->trans->translateuk(mb_strtolower($a['model']), 'uk', 'ru'));
+									$art->setModel($this->trans->translate(mb_strtolower($a['model']), 'uk', 'ru'));
                                     $art->setPrice($a['price']); 
 									$art->setStock((int)$a['stock']);
 									$art->setSezon($a['id_season']);

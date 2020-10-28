@@ -1920,6 +1920,7 @@ textarea.custom-file-input.parsley-error:focus {
 }
 .btn:focus, .sp-container button:focus, .btn:hover, .sp-container button:hover {
   text-decoration: none;
+  cursor: pointer;
 }
 .btn:focus, .sp-container button:focus, .btn.focus, .sp-container button.focus {
   outline: 0;

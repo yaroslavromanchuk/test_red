@@ -29,8 +29,8 @@ class Menu extends wsMenu
 	{
 		return wsActiveRecord::useStatic('Menu')->findBySiteId(1);
 
-		$m = self::findMenu(self::$_top_position);
+		//$m = self::findMenu(self::$_top_position);
                 
-		return $m->merge(self::findMenu(null));
+		//return $m->merge(self::findMenu(null));
 	}
 }

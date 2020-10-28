@@ -10,7 +10,7 @@ header('X-XSS-Protection: 0');?>
 display:none;
 }
 </style>
-<?=$this->getCurMenu()->getPageBody(); ?>
+<?=$this->getCurMenu()->getPageBody()?>
 <?php $coll = wsActiveRecord::useStatic('Subscriber')->count(array('active' => 1, 'confirmed is not null', 'men'=> 0, 'women'=>0, 'baby'=>0, 'shop'=>0)); ?>
 <p>Рассылка будет отправлена <?=$coll?> подписчикам.</p>
 <input type="hidden" id="all_subject" name="all_subject" value="<?=$coll?>"/>  
@@ -104,12 +104,13 @@ $( document ).ready(function() {
   </script>
 
 <form method="POST" id="mail_form" action="<?=$this->path?>generalmailing/" target="_blank">
-    <table id="editpage" cellpadding="5" cellspacing="0" class="table">
+    <table id="editpage"  class="table">
         <tr>
 		    <td class="kolom1">Начало обращения</td>
             <td><input type="hidden" id="id_post"  name="id_post" value="<?=@$this->pemail->id?$this->pemail->id:''?>">
 			<input name="subject_start" type="text" class="form-control input w500"  disabled
-                       value="<?php if(@$this->post->subject_start){ echo $this->post->subject_start;}elseif($this->pemail->subject_start){ echo $this->pemail->subject_start;} ?>"/><label><input type="checkbox" id="s_start" name="s_start" onclick="agreeForm(this.form)" value="1">Добавить приветствие</label></td>
+                       value="<?php if(@$this->post->subject_start){ echo $this->post->subject_start;}elseif($this->pemail->subject_start){ echo $this->pemail->subject_start;} ?>"/><label><input type="checkbox" id="s_start" name="s_start" onclick="agreeForm(this.form)" value="1">Добавить приветствие</label>
+            </td>
 					   </tr>
 					   <tr>
             <td class="kolom1">Тема письма</td>
@@ -281,19 +282,14 @@ $( document ).ready(function() {
 		function sendSave(url, data, save) {
 		var intro = tinymce.get('page_body').getContent().replace(/&/g,"#");
 		var ending = tinymce.get('page_ending').getContent().replace(/&/g,"#");
-var new_data = data + '&intro='+intro+'&ending='+ending+ '&save='+ save;
-
-			//surl = url+"&"+new_data;
-//		console.log(surl);
+        var new_data = data + '&intro='+intro+'&ending='+ending+ '&method='+ save;
             $.ajax({
                 url: url,
                 type: 'POST',
                 dataType: 'json',
                 data: new_data,
                 success: function (data) {
-                    if (data.status = 'send') {
-                            alert('Рассылка сохранена.');
-                    }
+                            alert(data.message);
                 }
             });
 
@@ -382,14 +378,14 @@ var new_data = data + '&from_mail=' + send_mail + '&count=' + count +'&intro='+e
 			///alert('Сообщение отправлено на тестовый email.');
 
         });
-		 $('#savepost').click(function () {
+	$('#savepost').click(function () {
             var url = '/admin/generalmailing/';
             var data = $('#mail_form').serialize();
            // $('.mailing_start').show();
-            sendSave(url, data, 2);
+            sendSave(url, data, 'save');
 			//$('#show_emails').show();
 			//$('#send_emails').show();
-			alert('Сообщение отправлено на сохранение.');
+	alert('Сообщение отправлено на сохранение.');
 
         });
 

@@ -25,7 +25,7 @@ class FinderController extends controllerAbstract {
 
 		
         $search_result = Finder::getArticlesByWord($search_word, array(), $page, $onPage, $category);
-        if (@$_GET['view'] == 'all') {
+        if (isset($_GET['view']) && $_GET['view'] == 'all') {
             $page = 0;
             $onPage = $search_result['count'];
             $this->view->per_page = $onPage;
@@ -125,7 +125,7 @@ class FinderController extends controllerAbstract {
         }else{
             $_SESSION['item_on_page'] =  Config::findByCode('products_per_page')->getValue();
         }
-        $prod_on_page = (int)@$_SESSION['items_on_page'];
+        $prod_on_page = (int)$_SESSION['items_on_page'];
               if(!$prod_on_page) {
                   $prod_on_page =  Config::findByCode('products_per_page')->getValue();
               }

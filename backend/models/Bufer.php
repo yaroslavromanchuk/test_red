@@ -37,7 +37,11 @@ class Bufer extends wsActiveRecord
                      if($post->interval_prognoz == 2){
                           return self:: getMassNormaDay($c, $from, $to, true);   
                      }elseif($post->method == 'oborot_all' or $post->method == 'oborot_root_category' or $post->method == 'oborot_category'){
+                       
                          return self::getOborot($c, $from, $to);
+                     }elseif($post->method == 'oborot_all_monch'){
+                         
+                         return self::getOborotGRN($c, date('Y-m',strtotime($post->from_prognoz)), date('Y-m', strtotime($post->to_prognoz)));
                      }else{
                          return self::getMassNorma($c, $from, $to);   
                      }      
@@ -45,6 +49,26 @@ class Bufer extends wsActiveRecord
               
                                   
     }
+    public static function getNormaTable($post){  
+        $from = date('Y-m-d',strtotime($post->from_prognoz));
+                $to = date('Y-m-d', strtotime($post->to_prognoz));
+                $cat = new Shopcategories((int)$post->cat_prognoz);
+                if(!empty($post->interval_prognoz)){
+                    switch ($post->interval_prognoz){
+                    case '1': return self::getMassNorma($cat->id, $from, $to);
+                    case '2': return self:: getMassNormaDay($cat->id, $from, $to, true);   
+                    case '3':
+                        return self:: getMassNormaMonth($cat->id, date('Y-m',strtotime($post->from_prognoz)), date('Y-m', strtotime($post->to_prognoz)));  
+                    default : 
+                }
+                }else{
+                    return self::getMassNorma($cat->id, $from, $to);
+                }
+                
+                
+        
+    }
+    
     public static function getNormaPrognozBrand($post){
         
         $from = date('Y-m-d',strtotime($post->from_prognoz_brand));
@@ -160,15 +184,7 @@ $res = [];
                 }
                          
       }
-      
-    //  echo '<pre>';
-    //  print_r($res);
-    //  echo '</pre>';
-    //  exit();
-                      
-                       
-                       return  $res;
-                            
+                       return  $res;     
     }
     /**
      * Оборачиваемость брендов за определенный интервал времени
@@ -256,9 +272,9 @@ ORDER BY  `ctn` DESC";
                             $min = 0;
                             $max = 1000;
                             switch ($post->zone) {
-                                case 1: $min = 0; $max = 21; break;
-                                case 21: $min = 21; $max = 28; break;
-                                case 28: $min = 28; $max = 1000; break;
+                                case 1: $min = 0; $max = 15; break;
+                                case 21: $min = 15; $max = 30; break;
+                                case 28: $min = 30; $max = 1000; break;
                                 default: $min = 0; $max = 1000; 
                                     break;
                             }
@@ -284,16 +300,175 @@ ORDER BY  `ctn` DESC";
                 }
                          
       }
-      
-    //  echo '<pre>';
-    //  print_r($res);
-    //  echo '</pre>';
-    //  exit();
-                      
-                       
-                       return  $res;
-                            
+    return  $res;                       
     }
+    
+    public static function getNormaOborotGraidCategory($post){
+             $from = date('Y-m-d',strtotime($post->from_prognoz));
+                $to = date('Y-m-d', strtotime($post->to_prognoz));
+                 $res = [];
+                 $i=0;
+                 if(!empty($post->graid)){
+                    $ar = [$post->graid => '']; 
+                    if(!empty($post->category)){
+               // $cc =  new Shopcategories((int)$post->cat_prognoz);
+                $catt = $post->category;//$cc->id;
+                }else{
+                    $catt = 0;
+                }
+                 $c = wsActiveRecord::useStatic('Shopcategories')->findAll(['parent_id'=>$catt, 'id not in (106, 85, 267, 146)', 'active'=> 1]);
+                    foreach ($c as $v) {
+                     
+                 
+                        if($v->getKidsIds()){
+                               $r = self::getOborot(implode(',', $v->getKidsIds()), $from, $to, $post->graid);
+                      
+                               }else{
+                            $r  = self::getOborot($v->id, $from, $to, $post->graid);
+                        } 
+                      //  if( $s = count($rr['ost']);//max($rr['ost']);
+                        $count = count($r['oborot']);
+                        if(isset($post->zone) and !empty($post->zone)){
+                            $min = 0;
+                            $max = 1000;
+                            switch ($post->zone) {
+                                case 1: $min = 0; $max = 15; break;
+                                case 21: $min = 15; $max = 30; break;
+                                case 28: $min = 30; $max = 1000; break;
+                                default: $min = 0; $max = 1000; 
+                                    break;
+                            }
+                            
+                            if($r['oborot'][$count-1] <= $min or $r['oborot'][$count-1] > $max){
+                                $count = 0;
+                            }
+                        }
+                        
+                if($count > 0){
+                        if(array_sum($r['oborot']) > 0){
+                           
+                      $res[$i] = $r;
+                       $res[$i]['cat'] = $v->h1; 
+                            $i++;
+                            
+                            
+                      } 
+                }
+                         
+      }
+                 }elseif(!empty($post->category)){
+                      $ar = [0 =>'Без грейда', 1=>'Грейд 1', 2=>'Грейд 2', 3=>'Грейд 3', 4=>'Грейд 4', 5=>'Грейд 5' ];
+                 }else{
+                      $ar = [0 =>'Без грейда', 1=>'Грейд 1', 2=>'Грейд 2', 3=>'Грейд 3', 4=>'Грейд 4', 5=>'Грейд 5' ];
+                 
+                 
+                 
+                 foreach ($ar as $k => $v ) {
+                            $r  = self::getOborotGraid($k, $from, $to, $cat);
+                        $count = count($r['oborot']);
+                        if(isset($post->zone) and !empty($post->zone)){
+                            $min = 0;
+                            $max = 1000;
+                            switch ($post->zone) {
+                                case 1: $min = 0; $max = 15; break;
+                                case 21: $min = 15; $max = 30; break;
+                                case 28: $min = 30; $max = 1000; break;
+                                default: $min = 0; $max = 1000; 
+                                    break;
+                            }
+                            if($r['oborot'][$count-1] <= $min or $r['oborot'][$count-1] > $max){
+                                $count = 0;
+                            }
+                        }
+                if($count > 0){
+                        if(array_sum($r['oborot']) > 0){
+                            foreach ($r['verch'] as $z=> $value) {
+                                $r['verch'][$z] = $r['verch_m'];
+                            }
+                        $res[$i] = $r;
+                        $res[$i]['cat'] = $v; 
+                            $i++;  
+                      } 
+                }           
+      }
+    }
+    return  $res;                       
+    }
+    
+    private static function getMassNormaMonth($c, $from, $to){
+         $tost  = wsActiveRecord::findByQueryFirstArray("
+SELECT 
+SUM(`ws_balance_category`.`count` ) AS ctn
+FROM  `ws_balance` 
+JOIN  `ws_balance_category` ON  `ws_balance`.`id` =  `ws_balance_category`.`id_balance` 
+WHERE  `ws_balance`.`date` =  DATE_FORMAT( NOW(), '%Y-%m-%d')
+     and `ws_balance_category`.id_category in ({$c}) 
+ ")['ctn'];
+     
+         $rr = [];
+         $rr['tost'] = $tost;
+          $sql = "
+SELECT DATE_FORMAT(`ws_balance`.`date`, '%m-%Y') AS nedelya,
+DATE_FORMAT(  `ws_balance`.`date` , '%Y-%m') AS `m`,
+SUM(  `ws_balance_category`.`count` ) AS ctn
+FROM  `ws_balance` 
+JOIN  `ws_balance_category` ON  `ws_balance`.`id` =  `ws_balance_category`.`id_balance` 
+WHERE DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m' ) >=  '{$from}'
+AND DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m' ) <=  '{$to}'
+     and `ws_balance_category`.id_category in ({$c}) 
+GROUP BY  `nedelya` 
+ORDER BY  `m` ASC 
+ ";
+            $ok = wsActiveRecord::findByQueryArray($sql);
+          
+            foreach($ok as $k){
+                  $z = wsActiveRecord::findByQueryFirstArray("
+                      SELECT  sum(IF(`ws_order_articles`.`count`>0,`ws_order_articles`.`count`,1)) as suma
+                      FROM  `ws_order_articles`
+inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
+inner join `ws_articles` on `ws_order_articles`.`article_id` = `ws_articles`.`id`
+WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m' )  = '{$k->m}' 
+AND `ws_orders`.`status` not in(17)
+and `ws_articles`.`category_id` in ({$c})");
+
+                  $activ = wsActiveRecord::findByQueryFirstArray(""
+                          . "SELECT SUM(  `count` ) AS ctn FROM  `red_article_log`"
+                          . "inner join `ws_articles` on `red_article_log`.`article_id` = `ws_articles`.`id`"
+                          . " WHERE `red_article_log`.`type_id` = 4"
+                          . " and `ws_articles`.`category_id` in ({$c})  "
+                          . " AND  DATE_FORMAT(  `red_article_log`.`ctime` ,  '%Y-%m' ) =  '{$k->m}' ");
+                  
+                  $hist = wsActiveRecord::findByQueryFirstArray("
+                      SELECT count(order_history.id) as `ctn`
+                      FROM order_history 
+                      inner join `ws_articles` on order_history.`article_id` = `ws_articles`.`id`
+WHERE order_history.name LIKE  '%Прийом товара с возврата%'
+                            and `ws_articles`.`category_id` in ({$c}) 
+			and  DATE_FORMAT(`order_history.`ctime` ,  '%Y-%m' )  =   '{$k->m}'  ");
+                    $dn = date('t', strtotime($k->nedelya));//(strtotime($k->dend)-strtotime($k->dbeg))/(60*60*24);
+                  $rr['x'][] = $k->nedelya;//.'('.$dn.')';
+                 
+                      $d = $dn?$dn:1;
+                    $rr['d'][] = $d;
+                  if($k->ctn > 0){
+                      $ost = (int)$k->ctn/$d;
+                  }else{
+                      $ost = 0;
+                  }
+                  $prod = (int)$z['suma'];
+                  $rr['ost'][] = ceil($ost);
+                  $rr['prod'][] = ceil($prod);
+                  if($ost > 0 and $prod > 0){
+                  $rr['oborot'][] =  ceil(($ost*$d)/$prod);
+                  }else{ 
+                   $rr['oborot'][] = 0; 
+                  }
+                  $rr['add'][] = (int)($activ['ctn']+$hist['ctn']);
+                  
+            }
+        return  self::prognoz_table($rr);
+    }
+    
     /**
      * 
      * @param type $c
@@ -302,7 +477,16 @@ ORDER BY  `ctn` DESC";
      * @return type
      */
     private static function getMassNorma($c, $from, $to){
-        
+         $tost  = wsActiveRecord::findByQueryFirstArray("
+SELECT 
+SUM(`ws_balance_category`.`count` ) AS ctn
+FROM  `ws_balance` 
+JOIN  `ws_balance_category` ON  `ws_balance`.`id` =  `ws_balance_category`.`id_balance` 
+WHERE  `ws_balance`.`date` =  DATE_FORMAT( NOW(), '%Y-%m-%d')
+     and `ws_balance_category`.id_category in ({$c}) 
+ ")['ctn'];
+         $rr = [];
+         $rr['tost'] = $tost;
         $sql = "
 SELECT WEEK(  `ws_balance`.`date` , -1 ) AS nedelya,
 ADDDATE(  `ws_balance`.`date` ,INTERVAL( WEEKDAY(  `ws_balance`.`date` ) ) DAY ) AS dbeg,
@@ -317,7 +501,7 @@ GROUP BY  `nedelya`
 ORDER BY  `dbeg` ASC 
  ";
             $ok = wsActiveRecord::findByQueryArray($sql);
-              $rr = [];
+         
             foreach($ok as $k){
                   $z = wsActiveRecord::findByQueryFirstArray("SELECT  sum(IF(`ws_order_articles`.`count`>0,`ws_order_articles`.`count`,1)) as suma FROM  `ws_order_articles`
 inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
@@ -348,7 +532,7 @@ WHERE order_history.name LIKE  '%Прийом товара с возврата%'
                           . "and order_history.`ctime` <= '".$ed."' ");
                   
                   $rr['x'][] = date("W", strtotime($k->dbeg)).'('.date("d.m", strtotime($k->dbeg)).')';
-                   $dn = (strtotime($k->dend)-strtotime($k->dbeg))/(60*60*24);
+                   $dn = (strtotime($k->dend)-strtotime($k->dbeg))/(60*60*24)+1;
                       $d = $dn?$dn:1;
                   if($k->ctn > 0){
                       $ost = (int)$k->ctn/$d;
@@ -380,7 +564,7 @@ WHERE order_history.name LIKE  '%Прийом товара с возврата%'
      */
     private static function getMassNormaDay($c, $from, $to, $type){
         
-        $sql = "
+   /*     $sql = "
 SELECT WEEK(  `ws_balance`.`date` , -1 ) AS nedelya,
 ADDDATE(  `ws_balance`.`date` ,INTERVAL( WEEKDAY(  `ws_balance`.`date` ) ) DAY ) AS dbeg,
 ADDDATE(  `ws_balance`.`date` ,INTERVAL( 6 - WEEKDAY(  `ws_balance`.`date` ) ) DAY ) AS dend,
@@ -392,9 +576,10 @@ AND DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m-%d' ) <=  '".$to."'
      and `ws_balance_category`.id_category in (".$c.") 
 GROUP BY  `nedelya` 
 ORDER BY  `dbeg` ASC 
- ";
+ "; */
         
-        $sql = "SELECT  `ws_balance`.`date` , SUM(  `ws_balance_category`.`count` ) AS ctn
+       $sql = "SELECT  `ws_balance`.`date`,
+           SUM(  `ws_balance_category`.`count` ) AS ctn
 FROM  `ws_balance` 
 JOIN  `ws_balance_category` ON  `ws_balance`.`id` =  `ws_balance_category`.`id_balance` 
 WHERE DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m-%d' ) >=  '".$from."'
@@ -473,6 +658,17 @@ WHERE order_history.name LIKE  '%Прийом товара с возврата%'
     private static function getMassNormaBrand($c, $from, $to){
       //  return $c;
         
+        $tost  = wsActiveRecord::findByQueryFirstArray("
+SELECT 
+SUM(`ws_balance_category`.`count` ) AS ctn
+FROM  `ws_balance` 
+JOIN  `ws_balance_category` ON  `ws_balance`.`id` =  `ws_balance_category`.`id_balance` 
+WHERE  `ws_balance`.`date` =  DATE_FORMAT( NOW(), '%Y-%m-%d')
+     and `ws_balance_category`.id_brand in ({$c}) 
+ ")['ctn'];
+     
+         $rr = [];
+         $rr['tost'] = $tost;
         $sql = "
 SELECT WEEK(  `ws_balance`.`date` , -1 ) AS nedelya,
 ADDDATE(  `ws_balance`.`date` ,INTERVAL( WEEKDAY(  `ws_balance`.`date` ) ) DAY ) AS dbeg,
@@ -488,7 +684,7 @@ ORDER BY  `dbeg` ASC
  ";
        // return $sql;
             $ok = wsActiveRecord::findByQueryArray($sql);
-              $rr = [];
+              
             foreach($ok as $k){
                   $z = wsActiveRecord::findByQueryFirstArray("SELECT  sum(IF(`ws_order_articles`.`count`>0,`ws_order_articles`.`count`,1)) as suma FROM  `ws_order_articles`
 inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
@@ -546,50 +742,190 @@ WHERE order_history.name LIKE  '%Прийом товара с возврата%'
      * @param type $c - категория
      * @param type $from - от
      * @param type $to - до
+     * @param type $graid - грейд
      * @return int
      */
-     private static function getOborot($c, $from, $to){
+     private static function getOborot($c, $from, $to, $graid = false){
         // echo $c;
        //  exit();
-        
+        //SUM(`ws_balance_category`.`summa`) as summa
+         $tost  = wsActiveRecord::findByQueryFirstArray("
+SELECT 
+SUM(`ws_balance_category`.`count` ) AS ctn
+FROM  `ws_balance` 
+JOIN  `ws_balance_category` ON  `ws_balance`.`id` =  `ws_balance_category`.`id_balance` 
+WHERE  `ws_balance`.`date` =  DATE_FORMAT( NOW(), '%Y-%m-%d')
+     and `ws_balance_category`.id_category in ({$c}) 
+ ")['ctn'];
+     
+         $rr = [];
+         $rr['tost'] = $tost;
         $sql = "
 SELECT WEEK(  `ws_balance`.`date` , -1 ) AS nedelya,
 ADDDATE(  `ws_balance`.`date` ,INTERVAL( WEEKDAY(  `ws_balance`.`date` ) ) DAY ) AS dbeg,
 ADDDATE(  `ws_balance`.`date` ,INTERVAL( 6 - WEEKDAY(  `ws_balance`.`date` ) ) DAY ) AS dend,
-SUM(  `ws_balance_category`.`count` ) AS ctn
+SUM(  `ws_balance_category`.`count` ) AS ctn,
+SUM(`ws_balance_category`.`summa`) as summa
 FROM  `ws_balance` 
-JOIN  `ws_balance_category` ON  `ws_balance`.`id` =  `ws_balance_category`.`id_balance` 
-WHERE DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m-%d' ) >=  '".$from."'
+JOIN  `ws_balance_category` ON  `ws_balance`.`id` =  `ws_balance_category`.`id_balance`";
+      if($graid){
+          $sql.= " JOIN  `red_brands` ON  `ws_balance_category`.`id_brand` = `red_brands`.`id`";
+      }  
+$sql.=" WHERE DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m-%d' ) >=  '".$from."'
 AND DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m-%d' ) <=  '".$to."'
-     and `ws_balance_category`.id_category in (".$c.") 
-GROUP BY  `nedelya` 
+     and `ws_balance_category`.id_category in (".$c.") ";
+    if($graid){
+        $sql.=" AND  `red_brands`.`greyd` = ".$graid;
+    }    
+$sql .= " GROUP BY  `nedelya` 
 ORDER BY  `dbeg` ASC 
  ";
             $ok = wsActiveRecord::findByQueryArray($sql);
-              $rr = [];
+        
             foreach($ok as $k){
-                  $z = wsActiveRecord::findByQueryFirstArray("SELECT  sum(IF(`ws_order_articles`.`count`>0,`ws_order_articles`.`count`,1)) as suma FROM  `ws_order_articles`
+                //SUM((`ws_orders`.`amount`+`ws_orders`.`deposit`+`ws_orders`.`bonus`)) as suma_grn, 
+                //SUM(IF(`ws_order_articles`.`count`>0,`ws_order_articles`.`count`,0)) as suma,
+                $sq = "SELECT 
+                      SUM(`ws_order_articles`.`count`) as suma,
+                      SUM((`ws_orders`.`amount`+`ws_orders`.`deposit`+`ws_orders`.`bonus`)) as suma_grn
+                      FROM  `ws_order_articles`
 inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
-inner join `ws_articles` on `ws_order_articles`.`article_id` = `ws_articles`.`id`
-WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' )  >= '".$k->dbeg."' 
-    and DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' )  <= '".$k->dend."' 
-AND `ws_orders`.`status` not in(17)
-and `ws_articles`.`category_id` in (".$c.")");
+inner join `ws_articles` on `ws_order_articles`.`article_id` = `ws_articles`.`id`" ;
+            if($graid){
+                $sq.="  inner join  `red_brands` ON  `ws_articles`.`brand_id` = `red_brands`.`id`";
+            }    
+        
+$sq .=" WHERE 
+DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' )  >= '".$k->dbeg."' 
+AND DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' )  <= '".$k->dend."' 
+AND `ws_orders`.`status` not in(17, 7, 2)
+and `ws_articles`.`category_id` in (".$c.")";   
+
+if($graid){
+    $sq.=" and `red_brands`.`greyd` = ".$graid;
+}
+                  $z = wsActiveRecord::findByQueryFirstArray($sq);
+
 
                   $rr['x'][] = date("W", strtotime($k->dbeg)).'('.date("d.m", strtotime($k->dbeg)).')';
                    $dn = (strtotime($k->dend)-strtotime($k->dbeg))/(60*60*24);
                       $d = $dn?$dn:1;
+                   //  l($d);
                   if($k->ctn > 0){
                       $ost = (int)$k->ctn/$d;
                   }else{
                       $ost = 0;
                   }
+                  
                   $prod = (int)$z['suma'];
+                  
                   if($ost > 0 and $prod > 0){
                   $rr['oborot'][] =  ceil(($ost*$d)/$prod);
                   }else{ 
                    $rr['oborot'][] = 0; 
                   }
+                  
+                    if($k->summa > 0){
+                        $ost_sum = (int)$k->summa/$d;
+                      //$ost_sum = (int)$k->summa;
+                    }else{
+                        $ost_sum = 0;
+                    } 
+                  
+                  $prod_grn = (int)$z['suma_grn'];
+                  
+                    if($ost_sum > 0 and $prod_grn > 0){
+                        $rr['oborot_grn'][] =  ceil(($ost_sum*$d)/$prod_grn);
+                    }else{ 
+                        $rr['oborot_grn'][] = 0; 
+                    }
+                  
+                  $rr['niz'][] = 15;
+                  $rr['verch'][] = 100;
+                  $rr['norma'][] = 30;
+            }
+        return  $rr;
+    }
+         private static function getOborotGRN($c, $from, $to){
+        $sql = "
+SELECT 
+DATE_FORMAT( `ws_balance`.`date` , '%Y-%m' ) AS monch,
+DATE_SUB( `ws_balance`.`date` , INTERVAL DAYOFMONTH( `ws_balance`.`date` ) -1 DAY ) AS dbeg,
+DATE_SUB( DATE_ADD( DATE_SUB( `ws_balance`.`date` , INTERVAL DAYOFMONTH( `ws_balance`.`date` ) -1 DAY ) , INTERVAL 1 MONTH ) , INTERVAL 1 DAY ) AS dend,
+SUM( `ws_balance_category`.`count` ) AS ctn,
+SUM( `ws_balance_category`.`summa` ) AS summa
+FROM `ws_balance`
+JOIN `ws_balance_category` ON `ws_balance`.`id` = `ws_balance_category`.`id_balance`
+WHERE DATE_FORMAT( `ws_balance`.`date` , '%Y-%m' ) >= '".$from."'
+AND DATE_FORMAT( `ws_balance`.`date` , '%Y-%m' ) <= '".$to."'
+and `ws_balance_category`.id_category in (".$c.") 
+GROUP BY `monch`
+ORDER BY `dbeg` ASC            
+ ";
+            $ok = wsActiveRecord::findByQueryArray($sql);
+           
+              $rr = [];
+            foreach($ok as $k){
+                //SUM((`ws_orders`.`amount`+`ws_orders`.`deposit`+`ws_orders`.`bonus`)) as suma_grn, 
+                //SUM(IF(`ws_order_articles`.`count`>0,`ws_order_articles`.`count`,0)) as suma,
+                
+                $sql = "SELECT 
+                      SUM(`ws_order_articles`.`count`) as suma,
+                      SUM(DISTINCT (`ws_orders`.`amount`+`ws_orders`.`deposit`+`ws_orders`.`bonus`)) as suma_grn
+                      FROM  `ws_order_articles`
+inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
+inner join `ws_articles` on `ws_order_articles`.`article_id` = `ws_articles`.`id`
+WHERE 
+DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' )  >= '".$k->dbeg."' 
+AND DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' )  <= '".$k->dend."' 
+AND `ws_orders`.`status` not in(17, 7, 2)
+and `ws_articles`.`category_id` in (".$c.")";
+                
+                $sql2 = "SELECT DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m' ) as monch,
+                      SUM((`ws_orders`.`amount`+`ws_orders`.`deposit`+`ws_orders`.`bonus`)) as suma_grn
+                      FROM  `ws_orders`
+WHERE 
+DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' )  >= '".$k->dbeg."' 
+AND DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' )  <= '".$k->dend."'
+AND `ws_orders`.`status` not in(17, 7, 2)
+group by monch";
+               // l($sql);
+                  $z = wsActiveRecord::findByQueryFirstArray( $sql);
+
+                  $rr['x'][] = date("m.Y", strtotime($k->dbeg));
+                   $dn = (strtotime($k->dend)-strtotime($k->dbeg))/(60*60*24);
+                      $d = $dn?($dn+1):1;
+                    //  l($d);  
+                  if($k->ctn > 0){
+                      $ost = (int)$k->ctn/$d;
+                  }else{
+                      $ost = 0;
+                  }
+                  
+                  $prod = (int)$z['suma'];
+                  
+                  if($ost > 0 and $prod > 0){
+                  $rr['oborot'][] =  ceil(($ost*$d)/$prod);
+                  }else{ 
+                   $rr['oborot'][] = 0; 
+                  }
+                  
+                    if($k->summa > 0){
+                        $ost_sum = (int)$k->summa/$d;
+                      //$ost_sum = (int)$k->summa;
+                    }else{
+                        $ost_sum = 0;
+                    }
+                   // l($ost_sum);
+                  
+                  $prod_grn = (int)$z['suma_grn'];
+                 // echo 'prod = '.$z['suma_grn'];
+                    if($ost_sum > 0 and $prod_grn > 0){
+                        $rr['oborot_grn'][] =  ceil(($ost_sum*$d)/$prod_grn);
+                    }else{ 
+                        $rr['oborot_grn'][] = 0; 
+                    }
+                  
                   $rr['niz'][] = 21;
                   $rr['verch'][] = 45;
                   $rr['norma'][] = 28;
@@ -606,7 +942,17 @@ and `ws_articles`.`category_id` in (".$c.")");
     private static function getOborotBrand($c, $from, $to){
         // echo $c;
        //  exit();
-        
+         $tost  = wsActiveRecord::findByQueryFirstArray("
+SELECT 
+SUM(`ws_balance_category`.`count` ) AS ctn
+FROM  `ws_balance` 
+JOIN  `ws_balance_category` ON  `ws_balance`.`id` =  `ws_balance_category`.`id_balance` 
+WHERE  `ws_balance`.`date` =  DATE_FORMAT( NOW(), '%Y-%m-%d')
+     and `ws_balance_category`.id_brand in ({$c}) 
+ ")['ctn'];
+     
+         $rr = [];
+         $rr['tost'] = $tost;
         $sql = "
 SELECT WEEK(  `ws_balance`.`date` , -1 ) AS nedelya,
 ADDDATE(  `ws_balance`.`date` ,INTERVAL( WEEKDAY(  `ws_balance`.`date` ) ) DAY ) AS dbeg,
@@ -621,12 +967,14 @@ GROUP BY  `nedelya`
 ORDER BY  `dbeg` ASC 
  ";
             $ok = wsActiveRecord::findByQueryArray($sql);
-              $rr = [];
+             
               $rr['niz_m'] = 21;
               $rr['norma_m'] = 28;
               $rr['verch_m'] = 60;
             foreach($ok as $k){
-                  $z = wsActiveRecord::findByQueryFirstArray("SELECT  sum(IF(`ws_order_articles`.`count`>0,`ws_order_articles`.`count`,1)) as suma FROM  `ws_order_articles`
+                  $z = wsActiveRecord::findByQueryFirstArray("SELECT  
+                      sum(IF(`ws_order_articles`.`count`>0,`ws_order_articles`.`count`,1)) as suma 
+                      FROM  `ws_order_articles`
 inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
 inner join `ws_articles` on `ws_order_articles`.`article_id` = `ws_articles`.`id`
 WHERE DATE_FORMAT(  `ws_orders`.`date_create` ,  '%Y-%m-%d' )  >= '".$k->dbeg."' 
@@ -677,7 +1025,7 @@ and `ws_articles`.`brand_id` = ".$c);
      * @param type $to
      * @return type
      */
-    private static function getOborotGraid($g, $from, $to){
+    private static function getOborotGraid($g, $from, $to, $cat = false){
         // echo $c;
        //  exit();
 
@@ -699,9 +1047,9 @@ ORDER BY  `dbeg` ASC
         
             $ok = wsActiveRecord::findByQueryArray($sql);
               $rr = [];
-              $rr['niz_m'] = 21;
-              $rr['norma_m'] = 28;
-              $rr['verch_m'] = 60;
+              $rr['niz_m'] = 15;
+              $rr['norma_m'] = 30;
+              $rr['verch_m'] = 45;
             foreach($ok as $k){
                   $z = wsActiveRecord::findByQueryFirstArray("SELECT  sum(IF(`ws_order_articles`.`count`>0,`ws_order_articles`.`count`,1)) as suma 
                     FROM  `ws_order_articles`
@@ -752,9 +1100,10 @@ AND `ws_orders`.`status` not in(17)");
      */
     private static function prognoz($arr = []){
         $i = 2;
-        $prod = $arr['prod'];
-        $ost = $arr['ost'];
-        $oborot = $arr['oborot'];
+        $prod = $arr['prod']?$arr['prod']:[0];
+        $ost = $arr['ost']?$arr['ost']:[0];
+        $oborot = $arr['oborot']?$arr['oborot']:[0];
+        $add = $arr['add']?$arr['add']:[0];
         foreach ($prod as $key => $value) {
             $n0 = ceil($ost[$key]*0.3);
             $n1 = ceil($ost[$key]*0.5);
@@ -786,13 +1135,14 @@ AND `ws_orders`.`status` not in(17)");
             }
         }
         $max_p = max($prod);
-        $max_d = max($arr['add']);
+        $max_d = max($add);
         $kl = array_search($max_p,$prod);
         $count = count($ost);
         $p_ost = ceil(array_sum($ost)/$count);
         $p_prod = ceil(array_sum($prod)/$count);
         $p_oborot = ceil(array_sum($oborot)/$count);
-       $t = $ost[$count-1];
+      // $t = $ost[$count-1];
+        $t = $arr['tost'];//текущий остаток
        for($i=0; $i<=$count; $i++){
            $arr['sr_ost'][$i] = $p_ost;
            $arr['sr_pr'][$i] = $p_prod;
@@ -809,12 +1159,37 @@ AND `ws_orders`.`status` not in(17)");
            $m = $ost[$kl] + $max_p;// остаток на момент максимальных продаж + продажи
            
            $otk = $m-$t;
-           if($otk <0 ){
+           $r = $otk;
+           if($otk < 0 ){
+              $r = $otk*(-1);
                $text = '<span style="color:#00e829;font-size: 18px;font-weight: bold;">Перегруз: + '.$otk*(-1).'</span>';
            }else{
+                $r = $otk*(-1);
                $text = '<span style="color:#ff0a0a;font-size: 18px;font-weight: bold;">Недогруз: - '.$otk.'</span>';
-           }     
+           }  
+           if($r == 0){$r = '';}
          $arr['otkloneniye'] = $text;
+         $arr['raznica'] = $r;
+         //$arr['tost'] =  $arr['tost'];
+        return $arr;
+    }
+     private static function prognoz_table($arr = []){
+        $prod = $arr['prod']?$arr['prod']:[0];
+        $ost = $arr['ost']?$arr['ost']:[0];
+        $max_p = max($prod);
+        $arr['max_p'] = $max_p;
+        
+        $kl = array_search($max_p,$prod);
+        
+       // $count = count($ost);
+        //$t = $ost[$count-1];//текущий остаток
+       $t =  $arr['tost'];
+
+       
+        $m = $ost[$kl] + $max_p;// Средний остаток на момент максимальных продаж + продажи
+        $r = ($m-$t)*(-1); 
+           if($r == 0){ $r = '';}
+         $arr['raznica'] = $r;
         return $arr;
     }
     /**
@@ -824,9 +1199,9 @@ AND `ws_orders`.`status` not in(17)");
      */
     private static function prognozdey($arr = []){
         $i = 2;
-        $prod = $arr['prod'];
+        $prod = $arr['prod']?$arr['prod']:[0];
        
-        $ost = $arr['ost'];
+        $ost = $arr['ost']?$arr['ost']:[0];
         $gm = [];
         $j = 0;
         foreach ($prod as $k => $v) {
@@ -891,12 +1266,19 @@ AND `ws_orders`.`status` not in(17)");
      * @param type $post  post->from_prognoz, post->to_prognoz, post->cat_prognoz
      * @return ['cat']['graid']=['ostatok','prodaji']
      */
-     public static function getToExcelNorma($post){
+     public static function getToExcelNorma($post){ 
+         //l($post);
+        // exit();
          $from = date('Y-m-d',strtotime($post->from_prognoz));
                 $to = date('Y-m-d', strtotime($post->to_prognoz));
-                $cat = new Shopcategories((int)$post->cat_prognoz);
+               // $cat = new Shopcategories((int)$post->cat_prognoz);
+               // $i = $post->graid?$post->graid:0;
                 $res = [];
-          if($cat->id == 267){
+                $c = $post->cat;
+                 for($i=0; $i<=5;$i++){
+                                     $res[$c][$i] = self::getQuery($c, $i, $from, $to); 
+                  }
+      /*    if($cat->id == 267){
                     $cc = wsActiveRecord::useStatic('Shopcategories')->findAll(['id in (33,14,15,54,59,146)']);
                     foreach ($cc as $v) {
                         if($kid = $v->getKidsIds()){
@@ -913,15 +1295,40 @@ AND `ws_orders`.`status` not in(17)");
                     }
                 }elseif($kid = $cat->getKidsIds()){
                             foreach ($kid as $k) {
-                                for($i=0; $i<=5;$i++){
+                               // for($i=0; $i<=5;$i++){
                                      $res[$k][$i] = self::getQuery($k, $i, $from, $to); 
-                                } 
+                               // } 
                             }
                                  }else{
-                                     for($i=0; $i<=5;$i++){
+                                    // for($i=0; $i<=5;$i++){
                                      $res[$cat->id][$i] = self::getQuery($cat->id, $i, $from, $to); 
-                                     }
-                                  }              
+                                   //  }
+                                  }*/
+                                 // l();
+         return $res;
+     }
+     public static function getToExcelNormaListCat($post){
+          $cat = new Shopcategories((int)$post->cat_prognoz);
+          $res = [];
+          if($cat->id == 267){
+                    $cc = wsActiveRecord::useStatic('Shopcategories')->findAll(['id in (33,14,15,54,59,146)']);
+                    foreach ($cc as $v) {
+                        if($kid = $v->getKidsIds()){
+                            foreach ($kid as $k) {
+                                $res[] = $k;
+                            }
+                        }else{
+                            $res[] = $v->id;
+                            
+                        }
+                    }
+                }elseif($kid = $cat->getKidsIds()){
+                            foreach ($kid as $k) {
+                                $res[] = $k; 
+                            }
+                                 }else{
+                                        $res[] = $v->id;
+                                  }
          return $res;
      }
      /**
@@ -933,6 +1340,21 @@ AND `ws_orders`.`status` not in(17)");
       * @return  ['ost','prod']
       */
      private static function getQuery($c, $b, $from, $to){
+         
+           $sq = "SELECT 
+SUM(`ws_balance_category`.`count` ) AS ctn
+FROM  `ws_balance` 
+JOIN  `ws_balance_category` ON  `ws_balance`.`id` =  `ws_balance_category`.`id_balance` 
+JOIN  `red_brands` ON  `ws_balance_category`.`id_brand` = `red_brands`.`id`
+WHERE  `ws_balance`.`date` =  DATE_FORMAT( NOW(), '%Y-%m-%d')";
+        
+
+    if($c){  $sq.=" and `ws_balance_category`.id_category  in ({$c}) ";}
+  if($b > -1){ $sq.=" and `red_brands`.`greyd`= {$b}  ";}
+ //l($sq);
+      $tost  = wsActiveRecord::findByQueryFirstArray($sq)['ctn'];
+         $rr = [];
+         $rr['tost'] = $tost;
         $sql = "
 SELECT WEEK(  `ws_balance`.`date` , -1 ) AS nedelya,
 ADDDATE(  `ws_balance`.`date` ,INTERVAL( WEEKDAY(  `ws_balance`.`date` ) ) DAY ) AS dbeg,
@@ -941,17 +1363,18 @@ SUM(  `ws_balance_category`.`count` ) AS ctn
 FROM  `ws_balance` 
 JOIN  `ws_balance_category` ON  `ws_balance`.`id` =  `ws_balance_category`.`id_balance` 
 JOIN  `red_brands` ON  `ws_balance_category`.`id_brand` = `red_brands`.`id`
-WHERE DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m-%d' ) >=  '".$from."'
-AND DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m-%d' ) <=  '".$to."'
-     and `ws_balance_category`.id_category = ".$c." 
-         and `red_brands`.`greyd` = ".$b." 
+WHERE DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m-%d' ) >=  '{$from}'
+AND DATE_FORMAT(  `ws_balance`.`date` ,  '%Y-%m-%d' ) <=  '{$to}'
+     and `ws_balance_category`.id_category = {$c} 
+         and `red_brands`.`greyd` = {$b} 
 GROUP BY  `nedelya` 
 ORDER BY  `dbeg` ASC 
  ";
+      // l($sql);
+      // exit();
             $ok = wsActiveRecord::findByQueryArray($sql);
-              $rr = [];
             foreach($ok as $k){
-                $sql = "SELECT  sum(IF(`ws_order_articles`.`count`>0,`ws_order_articles`.`count`,1)) as suma 
+                $sql = "SELECT  sum(`ws_order_articles`.`count`) as suma 
                     FROM  `ws_order_articles`
 inner join `ws_orders` ON `ws_order_articles`.`order_id` = `ws_orders`.`id`
 inner join `ws_articles` on `ws_order_articles`.`article_id` = `ws_articles`.`id`
@@ -965,9 +1388,11 @@ and `ws_articles`.`category_id` = ".$c." ";
                   $z = wsActiveRecord::findByQueryFirstArray($sql);
                   
                   if($k->ctn > 0){
-                     $dn = (strtotime($k->dend)-strtotime($k->dbeg))/(60*60*24);
+                     $dn = (strtotime($k->dend)-strtotime($k->dbeg))/(60*60*24)+1;
                       $d = $dn?$dn:1;
-                      $ost = (int)$k->ctn/$d;
+                      $ost = ceil($k->ctn/$d);
+                      $rr['d'][] = $d;
+                      $rr['all_ost'][] = $k->ctn;
                   }else{
                      $ost = 0; 
                   }
@@ -976,7 +1401,7 @@ and `ws_articles`.`category_id` = ".$c." ";
                   $rr['ost'][] = ceil($ost);
                   $rr['prod'][] = ceil($prod);
             } 
-        return ['ost'=> $rr['ost'], 'prod'=>$rr['prod']];//self::prognozExcel();//[ceil($ost), ceil($prod)]; 
+        return $rr;//['ost'=> $rr['ost'], 'prod'=>$rr['prod']];//self::prognozExcel();//[ceil($ost), ceil($prod)]; 
     }
     /**
      * 
@@ -994,8 +1419,11 @@ and `ws_articles`.`category_id` = ".$c." ";
             $max_p = 0;
             $m = 0;
         }
-        $count = count($v['ost']);
-            $t = $v['ost'][$count-1];
+        
+      //  $count = count($v['ost']);
+           // $t = $v['ost'][$count-1];
+        $t = $v['tost'];
+            
                 $otk = $t - $m;
                     $result[$k] = $otk;
             }
@@ -1096,6 +1524,7 @@ and `ws_articles`.`category_id` = ".$c." ";
            if($otk < 0 ){
                return ['add'=>$o_add, 'prod'=>$max_p, 'ost'=>(int)$o_ost, 'prognoz'=>$otk*(-1)];
            }else{
+               //  return ['add'=>$o_add, 'prod'=>$max_p, 'ost'=>(int)$o_ost, 'prognoz'=>$otk*(-1)];
               return false;
            }     
     }
@@ -1210,6 +1639,19 @@ GROUP BY  `ws_balance_category`.`id_brand`
        * @return ['ost'=>[],'prod'=>[]]
        */
      private static function getQueryBrand($c = false, $b, $from, $to){
+         $sq = "SELECT 
+SUM(`ws_balance_category`.`count` ) AS ctn
+FROM  `ws_balance` 
+JOIN  `ws_balance_category` ON  `ws_balance`.`id` =  `ws_balance_category`.`id_balance` 
+WHERE  `ws_balance`.`date` =  DATE_FORMAT( NOW(), '%Y-%m-%d')";
+        
+
+    if($c){ $sq.=" and `ws_balance_category`.id_category  in (".$c." ) ";}
+  if($b){$sq.=" and `ws_balance_category`.id_brand  in (".$b." ) ";}
+ 
+      $tost  = wsActiveRecord::findByQueryFirstArray($sq)['ctn'];
+         $rr = [];
+         $rr['tost'] = $tost;
               $sql = "
 SELECT WEEK(  `ws_balance`.`date` , -1 ) AS nedelya,
 ADDDATE(  `ws_balance`.`date` ,INTERVAL( WEEKDAY(  `ws_balance`.`date` ) ) DAY ) AS dbeg,
@@ -1231,7 +1673,7 @@ ORDER BY  `dbeg` ASC
 
             $ok = wsActiveRecord::findByQueryArray($sql);
            
-             $rr = [];
+           
             foreach($ok as $k){
                 $sql = "SELECT  sum(IF(`ws_order_articles`.`count`>0,`ws_order_articles`.`count`,1)) as suma 
                     FROM  `ws_order_articles`
@@ -1260,7 +1702,7 @@ if($b){ $sql.= " and `ws_articles`.`brand_id` = ".$b;}
                   $rr['prod'][] = ceil($prod);
             }
             
-         return ['ost'=> $rr['ost'], 'prod'=>$rr['prod']];
+         return ['ost'=> $rr['ost'], 'prod'=>$rr['prod'], 'tost' => $rr['tost']];
      }
      
      /**
@@ -1270,7 +1712,12 @@ if($b){ $sql.= " and `ws_articles`.`brand_id` = ".$b;}
       */
      public static function prognozBrand($arr){
         $result = [];
-        $v = $arr;
+        $prod = $arr['prod']?$arr['prod']:[0];
+        $ost = $arr['ost']?$arr['ost']:[0];
+        $max_p = max($prod);
+        $kl = array_search($max_p,$prod);
+        $t = $arr['tost'];
+       /* $v = $arr;
          if(count($v['prod'])) {
             
             
@@ -1283,10 +1730,14 @@ if($b){ $sql.= " and `ws_articles`.`brand_id` = ".$b;}
             $max_p = 0;
             
             $m = 0;
-        }
-        $count = count($v['ost']);
+        }*/
+        $m = $ost[$kl] + $max_p;// остаток на момент максимальных продаж + продажи
+           
+       // $otk = $m-$t;
         
-        $t = $v['ost'][$count-1];
+       // $count = count($v['ost']);
+        
+        //$v['ost'][$count-1];
 
          $otk = $t - $m;
 
@@ -1295,4 +1746,5 @@ if($b){ $sql.= " and `ws_articles`.`brand_id` = ".$b;}
             return $result;
        
     }
+    
 }

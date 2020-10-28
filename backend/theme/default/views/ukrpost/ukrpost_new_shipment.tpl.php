@@ -422,7 +422,7 @@ $('#m_postcode').autocomplete({
                      <div class="col-lg-3">
                    <div class="form-group">
                   <label class="form-control-label text-primary">Оголошена цінність, грн:  <span class="tx-danger">*</span></label>
-                  <input type="text" class="form-control" required name="declaredPrice" value="<?=ceil(($this->order->amount+$this->order->deposit))?>" >
+                  <input type="text" class="form-control" required name="declaredPrice" value="<?=ceil($this->order->FirstPriceOrder()+$this->order->getDeliveryCost())?>" >
                 </div>
                      </div><!-- col-lg-3 -->
                      <div class="col-lg-3">

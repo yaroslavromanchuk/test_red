@@ -16,5 +16,11 @@ class DeliveryType extends wsActiveRecord
 	{	
 		$this->_relations = array();
 	}
+        public static function getIsShop($dely){
+            return  wsActiveRecord::useStatic('DeliveryType')->findById($dely)->shop;
+        }
+        public static function Adress($id){
+            return wsActiveRecord::useStatic('DeliveryType')->findAll(['id'=>$id])->at(0)->getAdress();
+        }
 
 }

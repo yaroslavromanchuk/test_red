@@ -12,7 +12,7 @@
     <ul class="navbar-nav" style="max-height: calc(100vh - 11.2rem);overflow-y: auto;" >
       <?php if(count($this->filters['newcat'])){
             foreach ($this->filters['newcat'] as $cat) { 
-                if($cat['kids']){ ?>
+                if(!empty($cat['kids'])){ ?>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <?=$cat['title']?>

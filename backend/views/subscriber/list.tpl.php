@@ -18,12 +18,14 @@
 </form><br/><p>Первые 100</p>
 
 
-<table id="pageslist" cellpadding="2" cellspacing="0">
+<table class="table">
 		<tr>
 			<th colspan="2">Действия</th>
-			<th class="c-projecttitle">Имя</th>
-			<th class="c-projecttitle">Е-мейл</th>
-			<th class="c-clientname">Дата активации</th>
+			<th>Имя</th>
+			<th>Е-мейл</th>
+			<th>Дата активации</th>
+                        <th>Сегмент</th>
+                        <th>Дата редактирования</th>
 		</tr>
 	<?php
 		$row = 'row1';
@@ -32,11 +34,21 @@
 			$row = ($row == 'row2') ? 'row1' : 'row2';
 	?>
 		<tr class="<?php echo $row;?>">
-			<td class="kolomicon"><a href="<?php echo $this->path;?>subscribers/edit/id/<?php echo $sub->getId();?>/"><img src="<?php echo SITE_URL;?>/img/icons/edit-small.png" alt="Редактирование" /></a></td>
-			<td class="kolomicon"><a href="<?php echo $this->path;?>subscribers/delete/id/<?php echo $sub->getId();?>/" onclick="return confirm('Удалить подписчика?')"><img src="<?php echo SITE_URL;?>/img/icons/remove-small.png" alt="Удаление" /></a></td>
-			<td class="c-projecttitle"><?php echo $sub->getName();?></td>
-			<td class="c-projecttitle"><?php echo $sub->getEmail();?></td>
-			<td class="c-clientname"><?php echo $sub->getConfirmed() ? date('d-m-Y', strtotime($sub->getConfirmed())) : 'Не активирован';?></td>
+			<td>
+                            <a href="<?=$this->path?>subscribers/edit/id/<?=$sub->getId()?>/">
+                                <img src="/img/icons/edit-small.png" alt="Редактирование" />
+                            </a>
+                        </td>
+			<td>
+                            <a href="<?=$this->path?>subscribers/delete/id/<?=$sub->getId()?>/" onclick="return confirm('Удалить подписчика?')">
+                                <img src="/img/icons/remove-small.png" alt="Удаление" />
+                            </a>
+                        </td>
+			<td><?=$sub->getName()?></td>
+			<td ><?=$sub->getEmail()?></td>
+			<td><?=$sub->active ==1?'Активный':'Не активный'?></td>
+                        <td><?=$sub->segment->name?></td>
+                        <td><?=date('d.m.Y H:i', strtotime($sub->confirmed))?></td>
 		</tr>
 	<?php
 		}

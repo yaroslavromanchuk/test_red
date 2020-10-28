@@ -63,7 +63,7 @@ if(false){
      
            }
          //  print_r($up->putAddressClient('e7059d25-7a15-44fe-bf92-cf7823fe014d', 15995702));
-//print_r($up->getClientExternalId(8005));
+
 if(false){
     echo 'tut';
     print_r($client);
@@ -88,7 +88,9 @@ if(false){
 //print_r($up->getEditClient('0f5862a8-8b71-4c90-996d-f72387ce55e8', '', '', '', '', 0, '+380958087963'));
 //print_r($up->getClientAddress('e7059d25-7a15-44fe-bf92-cf7823fe014d'));
 //print_r($up->getClientPhone('0968171330'));
-//print_r($up->getEditClient('5b4260e8-b044-4aad-a750-6f4a26a23389', '', '', '', '', 'ce4e19d6-6a4f-4f1f-a8c4-5b4a1f9cde9a'));
+//print_r($up->getEditClient('a3f4232c-0a5b-4cb2-8d06-2ce18dfcbd60', ['bankAccount'=>'UA163005280000026005455021620']));
+        //  print_r($up->getEditClient('a3f4232c-0a5b-4cb2-8d06-2ce18dfcbd60', ['phones'=>[['phoneNumber'=>'+380674069080', 'type'=>'WORK', 'main'=>true]]]));
+//print_r($up->getClientExternalId(1));
 /*$r = $up->getnewClientAdmin(
         'PRIVATE_ENTREPRENEUR',
         'ФОП ЦИБУЛЯ І.В., інд. роб місця-01926',
@@ -368,78 +370,6 @@ echo print_r($route);
 
             }
             
-            
-         function getfilter($search_word = '', $category = '', $brands = '', $colors = '', $sizes = '', $labels = '', $sezons = '', $skidka = '', $categories = '', $price = array())
-	{
-		//$addtional = array();
-		//$addtional = array('categories'=>array(), 'colors'=>array(), 'sizes'=>array(), 'labels'=>array(), 'brands'=>array(), 'sezons'=>array(), 'skidka'=>array(), 'price'=>array());
-
-		//d($price, false);
-
-		//price
-		if($price['price_min'] != NULL ) {$addtional['price']['min'] =  $price['price_min'];}
-		if($price['price_max'] != NULL ) {$addtional['price']['max'] =  $price['price_max'];}
-
-		 //categories
-		$addtional['categories'] = $categories?$categories:$this->post->categories;
-		//brands
-		//d($brands, false);
-                 $addtional['brands'] = $brands?$brands:$this->post->brands;
-       // foreach (explode(',', $brands?$brands:$this->post->brands) as $v){ if ($v) $addtional['brands'][] =  (int)$v; }
-
-		//colors
-                $addtional['colors'] = $colors?$colors:$this->post->colors;
-        //foreach (explode(',', $colors?$colors:$this->post->colors) as $v){ if ($v) $addtional['colors'][] = (int)$v;}
-
-		//sizes
-                $addtional['sizes'] = $sizes?$sizes:$this->post->sizes;
-        //foreach (explode(',', $sizes?$sizes:$this->post->sizes) as $v){ if ($v) $addtional['sizes'][] = (int)$v; }
-
-		//labels
-                $addtional['labels'] =$labels?$labels:$this->post->labels;
-        //foreach (explode(',', $labels?$labels:$this->post->labels) as $v){ if ($v) $addtional['labels'][] = (int)$v; }
-
-		//sezons
-                $addtional['sezons'] = $sezons?$sezons:$this->post->sezons;
-       // foreach (explode(',', $sezons?$sezons:$this->post->sezons) as $v){ if ($v)$addtional['sezons'][] = (int)$v; }
-
-		//skidka
-                $addtional['skidka'] = $skidka?$skidka:$this->post->skidka;
-       // foreach (explode(',', $skidka?$skidka:$this->post->skidka) as $v){ if ($v) $addtional['skidka'][] = (int)$v; }
-
-
-		//d($addtional, false);
-		$prod_on_page = $_COOKIE['items_on_page'];
-                
-                if (!$prod_on_page){ $prod_on_page = Config::findByCode('products_per_page')->getValue();}
-
-		$this->view->per_page = $onPage = $prod_on_page;
-                
-		$page = $this->get->page?(int)$this->get->page:0;
-
-		//d($page, false);
-		$search_result = Filter::getArticlesFilter($search_word, $addtional, $category, $this->get->order_by, $page, $onPage);
-
-		$this->view->filters = $search_result['parametr'];
-               if($search_result['meta']) {$this->view->meta = $search_result['meta'];}
-
-		$this->view->cur_page = $page;
-
-		$this->view->result_count = $search_result['count'];
-
-		$this->view->total_pages = $search_result['pages'];
-
-		$this->view->search_word = $search_word;
-		$this->view->articles = $search_result['articles'];
-		$this->view->result = $this->view->render('finder/list.tpl.php');
-                $this->view->order_by = $this->get->order_by; 
-
-		$this->view->price_min = $search_result['min_max'] ? $search_result['min_max'][0]->min: 0;
-		$this->view->price_max = $search_result['min_max'] ? $search_result['min_max'][0]->max : 1;
-		echo $this->render('finder/result.tpl.php');
-	}   
-            
-            
 
 public function parseAction(){
     
@@ -461,6 +391,53 @@ public function parseAction(){
 public function newpageAction(){
 
   echo $this->render('developer/new_page.php');
+}
+public function npAction(){
+  //  require_once('np/NovaPoshta.php');
+   // $ref = 'df31fa0b-f0f4-11ea-8513-b88303659df5';
+     //   $np = new NovaPoshta();
+     // l($np->getCounterparties());
+    //  l($np->getCounterpartyContactPersons('df31fa0b-f0f4-11ea-8513-b88303659df5'));
+     //  l($np->getCities(0, "Київ", '8d5a980d-391c-11dd-90d9-001a92567626'));
+     //  l($np->getStreet('8d5a980d-391c-11dd-90d9-001a92567626', $findByString = 'Нижн', $page = 0));//2971196d-4149-11dd-9198-001d60451983 - улица
+       // l($np->__call());
+     /* l($np->setNewCounterparty([
+          'CityRef' => '8d5a980d-391c-11dd-90d9-001a92567626',
+          'FirstName' =>  "Ярослав",
+          'MiddleName' => "Анатолійович",
+          'LastName' => "Романчук",
+          'Phone' =>  "0968171330",
+          'Email' => "php@red.ua",
+          'CounterpartyType' =>  "PrivatePerson",
+          'CounterpartyProperty' =>  "Sender",
+       ]));*/
+    /*  l($np->updateCounterparty([
+          'Ref' => 'df32b679-f0f4-11ea-8513-b88303659df5',
+          'Description' =>  'ФОП Куковицкий С.С.',
+          'CityRef' => '8d5a980d-391c-11dd-90d9-001a92567626',
+          'FirstName' =>  "Сергій",
+          'MiddleName' => "Сергійович",
+          'LastName' => "Куковицкий",
+          'Phone' =>  "0674069080",
+          'Email' => "market@red.ua",
+          'CounterpartyType' =>  "Organization",
+       ]));*/
+    //  l($np->getCounterparties());
+    //  l($np->getCounterpartyContactPersons());
+     //  l($np->getCounterpartyAddresses('16d300ea-8501-11e4-acce-0050568002cf'));
+       // l($np->newContactPerson('Куковичкий', 'Сергей', '', '+380674069080'));
+     /*   l($np->updateContactPerson([
+            'Ref' => 'f2d13386-f0f4-11ea-8513-b88303659df5',
+            'Description' => 'ФОП Куковицкий С.С.',
+            'FirstName' =>  "Сергій",
+            'MiddleName' => "Сергійович",
+            'LastName' => "Куковицкий",
+            'Phone' =>  "+380674069080",
+            'Email' => 'market@red.ua']));*/
+     ///  l($np->getCounterpartyOptions("df32b679-f0f4-11ea-8513-b88303659df5"));
+     // l($np->getCounterpartyContactPersons());
+
+  echo $this->render('developer/np.php');
 }
 
 

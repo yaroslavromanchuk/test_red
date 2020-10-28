@@ -218,7 +218,7 @@ if ($order_owner->getAdminComents()) { $comment  = '<div class="alert alert-dang
 <?php if($this->getOrder()->getDeposit() > 0) { echo '<p style="padding: 5px;border-radius: 2px;background: #37d011;width: 200px;color: #040404;font-size: 16px;margin: 5px auto;"><b>Присутствует депозит!</b></p>';} ?>
 
 
-   <table cellpadding="4" cellspacing="0" id="order-articles" class="table " >
+   <table cellpadding="4" cellspacing="0" id="order-articles" class="table  " >
     <thead class="thead-light">
 <tr>
     <td colspan="2"><strong>Действие</strong></td>

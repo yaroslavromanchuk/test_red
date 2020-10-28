@@ -53,10 +53,17 @@ $str = ((isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], $_S
         $this->_global_template = 'site.tpl.php';
 
 
-        if (!isset($_SESSION['basket'])){ $_SESSION['basket'] = []; }
+        if (!isset($_SESSION['basket'])){
+            $_SESSION['basket'] = [];
+            }
+          //  if($this->ws->getCustomer()->id == 8005){
+             //   $this->ws->getCustomer()->updateCartUserBacket();
+          //  }
         $this->view->basket = $this->basket = $_SESSION['basket'];
 
-        if (!isset($_SESSION['basket_contacts'])){ $_SESSION['basket_contacts'] = []; }
+        if (!isset($_SESSION['basket_contacts'])){
+            $_SESSION['basket_contacts'] = [];
+            }
         $this->view->basket_contacts = $this->basket_contacts = $_SESSION['basket_contacts'];
 
         if (!isset($_SESSION['basket_articles'])){$_SESSION['basket_articles'] = [];}
@@ -71,8 +78,9 @@ $str = ((isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], $_S
 		
         //menus_caching
         $cache = Registry::get('cache');
-	$cache->setEnabled(true);
+	//$cache->setEnabled(true);
         $lang = Registry::get('lang');
+        $this->view->lang = $lang;
 		
 	if(Registry::get('device') == 'computer' or (isset($_COOKIE['mobil']) and $_COOKIE['mobil'] == 10)){ 
             $this->view->cached_top_menu = $this->view->render('/cache/top_menu.tpl.php');
@@ -80,7 +88,7 @@ $str = ((isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], $_S
             $cache_name = 'topcategories_3_'.$lang;
             $topcategories = $cache->load($cache_name);// меню навигации
         if (!$topcategories) { //если сломалось пищещь сюда TRUE // верхнее меню
-            $topcategories = $this->view->render('/cache/topcategories.tpl.php');
+            $topcategories =  $this->view->render('/cache/topcategories.tpl.php');
             $cache->save($topcategories, $cache_name, [$cache_name], false);
         }
         $this->view->cached_topcategories = $topcategories;
@@ -154,11 +162,128 @@ $str = ((isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], $_S
         $this->view->setContent($content);
         return $this->view->render($this->_global_template);
     }
+    public  function getFilter($category, $url = '', $search = '')
+            {
+        
+        $page_onpage_order_by = self::page_order_by();
+        $canonical = '';
+       if($url == ''){ $canonical .= $category->getPath(); $this->view->g_url = $category->getPath(); }//
+       if($search != ''){ $this->view->search_word = $search; }
+        $param = [];
+       if($this->get->categories) {
+           $param['categories'] = explode(',', $this->get->categories);
+           
+       }
+//if($this->ws->getCustomer()->id == 8005){l($this->get);}
+       if(count($_GET) > 1){
+          // print_r($_GET);
+           $this->cur_menu->noindex = 1;
+       }
+       
+       if($this->get->brands) {
+           $canonical.= 'brands-'.$this->get->brands.'/';
+          // print_r($this->get);
+           foreach (explode(',', $this->get->brands) as $v){
+            if ($v) {
+              $v =   str_replace("'", "\'", $v);
+             //  echo $v;
+               $param['brands'][] = (int)Brand::findByQueryFirstArray("SELECT id FROM `red_brands` WHERE  `name` LIKE  '".$v."' ")['id'];
+            }
+            }
+       }
+       $this->view->canonical = $canonical;
+       if($this->get->colors) {
+           $param['colors'] = explode(',', $this->get->colors);
+       }
+       if($this->get->sizes) {
+           $param['sizes'] = explode(',', $this->get->sizes);
+       }
+       if($this->get->labels) {
+           $param['labels'] = explode(',', $this->get->labels);
+       }
+       if($this->get->skidka) {
+           $param['skidka'] = explode(',', $this->get->skidka);
+       }
+       
+       if($this->get->sezons) {
+           foreach (explode(',', $this->get->sezons) as $v){
+            if ($v) {
+               $param['sezons'][] = (int)Shoparticlessezon::findByQueryFirstArray("SELECT * FROM  `ws_articles_sezon` WHERE  `translate` LIKE  '".$v."' ")['id'];
+            }
+            }
+       }
+       
+       if($this->get->price_min) {$param['price']['min'] = $this->get->price_min;}
+       if($this->get->price_max) {$param['price']['max'] = $this->get->price_max;}
+       
+       $meta_param = [
+           'search'=>$search,
+           'filter' => $param,
+           'category' => $category,
+           'order_by' => $page_onpage_order_by['order_by'],
+           'page' => $page_onpage_order_by['page'],
+           'Onpage' => $page_onpage_order_by['onPage']
+       ];
+       
+       $meta = Meta::getMeta($meta_param);
+       
+      //   $search_result = Filter::getArticlesFilter($search, $param, $category, $page_onpage_order_by['order_by'], $page_onpage_order_by['page'], $page_onpage_order_by['onPage']);
+          $search_result = Filter::getArticlesFilter($meta_param);
+         
+         if($meta) {
+                   if(isset($meta['noindex'])) { $this->cur_menu->noindex = 1; } 
+                   if(isset($meta['h1'])) {  $this->cur_menu->setName($meta['h1']);}
+                   if(isset($meta['title'])) { $this->cur_menu->setPageTitle($meta['title']);}
+                   if(isset($meta['descriptions'])) { $this->cur_menu->setMetatagDescription($meta['descriptions']);}
+                   
+                   if(isset($meta['footer'])) { self::futterText($meta['footer'], $category); }
+               }else{
+                   self::get_cur_menu($category);
+               }
+        $this->view->filters = $search_result['parametr'];
+        $this->view->result_count = $search_result['count'];
+        $this->view->total_pages = $search_result['pages'];
+        $this->view->articles = $search_result['articles'];
+	$this->view->result = $this->view->render('finder/list.tpl.php');
+            echo $this->render('finder/result.tpl.php');
+            }
+             public function futterText($param, $category) {
+                if(isset($param['block'])){
+                $this->cur_menu->setPageFooter('');
+            }elseif($param['text']){
+                $this->cur_menu->setPageFooter($param['text']);
+            }else{
+                     $this->cur_menu->setPageFooter($category->getFooter());
+                }
+            }
+            
+            
+          public  function page_order_by(){
+              
+                $this->view->order_by = $order_by = $this->get->order_by;
+
+                if(!empty($_COOKIE['items_on_page'])){
+                    $this->view->per_page = $onPage = $_COOKIE['items_on_page'];
+                }else{
+                     $this->view->per_page = $onPage = Config::findByCode('products_per_page')->getValue();
+                }
+                
+                $this->view->cur_page = $page = (int)$this->get->page?(int)$this->get->page:0;
+                return ['page' => $page, 'onPage' => $onPage, 'order_by' =>$order_by];
+            }
+            
+            public function get_cur_menu($category) { 
+             //   $this->cur_menu->article = 1; 
+                    $this->cur_menu->setName(($category->getH1()?$category->getH1():$category->getName()).' '.$this->trans->get('в интернет магазине RED'));
+                    $this->cur_menu->setPageTitle(($category->getTitle()?$category->getTitle():$category->getName()).' '.$this->trans->get('dop_title'));
+                    $this->cur_menu->setMetatagDescription($category->getDescription());
+                    $this->cur_menu->setPageFooter($category->getFooter());
+            }
 }
 
 class Translator
 {
-    public function get($msg)
+   static public function get($msg)
     {
 	if($msg){
         $value = wsActiveRecord::useStatic('Dictionary')->findByName(trim($msg))->at(0);
@@ -173,7 +298,7 @@ class Translator
         $value = new Dictionary();
             $value->setName($msg);
             $value->setTranslation($msg);
-            $value->setTranslationUk($this->translateuk($msg, 'ru', 'uk'));
+            $value->setTranslationUk($this->translate($msg, 'ru', 'uk'));
             $value->save();
             if(Registry::get('lang') == 'uk')
 		{
@@ -201,7 +326,7 @@ if($text == ''){
 $value = new Dictionary();
             $value->setName($msg);
             $value->setTranslation($msg);
-			$value->setTranslationUk($this->translateuk($msg, 'ru', 'uk'));
+			$value->setTranslationUk($this->translate($msg, 'ru', 'uk'));
             $value->save();  
     }else{
 	return $text;
@@ -252,5 +377,34 @@ public function translateru($str, $lang_from = 'uk', $lang_to='ru') {
 	    //  echo 'Fetching translation failed! Server response code:' . $responseCode . '<br>';  
         //echo 'Error description: ' . $responseDecoded['error']['errors'][0]['message'];  
     }
-}	
+}
+public function translate($str, $lang_from = 'uk', $lang_to='ru'){
+    // require_once('yandex/Translation.php');
+   // $tr = new Translation();
+   // $res = $tr->translate($lang_from, $lang_to, $str);            
+        if(/*$res['code'] == 200*/false){ 
+            return $res['text'][0];
+        }else{
+            $apiKey = 'AIzaSyC5MeHPcuEKqiWH7Oqlxvp8GhY7TTYwUf8';    
+  $url = 'https://www.googleapis.com/language/translate/v2?key=' . $apiKey . '&q=' . rawurlencode($str) . '&source='.$lang_from.'&target='.$lang_to;  
+  $handle = curl_init($url);  
+	curl_setopt($handle, CURLOPT_RETURNTRANSFER, true); 
+		if (isset($_SERVER['HTTP_REFERER'])) {
+            curl_setopt($handle, CURLOPT_REFERER, $_SERVER['HTTP_REFERER']);
+        }
+     curl_setopt($handle, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.696.71 Safari/534.24");    
+  $response = curl_exec($handle);  
+  $responseDecoded = json_decode($response, true);  
+  $responseCode = curl_getinfo($handle, CURLINFO_HTTP_CODE); 
+  curl_close($handle);  
+  if($responseCode == 200) {  
+		return $responseDecoded['data']['translations'][0]['translatedText'];
+    } else {   
+       return false;
+	    //  echo 'Fetching translation failed! Server response code:' . $responseCode . '<br>';  
+        //echo 'Error description: ' . $responseDecoded['error']['errors'][0]['message'];  
+    }
+        }
+    return false;
+}
 }

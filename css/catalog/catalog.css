@@ -61,8 +61,8 @@
   font-size: 12px;
   display: inline-block;
   position: absolute;
-  top: 4px;
-  left: 5px;
+  top: 2px;
+  left: 2px;
 }
 .select2-container--default.select2-container--focus .select2-selection--multiple {
   border-color: #e00d34;
@@ -206,17 +206,17 @@
 .product-grid .pic-1{opacity:1;transition:all .5s ease 0s}
 .product-grid .pic-2{opacity:0;transform:rotateY(-90deg);position:absolute;top:0;left:0;transition:all .5s ease-out 0s}
 .product-grid:hover .pic-2{opacity:1;transform:rotateY(0)}
-.product-grid .size-color{opacity:0;transform:translateY(-3px);transition:all .5s ease-out 0s}
+/*.product-grid .size-color{opacity:0;transform:translateY(-3px);transition:all .5s ease-out 0s}*/
 .product-grid .size-color p{margin: 5px;}
-.product-grid:hover .size-color{opacity:1;transform:translateY(0)}
-.product-grid .social{padding:0;margin:0;list-style:none;position:absolute;bottom:3px;left:-20%;z-index:1;transition:all .5s ease 0s}
-.product-grid:hover .social {left:17px}
+/*.product-grid:hover .size-color{opacity:1;transform:translateY(0)}*/
+.product-grid .social{padding:0;margin:0;list-style:none;position:absolute;bottom:3px;left:3%;z-index:1;transition:all .5s ease 0s}
+/*.product-grid:hover .social {left:17px}*/
 .product-grid .social li a{color:grey;font-size:17px;line-height:40px;text-align:center;height:40px;width:40px;margin:15px 0;border:1px solid grey;display:block;transition:all .5s ease-in-out}
 .product-grid .social li a i{font-size: 25px;}
 .product-grid .social li a:hover{color:#000;border-color:#000}
-.product-grid .sale-icon {position: absolute;left: -10px;top: 10px;padding: 7px;min-width: 90px;background: #000;font-size: 12px;color: #FFF;text-align: center;text-transform: uppercase;font-weight: 400;box-shadow: 2px 3px 4px 0 rgba(0, 0, 0, 0.5);}
+.product-grid .sale-icon {position: absolute;left: -10px;top: 10px;padding: 7px;background: #000;font-size: 80%;color: #FFF;text-align: center;text-transform: uppercase;font-weight: 400;box-shadow: 2px 3px 4px 0 rgba(0, 0, 0, 0.5);}
 .product-grid .sale-icon:after {display: block;position: absolute;top: 100%;left: 0;width: 0;height: 0;border-style: solid;border-width: 0 10px 10px 0;border-color: transparent #000 transparent;content: "";}
-.product-grid .sale-icon-right {position: absolute;right: -10px;top: 10px;padding: 7px;min-width: 90px;background: #e00d35;font-size: 12px;color: #FFF;text-align: center;text-transform: uppercase;font-weight: 400;box-shadow: -2px 3px 4px 0 rgba(0, 0, 0, 0.5);}
+.product-grid .sale-icon-right {position: absolute;right: -10px;top: 10px;padding: 7px;background: #e00d35;font-size: 80%;color: #FFF;text-align: center;text-transform: uppercase;font-weight: 400;box-shadow: -2px 3px 4px 0 rgba(0, 0, 0, 0.5);}
 .product-grid .sale-icon-right:after {display: block;position: absolute;top: 100%;right: 0;width: 0;height: 0;border-style: solid;border-width: 0 0 10px 10px;border-color: transparent #821429 transparent;content: "";}
 .product-grid:hover .product-content{background:#fff;}
 .product-grid .product-content{z-index:-1;padding:15px;text-align:left}

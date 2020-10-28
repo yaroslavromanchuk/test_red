@@ -81,24 +81,30 @@ class GroupadminCommand extends UserCommand
         break;
 	case "Интернет Магазин":
 		$data['text'] = 'Что пожелаешь хозяин?';
-		$data['reply_markup'] = ['keyboard' => [['Заказы','Товары','Уценка']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
+		$data['reply_markup'] = ['keyboard' => [['Заказы','Товары','Уценка','Бонусы']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
         break;
     case "Заказы":
 		$text = 'Какие заказы показать?';
 		$data['text'] = $text;
-        $data['reply_markup'] = ['keyboard' => [['Новые заказы','Заказы в магазине'],['Интернет Магазин']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
+        $data['reply_markup'] = ['keyboard' => [['Новые заказы','Отправленные заказы','Заказы в магазине'],['Интернет Магазин']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
         break;
 		case "Новые заказы":
 		//$text = 'Новых заказов: ';
 		$html = $this->get_url(array('send'=>'orders', 'type'=>1));
 		$data['text'] = $html->result;
-        $data['reply_markup'] = ['keyboard' => [['Новые заказы','Заказы в магазине'],['Интернет Магазин']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
+        $data['reply_markup'] = ['keyboard' => [['Новые заказы','Отправленные заказы','Заказы в магазине'],['Интернет Магазин']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
         break;
 		case "Заказы в магазине":
 		//$text = 'Заказов в магазине: ';
 		$html = $this->get_url(array('send'=>'orders', 'type'=>2));
 		$data['text'] = $html->result;
-        $data['reply_markup'] = ['keyboard' => [['Новые заказы','Заказы в магазине'],['Интернет Магазин']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
+        $data['reply_markup'] = ['keyboard' => [['Новые заказы','Отправленные заказы','Заказы в магазине'],['Интернет Магазин']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
+        break;
+    case "Отправленные заказы":
+		//$text = 'Заказов в магазине: ';
+		$html = $this->get_url(array('send'=>'orders', 'type'=>3));
+		$data['text'] = $html->result;
+        $data['reply_markup'] = ['keyboard' => [['Новые заказы','Отправленные заказы','Заказы в магазине'],['Интернет Магазин']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
         break;
 		case "Товары":
 		$text = 'Какие товары показать?';
@@ -138,12 +144,49 @@ class GroupadminCommand extends UserCommand
 	case "Уценка":
 		$html = $this->get_url(array('send'=>'ucenka', 'type'=>1));
 		$data['text'] = $html->result;
-		$data['reply_markup'] = ['keyboard' => [['Заказы','Товары','Уценка']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
+		$data['reply_markup'] = ['keyboard' => [['Заказы','Товары','Уценка','Бонусы']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
+        break;
+    case "Бонусы":
+        $text = 'Какие заказы показать?';
+		$data['text'] = $text;
+        $data['reply_markup'] = ['keyboard' => [['Зачислено','Активные','Использовано','Списано'],['Интернет Магазин']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
+       break;
+    case "Зачислено":
+		$html = $this->get_url(array('send'=>'bonus', 'type'=>1));
+		$data['text'] = $html->result;
+                
+		$data['reply_markup'] = ['keyboard' => [['Зачислено','Активные','Использовано','Списано'],['Интернет Магазин']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
+        break;
+    case "Активные":
+		$html = $this->get_url(array('send'=>'bonus', 'type'=>2));
+		$data['text'] = $html->result;
+		$data['reply_markup'] = ['keyboard' => [['Зачислено','Активные','Использовано','Списано'],['Интернет Магазин']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
+        break;
+    case "Использовано":
+		$html = $this->get_url(array('send'=>'bonus', 'type'=>3));
+		$data['text'] = $html->result;
+		$data['reply_markup'] = ['keyboard' => [['Зачислено','Активные','Использовано','Списано'],['Интернет Магазин']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
+        break;
+    case "Списано":
+		$html = $this->get_url(array('send'=>'bonus', 'type'=>4));
+		$data['text'] = $html->result;
+		$data['reply_markup'] = ['keyboard' => [['Зачислено','Активные','Использовано','Списано'],['Интернет Магазин']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
+        break;
+    case "dev-close-site":
+		$html = $this->get_url(array('send'=>'close', 'type'=>4));
+		$data['text'] = $html->result;
+		//$data['reply_markup'] = ['keyboard' => [['Зачислено','Активные','Использовано','Списано'],['Интернет Магазин']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
+        break;
+    case "delete-table":
+		$html = $this->get_url(array('send'=>'delete-table', 'type'=>4));
+		$data['text'] = $html->result;
+		//$data['reply_markup'] = ['keyboard' => [['Зачислено','Активные','Использовано','Списано'],['Интернет Магазин']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
         break;
     default:
 		$data['text'] = 'Эта функция еще не готова((( Выберите что-то другое.';
-       $data['reply_markup'] = ['keyboard' => [['Заказы','Товары','Уценка']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
+       $data['reply_markup'] = ['keyboard' => [['Заказы','Товары','Уценка','Бонусы']], 'resize_keyboard' => true, 'one_time_keyboard' => false, 'selective' => false ];
 }
+$data['parse_mode'] = 'HTML';
 	return Request::sendMessage($data);
 
     }

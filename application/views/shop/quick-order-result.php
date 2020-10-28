@@ -1,6 +1,6 @@
-﻿<?php if(@$this->order){
+﻿<?php if($this->order){
     $id = $this->order->getId();
-    $summ = $this->order->getAmount();
+    $summ = $this->order->calculateOrderPrice2(true, false);
     ?>
 <script>
 dataLayer = [{
@@ -14,7 +14,7 @@ dataLayer.push({'event' : 'quick' , 'eventAction' : 'add_quick'});
 	<?php
 					//register sellaction
 if (isset($_COOKIE["SAuid"]) && isset($_COOKIE["utm_source"]) && $_COOKIE["utm_source"] == "sellaction.net") {
-    echo '<img src="http://sellaction.net/reg.php?id='.$_COOKIE["SAuid"].'-1573_'.$summ.'&order_id='.$id.'" width="1" height="1" alt="" />';
+echo '<img src="https://sellaction.net/reg.php?id='.$_COOKIE["SAuid"].'-1573_'.$summ.'&order_id='.$id.'" width="1" height="1" alt="" />';
 	wsSellaction::add($id, $summ);
 }
 if(isset($_COOKIE["utm_email_track"])){

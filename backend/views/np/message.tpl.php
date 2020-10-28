@@ -1,5 +1,5 @@
 <div class="modal" id="myModalMessage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-<div class="modal-dialog" >
+<div class="modal-dialog modal-lg" role="document" >
 <div class="modal-content">
 <div class="modal-header pd-20">
 <h6 id="myModalLabel" class="tx-14 mg-b-0 tx-uppercase tx-inverse tx-bold">Сообщение</h6>

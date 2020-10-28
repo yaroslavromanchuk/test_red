@@ -21,27 +21,6 @@ $(".open").click(function() {
 $("body").toggleClass("modal-open");
 $(".s_h").toggleClass("left");
 if ($("#none").is(':hidden')){
-     lazyload ();
-var lazyloadImages = document.querySelectorAll("img.catalog_img");    
-  var lazyloadThrottleTimeout;
-  
-  function lazyload () {
-    if(lazyloadThrottleTimeout) {
-      clearTimeout(lazyloadThrottleTimeout);
-    }    
-    
-    lazyloadThrottleTimeout = setTimeout(function() {
-        var scrollTop = window.pageYOffset;
-        lazyloadImages.forEach(function(img) {
-            if(img.offsetTop < (window.innerHeight + scrollTop)) {
-              img.src = img.dataset.src;
-              img.classList.remove('catalog_img');
-            }
-        });
-    }, 20);
-  }
-
- 
 $("#none").show();
 $("#navbar-main").slideDown();
 }else{
@@ -70,7 +49,7 @@ $(".logo-grey").toggleClass("red");
                  if ($this->ws->getCustomer()->getIsLoggedIn()) { 
                     $des = wsActiveRecord::useStatic('Desires')->count(array('id_customer'=>$this->ws->getCustomer()->getId()));
                  }
-                if($_SESSION['desires'] or $des){ ?>
+                if(!empty($_SESSION['desires']) or $des){ ?>
 		<a href="/desires/" title="<?=$result[0]?>" class="p-0"><i class="icon ion-ios-heart text-white" style="font-size:30px"></i></a>
 		<?php }else{ ?>
 		<a href="#" title="<?=$result[1]?>!" class="p-0"><i class="icon ion-ios-heart-outline text-white" style="font-size:30px"></i></a>
@@ -95,7 +74,7 @@ $(".logo-grey").toggleClass("red");
     echo '<p style="padding: 1px 5px;text-align:  center;color:  red;margin-bottom: 0px;">'.Config::findByCode('new_grafik')->getValue().'</p>';
  } ?>
 
-<div id="none" class="modal fade open s_h left" style="background: #0000006b;top:52px;">
+<div id="none" class="modal fade open s_h left" style="background: #0000006b;top:52px;z-index: 100917;">
 <div class="collapse kat_menu_m navbar-collapse s_h left p-2" id="navbar-main" style="position: relative;">
 <ul class="navbar-nav">
 <li class="nav-item">
@@ -103,8 +82,8 @@ $(".logo-grey").toggleClass("red");
 				<div class="btn-group" role="group" aria-label="Basic example">
 			
 				
-					<button type="button" class="btn btn-secondary btn-sm" <?php echo $_SESSION['lang'] == 'uk' ? disabled : '';?> name="uk" onclick="setUk('uk','<?=Registry::get('lang')?>','<?=$_SERVER['REQUEST_URI']?>');" >UA</button>
-					<button type="button" class="btn btn-secondary btn-sm" <?php echo $_SESSION['lang'] == 'ru' ? disabled : '';?>  name="ru" onclick="setUk('ru','<?=Registry::get('lang')?>','<?=$_SERVER['REQUEST_URI']?>');" >RU</button>
+					<button type="button" class="btn btn-secondary btn-sm" <?php echo $_SESSION['lang'] == 'uk' ? 'disabled' : '';?> name="uk" onclick="setUk('uk','<?=Registry::get('lang')?>','<?=$_SERVER['REQUEST_URI']?>');" >UA</button>
+					<button type="button" class="btn btn-secondary btn-sm" <?php echo $_SESSION['lang'] == 'ru' ? 'disabled' : '';?>  name="ru" onclick="setUk('ru','<?=Registry::get('lang')?>','<?=$_SERVER['REQUEST_URI']?>');" >RU</button>
 					
 				</div>
 				<?php if($this->ws->getCustomer()->getIsLoggedIn()){
@@ -116,56 +95,56 @@ $(".logo-grey").toggleClass("red");
 		<a href="tel:+380442244000" class="d-block btn btn-light py-1 my-1 text-left"><span>+38(044) 224-40-00</span></a>
 		</li>
 						<li class="nav-item">
-						<a href="/" class="d-block btn btn-light py-1 my-1 text-left"><img class="catalog_img" data-src="/mobil/mimages/menu/home.png" alt="Главная"/><span><?=$this->trans->get('Главная');?></span></a>
+						<a href="/" class="d-block btn btn-light py-1 my-1 text-left"><img class="catalog_img" data-src="/mobil/mimages/menu/home.webp" alt="Главная"/><span><?=$this->trans->get('Главная');?></span></a>
 						</li>
 		
                 <?php  if (!$this->ws->getCustomer()->getIsLoggedIn()) { 
 			?>
 			<li class="nav-item">
-			<a href = "/account/login/" class="d-block btn btn-light py-1 my-1 text-left" ><img class="catalog_img" data-src="/mobil/mimages/menu/vhod.png" alt="Вход"/><?=$this->trans->get('Войти');?></a>
+			<a href = "/account/login/" class="d-block btn btn-light py-1 my-1 text-left" ><img class="catalog_img" data-src="/mobil/mimages/menu/vhod.webp" alt="Вход"/><?=$this->trans->get('Войти');?></a>
 			</li>
 			<li class="nav-item">
-			<a href = "/account/register/" class="d-block btn btn-light py-1 my-1 text-left" ><img class="catalog_img" data-src="/mobil/mimages/menu/reg.png" alt="<?=$result[4]?>"/><?=$result[4]?></a>
+			<a href = "/account/register/" class="d-block btn btn-light py-1 my-1 text-left" ><img class="catalog_img" data-src="/mobil/mimages/menu/reg.webp" alt="<?=$result[4]?>"/><?=$result[4]?></a>
 			</li>
                 <?php }else { 
 				?>
-					<li class="nav-item">	<a href = "/account/" class="d-block btn btn-light py-1 my-1 text-left" ><img src="/mobil/mimages/menu/login.png" alt="Личный кабинет"/><?=$this->trans->get('Личный кабинет');?></a></li>
+					<li class="nav-item">	<a href = "/account/" class="d-block btn btn-light py-1 my-1 text-left" ><img src="/mobil/mimages/menu/login.webp" alt="Личный кабинет"/><?=$this->trans->get('Личный кабинет');?></a></li>
                 <?php } ?>
 						
 						<li class="nav-item">
-						<a href="/brands/" class="d-block btn btn-light py-1 my-1 text-left"><img class="catalog_img" data-src="/mobil/mimages/menu/brand.png" alt="Бренды"/><?=$this->trans->get('Бренды');?></a> 
+						<a href="/brands/" class="d-block btn btn-light py-1 my-1 text-left"><img class="catalog_img" data-src="/mobil/mimages/menu/brand.webp" alt="Бренды"/><?=$this->trans->get('Бренды');?></a> 
 						</li>
 						<?php		
                     foreach (wsActiveRecord::useStatic('TopMenu')->findAll() as $menu) {
 					echo '<li class="nav-item" ><a href="' . $menu->getUrl() . '" class="d-block btn btn-light py-1 my-1 text-left">
-					<img  class="catalog_img" data-src="/mobil/mimages/menu/'.$menu->getImg().'.png" />' . $menu->getTitle() . '</a></li>';
+					<img  class="catalog_img" data-src="/mobil/mimages/menu/'.$menu->getImg().'.webp" />' . $menu->getTitle() . '</a></li>';
                     }
 					?>
 					<li class="nav-item">
 						<a href="/returns/" class="d-block btn btn-light py-1 my-1 text-left">
-                                                    <img class="catalog_img" data-src="/mobil/mimages/menu/return.png" alt="Условия Возврата"/><?=$this->trans->get('Условия Возврата');?></a>
+                                                    <img class="catalog_img" data-src="/mobil/mimages/menu/return.webp" alt="Условия Возврата"/><?=$this->trans->get('Условия Возврата');?></a>
 						</li>
                                                 <li class="nav-item">
 						<a href="/transactions/" class="d-block btn btn-light py-1 my-1 text-left">
-                                                  <!--  <img class="catalog_img" data-src="/mobil/mimages/menu/return.png" alt="Условия Возврата"/>-->
+                                                  <!--  <img class="catalog_img" data-src="/mobil/mimages/menu/return.webp" alt="Условия Возврата"/>-->
                                                 <?=$this->trans->get('Условия сделок');?>
                                                 </a>
 						</li>
                                                 <li class="nav-item">
 						<a href="/discount/" class="d-block btn btn-light py-1 my-1 text-left">
-                                                  <!--  <img class="catalog_img" data-src="/mobil/mimages/menu/return.png" alt="Условия Возврата"/>-->
+                                                  <!--  <img class="catalog_img" data-src="/mobil/mimages/menu/return.webp" alt="Условия Возврата"/>-->
                                                 <?=$this->trans->get('Дисконт');?>
                                                 </a>
 						</li>
                                                 <li class="nav-item">
 						<a href="/question/" class="d-block btn btn-light py-1 my-1 text-left">
-                                                  <!--  <img class="catalog_img" data-src="/mobil/mimages/menu/return.png" alt="Условия Возврата"/>-->
+                                                  <!--  <img class="catalog_img" data-src="/mobil/mimages/menu/return.webp" alt="Условия Возврата"/>-->
                                                 FAQ
                                                 </a>
 						</li>
 			<?php  if ($this->ws->getCustomer()->getIsLoggedIn()) { 
 			?><li class="nav-item">
-			<a href="/account/logout/" class="d-block btn btn-light py-1 my-1 text-left"><img class="catalog_img" data-src="/mobil/mimages/menu/exit.png" alt="Выход"/><?=$result[8]?></a>
+			<a href="/account/logout/" class="d-block btn btn-light py-1 my-1 text-left"><img class="catalog_img" data-src="/mobil/mimages/menu/exit.webp" alt="Выход"/><?=$result[8]?></a>
 			</li>
 			<?php } ?>
 					</ul>

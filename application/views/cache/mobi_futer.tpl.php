@@ -1,8 +1,8 @@
-  <script src="/mobil/mjs/common.js"></script>
+<script src="/mobil/mjs/common.js"></script>
 <footer>
 		<div class="w-100 mx-auto text-center ">
 				<a href="#" data-evaluation="rss" data-toggle="modal" data-target="#subscribe"  class="btn btn-light" style="background-color: #d3d3d399;font-size: 100%;">
-					<img style="margin-top: -7px;width: 20px;margin-right: 10px;" class="catalog_img" data-src="/mobil/mimages/rss_email.png" alt="Главная"/>
+					<img style="margin-top: -7px;width: 20px;margin-right: 10px;" class="catalog_img" data-src="/mobil/mimages/rss_email.webp" alt="Главная"/>
 					<span><?=$this->trans->get('Подписаться на обновления');?></span>
 				</a>
 		</div>
@@ -53,16 +53,16 @@
 							<h4 class="modal-title"><?=$this->trans->get('Новости');?> <span style="color:red;">RED.UA</span></h4>
 							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 						</div>
-						<form name="comment" id="comment-form" class="disabled-while-empty" method="post" action="/subscribe/">
+						<form name="comment"  class="disabled-while-empty" method="post" action="/subscribe/">
 						<div class="modal-body">
 <input type="radio" name="active" id="radio"  value="1" style="display:none;" checked="checked">						
 							<div class="form-group form-group-sm">
 								<label for="comment-input-name"><?=$this->trans->get('Имя');?></label>
-								<input type="text" class="form-control" id="comment-input-name" name="name" placeholder="<?=$this->trans->get('Имя');?>" required>
+								<input type="text" class="form-control"  name="name" placeholder="<?=$this->trans->get('Имя');?>" required>
 							</div>
 							<div class="form-group form-group-sm">
 								<label for="comment-input-email">e-mail</label>
-								<input type="email" class="form-control" id="comment-input-email" name="email" placeholder="example@mail.com" required>
+								<input type="email" class="form-control" name="email" placeholder="example@mail.com" required>
 							</div>
 							<div class="form-group" >
 							<div class="form-group form-group-sm" style="text-align: center;">
@@ -90,7 +90,7 @@
 							<h4 class="modal-title"><?=$this->trans->get('Оцените нашу работу');?></h4>
 							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 						</div>
-		    	<form name="comment" id="comment-form" class="disabled-while-empty" method="post" action="/page/saymail/">
+		    	<form name="comment"  class="disabled-while-empty" method="post" action="/page/saymail/">
 						<div class="modal-body">						
 							<div class="comment-types"><div class="comment-type">
 									<input type="radio" name="comment-type" id="comment-radio-good" value=":)Поблагодарить">
@@ -130,4 +130,4 @@
 	<!-- End Comment modal -->	
 	</footer>
 
-<script  src="//uaadcodedsp.rontar.com/rontar_aud_async.js"></script>
+<!--<script  src="//uaadcodedsp.rontar.com/rontar_aud_async.js"></script>-->

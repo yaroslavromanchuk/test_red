@@ -78,6 +78,14 @@
                     <label class="form-control-label">Оценка: <span class="tx-danger">*</span></label>
                     <input type="text" required class="form-control" value="<?=$this->order->getAmount()?>" name="declared_cost">
                 </div>
+                <div class="form-group">
+                 <label class="form-control-label">Платит за доставку:</label>
+                <div>
+            <label class="rdiobox"><input name="delivery_payment_payer" checked type="radio" value="0"><span>Отправитель</span></label>
+            <label class="rdiobox"><input name="delivery_payment_payer"  type="radio" value="1"><span>Получатель</span></label>
+            
+            </div>
+            </div>
             </div>
             
             <div class="col-12">

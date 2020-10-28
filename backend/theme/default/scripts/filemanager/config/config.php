@@ -1,8 +1,7 @@
 <?php
-
-session_start();
-
-
+if (session_id() == '') {
+    session_start();
+}
 mb_internal_encoding('UTF-8');
 
 mb_http_output('UTF-8');
@@ -31,7 +30,7 @@ date_default_timezone_set('Europe/Kiev');
 |
 */
 
-define('USE_ACCESS_KEYS', false); // TRUE or FALSE
+define('USE_ACCESS_KEYS', true); // TRUE or FALSE
 
 /*
 |--------------------------------------------------------------------------
@@ -72,22 +71,22 @@ $config = array(
 	'base_url' => 'https://' . $_SERVER['HTTP_HOST'],
 	/*
 	|--------------------------------------------------------------------------
-	| path from base_url to base of upload folder
+	| path from base_url to base of upload folder/ путь от base_url до базы папки загрузки
 	|--------------------------------------------------------------------------
 	|
 	| with start and final /
 	|
 	*/
-	'upload_dir' => '/storage/images/RED_ua/',
+	'upload_dir' => '/storage/',
 	/*
 	|--------------------------------------------------------------------------
-	| relative path from filemanager folder to upload folder
+	| relative path from filemanager folder to upload folder/ относительный путь от папки файлового менеджера до папки загрузки
 	|--------------------------------------------------------------------------
 	|
 	| with final /
 	|
 	*/
-	'current_path' => '../../../storage/images/RED_ua/',
+	'current_path' => '../../../../storage/',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -98,7 +97,7 @@ $config = array(
 	| DO NOT put inside upload folder
 	|
 	*/
-	'thumbs_base_path' => '../../../storage/thumbs/',
+	'thumbs_base_path' => '../../../../thumbs/',
 
 
 	/*
@@ -147,6 +146,9 @@ $config = array(
 	*/
 
 	'access_keys' => array(
+            'anya',
+            'nia',
+            'yarik'
 
 	),
 

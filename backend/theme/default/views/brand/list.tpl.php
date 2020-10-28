@@ -13,13 +13,13 @@
                         <th >Страна бренда</th>
 			<th >Товаров</th>
 			<th >На главной</th>
-                        <th >Грейд</th>
+                        <th>Грейд</th>
+                        <th>Действие</th>
 		</tr>
                 </thead>
                 <tbody>
 <?php
-	foreach($this->getBrands() as $b ) {
-		$count = $b->getCountArticles();		
+	foreach($this->getBrands() as $b ) {		
 ?>
 		<tr>
 			<td><a href="<?=$this->path?>brand/edit/id/<?=$b->id?>/"><img src="/img/icons/edit-small.png" alt="Редактирование" /></a>
@@ -32,20 +32,20 @@
                         <td><?php if($b->getImage()) { ?><img style="max-height:  30px" src="<?=$b->getImage()?>" alt="<?=$b->name?>"><?php } ?></td>
 			<td><?=$b->name?></td>
                         <td><?=$b->country_brand?></td>
-			<td><a href="/admin/shop-articles/?search=&brand=<?=$b->name?>&from=&to=&id=&sort=dateminus"><?=$count?></a></td>
+                        <td><a href="/admin/shop-articles/?brand_id=<?=$b->id?>&status=3&nalich=1&sort=dateminus" target="_blank"><?=$b->getCountArticles()?></a></td>
 			<td><?=$b->top?'Да':'Нет'?></td>
+                        <td><?=$b->greyd?></td>
                         <td>
-                            <?php if($b->greyd){ echo $b->greyd; }else {?>
-                            <select class="form-control" id="<?=$b->id?>" name="<?=$b->id?>" data-placeholder="Грейд" onchange="setGreyd(this);">
+                            <select class="form-control " id="<?=$b->id?>" name="<?=$b->id?>" data-placeholder="Грейд" onchange="setGreyd(this);">
                             <option label="Грейд"></option>
+                            <option value="0">Без грейда</option>
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
                             <option value="4">4</option>
                             <option value="5">5</option>
-                            <option value="0">Без грейда</option>
                             </select>
-                            <?php } ?></td>
+                        </td>
 		</tr>
 <?php
 		}

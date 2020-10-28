@@ -1,20 +1,21 @@
 <?php
 
-if(isset($_GET['red']) and $_GET['red'] == '5c63fup9d755q55jsue4svcnu5'){
+if(/*isset($_GET['red']) and $_GET['red'] == '5c63fup9d755q55jsue4svcnu5'*/true){
 require_once('cron_init.php');
 header("Content-type: text/xml; charset: UTF-8");
-$t_f = date("Y-m-d 00:00:00");
-
-
-  $dom = new domDocument("1.0", "utf-8"); // Ñîçäà¸ì XML-äîêóìåíò âåðñèè 1.0 ñ êîäèðîâêîé utf-8
+  $dom = new domDocument("1.0", "utf-8"); 
   
-  $root = $dom->createElement("price");
-	//$root->setAttribute("date", date('Y-m-d H:m'));
-		$dom->appendChild($root);
+  $root1 = $dom->createElement("yml_catalog");
+	$root1->setAttribute("date", date('Y-m-d H:m'));
+	$dom->appendChild($root1);
+	$root = $root1->appendChild($dom->createElement("shop"));
+	 
+	// $root->appendChild($shop);
 		
-  $date = $dom->createElement("date", date('Y-m-d H:m'));
-		$root->appendChild($date);
-  $name = $dom->createElement("firmName", iconv('windows-1251', 'UTF-8', "Èíòåðíåò ìàãàçèí ìîäíîé îäåæäû").' red.ua');
+		
+ // $date = $dom->createElement("date", date('Y-m-d H:m'));
+		//$root->appendChild($date);
+  $name = $dom->createElement("name", 'Ð˜Ð½Ñ‚ÐµÑ€Ð½ÐµÑ‚ Ð¼Ð°Ð³Ð°Ð·Ð¸Ð½ Ð¼Ð¾Ð´Ð½Ð¾Ð¹ Ð¾Ð´ÐµÐ¶Ð´Ñ‹ red.ua');
 		$root->appendChild($name);
  // $company = $dom->createElement("firmId", '');
 		//$root->appendChild($company);
@@ -22,13 +23,13 @@ $t_f = date("Y-m-d 00:00:00");
 	//$url = $dom->createElement("url", "http://www.red.ua/");
 	//$root->appendChild($url);
 		
- //$currencies = $dom->createElement("currencies");
-	//	$root->appendChild($currencies);
+ $currencies = $dom->createElement("currencies");
+		$root->appendChild($currencies);
 		
- //$currency = $dom->createElement("currency");
-	//$currency->setAttribute("code", "UAH");
-    //$currency->setAttribute("rate", 1);
-	//	$currencies->appendChild($currency);
+ $currency = $dom->createElement("currency");
+	$currency->setAttribute("id", "UAH");
+    $currency->setAttribute("rate", 1);
+		$currencies->appendChild($currency);
 		
  $catalog = $dom->createElement("categories");
 		$root->appendChild($catalog);
@@ -36,57 +37,58 @@ $t_f = date("Y-m-d 00:00:00");
  $categorys =  wsActiveRecord::useStatic('Shopcategories')->findAll(array(' active = 1 and parent_id = 0 and id in(33,14,15,54,59,146,248)'));
  $mas = array();
   foreach($categorys as $cat){
-  $category = $dom->createElement("category"); // Ñîçäà¸ì óçåë "category" , $cat->name
+  $category = $dom->createElement("category", $cat->name); // Ð¡Ð¾Ð·Ð´Ð°Ñ‘Ð¼ ÑƒÐ·ÐµÐ» "category" , $cat->name
   
-	//$category->setAttribute("id", $cat->id); // Óñòàíàâëèâàåì àòðèáóò "id" ó óçëà "user"
+	$category->setAttribute("id", $cat->id);// Ð£ÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÐ¼ Ð°Ñ‚Ñ€Ð¸Ð±ÑƒÑ‚ "id" Ñƒ ÑƒÐ·Ð»Ð° "user"
 	
 	$mas[] = $cat->id;
 		$catalog->appendChild($category);
-		$id = $dom->createElement("id", $cat->id);
-		$category->appendChild($id);
-		$name = $dom->createElement("name", $cat->name);
-		$category->appendChild($name);
+		//$id = $dom->createElement("id", $cat->id);
+		//$category->appendChild($id);
+		//$name = $dom->createElement("name", $cat->name);
+		//$category->appendChild($name);
 		
 		
     $dop_category =  wsActiveRecord::useStatic('Shopcategories')->findAll(array('active'=>1, 'parent_id'=>$cat->getId()));
 	  foreach($dop_category as $d_cat){
- $category = $dom->createElement("category"); // Ñîçäà¸ì óçåë "category" , $d_cat->name
-	//$category->setAttribute("id", $d_cat->id); // Óñòàíàâëèâàåì àòðèáóò "id" ó óçëà "user"
+ $category = $dom->createElement("category", $d_cat->name); // Ð¡Ð¾Ð·Ð´Ð°Ñ‘Ð¼ ÑƒÐ·ÐµÐ» "category" , $d_cat->name
+	$category->setAttribute("id", $d_cat->id);// Ð£ÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÐ¼ Ð°Ñ‚Ñ€Ð¸Ð±ÑƒÑ‚ "id" Ñƒ ÑƒÐ·Ð»Ð° "user"
 	$mas[] = $d_cat->id;
-  //  $category->setAttribute("parentId", $cat->id); // Óñòàíàâëèâàåì àòðèáóò "id" ó óçëà "user"
-	//$category->setAttribute("portal_id", $cat->id); // Óñòàíàâëèâàåì àòðèáóò "id" ó óçëà "user"
-	//$category->setAttribute("portal_url", $cat->getPath()); // Óñòàíàâëèâàåì àòðèáóò "id" ó óçëà "user"
+   $category->setAttribute("parentId", $cat->id); // Ð£ÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÐ¼ Ð°Ñ‚Ñ€Ð¸Ð±ÑƒÑ‚ "id" Ñƒ ÑƒÐ·Ð»Ð° "user"
+	//$category->setAttribute("portal_id", $cat->id); // Ð£ÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÐ¼ Ð°Ñ‚Ñ€Ð¸Ð±ÑƒÑ‚ "id" Ñƒ ÑƒÐ·Ð»Ð° "user"
+	//$category->setAttribute("portal_url", $cat->getPath()); // Ð£ÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÐ¼ Ð°Ñ‚Ñ€Ð¸Ð±ÑƒÑ‚ "id" Ñƒ ÑƒÐ·Ð»Ð° "user"
 		$catalog->appendChild($category);
-		$id = $dom->createElement("id", $d_cat->id);
-		$category->appendChild($id);
-		$name = $dom->createElement("name", $d_cat->name);
-		$category->appendChild($name);
-		$parentId = $dom->createElement("parentId", $cat->id);
-		$category->appendChild($parentId);
+		//$id = $dom->createElement("id", $d_cat->id);
+		//$category->appendChild($id);
+		//$name = $dom->createElement("name", $d_cat->name);
+		//$category->appendChild($name);
+		//$parentId = $dom->createElement("parentId", $cat->id);
+		//$category->appendChild($parentId);
 		
 		$dop_category_count =  wsActiveRecord::useStatic('Shopcategories')->count(array('active'=>1, 'parent_id'=>$d_cat->getId()));
 		if($dop_category_count > 0){
 		$dop_category2 =  wsActiveRecord::useStatic('Shopcategories')->findAll(array('active'=>1, 'parent_id'=>$d_cat->getId()));
 		foreach($dop_category2 as $d_cat2){
- $category = $dom->createElement("category"); // Ñîçäà¸ì óçåë "category" , $d_cat2->name
-	//$category->setAttribute("id", $d_cat2->id); // Óñòàíàâëèâàåì àòðèáóò "id" ó óçëà "user"
+ $category = $dom->createElement("category", $d_cat2->name); // Ð¡Ð¾Ð·Ð´Ð°Ñ‘Ð¼ ÑƒÐ·ÐµÐ» "category" , $d_cat->name
+	$category->setAttribute("id", $d_cat2->id); // Ð£ÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÐ¼ Ð°Ñ‚Ñ€Ð¸Ð±ÑƒÑ‚ "id" Ñƒ ÑƒÐ·Ð»Ð° "user"
 	$mas[] = $d_cat2->id;
-    //$category->setAttribute("parentId", $d_cat->id); // Óñòàíàâëèâàåì àòðèáóò "id" ó óçëà "user"
-	//$category->setAttribute("portal_id", $d_cat->id); // Óñòàíàâëèâàåì àòðèáóò "id" ó óçëà "user"
-	//$category->setAttribute("portal_url", $d_cat->getPath()); // Óñòàíàâëèâàåì àòðèáóò "id" ó óçëà "user"
+    $category->setAttribute("parentId", $d_cat->id); // Ð£ÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÐ¼ Ð°Ñ‚Ñ€Ð¸Ð±ÑƒÑ‚ "id" Ñƒ ÑƒÐ·Ð»Ð° "user"
+	//$category->setAttribute("portal_id", $d_cat->id); // Ð£ÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÐ¼ Ð°Ñ‚Ñ€Ð¸Ð±ÑƒÑ‚ "id" Ñƒ ÑƒÐ·Ð»Ð° "user"
+	//$category->setAttribute("portal_url", $d_cat->getPath()); // Ð£ÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÐ¼ Ð°Ñ‚Ñ€Ð¸Ð±ÑƒÑ‚ "id" Ñƒ ÑƒÐ·Ð»Ð° "user"
 		$catalog->appendChild($category);
-		$id = $dom->createElement("id", $d_cat2->id);
-		$category->appendChild($id);
-		$name = $dom->createElement("name", $d_cat2->name);
-		$category->appendChild($name);
-		$parentId = $dom->createElement("parentId", $d_cat->id);
-		$category->appendChild($parentId);
+		//$id = $dom->createElement("id", $d_cat2->id);
+		//$category->appendChild($id);
+		//$name = $dom->createElement("name", $d_cat2->name);
+		//$category->appendChild($name);
+		//$parentId = $dom->createElement("parentId", $d_cat->id);
+		//$category->appendChild($parentId);
 		}
 		
 		
 		}
 		  }
   }
+  /*
 	$delivery1 = $dom->createElement("delivery");
 			$delivery1->setAttribute("id", '1');
 			$delivery1->setAttribute("type", "warehouse");
@@ -98,7 +100,7 @@ $t_f = date("Y-m-d 00:00:00");
   $delivery2 = $dom->createElement("delivery");
 			$delivery2->setAttribute("id", '2');
 			$delivery2->setAttribute("type", "address");
-			$delivery2->setAttribute("cost", '50');
+			$delivery2->setAttribute("cost", '65');
 			$delivery2->setAttribute("time", "1");
 			$delivery2->setAttribute("carrier", "slf");
 			$delivery2->setAttribute("freeFrom", "750");
@@ -118,8 +120,9 @@ $delivery4 = $dom->createElement("delivery");
 			$delivery4->setAttribute("time", "2");
 			$delivery4->setAttribute("carrier", "NP");
 		$root->appendChild($delivery4);	
+		*/
 		
-  $offers = $dom->createElement("items");
+  $offers = $dom->createElement("offers");
 		$root->appendChild($offers);
 		
 		$qq = '
@@ -129,32 +132,34 @@ JOIN ws_articles ON ws_articles_sizes.id_article = ws_articles.id
 WHERE ws_articles_sizes.count >0
 AND ws_articles.active =  "y"
 AND ws_articles.stock > 1
-AND ws_articles.ctime < "'.$t_f.'"
+AND ws_articles.status = 3
 AND ws_articles.category_id
 IN (' . (implode(',', $mas)) . ') 
-ORDER BY  `ws_articles`.`ctime` DESC limit 10';
+ORDER BY  `ws_articles`.`ctime` DESC limit 1000';
 		
 	$articles = wsActiveRecord::useStatic('Shoparticles')->findByQuery($qq);
 		
 		foreach($articles as $a){
+                    $img = $a->getImagePath('detail');
 		//echo $a->id;
-		 $offer = $dom->createElement("item");
-		// $offer->setAttribute("id", $a->id);
+		 $offer = $dom->createElement("offer");
+		$offer->setAttribute("id", $a->id);
 		// $offer->setAttribute("available", "true");
 		 // $offer->setAttribute("selling_type", "s");
 		 $offers->appendChild($offer);
 		 
-		 $offer->appendChild($dom->createElement("id", $a->id));
+		// $offer->appendChild($dom->createElement("id", $a->id));
 		 $offer->appendChild($dom->createElement("categoryId", $a->category_id));//
 		// $offer->appendChild($dom->createElement("code", $a->code));//
 		 $offer->appendChild($dom->createElement("vendor",  htmlspecialchars(strip_tags($a->brand))));//
 		 $offer->appendChild($dom->createElement("name", $a->model));//
 		 //$offer->appendChild($dom->createElement("description",  htmlspecialchars(strip_tags($a->long_text))));//
-		 $offer->appendChild($dom->createElement("url",  "https://www.red.ua".htmlspecialchars(strip_tags($a->getPath()))));//
-		 //$offer->appendChild($dom->createElement("image",  "https://www.red.ua".htmlspecialchars(strip_tags($a->getImagePath('listing')))));//
-		 $offer->appendChild($dom->createElement("priceRUAH",  $a->price));//
-		 $offer->appendChild($dom->createElement("stock",  iconv('windows-1251', 'UTF-8', "Â íàëè÷èè")));//
-		 $offer->appendChild($dom->createElement("guarantee",  iconv('windows-1251', 'UTF-8',"14 äíåé")));//
+		 $offer->appendChild($dom->createElement("url", "https://www.red.ua".htmlspecialchars(strip_tags($a->getPath()))));//
+		 $offer->appendChild($dom->createElement("picture",  "https://www.red.ua".$img));//
+		 $offer->appendChild($dom->createElement("price",  $a->price));//
+		 //$offer->appendChild($dom->createElement("stock",  iconv('windows-1251', 'UTF-8', "ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")));//
+		 $offer->appendChild($dom->createElement("store",  "true"));//
+		 //$offer->appendChild($dom->createElement("guarantee",  iconv('windows-1251', 'UTF-8',"14 ï¿½ï¿½ï¿½ï¿½")));//
 		 
 		 $colors = '';
 		 $sizes = '';
@@ -169,22 +174,23 @@ ORDER BY  `ws_articles`.`ctime` DESC limit 10';
 		 $i++;
 		 }
 		// wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array("code LIKE '".$a->code."' "));
-		 $param = $dom->createElement("param", $colors);//
-		 $param->setAttribute("name", iconv('windows-1251', 'UTF-8', "Öâåò"));
-		 $offer->appendChild($param);
+		// $param = $dom->createElement("param", $colors);//
+		 //$param->setAttribute("name", iconv('windows-1251', 'UTF-8', "ï¿½ï¿½ï¿½ï¿½"));
+		// $offer->appendChild($param);
 		 
 		// $colors = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array("code LIKE '".$a->code."' "))->getColor()->getName()
-		 $param = $dom->createElement("param", $sizes);//
-		 $param->setAttribute("name", iconv('windows-1251', 'UTF-8', "Ðàçìåð"));
-		 $offer->appendChild($param);
+		 //$param = $dom->createElement("param", $sizes);//
+		 //$param->setAttribute("name", iconv('windows-1251', 'UTF-8', "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"));
+		// $offer->appendChild($param);
 		// $vendor = $dom->createElement("vendor",  htmlspecialchars(strip_tags($a->brand)));//
 			//$offer->appendChild($vendor);
 		// $reference = $dom->createElement("reference", $a->id);//
 			//$offer->appendChild($reference);
 
-			;
-		//$oldprice = $dom->createElement("oldprice",  $a->old_price);
-		//$offer->appendChild($oldprice);
+			if($a->old_price > 0){
+		$oldprice = $dom->createElement("oldprice",  $a->old_price);
+		$offer->appendChild($oldprice);
+			}
 		
 		
 		
@@ -214,11 +220,7 @@ ORDER BY  `ws_articles`.`ctime` DESC limit 10';
 		 
 		
 		}
-		
-
-
   echo $dom->saveXML();
   }
   //echo printf("<pre>%s</pre>",print_r($mas, true));
   
-  ?>

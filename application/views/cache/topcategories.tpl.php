@@ -28,7 +28,7 @@
 </div>
 </div>
 
-<link rel="stylesheet" type="text/css" href="/css/menu_category.css?v=1.3.7" />
+<link rel="stylesheet" type="text/css" href="/css/menu_category.css?v=1.3.9" />
 <script>
 var e,i=320;
 e = !!/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
@@ -64,7 +64,7 @@ i+30>n?$(this).css("margin-left",o):$(this).css("margin-left","")})
 		<ul>	
 <?php
 $t_f = date("Y-m-d"); 
-$cats = wsActiveRecord::useStatic('Shopcategories')->findAll(array('parent_id' => 0, 'active' => 1));
+$cats = wsActiveRecord::useStatic('Shopcategories')->findAll(['parent_id' => 0, 'active' => 1]);
 
 	foreach ($cats as $category) {
 	$color = '';
@@ -149,7 +149,7 @@ GROUP BY red_brands.id
 ORDER BY cnt DESC
 LIMIT 12
 		';
-$cached_brands = wsActiveRecord::findByQueryArray($sql);
+$cached_brands = wsActiveRecord::useStatic('Brand')->findByQuery($sql);
 if (count($cached_brands)) {
 ?>
 <li class="menu-item-has-children menu-item-has-mega-menu">
@@ -159,7 +159,7 @@ if (count($cached_brands)) {
     $j = 0;
     foreach ($cached_brands as $brand) {							$j++;
 ?>
-    <li><a href="/all/articles/brands-<?=strtolower(str_replace(' ', '_', str_replace('+', '%20', urlencode($brand->name))))?>/" ><?=$brand->name?></a></li>
+    <li><a href="/all/articles/brands-<?=$brand->name?>" ><?=$brand->name?></a></li>
 <?php  } ?>
 <li><a href="/brands/" class="brand_show_all"><b><?=$this->trans->get('Показать все')?></b></a></li>
 </ul>

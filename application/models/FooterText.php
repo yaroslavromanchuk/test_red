@@ -43,9 +43,13 @@ class FooterText extends wsActiveRecord
     
     
     
-    public function Text($param){
+   static public function Text($param){
          return  wsActiveRecord::useStatic('FooterText')->findFirst($param)->text;
         
     }
+   /* static public function Text($param){
+        $text = new FooterText();
+        return $text->getText($param);
+    }*/
     
 }

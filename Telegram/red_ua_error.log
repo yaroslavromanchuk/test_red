@@ -1,0 +1,34 @@
+[2019-07-02 16:48:44] bot_log.ERROR: exception 'Longman\TelegramBot\Exception\TelegramException' with message 'Duplicate update received!' in /home/www.red.ua/www/Telegram/vendor/longman/telegram-bot/src/DB.php:496
+Stack trace:
+#0 /home/www.red.ua/www/Telegram/vendor/longman/telegram-bot/src/Telegram.php(485): Longman\TelegramBot\DB::insertRequest(Object(Longman\TelegramBot\Entities\Update))
+#1 /home/www.red.ua/www/Telegram/vendor/longman/telegram-bot/src/Telegram.php(387): Longman\TelegramBot\Telegram->processUpdate(Object(Longman\TelegramBot\Entities\Update))
+#2 /home/www.red.ua/www/Telegram/hook.php(76): Longman\TelegramBot\Telegram->handle()
+#3 {main} [] []
+[2019-09-02 17:50:36] bot_log.ERROR: exception 'Longman\TelegramBot\Exception\TelegramException' with message 'Telegram returned an invalid response! Please review your bot name and API key.' in /home/www.red.ua/www/Telegram/vendor/longman/telegram-bot/src/Request.php:463
+Stack trace:
+#0 /home/www.red.ua/www/Telegram/vendor/longman/telegram-bot/src/Request.php(535): Longman\TelegramBot\Request::send('sendMessage', Array)
+#1 /home/www.red.ua/www/Telegram/Commands/GroupadminCommand.php(147): Longman\TelegramBot\Request::sendMessage(Array)
+#2 /home/www.red.ua/www/Telegram/vendor/longman/telegram-bot/src/Commands/Command.php(173): Longman\TelegramBot\Commands\UserCommands\GroupadminCommand->execute()
+#3 /home/www.red.ua/www/Telegram/vendor/longman/telegram-bot/src/Telegram.php(521): Longman\TelegramBot\Commands\Command->preExecute()
+#4 /home/www.red.ua/www/Telegram/vendor/longman/telegram-bot/src/Telegram.php(487): Longman\TelegramBot\Telegram->executeCommand('groupadmin')
+#5 /home/www.red.ua/www/Telegram/vendor/longman/telegram-bot/src/Telegram.php(387): Longman\TelegramBot\Telegram->processUpdate(Object(Longman\TelegramBot\Entities\Update))
+#6 /home/www.red.ua/www/Telegram/hook.php(76): Longman\TelegramBot\Telegram->handle()
+#7 {main} [] []
+[2019-09-02 17:51:21] bot_log.ERROR: exception 'Longman\TelegramBot\Exception\TelegramException' with message 'Duplicate update received!' in /home/www.red.ua/www/Telegram/vendor/longman/telegram-bot/src/DB.php:496
+Stack trace:
+#0 /home/www.red.ua/www/Telegram/vendor/longman/telegram-bot/src/Telegram.php(485): Longman\TelegramBot\DB::insertRequest(Object(Longman\TelegramBot\Entities\Update))
+#1 /home/www.red.ua/www/Telegram/vendor/longman/telegram-bot/src/Telegram.php(387): Longman\TelegramBot\Telegram->processUpdate(Object(Longman\TelegramBot\Entities\Update))
+#2 /home/www.red.ua/www/Telegram/hook.php(76): Longman\TelegramBot\Telegram->handle()
+#3 {main} [] []
+[2020-07-15 08:45:21] bot_log.ERROR: exception 'Longman\TelegramBot\Exception\TelegramException' with message 'Duplicate update received!' in /home/www.red.ua/www/Telegram/vendor/longman/telegram-bot/src/DB.php:496
+Stack trace:
+#0 /home/www.red.ua/www/Telegram/vendor/longman/telegram-bot/src/Telegram.php(485): Longman\TelegramBot\DB::insertRequest(Object(Longman\TelegramBot\Entities\Update))
+#1 /home/www.red.ua/www/Telegram/vendor/longman/telegram-bot/src/Telegram.php(387): Longman\TelegramBot\Telegram->processUpdate(Object(Longman\TelegramBot\Entities\Update))
+#2 /home/www.red.ua/www/Telegram/hook.php(78): Longman\TelegramBot\Telegram->handle()
+#3 {main} [] []
+[2020-08-18 13:06:22] bot_log.ERROR: exception 'Longman\TelegramBot\Exception\TelegramException' with message 'Duplicate update received!' in /home/www.red.ua/www/Telegram/vendor/longman/telegram-bot/src/DB.php:496
+Stack trace:
+#0 /home/www.red.ua/www/Telegram/vendor/longman/telegram-bot/src/Telegram.php(485): Longman\TelegramBot\DB::insertRequest(Object(Longman\TelegramBot\Entities\Update))
+#1 /home/www.red.ua/www/Telegram/vendor/longman/telegram-bot/src/Telegram.php(387): Longman\TelegramBot\Telegram->processUpdate(Object(Longman\TelegramBot\Entities\Update))
+#2 /home/www.red.ua/www/Telegram/hook.php(80): Longman\TelegramBot\Telegram->handle()
+#3 {main} [] []

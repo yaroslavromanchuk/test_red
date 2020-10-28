@@ -27,13 +27,12 @@ class NewsController extends controllerAbstract
      */
         public function indexAction()
     {
-        if ($news = wsActiveRecord::useStatic('Shoparticlesoption')->findById($this->get->getId())) {
+        if (isset($this->get->id) && $news = wsActiveRecord::useStatic('Shoparticlesoption')->findById($this->get->getId())) {
             $this->view->news = $news;
+           //$this->cur_menu->setImage($news->intro);
             $this->cur_menu->setName($news->option_text);
             $this->cur_menu->setPageTitle($news->option_text.' - '.Translator::get('в интернет магазине RED'));
             $this->cur_menu->setMetatagDescription(strip_tags($news->content));
-            
-            
             echo $this->render('news/one.tpl.php');
         } else{
             $this->view->news = wsActiveRecord::useStatic('Shoparticlesoption')->findActiveOption();

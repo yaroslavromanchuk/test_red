@@ -19,13 +19,12 @@
     .border_left {border-left: 2px solid #000;}
 	.border{ border: 1px solid black;}
 </style>
-<body onload="window.print()">
+<body onload="window.print()" style="width: 700px; margin: auto">
 <?php 
-$zayava = true;
 $z = 2;//3
 require_once("QRCode/qrcode.php");
 for ($step = 0; $step < $z; $step++) { ?>
-<table border="0" cellpadding="3" cellspacing="0" width="700">
+<table border="0" cellpadding="3" cellspacing="0" >
 <tr>
     <td colspan="8" class="tt_border_bottom">
             <table border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -51,16 +50,8 @@ for ($step = 0; $step < $z; $step++) { ?>
 <tr>
         <td colspan="2" rowspan="2"><img src="/images/barcodeimage.php?text=<?=$this->order->getId()?>" alt="Barcode Image" /></td>
         <td colspan="4" align="center" class="fnt_size_3">
-            
-            <strong>Товарный чек № <?=$this->order->getId()?></strong>
-            <p style="margin: 0px;padding: 0px;    font-size: 14px;">
-                <?php
-		if ($this->order->getComlpect()) {
-			$compl = explode(';', $this->order->getComlpect());
-                        $str1 = implode(', ', $compl);
-			echo '( '.trim($str1).' )';
-						}
-		?></p>
+        <strong>Товарный чек № <?=$this->order->id?></strong>
+	<?=$this->order->getComlpect()?'<br><span>('.substr(implode(explode(";", $this->order->getComlpect()), ', '), 0, -2).')</span><br>':''?>
             
         </td>
         <td colspan="2"></td>
@@ -139,7 +130,15 @@ for ($step = 0; $step < $z; $step++) { ?>
 	$price_show = 0;
 	$to_pay_minus = 0;
 	$sk = 0;
-	$cod ='%';
+	//$cod ='%ID'.$this->order->customer->id.'&';
+       // $cod ='%';
+        $cod ='%ID'.$this->order->customer->id.'&ORDER'.$this->order->id.'&';
+        if($this->order->deposit > 0){
+           $cod.='DEPO'.Number::formatFloat($this->order->deposit).'&'; 
+        }
+        if($this->order->bonus > 0){
+            $cod.='COIN'.Number::formatFloat($this->order->bonus).'&'; 
+        }
 	
     foreach ($this->getOrder()->getArticles() as $main_key => $article_rec) {
 	if($article_rec->getCount() > 0){
@@ -225,10 +224,10 @@ echo $skid_show ? '<span '.$st.'>'.ceil($skid_show).' %</span>' : '';
             <strong><?=Number::formatFloat($t_real_price, 2)?></strong>
         </td>
     </tr>
-    <tr>
+   <!-- <tr>
 			<td colspan="6" align="right"><i>Скидка клиента</i></td>
-			<td class="border_all border_right" align="right" colspan="2"><i><?=$this->order->getDiscont();?> %*</i></td>
-	</tr>
+			<td class="border_all border_right" align="right" colspan="2"><i><?php //$this->order->getDiscont();?> %*</i></td>
+	</tr>-->
 		<?php if($this->getOrder()->getKuponPrice() > 0){ ?> 
 	<tr>
 		<td colspan="6" align="right"><i style="font-weight: bold;">Код на скидку</i></td>
@@ -239,13 +238,13 @@ echo $skid_show ? '<span '.$st.'>'.ceil($skid_show).' %</span>' : '';
 		<td class="border_all border_right" align="right" colspan="2"><i style="font-weight: bold;"><?=Number::formatFloat($this->getOrder()->getKuponPrice(), 2)?> %</i></td>
 		</tr>
     <?php } ?>
-	<tr>
+	<!--<tr>
 			<td colspan="6" align="right"><i>Сумма общей скидки</i></td>
-			<td class="border_all border_right" align="right" colspan="2"><i><?=Number::formatFloat($to_pay_minus, 2)?></i></td>
-	</tr>
+			<td class="border_all border_right" align="right" colspan="2"><i><?pph //Number::formatFloat($to_pay_minus, 2)?></i></td>
+	</tr>-->
 <?php
-$min_sum_bonus = Config::findByCode('min_sum_bonus')->getValue();
-		if($this->getOrder()->getBonus() > 0 and $to_pay >= $min_sum_bonus){?>
+//$min_sum_bonus = Config::findByCode('min_sum_bonus')->getValue();
+		if($this->getOrder()->getBonus() > 0){?>
 		<tr>
 			<td colspan="6" align="right"><i>Бонусная скидка</i></td>
             <td class="border_all border_right" align="right" colspan="2">
@@ -259,7 +258,7 @@ $min_sum_bonus = Config::findByCode('min_sum_bonus')->getValue();
 			</td>
 			<td class="border_all border_right" align="right" colspan="2">
 				<i>
-				<?=Number::formatFloat(($this->order->amount-$this->getOrder()->dop_summa-$this->getOrder()->getDeliveryCost()), 2)?>
+				<?=Number::formatFloat(($this->order->calculateOrderPrice2(true, true, false)), 2)?>
 		</i>
 			</td>
 		</tr>
@@ -345,12 +344,13 @@ $min_sum_bonus = Config::findByCode('min_sum_bonus')->getValue();
 	<?php if(true){
 		$qr = new qrcode();
 		$qr->text($cod);
+               // echo $cod; 
 		echo "<p id='qr".$this->order->getId()."' hidden><img src='".$qr->get_link(140)."' style='max-width: 140px;' border='0'/></p>";
 		//echo $cod;
 				}?>
     <div style='page-break-after: always;'></div>
 		<?php }
-if($z > 1 and $zayava){
+if($z > 1 and Config::findByCode('tov_check_zayava')->getValue()){
 		?>
 		
 	 <table border="0" cellpadding="3" cellspacing="0" width="700" >
@@ -451,7 +451,7 @@ foreach ($this->getOrder()->getArticles() as $main_key => $article_rec) {
                 <b>на депозит</b> - внутренний счет в аккаунте на сайте red.ua
             </td>
         </tr>
-        <?php if(in_array($this->getOrder()->payment_method_id, [4,6]) and false){ ?>
+        <?php if(in_array($this->getOrder()->payment_method_id, [4,6]) and Config::findByCode('return_pay_to_order_card')->getValue()){ ?>
             <tr>
             <td colspan="2"  style="text-align:center">
                 ☐

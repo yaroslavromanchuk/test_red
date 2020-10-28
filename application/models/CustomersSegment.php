@@ -27,7 +27,7 @@ class CustomersSegment extends wsActiveRecord
     }
     
     public function getCountCustomer(){
-        $sql = "SELECT COUNT(  `ws_customers`.`id` ) AS  `ctn` from `ws_customers` WHERE  `ws_customers`.`segment_id` =".$this->id;
+        $sql = "SELECT COUNT(  `ws_customers`.`id` ) AS  `ctn` from `ws_customers` WHERE `ws_customers`.`customer_type_id` = 1 and  `ws_customers`.`segment_id` =".$this->id;
        return wsActiveRecord::useStatic('Customer')->findByQuery($sql)->at(0)->ctn;
     }
     
@@ -42,7 +42,7 @@ class CustomersSegment extends wsActiveRecord
             $sql = "SELECT  `ws_customers_segment` . * , COUNT(  `ws_customers`.`id` ) AS  `ctn` 
 FROM  `ws_customers_segment` 
 INNER JOIN  `ws_customers` ON  `ws_customers_segment`.`id` =  `ws_customers`.`segment_id` 
-WHERE `ws_customers_segment`.`active` = 1
+WHERE `ws_customers_segment`.`active` = 1 and `ws_customers`.`customer_type_id` = 1
 GROUP BY  `ws_customers_segment`.`id` ";
             return wsActiveRecord::useStatic('CustomersSegment')->findByQuery($sql);
         }else{

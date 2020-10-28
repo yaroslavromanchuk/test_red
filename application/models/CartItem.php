@@ -39,4 +39,12 @@ class CartItem extends wsActiveRecord
          ];
     }
     //put your code here
+    public function clearCartIthem(){
+        if($this->id){
+            //print_r($this);
+            @$this->destroy();
+            //die();
+        }
+        return false;
+    }
 }

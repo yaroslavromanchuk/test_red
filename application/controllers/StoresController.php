@@ -37,7 +37,7 @@ public function indexAction(){
          $this->cur_menu->setName($post->name);
    $this->cur_menu->setPageTitle('Магазини RED');
     $this->cur_menu->setMetatagDescription('Акції роздрібних магазинів RED – Київ, Бориспіль ✓ Телефони ✓ Графік работи');
-        $this->cur_menu->nofollow = 1;
+        $this->cur_menu->noindex = 1;
          echo $this->render('stores/one_post.php');
        // echo 'tut';
         //die();
@@ -45,13 +45,13 @@ public function indexAction(){
    $this->cur_menu->setName('Акції');
    $this->cur_menu->setPageTitle('Магазини RED');
    $this->cur_menu->setMetatagDescription('Акції роздрібних магазинів RED – Київ, Бориспіль ✓ Телефони ✓ Графік работи');
-   $this->cur_menu->nofollow = 1;
+   $this->cur_menu->noindex = 1;
     echo $this->render('stores/akcii.php');
     
     /*    $this->cur_menu->setName('Адреси магазинів');
    $this->cur_menu->setPageTitle('Магазини RED');
    $this->cur_menu->setMetatagDescription('Адреса роздрібних магазинів RED – Київ, Бориспіль ✓ Телефони ✓ Графік работи');
-   $this->cur_menu->nofollow = 1;
+   $this->cur_menu->noindex = 1;
     echo $this->render('stores/address.php');
      * */
      
@@ -87,7 +87,7 @@ public function addresAction(){
    $this->cur_menu->setName('Адреси магазинів');
    $this->cur_menu->setPageTitle('Магазини RED');
    $this->cur_menu->setMetatagDescription('Адреса роздрібних магазинів RED – Київ, Бориспіль ✓ Телефони ✓ Графік работи');
-   $this->cur_menu->nofollow = 1;
+   $this->cur_menu->noindex = 1;
     echo $this->render('stores/address.php');
 }
 public function infoAction(){
@@ -95,7 +95,7 @@ public function infoAction(){
    $this->cur_menu->setName('Інформація');
    $this->cur_menu->setPageTitle('Магазини RED');
    $this->cur_menu->setMetatagDescription('Інформація роздрібних магазинів RED – Київ, Бориспіль ✓ Телефони ✓ Графік работи');
-   $this->cur_menu->nofollow = 1;
+   $this->cur_menu->noindex = 1;
     echo $this->render('stores/info.php');
 }
 

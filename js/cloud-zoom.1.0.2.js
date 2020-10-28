@@ -1,6 +1,6 @@
 (function ($) {
 	$(document).ready(function () {
-		$('.cloud-zoom, .cloud-zoom-gallery').CloudZoom();
+		//$('.cloud-zoom, .cloud-zoom-gallery').CloudZoom();
 	});
 	function format(str) {
 		for (var i = 1; i < arguments.length; i++) {

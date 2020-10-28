@@ -30,8 +30,88 @@
         </script>
    <?php  
  }?>
-        <?php if($this->filters){ ?>
-        <div class="card">
+
+       
+ <?php if(count($this->filters['newcat']) > 0){ ?>
+    
+    <div class="card mb-2">
+    <div class="card-header w-100">
+    <p class="card-title">
+            <?php 
+    if($this->getCategory()->getId()){
+   echo $this->getCategory()->getRoutez().'<span class="float-right badge  badge-light  badge-pill round">'.$this->result_count.'</span>';
+    }else{
+        echo $this->trans->get('Категория');
+    } ?>
+        </p>
+  </div>
+  
+<div class="filter-content">
+                    
+<ul class="list-group list-group-flush list-group-item-action">
+<?php
+    foreach ($this->filters['newcat'] as $cat) { 
+      if(!empty($cat['kids'])){
+        if(!empty($cat['title'])){ ?>
+             <li class="list-group-item list-group-item-action" href="<?=$cat['url']?>">
+                 <span class="title-cat"></span><a href="<?=$cat['url']?>" class="title-cat-g">
+                 <?=$cat['title']?>
+                     <span class="float-right badge    badge-pill round"><?=$cat['count']?></span>
+                 </a>
+                 <div class="sidebar-submenu">
+                     <ul>
+                       <?php  foreach ($cat['kids'] as $value) {
+                           if($value['count'] > 0){?>
+             <li class='list-group-item list-group-item-action' >
+                 <a href="<?=$value['url']?>" >
+                       <?=$value['title']?><span class='float-right badge    badge-pill round'><?=$value['count']?></span>
+                        </a>
+             </li>  
+                           <?php } } ?>
+                     </ul>
+                 </div>
+             </li>
+       <?php }
+  //  echo ' <div class="list-group list-group-flush p-1 pl-3">';
+        
+   // echo '</div>';
+                }else{ ?>
+             <li  class="list-group-item list-group-item-action">
+                 <a  href="<?=$cat['url']?>">
+                     <?=$cat['title']?>
+                      <span class="float-right badge    badge-pill round"><?=$cat['count']?></span></a>
+             </li>
+                            <?php }
+    } ?>
+</ul>
+                </div>
+        <script>
+           
+                 $(".title-cat").click(function() {
+                    // console.log('sdgf');
+               // $(".sidebar-submenu").hide();
+e = $(this).closest('.list-group-item-action').find('.sidebar-submenu');
+    if(!e.is(':visible')) {
+        $(this).addClass("activ");
+    $('.sidebar-submenu').hide();
+    e.fadeIn(300, "linear");
+}else{
+    $(this).removeClass("activ")
+    e.hide();
+}
+return false;
+             //   this.parent().(".sidebar-submenu").togleClass();
+  //alert( "Handler for .click() called." );
+});
+       
+
+        
+        </script>
+     </div>
+
+<?php } ?>
+         <?php if($this->filters){ ?>
+        <div class="card mb-2">
     <div class="card-header w-100">
     <h6 class="title text-uppercase font-weight-bold text-center"><?=$this->trans->get('filters')?></h6>
   </div>
@@ -44,7 +124,8 @@
     </div>
 </div>
             <?php } ?>
- <?php if($top = Shoparticlestop::activeTopArticle() and $top->count() > 0){?>
+        
+ <?php if($top = Shoparticlestop::activeTopArticle() and $top->count() > 0){ ?>
 <div class="card"></div>
  <?php }elseif($act = Shoparticlesoption::findActiveOption(5) and $act->count() > 0){ ?>
 <div class="card">
@@ -86,49 +167,6 @@ $('#circle_car').cycle({
 });
 </script>
  <?php } ?>
- <?php if(count($this->filters['newcat']) > 0){ ?>
-    
-    <div class="card">
-    <div class="card-header w-100">
-    <h6 class="title">
-            <?php 
-    if($this->getCategory()->getId()){
-   echo $this->getCategory()->getRoutez().'<span class="float-right badge  badge-light  badge-pill round">'.$this->result_count.'</span>';
-    }else{
-        echo $this->trans->get('Категория');
-    } ?>
-        </h6>
-  </div>
-  
-<div class="filter-content">
-                    
-<div class="list-group list-group-flush list-group-item-action">
-<?php
-    foreach ($this->filters['newcat'] as $cat) { 
-      if($cat['kids']){
-        if($cat['title']){
-             echo "<a class='list-group-item list-group-item-action' href='".$cat['url']."'><i class='icon ion-ios-arrow-down mr-3'></i>".$cat['title']."</a>";
-        }
-   
- echo ' <div class="list-group list-group-flush p-1 pl-3">';
-        foreach ($cat['kids'] as $value) {
-             echo "<a class='list-group-item list-group-item-action' href='".$value['url']."'>
-                 <i class='icon ion-ios-arrow-forward-outline mr-3'></i>
-                        ".$value['title']."<span class='float-right badge    badge-pill round'>".$value['count']."</span></a>";
-                        
-                    }
-                    echo '</div>';
-                }else{ ?>
-                        <a class="list-group-item list-group-item-action"  href="<?=$cat['url']?>">
-                      <i class="icon ion-ios-arrow-forward-outline mr-3"></i><?=$cat['title']?><span class="float-right badge    badge-pill round"><?=$cat['count']?></span></a>
-
-                            <?php }
-    } ?>
-                    </div>
-                </div>
-     </div>
-
-<?php } ?>
 </div>
     <div class="col-sm-12 col-md-12 col-lg-10 col-xl-10 p-0">
     <div class="row m-0 m-auto">

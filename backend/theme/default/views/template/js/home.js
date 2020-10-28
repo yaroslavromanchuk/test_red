@@ -1,4 +1,831 @@
+function nTime(){
+$(".m_time").hide();
+$(".n_time").show();
+return false;
+}
+function mTime(){
+$(".n_time").hide();
+$(".m_time").show();
+return false;
+}
+function naTime(){
+$(".m_a_time").hide();
+$(".n_a_time").show();
+return false;
+}
+function maTime(){
+$(".n_a_time").hide();
+$(".m_a_time").show();
+return false;
+}
 
+$(function(){
+$('#days').on('shown.bs.modal', function () {
+$('.sparkline_days').html($('.days').text());
+  $('.sparkline_days').sparkline('html', {
+    type: 'bar',
+    barWidth: 30,
+    height: 200,
+    barColor: '#0083CD',
+    lineColor: 'rgba(255,255,255,0.5)',
+    chartRangeMin: 0,
+    chartRangeMax: 10
+  });
+});
+$('#week').on('shown.bs.modal', function () {
+$('.sparkline_week').html($('.week').text());
+  $('.sparkline_week').sparkline('html', {
+    type: 'bar',
+    barWidth: 30,
+    height: 200,
+    barColor: '#0083CD',
+    lineColor: 'rgba(255,255,255,0.5)',
+    chartRangeMin: 0,
+    chartRangeMax: 10
+  });
+});
+$('#month').on('shown.bs.modal', function () {
+$('.sparkline_month').html($('.month').text());
+  $('.sparkline_month').sparkline('html', {
+    type: 'bar',
+    barWidth: 30,
+    height: 200,
+    barColor: '#6e42c1',
+    lineColor: 'rgba(255,255,255,0.5)',
+    chartRangeMin: 0,
+    chartRangeMax: 10
+  });
+});
+$('#year').on('shown.bs.modal', function () {
+$('.sparkline_year').html($('.year').text());
+  $('.sparkline_year').sparkline('html', {
+    type: 'bar',
+    barWidth: 30,
+    height: 200,
+    barColor: '#2b333e',
+    lineColor: 'rgba(255,255,255,0.5)',
+    chartRangeMin: 0,
+    chartRangeMax: 10
+  });
+});
+   
+
+});
+/**
+ * 
+ * @type type
+ */
+
+$("#order_gryde_form_id").submit(function(){
+if(!$("#gryde").val()){
+    $("#gryde").focus();
+    alert('Укажите грейд');
+    return false;
+}
+    var f1 = new Date($('#one_date_from_gryde').val());
+   var t1 = new Date($('#one_date_to_gryde').val());
+   
+   var f2 = new Date($('#two_date_from_gryde').val());
+   var t2 = new Date($('#two_date_to_gryde').val());
+   
+   if(f1 > t1){
+       alert('Не правильно указана дата');
+       return false;
+   }
+  /* else if(f2 > t2){
+        alert('Не правильно указана дата сравнения');
+       return false;
+   }else if(f2 >= f1  || t2 >= t1){
+       alert('Дата сравнения должна быть меньше первой даты');
+       return false;
+   }*/
+
+
+console.log($(this).serialize());
+console.log($(this).serializeArray());
+
+order_gryde($(this).serialize());
+return false;
+});
+$("#procent-ostatka").submit(function(){
+
+    var f = $(this).serializeArray();
+        console.log(f);
+       // console.log(f.one-date-from);
+   // alert(f);
+    var f1 = new Date($('#one-date-from').val());
+   var t1 = new Date($('#one-date-to').val());
+   var f2 = new Date($('#two-date-from').val());
+   var t2 = new Date($('#two-date-to').val());
+   
+   if(f1 > t1){
+       alert('Не правильно указана дата');
+       return false;
+   }else if(f2 > t2){
+        alert('Не правильно указана дата сравнения');
+       return false;
+   }else if(f2 >= f1  || t2 >= t1){
+       alert('Дата сравнения должна быть меньше первой даты');
+       return false;
+   }
+
+   procent_ostatka($(this).serialize());
+    return false;
+});
+
+$("#realization_form").submit(function(){
+
+    var f = $(this).serializeArray();
+        console.log(f);
+       // console.log(f.one-date-from);
+   // alert(f);
+    var f1 = new Date($('#one_date_from_r').val());
+   var t1 = new Date($('#one_date_to_r').val());
+
+   
+   if(f1 > t1){
+       alert('Не правильно указана дата');
+       return false;
+   }
+
+   realization($(this).serialize());
+    return false;
+});
+
+
+$("#form_prognoz").submit(function(e){
+    console.log($(this).serialize());
+    prognoz($(this).serialize());
+    return false;
+});
+$("#form_prognoz_brand").submit(function(e){
+    console.log($(this).serialize());
+    prognozBrand($(this).serialize());
+    return false;
+});
+$("#form_oborot_all").submit(function(e){
+    var form = $(this).serialize();
+    var from = $('#from_oborot').val();
+    var to = $('#to_oborot').val();
+    form+='&cat_prognoz=267&from_prognoz='+from+'&to_prognoz='+to;
+
+    oborot_all(form);
+    return false;
+});
+$("#form_oborot_all_grn").submit(function(e){
+    var form = $(this).serialize();
+    var from = $('#from_oborot').val();
+    var to = $('#to_oborot').val();
+    form+='&cat_prognoz=267&from_prognoz='+from+'&to_prognoz='+to;
+ console.log(form);
+    oborot_all_monch(form);
+    
+    
+    return false;
+});
+
+
+$("#form_oborot_root").submit(function(e){
+    var form = $(this).serialize();
+    var from = $('#from_oborot').val();
+    var to = $('#to_oborot').val();
+    form+='&from_prognoz='+from+'&to_prognoz='+to;
+ console.log(form);
+   //  $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+  
+    oborot_category(form, 'oborot_root');
+    
+   //   oborot_root(form, ar, 0); 
+    return false;
+});
+$("#form_oborot_brand").submit(function(e){
+    var form = $(this).serialize();
+    var from = $('#from_oborot').val();
+    var to = $('#to_oborot').val();
+    form+='&from_prognoz='+from+'&to_prognoz='+to;
+ console.log(form);
+   //  $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+  oborot_brand(form, 'oborot_brand');
+    return false;
+});
+$("#form_oborot_graid").submit(function(e){
+    var form = $(this).serialize();
+    var from = $('#from_oborot').val();
+    var to = $('#to_oborot').val();
+    form+='&from_prognoz='+from+'&to_prognoz='+to;
+ console.log(form);
+   //  $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+  oborot_graid(form, 'oborot_graid');
+    return false;
+});
+$("#form_oborot_graid_category").submit(function(e){
+    var form = $(this).serialize();
+    var from = $('#from_oborot').val();
+    var to = $('#to_oborot').val();
+    form+='&from_prognoz='+from+'&to_prognoz='+to;
+ console.log(form);
+   //  $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+  oborot_graid_category(form, 'oborot_graid');
+    return false;
+});
+
+$("#form_oborot_category").submit(function(e){
+   // var form_array  = $(this).serializeArray();
+    var form = $(this).serialize();
+    //console.log(form_array);
+    var from = $('#from_oborot').val();
+    var to = $('#to_oborot').val();
+    form+='&from_prognoz='+from+'&to_prognoz='+to;
+    console.log(form);
+    oborot_category(form, 'oborot_category');
+    return false;
+});
+function oborot_category(form, element){
+  //  console.log(form);
+   // console.log(element);
+    //return false;
+    
+    if(element == 'oborot_category'){
+         var cat = $('#cat_oborot_category option:selected').text();
+    }else{
+        var cat = 'Главные категории';
+    }
+   
+    console.log(cat);
+            //var date =[];
+		$.ajax({
+                beforeSend: function(){
+                    $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+                },
+                url: '/admin/home/',
+                type: 'POST',
+                dataType: 'json',
+                data: form,
+                success: function (res) {
+			console.log(res);
+                        //  date = res;
+                },
+		error: function (res) {
+			console.log(res);
+		}
+            }).done(function(date) {
+                if(date.length > 0){
+                 chart.addSeries({data: date[0].niz, name:'21', type: 'area', zIndex: 4,color: '#23bf08', marker: {enabled: false}});
+                 chart.addSeries({data: date[0].norma, name:'28', type: 'area', zIndex: 3, color: '#17f2f4',  marker: {enabled: false}});
+                 chart.addSeries({data: date[0].verch, name:'45', type: 'area', zIndex: 2,color: '#ff0018', marker: {enabled: false}});
+                 chart.xAxis[0].setCategories(date[0].x);
+                 var z = 5;
+                for(var k in date){
+                    chart.addSeries({data: date[k].oborot, name:date[k].cat,  type: 'spline', zIndex: z});
+                    z++;
+                }
+            }
+                console.log(date);
+                    $('.modal-backdrop').hide();
+                    $('#foo').detach();
+                      });
+                      
+     
+var chart =  new  Highcharts.Chart({
+title: {
+        text: cat
+            },
+  chart: {
+    renderTo: element
+  },
+
+    xAxis: {
+    labels: {
+      rotation: 90
+    }, 
+    title:{
+         text: 'Недели'
+    }
+            },
+    yAxis: {
+                title: {
+                    text: 'Дни'
+                },
+                 categories: [0]
+            },
+    tooltip: {
+        shared: true
+    }
+});
+     
+
+return false;
+
+}
+function oborot_brand(form, element){
+  //  console.log(form);
+   // console.log(element);
+    //return false;
+    
+   // if(element == 'oborot_brand'){
+       //  var cat = $('#cat_oborot_category option:selected').text();
+    //}else{
+        var cat = 'Бренды';
+   // }
+   
+    console.log(cat);
+            //var date =[];
+		$.ajax({
+                beforeSend: function(){
+                    $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+                },
+                url: '/admin/home/',
+                type: 'POST',
+                dataType: 'json',
+                data: form,
+                success: function (res) {
+			console.log(res);
+                        //  date = res;
+                },
+		error: function (res) {
+			console.log(res);
+		}
+            }).done(function(date) {
+                if(date.length > 0){
+                    var l = date[0].verch.length;
+                   
+                 chart.addSeries({data: date[0].niz, name:date[0].niz_m, type: 'area', zIndex: 4,color: '#23bf08', marker: {enabled: false}});
+                 chart.addSeries({data: date[0].norma, name:date[0].norma_m, type: 'area', zIndex: 3, color: '#17f2f4',  marker: {enabled: false}});
+                // chart.addSeries({data: date[0].verch, name:date[0].verch_m, type: 'area', zIndex: 2,color: '#ff0018', marker: {enabled: false}});
+                 chart.xAxis[0].setCategories(date[0].x);
+                 var z = 5;
+                 var verch = 0;
+                 for(var v in date){
+                    if(date[v].verch_m > verch){
+                      verch = date[v].verch_m;
+                    }
+                 }
+                 var vv = [];
+                  for(i=0;i<l;i++){
+                      vv.push(verch);
+                  }
+                  chart.addSeries({data: vv, name: verch, type: 'area', zIndex: 2,color: '#ff0018', marker: {enabled: false}});
+                  
+                for(var k in date){
+                    
+                    chart.addSeries({data: date[k].oborot, name:date[k].cat,  type: 'spline', zIndex: z});
+                    z++;
+                }
+                
+            }
+                console.log(date);
+                    $('.modal-backdrop').hide();
+                    $('#foo').detach();
+                      });
+                      
+     
+var chart =  new  Highcharts.Chart({
+title: {
+        text: cat
+            },
+  chart: {
+    renderTo: element
+  },
+
+    xAxis: {
+    labels: {
+      rotation: 90
+    }, 
+    title:{
+         text: 'Недели'
+    }
+            },
+    yAxis: {
+                title: {
+                    text: 'Дни'
+                },
+                 categories: [0]
+            },
+    tooltip: {
+        shared: true
+    }
+});
+     
+
+return false;
+
+}
+function oborot_graid(form, element){
+  //  console.log(form);
+   // console.log(element);
+    //return false;
+    
+   // if(element == 'oborot_brand'){
+       //  var cat = $('#cat_oborot_category option:selected').text();
+    //}else{
+        var cat = 'Грейды';
+   // }
+   
+    console.log(cat);
+            //var date =[];
+		$.ajax({
+                beforeSend: function(){
+                    $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+                },
+                url: '/admin/home/',
+                type: 'POST',
+                dataType: 'json',
+                data: form,
+                success: function (res) {
+			console.log(res);
+                        //  date = res;
+                },
+		error: function (res) {
+			console.log(res);
+		}
+            }).done(function(date) {
+                if(date.length > 0){
+                    var l = date[0].verch.length;
+                   
+                 chart.addSeries({data: date[0].niz, name:date[0].niz_m, type: 'area', zIndex: 4,color: '#23bf08', marker: {enabled: false}});
+                 chart.addSeries({data: date[0].norma, name:date[0].norma_m, type: 'area', zIndex: 3, color: '#17f2f4',  marker: {enabled: false}});
+                // chart.addSeries({data: date[0].verch, name:date[0].verch_m, type: 'area', zIndex: 2,color: '#ff0018', marker: {enabled: false}});
+                 chart.xAxis[0].setCategories(date[0].x);
+                 var z = 5;
+                 var verch = 0;
+                 for(var v in date){
+                    if(date[v].verch_m > verch){
+                      verch = date[v].verch_m;
+                    }
+                 }
+                 var vv = [];
+                  for(i=0;i<l;i++){
+                      vv.push(verch);
+                  }
+                  chart.addSeries({data: vv, name: verch, type: 'area', zIndex: 2,color: '#ff0018', marker: {enabled: false}});
+                  
+                for(var k in date){
+                    
+                    chart.addSeries({data: date[k].oborot, name:date[k].cat,  type: 'spline', zIndex: z});
+                    z++;
+                }
+                
+            }
+                console.log(date);
+                    $('.modal-backdrop').hide();
+                    $('#foo').detach();
+                      });
+                      
+     
+var chart =  new  Highcharts.Chart({
+title: {
+        text: cat
+            },
+  chart: {
+    renderTo: element
+  },
+
+    xAxis: {
+    labels: {
+      rotation: 90
+    }, 
+    title:{
+         text: 'Недели'
+    }
+            },
+    yAxis: {
+                title: {
+                    text: 'Дни'
+                },
+                 categories: [0]
+            },
+    tooltip: {
+        shared: true
+    }
+});
+     
+
+return false;
+
+}
+function oborot_graid_category(form, element){
+  //  console.log(form);
+   // console.log(element);
+    //return false;
+    
+   // if(element == 'oborot_brand'){
+       //  var cat = $('#cat_oborot_category option:selected').text();
+    //}else{
+        var cat = 'Грейды';
+   // }
+   
+    console.log(cat);
+            //var date =[];
+		$.ajax({
+                beforeSend: function(){
+                    $('<div/>', {
+                        id: 'foo',
+                        class: 'modal-backdrop fade show',
+                        html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>'
+                    }).appendTo('body');
+                },
+                url: '/admin/home/',
+                type: 'POST',
+                dataType: 'json',
+                data: form,
+                success: function (res) {
+			console.log(res);
+                        //  date = res;
+                },
+		error: function (res) {
+			console.log(res);
+		}
+            }).done(function(date) {
+                if(date.length > 0){
+                    var l = date[0].verch.length;
+                   
+                 chart.addSeries({data: date[0].niz, name:date[0].niz_m, type: 'area', zIndex: 4,color: '#23bf08', marker: {enabled: false}});
+                 chart.addSeries({data: date[0].norma, name:date[0].norma_m, type: 'area', zIndex: 3, color: '#17f2f4',  marker: {enabled: false}});
+                // chart.addSeries({data: date[0].verch, name:date[0].verch_m, type: 'area', zIndex: 2,color: '#ff0018', marker: {enabled: false}});
+                 chart.xAxis[0].setCategories(date[0].x);
+                 var z = 5;
+                 var verch = 0;
+                 for(var v in date){
+                    if(date[v].verch_m > verch){
+                      verch = date[v].verch_m;
+                    }
+                 }
+                 var vv = [];
+                  for(i=0;i<l;i++){
+                      vv.push(verch);
+                  }
+                  chart.addSeries({data: vv, name: verch, type: 'area', zIndex: 2,color: '#ff0018', marker: {enabled: false}});
+                  
+                for(var k in date){
+                    
+                    chart.addSeries({data: date[k].oborot, name:date[k].cat,  type: 'spline', zIndex: z});
+                    z++;
+                }
+                
+            }
+                console.log(date);
+                    $('.modal-backdrop').hide();
+                    $('#foo').detach();
+                      });
+                      
+     
+var chart =  new  Highcharts.Chart({
+title: {
+        text: cat
+            },
+  chart: {
+    renderTo: element
+  },
+
+    xAxis: {
+    labels: {
+      rotation: 90
+    }, 
+    title:{
+         text: 'Недели'
+    }
+            },
+    yAxis: {
+                title: {
+                    text: 'Дни'
+                },
+                 categories: [0]
+            },
+    tooltip: {
+        shared: true
+    }
+});
+     
+
+return false;
+
+}
+
+
+
+$("#form_analitics").submit(function(e){
+    analityks($('#from_analitic').val(), $('#to_analitic').val())
+    return false;
+});
+$('.articles').click(function(e){
+  if(e.target.id == 'h') {
+  $(".n_a_time").hide();
+$(".m_a_time").hide();
+}
+$('#'+e.target.id).addClass("active");
+  //rickshaw2(e.target.id);
+  console.log(e.target.id);
+  chartLine(e.target.id);
+});
+
+$('.order').click(function(e){
+$('#h').removeClass("active");
+$('#n').removeClass("active");
+$('#m').removeClass("active");
+  console.log(e.target.id);
+  if(e.target.id == 'h') {
+  $(".n_time").hide();
+$(".m_time").hide();
+}
+  $('#'+e.target.id).addClass("active");
+  rickshaw2(e.target.id);
+});
+
+function order_gryde(from){
+     var date =[];
+ var max = 0;
+ var min = 30000;
+		//var new_data = '&method=ostatki';
+		//console.log(new_data);
+		$.ajax({
+                    beforeSend: function(){
+                    $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+                },
+                url: '/admin/home/',
+                type: 'POST',
+                dataType: 'json',
+                data: from,
+                success: function (res) {
+                    console.log(res);
+                         /*       date = res;
+                        for(var key in res.y){  
+                        if(res.y[key] > max){ max = res.y[key];}
+                        if(res.y[key] < min){ min = res.y[key];}
+                        }
+                        min = min - 100;
+                        max = max +100;*/
+                },
+				error: function (res) {
+				console.log(res);
+                                $('#foo').detach();
+				}
+            }).done(function(date) {
+		var ctx4 = $('#order_gryde');
+                ctx4.empty();
+                        // ctx4.height= 300;
+                    $('#foo').detach();
+                    new  Highcharts.Chart({
+title: {
+        text: 'Продажи по грейдам за период'
+            },
+  chart: {
+    renderTo: 'order_gryde'
+  },
+  yAxis: [{ // Primary yAxis
+        labels: {
+            format: '{value}',
+            style: {
+                color: Highcharts.getOptions().colors[1]
+            }
+        },
+        title: {
+            text: 'Значение',
+            style: {
+                color: Highcharts.getOptions().colors[1]
+            }
+        }
+    }],
+
+    xAxis: {
+         categories: date['y'],
+    labels: {
+      rotation: 90
+    }, 
+    title:{
+         text: 'Месяцы'
+    }
+            },
+    
+    tooltip: {
+        shared: true
+    },
+    series: [
+        date['a'],
+        date['b']
+  ]
+});
+                    
+   /*                 
+   new Chart(ctx4, {
+    type: 'line',
+    data: {
+      labels: date.x,
+      datasets: [{
+	label: 'Сумма выбраный период ', 
+        data: date.y,
+        borderColor: '#324463',
+        borderWidth: 1,
+        fill: false
+      },
+      {
+	label: 'Сумма период год назад ', 
+        data: date.z,
+        borderColor: '#320063',
+        borderWidth: 1,
+        fill: false
+      }
+	  ]
+    },
+    options: {
+      legend: {
+        display: false,
+          labels: {
+            display: true
+          }
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero:true,
+            fontSize: 10,
+            max: max,
+            min: min
+          }
+        }],
+        xAxes: [{
+          ticks: {
+            beginAtZero:true,
+            fontSize: 10
+          }
+        }]
+      }
+    }
+  });*/
+});
+}
+//realization
+function realization(from){
+     var date =[];
+ var max = 0;
+ var min = 30000;
+		//var new_data = '&method=ostatki';
+		//console.log(new_data);
+		$.ajax({
+                    beforeSend: function(){
+                    $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+                },
+                url: '/admin/home/',
+                type: 'POST',
+                dataType: 'json',
+                data: from,
+                success: function (res) {
+                    console.log(res);
+                                date = res;
+                        for(var key in res.y){  
+                        if(res.y[key] > max){ max = res.y[key];}
+                        if(res.y[key] < min){ min = res.y[key];}
+                        }
+                        min = min - 100;
+                        max = max +100;
+                },
+				error: function (res) {
+				console.log(res);
+                                $('#foo').detach();
+				}
+            }).done(function() {
+		var ctx4 = $('#realization');
+                    ctx4.height= 300;
+                    $('#foo').detach();
+   new Chart(ctx4, {
+    type: 'line',
+    data: {
+      labels: date.x,
+      datasets: [{
+	label: 'Сумма ', 
+        data: date.y,
+        borderColor: '#324463',
+        borderWidth: 1,
+        fill: false
+      }
+	  ]
+    },
+    options: {
+      legend: {
+        display: false,
+          labels: {
+            display: true
+          }
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero:true,
+            fontSize: 10,
+            max: max,
+            min: min
+          }
+        }],
+        xAxes: [{
+          ticks: {
+            beginAtZero:true,
+            fontSize: 10
+          }
+        }]
+      }
+    }
+  });
+});
+}
 //сравнение остатков
 function procent_ostatka(form){
 
@@ -15,28 +842,34 @@ function procent_ostatka(form){
                       
                 },
 		error: function (res) {
-			console.log(res);
+                   // fopen();
+			console.log(res.responseText);
+                        console.log(res);
                         $('.modal-backdrop').hide();
                     $('#foo').detach();
 		}
             }).done(function(date) {
                  var s1 = 0;
                  var s2 = 0;
+                 var s3 = 0;
+                 var s4 = 0;
                  
               var text = '<legend>Средние остатки: в шт.</legend>';
-            text += '<table class="table"><thead><tr><td>Категория</td><td>'+date.t+' (оборот)</td><td>'+date.s+' (оборот)</td></tr></thead><tbody>';
+            text += '<table class="table"><thead><tr><td>Категория</td><td>'+date.t+' (остаток/оборот)</td><td>'+date.t+' (продажи)</td><td>'+date.s+' (остаток/оборот)</td><td>'+date.s+' (продажи)</td></tr></thead><tbody>';
             delete date['s'];
             delete date['t'];
             for(var k in date.table){
                 s1+=date.table[k].one;
                 s2+=date.table[k].two;
+                s3+=date.table[k].one_prod;
+                s4+=date.table[k].two_prod;
                
-                text+='<tr><td>'+date.table[k].name+'</td><td>'+date.table[k].one+' ('+date.table[k].oborot_one+')</td><td>'+date.table[k].two+' ('+date.table[k].oborot_two+')</td></tr>';
+                text+='<tr><td>'+date.table[k].name+'</td><td>'+date.table[k].one+' ('+date.table[k].oborot_one+')</td><td>'+date.table[k].one_prod+'</td><td>'+date.table[k].two+' ('+date.table[k].oborot_two+')</td><td>'+date.table[k].two_prod+'</td></tr>';
                // da.push(date[k].y);
                // date[k].y.empty();
             }
             
-            text+='</tbody><tfoot><tr><td></td><td>'+s1+'</td><td>'+s2+'</td></tr></tfoot></table>';
+            text+='</tbody><tfoot><tr><td></td><td>'+s1+'</td><td>'+s3+'</td><td>'+s2+'</td><td>'+s4+'</td></tr></tfoot></table>';
            $('#ostatki2_table').html(text);
 
                     $('.modal-backdrop').hide();
@@ -79,6 +912,96 @@ title: {
     },
     series: [
         date['a'],
+        date['b'],
+        date['c'],
+        date['d']
+  ]
+});
+     
+ });
+return false;
+
+}
+//сравнение грейдов
+function procent_graid(form){
+
+		$.ajax({
+                beforeSend: function(){
+                    $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+                },
+                url: '/admin/home/',
+                type: 'POST',
+                dataType: 'json',
+                data: form,
+                success: function (res) {
+			console.log(res);
+                      
+                },
+		error: function (res) {
+			console.log(res);
+                        $('.modal-backdrop').hide();
+                    $('#foo').detach();
+		}
+            }).done(function(date) {
+                 var s1 = 0;
+                 var s2 = 0;
+                 
+              var text = '<legend>Средние грейдов: в шт.</legend>';
+            text += '<table class="table"><thead><tr><td>Грейд</td><td>'+date.t+' (оборот)</td><td>'+date.s+' (оборот)</td></tr></thead><tbody>';
+            delete date['s'];
+            delete date['t'];
+            for(var k in date.table){
+                s1+=date.table[k].one;
+                s2+=date.table[k].two;
+               
+                text+='<tr><td>'+date.table[k].name+'</td><td>'+date.table[k].one+' ('+date.table[k].oborot_one+')</td><td>'+date.table[k].two+' ('+date.table[k].oborot_two+')</td></tr>';
+               // da.push(date[k].y);
+               // date[k].y.empty();
+            }
+            
+            text+='</tbody><tfoot><tr><td></td><td>'+s1+'</td><td>'+s2+'</td></tr></tfoot></table>';
+           $('#ostatki2_table').html(text);
+
+                    $('.modal-backdrop').hide();
+                    $('#foo').detach();
+                    $('#ostatki2').empty();
+ new  Highcharts.Chart({
+title: {
+        text: 'Сравнение грейдов за период'
+            },
+  chart: {
+    renderTo: 'gride2'
+  },
+  yAxis: [{ // Primary yAxis
+        labels: {
+            format: '{value} %',
+            style: {
+                color: Highcharts.getOptions().colors[1]
+            }
+        },
+        title: {
+            text: 'Дни',
+            style: {
+                color: Highcharts.getOptions().colors[1]
+            }
+        }
+    }],
+
+    xAxis: {
+         categories: date['y'],
+    labels: {
+      rotation: 90
+    }, 
+    title:{
+         text: 'Категории'
+    }
+            },
+    
+    tooltip: {
+        shared: true
+    },
+    series: [
+        date['a'],
         date['b']
   ]
 });
@@ -87,7 +1010,6 @@ title: {
 return false;
 
 }
-
 
 
 
@@ -618,15 +1540,7 @@ var url = '/admin/home/';
 			console.log(res);
 			new Morris.Donut({
     element: 'ucenka_2',
-    data: [
-        {label: "0%", value: res[0]},
-        {label: "10%", value: res[10]},
-        {label: "20%", value: res[20]},
-        {label: "30%", value: res[30]},
-        {label: "40%", value: res[40]},
-        {label: "50%", value: res[50]},
-	{label: "60%", value: res[60]}
-    ],
+    data: res.uc,
     colors: ['#0c8e22','#0c8e17','#98eacc','#4a63e0','#ffccce','#ff6870', '#e40613'],
     resize: true
   });
@@ -833,11 +1747,94 @@ function delivery_time(e, from, to){
 });
 }
 
-
 function  ToExcel(form){
-window.location = '/admin/home/method/balance_to_excel?'+form+'/';
-    return false;
+     $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+   $('#table_return_prognoz').detach();
+            $('#download_table_return_prognoz').detach();
+            var t = document.getElementById("prognoz");
+            var button = document.createElement("button");
+                                      
+    button.innerHTML = "Скачать таблицу";
+    button.setAttribute("class", "btn btn-danger");
+    button.setAttribute("id", "download_table_return_prognoz");
+    button.setAttribute("onClick", "return download('table_return_prognoz')");
+                                
+                    var table = document.createElement("table");
+                    table.setAttribute("id", "table_return_prognoz");
+                    table.setAttribute("class", "table");
+                    t.appendChild(table);
+                    t.appendChild(button);
+                    var header = table.createTHead();
+  var row = header.insertRow(0);
+            row.insertCell(0).innerHTML = "<b>Категория</b>";
+            row.insertCell(1).innerHTML = "<b>Без грейда</b>";
+            row.insertCell(2).innerHTML = "<b>Грейд 1</b>";
+            row.insertCell(3).innerHTML = "<b>Грейд 2</b>";
+            row.insertCell(4).innerHTML = "<b>Грейд 3</b>";
+            row.insertCell(5).innerHTML = "<b>Грейд 4</b>";
+            row.insertCell(6).innerHTML = "<b>Грейд 5</b>";
+            row.insertCell(7).innerHTML = "<b>Общее</b>"; 
+             var body = table.createTBody();
+     $.ajax({
+                url: '/admin/home/',
+                type: 'POST',
+                dataType: 'json',
+                data: form+'&method=balance_to_excel_list_cat',
+                success: function (res) {
+                    console.log(res);    
+                
+                   if(ToExcelS(form, res, body)){
+                        $('#foo').detach(); 
+                   }
+                },
+				error: function(res){
+				console.log(res);
+					}
+            });
+}
+function  ToExcelS(form, ss, body){
+    console.log(form);
+    console.log(ss);
+  //  var l = ss.length;
+     for(var i in ss){
+             $.ajax({
+                url: '/admin/home/',
+                type: 'POST',
+                dataType: 'json',
+                data: form+'&method=balance_to_excel&cat='+ss[i],
+                success: function (res) {
+                    console.log(res);
+                var row = body.insertRow(); 
+                     row.insertCell(0).innerHTML = res.name;
+                     var o = 0;
+
+                          row.insertCell(1).innerHTML = res.res[0];
+                          o+=res.res[0];
+                          row.insertCell(2).innerHTML = res.res[1];
+                          o+=res.res[1];
+                          row.insertCell(3).innerHTML = res.res[2];
+                          o+=res.res[2];
+                          row.insertCell(4).innerHTML = res.res[3];
+                          o+=res.res[3];
+                          row.insertCell(5).innerHTML = res.res[4];
+                          o+=res.res[4];
+                          row.insertCell(6).innerHTML = res.res[5];
+                          o+=res.res[5];
+                      row.insertCell(7).innerHTML = o;                         
+                },
+				error: function(res){
+				console.log(res);
+					}
+            });
+        }
+                    
+       
+//window.location = '/admin/home/method/balance_to_excel?'+form+'/';
+    return true;
 };
+function sendAjaxToExcel(){
+    
+}
 
 function  ProcentToExcel(form){
 window.location = '/admin/home/method/procent_to_excel/from_procent/'+$('#from_procent').val()+'/to_procent/'+$('#to_procent').val();
@@ -867,7 +1864,7 @@ function oborot_all(form){
                 dataType: 'json',
                 data: form,
                 success: function (res) {
-				//console.log(res);
+				console.log(res);
                                 date = res;
                               //  console.log(res.otkloneniye);
                 },
@@ -938,10 +1935,119 @@ title: {
   },
   {
    type: 'spline',
-   name: 'Оборот',
+   name: 'Оборот шт.',
    color: Highcharts.getOptions().colors[4],
    zIndex: 5,
     data: date.oborot
+  },
+  {
+   type: 'spline',
+   name: 'Оборот грн.',
+   color: Highcharts.getOptions().colors[5],
+   zIndex: 5,
+    data: date.oborot_grn
+  }
+  ]
+});
+       });
+
+return false;
+
+} 
+function oborot_all_monch(form){
+  var date =[];
+		$.ajax({
+                beforeSend: function(){
+                    $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+                },
+                url: '/admin/home/',
+                type: 'POST',
+                dataType: 'json',
+                data: form,
+                success: function (res) {
+				console.log(res);
+                                date = res;
+                              //  console.log(res.otkloneniye);
+                },
+				error: function (res) {
+				console.log(res);
+                                $('#foo').detach();
+				}
+            }).done(function() {
+              //  console.log(date);
+                    $('.modal-backdrop').hide();
+                    $('#foo').detach();
+       
+new  Highcharts.Chart({
+title: {
+        text: 'Весь товар'
+            },
+  chart: {
+    renderTo: 'oborot_grn'
+  },
+
+    xAxis: {
+    categories: date.x,
+    
+    labels: {
+      rotation: 90
+    }, 
+    title:{
+         text: 'Месяцы'
+    }
+            },
+    yAxis: {
+                title: {
+                    text: 'Дни'
+                }
+            },
+    tooltip: {
+        shared: true
+    },
+  series: [
+         {
+    type: 'area',
+   marker: {
+            enabled: false
+        },
+   name: '21',
+   color: '#23bf08',
+   zIndex: 4,
+    data: date.niz
+  },
+  {
+   type: 'area',
+   name: '28',
+   color: '#17f2f4',
+   marker: {
+            enabled: false
+        },
+   zIndex: 3,
+    data: date.norma
+  },
+       {
+    type: 'area',
+   marker: {
+            enabled: false
+        },
+   name: '45',
+   color: '#ff0018',
+   zIndex: 2,
+    data: date.verch
+  },
+  {
+   type: 'spline',
+   name: 'Оборот шт.',
+   color: Highcharts.getOptions().colors[4],
+   zIndex: 5,
+    data: date.oborot
+  },
+  {
+   type: 'spline',
+   name: 'Оборот грн.',
+   color: Highcharts.getOptions().colors[5],
+   zIndex: 5,
+    data: date.oborot_grn
   }
   ]
 });
@@ -956,6 +2062,8 @@ function ostatki(){
   var date =[];
  var max = 0;
  var min = 30000;
+ var min_grn = 10000000;
+ var max_grn = 10;
   var url = '/admin/home/';
 		var new_data = '&method=ostatki';
 		//console.log(new_data);
@@ -965,6 +2073,7 @@ function ostatki(){
                 dataType: 'json',
                 data: new_data,
                 success: function (res) {
+                    console.log(res);
                                 date = res;
                         for(var key in res.y){  
                         if(res.y[key] > max){ max = res.y[key];}
@@ -972,6 +2081,14 @@ function ostatki(){
                         }
                         min = min - 100;
                         max = max +100;
+                        
+                        for(var key in res.z){  
+                        if(res.z[key] > max_grn){ max_grn = res.z[key];}
+                        if(res.z[key] < min_grn){ min_grn = res.z[key];}
+                        }
+                        min_grn = min_grn - 100;
+                        max_grn = max_grn + 100;
+                        
                 },
 				error: function (res) {
 				console.log(res);
@@ -981,6 +2098,7 @@ function ostatki(){
                     ctx4.height= 300;
    new Chart(ctx4, {
     type: 'line',
+   // height: 300,
     data: {
       labels: date.x,
       datasets: [{
@@ -1006,6 +2124,47 @@ function ostatki(){
             fontSize: 10,
             max: max,
             min: min
+          }
+        }],
+        xAxes: [{
+          ticks: {
+            beginAtZero:true,
+            fontSize: 10
+          }
+        }]
+      }
+    }
+  });
+  var ctx4_grn = $('#ostatki_grn');
+    ctx4_grn.height= 300;
+  new Chart(ctx4_grn, {
+    type: 'line',
+   // height: 300,
+    data: {
+      labels: date.x,
+      datasets: [{
+	  label: 'Сумма',
+        data: date.z,
+        borderColor: '#5B93D3',
+        borderWidth: 1,
+        fill: false
+      }
+	  ]
+    },
+    options: {
+      legend: {
+        display: false,
+          labels: {
+            display: true
+          }
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero:true,
+            fontSize: 10,
+            max: max_grn,
+            min: min_grn
           }
         }],
         xAxes: [{
@@ -1429,90 +2588,36 @@ var label = [];
 };
 
 function flotPie2(e){
-  var piedata =[];
- var i;
-  var url = '/admin/home/';
-		var new_data = '&method=order&type='+e;
 		$.ajax({
-                url: url,
+                url: '/admin/home/',
                 type: 'POST',
                 dataType: 'json',
-                data: new_data,
-                success: function (res) {
-		piedata = res;
-                },
-				error: function (res) {
-				console.log(res);
-				}
-            }).done(function() {
-  $.plot('#flotPie2', piedata, {
-    series: {
-      pie: {
-        show: true,
-        radius: 1,
-        innerRadius: 0.4,
-        label: {
-          show: true,
-          radius: 2/3,
-          formatter: labelFormatter,
-         threshold: 0.1
-        }
-      }
-    },
-    grid: {
-      hoverable: true,
-      clickable: true
-    },
-    legend: { show: true
-	}
+                data: '&method=order&type='+e,
+		error: function (res) {console.log(res);}
+            }).done(function(res) {
+                console.log(res);
+    new Morris.Donut({
+    element: 'flotPie2',
+    data: res.st,
+    colors: res.color,
+    resize: true
   });
-
-  function labelFormatter(label, series) {
-    return "<div style='font-size:8pt; text-align:center; padding:2px; color:white;'>" + label + "<br/>" + series.data[0][1] + "</div>";//Math.round(series.percent)
-  }
   });
 }
 function flotPie3(e){
-  var piedata =[];
-  var url = '/admin/home/';
-		var new_data = '&method=order&type='+e;
 		$.ajax({
-                url: url,
+                url: '/admin/home/',
                 type: 'POST',
                 dataType: 'json',
-                data: new_data,
-                success: function (res) {
-				piedata = res;
-                },
-				error: function (res) {
-				console.log(res);
-				}
-            }).done(function() {
-  $.plot('#flotPie3', piedata, {
-    series: {
-      pie: {
-        show: true,
-        radius: 1,
-        innerRadius: 0.4,
-        label: {
-          show: true,
-          radius: 2/3,
-          formatter: labelFormatter,
-         threshold: 0.1
-        }
-      }
-    },
-    grid: {
-      hoverable: true,
-      clickable: true
-    },
-    legend: { show: true
-	}
+                data: '&method=order&type='+e,
+		error: function (res) {console.log(res);}
+            }).done(function(res) {
+    new Morris.Donut({
+    element: 'flotPie3',
+    data: res.st,
+    colors: res.color,
+    resize: true
   });
-
-  function labelFormatter(label, series) {
-    return "<div style='font-size:8pt; text-align:center; padding:2px; color:white;'>" + label + "<br/>" + series.data[0][1] + "</div>";//Math.round(series.percent)
-  }
   });
 }
 function  chek(){

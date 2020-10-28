@@ -48,8 +48,8 @@ body {
     background-position: 50% 0%;
     background-repeat: no-repeat;
 	background-size: cover;
-	background-image: url(/img/fon/admin/winter_2018_4.jpg);
-        /*background-image: url(/img/fon/admin/winter2018.1.jpg);*/
+	/*background-image: url(/img/fon/admin/autumn.jpg);*/
+        background-image: url(/img/fon/admin/winter2018.1.jpg);
         
 	z-index: 1;
 } 
@@ -78,7 +78,7 @@ body {
     width: auto;
     height: auto; 
 }
- 
+ /*
  @supports (object-fit: cover) {
      #video-bg > video {
          top: 0;
@@ -87,7 +87,7 @@ body {
          height: 100%;
          object-fit: cover;
      }
- }
+ }*/
 /*сделал ярик снег*/
 .knopka{
   background: #eee;

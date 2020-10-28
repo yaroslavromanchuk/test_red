@@ -59,13 +59,30 @@ die(json_encode(html_entity_decode($rez)));
 	
 	public function setlangAction(){
 	if($this->post->lang){
-            $_SESSION['lang'] = $this->post->lang; 
-			if($this->post->lang == 'uk'){
-				$page = '/uk'.$this->post->ur;
-			}else{
-				$page = substr($this->post->ur, 3);
-			}
-            die($page);
+            $lang = wsLanguage::findLangActive($this->post->lang);
+           //l($lang);
+            if($lang){
+                 $_SESSION['lang'] = $lang->code;
+                // Registry::set('lang', $lang->code);
+               //  Registry::set('lang_id', $lang->id);
+                 if($lang->code == 'uk'){
+                     $page = '/uk'.$this->post->ur;
+                 }else{
+                     $page = substr($this->post->ur, 3);
+                 }
+                 die($page);
+            }
+            
+            //$_SESSION['lang'] = $this->post->lang; 
+           // Registry::set('lang', 'ru');
+           // Registry::set('lang_id', 1);
+			//if($this->post->lang == 'uk'){
+			//	$page = '/uk'.$this->post->ur;
+			//}else{
+				
+			//}
+           // die($page);
+            return false;
         }		
 	return false;
 	}
@@ -93,6 +110,22 @@ $arrr['ctn'] = $count;
             $_SESSION['total_price'] = $this->post->amount;
             die(); 
         }
+        public function setpromoAction() {
+            if($this->post->promo){
+              //  $kod = wsActiveRecord::useStatic('Other')->findFirst(["cod"=>]);
+               $kod =  (object)Other::findActiveCode($this->post->promo);
+               if($kod->flag){
+                   $_SESSION['promo'] = $kod->cod;
+                 //  die(json_encode('<span style="color:green">'.$kod->message.'</span>'));
+               }
+               die(json_encode($kod));
+                
+            }
+            die('error'); 
+        }
+        public function deletepromoAction() {
+            unset($_SESSION['promo']);
+        }
          public function clearAction(){
             if($this->ws->getCustomer()->getId()){
                 $_SESSION['desires'] = [];
@@ -114,7 +147,13 @@ $arrr['ctn'] = $count;
         }
           public function  sitkaAction()
                 {
+              $this->cur_menu->nofollow = 1;
+             // echo $this->get->lang;
               $src = '';
+              if($this->get->user == 8005){
+                  $this->view->lang = $this->get->lang;
+                  $res = $this->view->render('/size/men.php');
+              }else{
               switch ($this->get->id){
                   case 1: $src = '/img/size/size1.png'; break;
                    case 2: $src = '/img/size/size2.png'; break;
@@ -124,15 +163,13 @@ $arrr['ctn'] = $count;
                        case 6: $src = '/img/size/size6.png'; break;
                         case 7: $src = '/img/size/baby_ob.png'; break;
                          case 8: $src = '/img/size/baby.png'; break;
-default : $src = '/img/size/size1.png'; break;
+                default : $src = '/img/size/size1.png'; break;
               }
              // print_r($this->get->id);
                  //print($this->post->id);
               $res = '<img style="width: 100%;" class="" src="'.$src.'" alt="size"/>';
+              }
                      die(json_encode($res));
             
                 }
-
-
-
 }

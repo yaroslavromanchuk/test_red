@@ -21,7 +21,7 @@
 </style>
 <body onload="window.print()">
 <?php 
-$z = 3;//3
+$z = 2;//3
 require_once("QRCode/qrcode.php");
 for ($step = 0; $step < $z; $step++) { ?>
 <table border="0" cellpadding="3" cellspacing="0" width="700">
@@ -159,7 +159,7 @@ $sk = Number::formatFloat(99.99, 2);
 		}
 		
 				//$z = chr(10);
-		$cod.=$article_rec->artikul.'/'.$article_rec->getCount().'/'.$sk.'&';
+		$cod.=$article_rec->getCode().'/'.$article_rec->getCount().'/'.$sk.'&';
 		
         ?>
         <tr>
@@ -170,8 +170,8 @@ $sk = Number::formatFloat(99.99, 2);
             </td>
             <td class="border_all <?php echo($i == $c) ? 'tt_border_bottom' : ''?>" align="center">
 				<?php if($article_rec->getCount()) {?>
-				<img src="/images/barcodeimage.php?text=<?=$article_rec->artikul?>" alt="Barcode Image" />
-				<br><?=$article_rec->artikul?>
+				<img src="/images/barcodeimage.php?text=<?=$article_rec->getCode()?>" alt="Barcode Image" />
+				<br><?=$article_rec->getCode()?>
 				<?php } ?>
             </td>
             <td class="border_all <?php echo($i == $c) ? 'tt_border_bottom' : ''?>" align="center">
@@ -208,7 +208,7 @@ echo $skid_show ? '<span '.$st.'>'.$skid_show.' %</span>' : '';
 	
     //$to_pay = $this->getOrder()->calculateOrderPrice2(true, true); //общая сумма к оплате
 	
-	$to_pay_minus = $t_real_price - $this->getOrder()->getAmount();//общая скидка
+	$to_pay_minus = $t_real_price - ($this->getOrder()->getAmount()-$this->getOrder()->dop_summa-$this->getOrder()->getDeliveryCost());//общая скидка
          $to_pay = Number::formatFloat($this->order->amount, 2);
 
 
@@ -257,11 +257,7 @@ $min_sum_bonus = Config::findByCode('min_sum_bonus')->getValue();
 			</td>
 			<td class="border_all border_right" align="right" colspan="2">
 				<i>
-				<?php
-		if($this->getOrder()->getDeliveryCost() > 0 or $this->getOrder()->getDeposit() > 0) {
-		echo $this->getOrder()->calculateOrderPrice2(false, true, false, $bonus);
-		}else{ echo $to_pay;}
-		?>
+				<?=Number::formatFloat(($this->order->amount-$this->getOrder()->dop_summa-$this->getOrder()->getDeliveryCost()), 2)?>
 		</i>
 			</td>
 		</tr>
@@ -270,6 +266,16 @@ $min_sum_bonus = Config::findByCode('min_sum_bonus')->getValue();
             <td colspan="6" align="right"><i>Депозит</i></td>
             <td class="border_all border_right" align="right" colspan="2">
                 <i><?php echo Number::formatFloat($this->getOrder()->getDeposit(), 2)?></i>
+            </td>
+        </tr>
+    <?php } ?>
+    <?php if ($this->getOrder()->getDopSumma() > 0) { ?>
+        <tr>
+            <td colspan="6" align="right" ><span class="fnt_size_1">Дополнительная оплата</span><br>
+            <i><?=$this->getOrder()->getCommentDopSumm()?></i>
+            </td>
+            <td class="border_all border_right" align="right" colspan="2">
+                <i><?php echo Number::formatFloat($this->getOrder()->getDopSumma(), 2)?></i>
             </td>
         </tr>
     <?php } ?>
@@ -337,7 +343,7 @@ $min_sum_bonus = Config::findByCode('min_sum_bonus')->getValue();
 	<?php if(true){
 		$qr = new qrcode();
 		$qr->text($cod);
-		echo "<p id='qr".$this->order->getId()."' hidden><img src='".$qr->get_link(140)."' border='0'/></p>";
+		echo "<p id='qr".$this->order->getId()."' hidden><img src='".$qr->get_link(140)."' style='max-width: 140px;' border='0'/></p>";
 		//echo $cod;
 				}?>
     <div style='page-break-after: always;'></div>
@@ -411,8 +417,8 @@ foreach ($this->getOrder()->getArticles() as $main_key => $article_rec) {
 	</td>
 	<td class="border" align="center">
 	<?php if($article_rec->getCount()) {?>
-				<img src="/images/barcodeimage.php?text=<?=$article_rec->artikul?>" alt="Barcode Image" />
-				<br><?=$article_rec->artikul?>
+				<img src="/images/barcodeimage.php?text=<?=$article_rec->getCode()?>" alt="Barcode Image" />
+				<br><?=$article_rec->getCode()?>
 				<?php } ?>
 				</td>
 	<td class="border" align="center"> ___ шт.</td>

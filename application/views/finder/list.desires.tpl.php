@@ -75,9 +75,9 @@ echo $text;
 </div>
 </div>
 <?php }else{ ?>
-<div class="row">
+<div class="row m-auto">
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center p-3">
-        <div class="alert alert-danger" role="alert"><?=$this->trans->get('message_no_articles');?></div>
+        <div class="alert alert-danger" role="alert"><?=$this->trans->get('message_no_articles')?></div>
     </div>
 </div>
  <?php   } ?>

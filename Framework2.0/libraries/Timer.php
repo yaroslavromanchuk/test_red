@@ -43,5 +43,3 @@ class Timer {
 		}
 	} //elapsed
 } //Timer
-
-?>

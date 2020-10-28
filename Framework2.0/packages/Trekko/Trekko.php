@@ -1,20 +1,23 @@
 ﻿<?php
 class Trekko{ 
 
-	protected $key = 'ogjlOLSGljlgojkfsd24dfsodflwGOTolnLejroi35lkjl2352ll8lj90KL';
-	protected $throwErrors = FALSE;
-	protected $client = '134';
+	protected $key = '28f165668446cdc90ba362a091be55b6';//ogjlOLSGljlgojkfsd24dfsodflwGOTolnLejroi35lkjl2352ll8lj90KL - Цибуля, 28f165668446cdc90ba362a091be55b6 - Люба, df3MWr67ZdZWdSvNGSomutZJfhGD0E - Ярослав
+	protected $throwErrors = FALSE;//
+	protected $client = '325';//134 - Цибуля 317  - romanchuk, 325 - Люба
 	
 	protected $obj = 'order';
         
         protected $format = 'array';
-
+/*
 function __construct($key, $client, $obj, $throwErrors = true) {
 		$this->throwErrors = $throwErrors;
 		return $this	
 			->setKey($key)
 			->setClient($client)
 			->setObject($obj);
+	}*/
+        function __construct() {
+		
 	}
 	function setKey($key) {
 		$this->key = $key;
@@ -61,10 +64,6 @@ function __construct($key, $client, $obj, $throwErrors = true) {
 	}
 	public function getCreateMasOrder($orders){
 	$request = array('client' => $this->client, 'object' => $this->obj, 'method' => 'create','parameters' => array('orders' => $orders));
-      //  echo 'pre';
-      //  print_r($request);
-       //// echo '</pre>';
-       // return true;
 	return $this->_requestJSON(json_encode($request));
 	}
 	

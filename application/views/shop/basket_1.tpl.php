@@ -71,11 +71,10 @@ echo '<div class="col-xs-10 col-xs-offset-1">
 		$size = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(['id_article' => $article->getId(), 'id_size' => $item['size'], 'id_color' => $item['color']]);
 		
 		if(/*$article->getId().'_'.$size->code == $chasy*/false){
-		$price = $article->getPerc(($now_orders+$sum_order), $item['count'], $skidka, 99, $kupon, $sum_order);
-                
+		$price = $article->getPerc();
                 }else{
 		$mes = '';
-		$price = $article->getPerc(($now_orders+$sum_order), $item['count'], $skidka, $event_skidka, $kupon, $sum_order);
+		$price = $article->getPerc();
 		}
 		
 		if($price['option_id']) {$_SESSION['basket'][$key]['option_id'] = $price['option_id'];}

@@ -146,6 +146,25 @@ value="<?=@$this->post->unsubscribe ? $this->post->unsubscribe : '&utm_source=un
                  <textarea name="ending" class="pagetext-s form-control" id="page_ending"><?php if(@$this->post->ending){ echo @stripslashes($this->post->ending);}elseif($this->pemail->ending){ echo @stripslashes($this->pemail->ending);}?></textarea>
                   </div>
             </div>
+       <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+           <div class="form-group">
+                    <label class="form-control-label">Бренды:</label>
+<select name="brand_id[]" class="form-control select2" multiple id="opis_id"  data-placeholder="Выберите Бренд">
+                   <option value="">Выберите Бренд</option>
+               <?php foreach (wsActiveRecord::useStatic('Shoparticles')->findByQuery("SELECT `brand` , `brand_id` , SUM( `stock` ) AS ctn
+FROM `ws_articles`
+WHERE `stock` NOT LIKE '0'
+GROUP BY `brand_id`
+ORDER BY ctn DESC
+LIMIT 0 , 20") as $b) { ?>
+                   <option value="<?=$b->brand_id?>" ><?=$b->brand?></option>
+                               <?php
+                               //
+                               
+               } ?>
+                   </select> </div>
+           
+           </div>
         </div>       
 	  <!-- <tr>
             <td class="kolom1 hide">Вложить новости</td>
@@ -201,6 +220,15 @@ value="<?=@$this->post->unsubscribe ? $this->post->unsubscribe : '&utm_source=un
 
  $(function(){
         'use strict';
+        function formatState(state){
+            consolr.log(state);
+            if(!state.id){ return state.text;}
+            var $state = $('<span><img src="'+state.element.data.img+'">'+state.text+'</span>');
+            return $state;
+        }
+       // $('.select3').select2({
+        //  templateResult: formatState
+       // });
 
 var  count_all = $('#all_subject');    
         
@@ -249,8 +277,10 @@ selectType.change(function(){
        
 
         $('#send_test').click(function () {
+            //console.log($('#mail_form').serialize());
+           // return false;
             sendMailTest('/admin/generalmailing/', $('#mail_form').serialize(), 'go_test_email');
-            alert('Сообщение отправлено на тестовый email.');
+          alert('Сообщение отправлено на тестовый email.');
         });
         
 	$('#savepost').click(function () {
@@ -264,15 +294,17 @@ selectType.change(function(){
         });
 
           $('#view_test').click(function () {
-            //  console.log(tinymce.get('page_body').getContent());
-            //  console.log(tinymce.get('page_ending').getContent());
-              var intro = tinymce.get('page_body').getContent();//.replace(/&/g,"#");
-		var ending = tinymce.get('page_ending').getContent();//.replace(/&/g,"#");
+             // console.log(tinymce.get('page_body').getContent());
+             //console.log(tinymce.get('page_ending').getContent());
+              var intro = tinymce.get('page_body').getContent();//.replace(/&/g,"&amp;");
+              console.log(intro);
+		var ending = tinymce.get('page_ending').getContent();//.replace(/&/g,"&amp;");
+                console.log(ending);
               $.ajax({
                 url: '/admin/generalmailing/',
                 type: 'POST',
                 dataType: 'json',
-                data: $('#mail_form').serialize()+'&method=preview&intro='+intro+'&ending='+ending,
+                data: $('#mail_form').serialize()+'&method=preview&intro='+encodeURIComponent(intro)+'&ending='+encodeURIComponent(ending),
                 success: function (data) {
                   //  console.log(data);
                     fopen(data.title, data.message);
@@ -290,9 +322,9 @@ selectType.change(function(){
        
           //  console.log('count='+count_mail);
             
-		var intro = tinymce.get('page_body').getContent();//.replace(/&/g,"#");
-		var ending = tinymce.get('page_ending').getContent();//.replace(/&/g,"#");
-var new_data = data + '&from_mail=' + send_mail + '&count=' + count +'&intro='+intro+'&ending='+ending+'&method='+go+'&track='+track+'&all_count='+count_mail;
+		var intro = tinymce.get('page_body').getContent();
+		var ending = tinymce.get('page_ending').getContent();
+var new_data = data + '&from_mail=' + send_mail + '&count=' + count +'&intro='+encodeURIComponent(intro)+'&ending='+encodeURIComponent(ending)+'&method='+go+'&track='+track+'&all_count='+count_mail;
 console.log(new_data);
             $.ajax({
                 url: url,
@@ -360,9 +392,9 @@ console.log(new_data);
         }
     
     	function sendSave(url, data, save) {
-		var intro = tinymce.get('page_body').getContent();//.replace(/&/g,"#");
-		var ending = tinymce.get('page_ending').getContent();//.replace(/&/g,"#");
-                var new_data = data + '&intro='+intro+'&ending='+ending+ '&method='+ save;
+		var intro = tinymce.get('page_body').getContent();
+		var ending = tinymce.get('page_ending').getContent();
+                var new_data = data + '&intro='+encodeURIComponent(intro)+'&ending='+encodeURIComponent(ending)+ '&method='+ save;
             $.ajax({
                 url: url,
                 type: 'POST',
@@ -397,7 +429,7 @@ console.log(new_data);
 				if (data.data[i].img) {
 					himg += '<img style="display: none;" id ="aih_' + data.data[i].id + '" src="' + data.data[i].img + '"  />';
 				}
-				out += '<option value="' + data.data[i].id + '">' + data.data[i].title + himg + '</option>';
+				out += '<option value="' + data.data[i].id + '" >' + data.data[i].title + himg + '</option>';
 			}
 			if ('articles' == data.type) {
 				out = '<option value="0" selected>Выберите товар...</option>' + out;
@@ -431,6 +463,8 @@ tinymce.init({
 	   
 	   external_filemanager_path:"/backend/scripts/filemanager/",
 	   filemanager_title:"Responsive Filemanager" ,
+           filemanager_subfolder: "images/RED_ua/send1/",
+           filemanager_access_key: "anya",
 	   external_plugins: { "filemanager" : "/backend/scripts/filemanager/plugin.min.js"},
 	   convert_urls: false
 	 });

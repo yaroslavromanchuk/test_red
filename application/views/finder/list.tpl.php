@@ -20,13 +20,13 @@ foreach($this->articles as $article){
 } ?>
 </div>
 <div class="row m-auto">
-<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center pt-3" >
-<input type="hidden" class="items_on_page" name="items_on_page" value="<?=$_COOKIE['items_on_page']?$_COOKIE['items_on_page']:32?>" />
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center p-1 p-md-3" >
+<input type="hidden" class="items_on_page" name="items_on_page" value="<?=!empty($_COOKIE['items_on_page'])?$_COOKIE['items_on_page']:60?>" />
 <div class="btn-group mb-3"  data-toggle="buttons-checkbox">
-                    <button onclick="return but_val_new($(this))" type="button" class="btn btn-secondary <?php if($_COOKIE['items_on_page']==32 or !$_COOKIE['items_on_page'])  echo 'active' ?>" <?php if($_COOKIE['items_on_page']==32 or !$_COOKIE['items_on_page'])  echo 'disabled' ?> value="32">30</button>
-                    <button onclick="return but_val_new($(this))" type="button" class="btn btn-secondary <?php if($_COOKIE['items_on_page']==60)  echo 'active' ?>" <?php if($_COOKIE['items_on_page']==60)  echo 'disabled' ?> value="60">60</button>
-                    <button onclick="return but_val_new($(this))" type="button" class="btn btn-secondary <?php if($_COOKIE['items_on_page']==90)  echo 'active' ?>" <?php if($_COOKIE['items_on_page']==90)  echo 'disabled' ?> value="90">90</button>
-                    <button onclick="return but_val_new($(this))" type="button" class="btn btn-secondary <?php if($_COOKIE['items_on_page']==120)  echo 'active' ?>" <?php if($_COOKIE['items_on_page']==120) echo 'disabled' ?> value="120">120</button>
+    <button onclick="return but_val_new($(this))" type="button" class="btn btn-secondary <?php if(isset($_COOKIE['items_on_page']) && $_COOKIE['items_on_page']==32 )  echo 'active' ?>" <?php if(isset($_COOKIE['items_on_page']) && $_COOKIE['items_on_page']==32 )  echo 'disabled' ?> value="32">30</button>
+    <button onclick="return but_val_new($(this))" type="button" class="btn btn-secondary <?php if((isset($_COOKIE['items_on_page']) && $_COOKIE['items_on_page']==60) or !isset($_COOKIE['items_on_page']))  echo 'active' ?>" <?php if((isset($_COOKIE['items_on_page']) && $_COOKIE['items_on_page']==60) or !isset($_COOKIE['items_on_page']))  echo 'disabled' ?> value="60">60</button>
+    <button onclick="return but_val_new($(this))" type="button" class="btn btn-secondary <?php if(isset($_COOKIE['items_on_page']) && $_COOKIE['items_on_page']==90)  echo 'active' ?>" <?php if(isset($_COOKIE['items_on_page']) && $_COOKIE['items_on_page']==90)  echo 'disabled' ?> value="90">90</button>
+    <button onclick="return but_val_new($(this))" type="button" class="btn btn-secondary <?php if(isset($_COOKIE['items_on_page']) && $_COOKIE['items_on_page']==120)  echo 'active' ?>" <?php if(isset($_COOKIE['items_on_page']) && $_COOKIE['items_on_page']==120) echo 'disabled' ?> value="120">120</button>
 </div>
  <?php 
 if($this->total_pages){
@@ -80,4 +80,5 @@ echo $text;
         <div class="alert alert-danger" role="alert"><?=$this->trans->get('message_no_articles');?></div>
     </div>
 </div>
+<div class="row m-auto slider_articles"><?=$this->render('/pages/sliders/no_articles.php')?></div>
  <?php   } ?>

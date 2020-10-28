@@ -126,20 +126,13 @@ $price_real = (int)$article_rec->getOldPrice() ? $article_rec->getOldPrice() : $
 		$t_real_price += $price_real;//сумируется стартовая цена
 	
 		$price_show = $article_rec->getPerc($this->order->getAllAmount());//вычисление цены и скидка на товар
-		
-			$sum_skudka += $price_show['minus']/$article_rec->getCount(); //сумируется общая скидка
-			
-				$skid_show = round((1 - (($price_show['price']/$article_rec->getCount())/ $price_real)) * 100, 2);//вычисление процента скидки по товару
+		$skid_show = round((1 - (($price_show['price']/$article_rec->getCount())/ $price_real)) * 100, 2);//вычисление процента скидки по товару
 				
-					$sk = Number::formatFloat($skid_show, 2);
+		$sk = Number::formatFloat($skid_show, 2);
 					
 					
-					if($skid_show == 100) $sk = Number::formatFloat(99.99, 2);
-			//}else{
-		//$sk = Number::formatFloat($skid_show, 2);
-		//}
-					
-					
+		if($skid_show == 100){ $sk = Number::formatFloat(99.99, 2);}
+			
  echo Number::formatFloat($price_real, 2); 
  
  ?>
@@ -163,11 +156,11 @@ echo $skid_show ? '<span '.$st.'>'.round($skid_show).' %</span>' : '';?>
 		
     }
 	
-	if($this->getOrder()->getBonus() > 0){ $bonus = true; }else{ $bonus = false; }
+	//if($this->getOrder()->getBonus() > 0){ $bonus = true; }else{ $bonus = false; }
 	
-    $to_pay = $this->getOrder()->calculateOrderPrice2(true, true, true, $bonus); //общая сумма к оплате
+    $to_pay = $this->getOrder()->calculateOrderPrice2(); //общая сумма к оплате
 	
-	$to_pay_minus = $sum_skudka;//общая скидка
+	$to_pay_minus = $t_real_price - ($this->getOrder()->getAmount()-$this->getOrder()->dop_summa-$this->getOrder()->getDeliveryCost());//общая скидка
 	
     $kop = round(($to_pay - toFixed($to_pay)) * 100, 0);//
     ?>
@@ -205,16 +198,12 @@ echo $skid_show ? '<span '.$st.'>'.round($skid_show).' %</span>' : '';?>
 	<tr>
 		<td colspan="4" align="right"><i>Стоимость с учетом скидок</i></td>
 		<td class="border_all border_right" align="right" colspan="2"><i>
-		<?php
-		if($this->getOrder()->getDeliveryCost() > 0 or $this->getOrder()->getDeposit() > 0) {
-		echo $this->getOrder()->calculateOrderPrice2(false, true, false, $bonus);
-		}else{ echo $to_pay;}
-		?>
+		<?=Number::formatFloat(($this->order->amount-$this->getOrder()->dop_summa-$this->getOrder()->getDeliveryCost()), 2)?>
 		</i>
         </td>
         </tr>
     <tr>
-		<td colspan="4" align="right" class="fnt_size_1">Доставка:</td>
+	<td colspan="4" align="right" class="fnt_size_1">Доставка:</td>
         <td class="border_all border_right" align="right" colspan="2"><?=Number::formatFloat($this->getOrder()->getDeliveryCost(), 2);?></td>
     </tr>
     <?php  if ($this->getOrder()->getDeposit() > 0) { ?>
@@ -223,6 +212,7 @@ echo $skid_show ? '<span '.$st.'>'.round($skid_show).' %</span>' : '';?>
 		<td class="border_all border_right" align="right" colspan="2"><i><?=Number::formatFloat($this->getOrder()->getDeposit(), 2)?></i></td>
 	</tr>
     <?php } ?>
+    
     <tr>
 		<td colspan="4" class="border_none fnt_size_1" align="right"><strong style="text-transform: uppercase;">Всего к оплате:</strong><br/>
             <span>Без ПДВ</span>
@@ -257,14 +247,13 @@ echo $skid_show ? '<span '.$st.'>'.round($skid_show).' %</span>' : '';?>
  }
 $qr = new qrcode();
 $qr->text($cod);
-		echo "<p id='qr".$this->order->getId()."' hidden><img src='".$qr->get_link(220)."' border='0'/></p>";
+		echo "<p id='qr".$this->order->getId()."' hidden><img src='".$qr->get_link()."' style='max-width: 200px;' border='0'/></p>";
 		//echo $cod;
  ?>
  <script>
-$(function(){
- $('.qr<?=$this->order->getId()?>').html($('#qr<?=$this->order->getId()?>').html());
- //window.print();
- });
-</script>
+     $(function(){
+            $('.qr<?=$this->order->getId()?>').html($('#qr<?=$this->order->getId()?>').html());
+        });
+ </script>
 </body>
 </html>

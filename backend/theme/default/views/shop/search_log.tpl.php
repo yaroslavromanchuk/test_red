@@ -1,80 +1,59 @@
-<img src="<?php echo SITE_URL;?><?php echo $this->getCurMenu()->getImage();?>" alt="" width="32" class="page-img"
+<img src="<?=$this->getCurMenu()->getImage()?>" alt="" width="32" class="page-img"
      height="32"/>
-<h1><?php echo $this->getCurMenu()->getTitle();?></h1><br/>
+<h1><?=$this->getCurMenu()->getTitle()?></h1><br/>
+<div class="panel panel-success">
+    <div class="panel-heading">
+        <h3 class="panel-title">Форма поиска</h3>
+    </div>
+      <form method="get" class="form-horizontal">
+    <div class="panel-body">
+      
+<div class="row m-auto">
+    <div class="col-sm-12 col-md-6">
+       <div class="form-group">
+    <label for="from" class="ct-110 control-label">От:</label>
+    <div class="col-xs-8">
+        <input type="date" value="<?php if(!empty($_GET['from'])){ echo $_GET['from'];}else{echo date('Y-m-d');}?>" class="form-control input " name="from" id="go_from" placeholder="от" >
+    </div>
+  </div>
+    </div>
+    <div class="col-sm-12 col-md-6">
+        <div class="form-group">
+    <label for="to" class="ct-110 control-label">До:</label>
+    <div class="col-xs-8">
+	<input type="date" value="<?php if(!empty($_GET['to'])){ echo $_GET['to'];}else{echo date('Y-m-d');}?>"  class="form-control input " name="to" placeholder="до" >
+    </div>
+  </div>
+    </div>
+</div>
+    
 
+    </div>
+    <div class="panel-footer">
+<div class="form-group">
+    <div class="col-xs-12" style="text-align:center;">
+      <button type="submit" name="go" class="btn btn-primary  btn-lg "><i class="glyphicon glyphicon-search" aria-hidden="true"></i>Искать</button>
+  </div>
+  </div>
+  </div>
+    </form>
+</div>
 
 <?php if ($this->getSearchs()->count()) { ?>
 
-<table cellspacing="0" cellpadding="4" id="orders">
+<table cellspacing="0" cellpadding="4" id="orders" class="table">
     <tr>
-        <th>Дата</th>
-        <th>Пользователь</th>
+        <!--<th>Дата</th>-->
         <th>Искали</th>
+        <th>Колл.</th>
     </tr>
-    <?php $row = 'row2'; foreach ($this->getSearchs() as $search) {
-    $row = ($row == 'row2') ? 'row1' : 'row2';
+    <?php  foreach ($this->getSearchs() as $search) {
     ?>
-    <tr class="<?php echo $row; ?>">
-        <td><?php $d = new wsDate($search->getCtime()); echo $d->getFormattedDateTime(); ?></td>
-        <td><?php if($search->getCustomerId()>0) echo '<a href="/admin/user/edit/id/'.$search->getCustomerId().'/">'.$search->customer->getFullname().'</a>'; else echo 'Гость'; ?></td>
-        <td><?php echo $search->getSearch(); ?></td>
-
+    <tr >
+        <!--<td><?php /* $d = new wsDate($search->getCtime()); echo $d->getFormattedDate(); */?></td>-->
+        <td><?=$search->search?></td>
+        <td><?=$search->ctn?></td>
     </tr>
     <?php } ?>
 </table>
-<p>
-    <label></label>
-</p>
-    <?php
-    $limitLeft = 2;
-    $limitRight = 2;
-    $url = explode('?', $_SERVER['REQUEST_URI']);
-    if (count($url) == 2) {
-        $ur = $url[0];
-        $get = '?' . $url[1];
-    }
-    else {
-        $ur = $_SERVER['REQUEST_URI'];
-        $get = '';
-    }
-    $pager = preg_replace('/\/page\/\d*/', '', $ur) . '/page/';
-    $paginator = '&nbsp;&nbsp;';
-    if ($this->page > 1) {
-        $paginator .= '<a href="' . $pager . '1' . $get . '"><<</a>&nbsp;<a href="' . $pager . ($this->page - 1) . $get . '"><</a>&nbsp;';
-    } else {
-        $paginator .= '<span class="grey"><</span>&nbsp;<span class="grey"><<</span>&nbsp;';
-    }
-    $start = 1;
-    $end = $this->totalPages;
-    if ($this->page > $limitLeft) {
-        $paginator .= '...&nbsp;';
-        $start = $this->page - $limitLeft;
-    }
-    if (($this->page + $limitRight) < $this->totalPages) {
-        $end = $this->page + $limitRight;
-    }
-    //for ($i = 1; $i <= $this->totalPages; $i++){
-    for ($i = $start; $i <= $end; $i++) {
-        if ($i == $this->page) {
-            $paginator .= '<span>' . $i . '</span>';
-        } else {
-            $paginator .= '<span><a href="' . $pager . $i . $get . '">' . $i . '</a></span>';
-        }
-        if ($i <= $end - 1) {
-            $paginator .= '<span class="delimiter">&nbsp;|&nbsp;</span>';
-        }
-
-    }
-    if ($this->page == $this->totalPages) {
-        $paginator .= '&nbsp;<span class="grey">>></span>&nbsp;<span class="grey">></span>';
-    } else {
-        $paginator .= '&nbsp;<a href="' . $pager . ($this->page + 1) . $get . '">></a>&nbsp;<a href="' . $pager . $this->totalPages . $get . '">>></a>';
-    }
-    echo $paginator;
-
-    ?><br/>
-Всего страниц: <?php echo $this->totalPages ?>,  записей: <?php echo $this->count ?>
-
-
-<?php } else echo 'Нет записей'; ?>
-<p>&nbsp;</p>
+<?php } else {echo 'Нет записей'; }?>

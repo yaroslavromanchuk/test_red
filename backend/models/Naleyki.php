@@ -11,7 +11,7 @@
  *
  * @author PHP
  */
-class Naleyki extends wsActiveRecord{
+class Naleyki extends wsActiveRecord {
    
     public static function getPrint($get = []){
          switch ($get->type) {

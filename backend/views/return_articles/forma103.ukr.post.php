@@ -1,9 +1,3 @@
-<?php 
-//header("application/msword");
-//header("Content-Disposition: attachment; filename=filename.doc;");
-//header("Content-Transfer-Encoding: binary");
-?>
-
 <!DOCTYPE>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru">
 <head>
@@ -12,10 +6,21 @@
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<script src="<?=$this->files?>scripts/jquery.js" charset="utf-8"></script>
+        <style>
+            body{
+                width: 1200px;
+    font-size: 12px;
+    font-family: Verdana;
+            }
+            table td{
+                padding: 5px;
+                font-size: 14px;
+            }
+            
+        </style>
 </head>
 
-<body style="width:1754px;font-size: 14px;">
-
+<body>
 <?php
 if($this->order){ ?>
 <table style="width:100%;">
@@ -30,7 +35,7 @@ if($this->order){ ?>
 <tr><td  style="text-align:left;"><b>Реквізити відправника</b></td><td  style="text-align:left;">р/р 26005455021620, МФО 300528</td></tr>
 <tr><td  style="text-align:left;"></td><td  style="text-align:left;">назва банку ПАТ "ОТПБАНК", ОКПО 2978405548</td></tr>
 </table>
-<table border="2" cellpadding="3" cellspacing="0"  style="width:100%;    font-weight: 600;margin-top: 10px;">
+<table border="1" cellpadding="1" cellspacing="0"  style="width:100%;margin-top: 10px;">
 <tr style="text-align:center;">
 <td>№ з/п</td>
 <td>Куди</td>

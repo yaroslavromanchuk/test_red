@@ -432,6 +432,8 @@ tinymce.init({
 	   
 	   external_filemanager_path:"/backend/scripts/filemanager/",
 	   filemanager_title:"Responsive Filemanager" ,
+           filemanager_subfolder: "images/RED_ua/send1/",
+           filemanager_access_key: "anya",
 	   external_plugins: { "filemanager" : "/backend/scripts/filemanager/plugin.min.js"},
 	   convert_urls: false
 	 });

@@ -1,5 +1,5 @@
 <?php 
-header("Content-Type: text/html; charset=utf-8");
+//header("Content-Type: text/html; charset=utf-8");
 
 
 //$html=simplexml_load_file('https://www.red.ua/articlelist/?id=106');
@@ -13,7 +13,7 @@ header("Content-Type: text/html; charset=utf-8");
 //require_once('ws_articles.php');
 //require_once('ws_order_articles03.php');
 //require_once('ws_cat.php');
-require_once('parse_excel.php');
+//require_once('parse_excel.php');
 //$mass=array();
 
 
@@ -40,7 +40,56 @@ echo print_r($r_ok);
 echo '</pre>';*/
 //$path = 'list_end.xlsx';
 //$res = parse_excel_file($path);
-if(false){
+if(false)
+    {
+    $art = wsActiveRecord::useStatic('Shoporderarticles')->findAll(['order_id >= 420029']);
+    if($art){
+        foreach ($art as $a) {
+           $a->setArtikul(wsActiveRecord::findByQueryFirstArray("SELECT code from ws_articles_sizes where id_article ='$a->article_id' and id_size = '$a->size' and  id_color = '$a->color'")['code']);
+            echo $a->size.'->'.$a->color.'<br>';
+            $a->save();
+            
+        }
+    }
+    
+}
+if(false)
+    {
+    $path = 'sr.xlsx';
+$res = parse_excel_file($path);
+echo '<table>';
+$i = 0;
+
+foreach($res as $b){
+    if($i >= 2502){
+$a = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array("code LIKE'".trim($b[0])."%'"));
+if($a){
+echo '<tr>';
+ echo '<td>'.trim($b[0]).'</td><td>'.$a->code.'</td><td>'.$b[1].'</td>';
+echo '</tr>';
+}else{
+    $z = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array("code_sr LIKE'".trim($b[0])."%'"));
+    if($z){
+        echo '<tr>';
+         echo '<td>'.trim($b[0]).'</td><td>'.$z->code_sr.'</td><td>'.$b[1].'</td>';
+         echo '</tr>';
+    }else{
+        echo '<tr>';
+    echo '<td>'.trim($b[0]).'</td><td> </td><td>'.$b[1].'</td>';
+    echo '</tr>';
+    
+    }  
+}
+
+//if($i > 2500){ break;}
+}
+$i++;
+}
+echo '</table>';
+}
+
+if(false)
+    {
 $path = 'list_end_f.xlsx';
 $res = parse_excel_file($path);
 echo '<table>';
@@ -62,7 +111,8 @@ echo '</tr>';
 }
 echo '</table>';
 }
-if(false){
+if(false)
+    {
 $path = 'list_end.xlsx';
 $res = parse_excel_file($path);
 $i=0;
@@ -114,7 +164,42 @@ echo '</table>';
 //echo '<pre>';
 //echo print_r($r);
 //echo '</pre>';
-$mas = array();
+$mas = [];
+//print_r($mas);
+/*
+require_once('../cron/cron_init.php');
+
+
+$summ = wsActiveRecord::useStatic('RedCoin')->findByQuery("SELECT if(SUM(coin)>0, SUM(coin), 0) as `summ` FROM ws_red_coin WHERE coin > 0 and status = 2 and customer_id = 8005")->at(0)->summ;
+echo 'Summa:'.$summ.'<br>';
+$mass = wsActiveRecord::useStatic('RedCoin')->findAll(['coin > 0 ', 'status'=>2, 'customer_id'=>8005]);
+$order = 55;
+
+if($summ > 0){
+    foreach ($mass as $m) {
+       // echo $m->coin.'<br>';
+       
+        if($m->coin <= $order){
+            $order -=  $m->coin;
+            $m->setCoinOn($m->coin_on+$m->coin);
+            $m->setCoin(0);
+            $m->setStatus(3);
+            $m->save();
+        }else{
+            $m->setCoin($m->coin - $order);
+            $m->setCoinOn($m->coin_on+$order);
+            $order = 0;
+            $m->save();
+        }
+     
+        if($order ==0) break; 
+        }
+}
+*/
+//echo '<br>Order = '.$order.'<br>';
+//print_r($mas);
+
+
 //$s= 0;
 //echo save_excel_file($ws_order_articles, 'brand');
 /*
@@ -428,6 +513,25 @@ $q++;
 }
 echo $q;
 */
+/*
+$start = new DateTime('01.08.2014');
+$end = new DateTime('30.08.2015 23:59');
+$interval = new DateInterval('P1D');
+$dateRange = new DatePeriod($start, $interval, $end);
+
+$weekNumber = 1;
+$weeks = array();
+foreach ($dateRange as $date) {
+  $weeks[$weekNumber][] = $date->format('Y-m-d');
+  if ($date->format('w') == 0) {
+    $weekNumber++;
+  }
+}
+
+echo '<pre>';
+print_r($weeks);
+echo '</pre>';
+*/
 ?>
 <form action="parse_excel.php" method="POST"  enctype="multipart/form-data">
 <div class="form-layout">
@@ -440,7 +544,7 @@ echo $q;
             </div>
             
             </div>
-
+</div>
             <div class="form-layout-footer">
               <button class="btn btn-info mg-r-5" name="save" type="submit">Загрузить</button>
               <button class="btn btn-secondary">Очистить</button>

@@ -54,7 +54,7 @@
                                         
                                         foreach($_SESSION['basket'] as $key => $item){
                                             if (($article = wsActiveRecord::useStatic('Shoparticles')->findById($item['article_id'])) && $item['count'] > 0) {
-                                            $sum +=   $article->getPerc(($cust->getSumOrderNoNew()+$_SESSION['or_sum']), $item['count'], $cust->getDiscont(false, 0, true), 0, 0, $_SESSION['or_sum'])['price'];
+                                            $sum +=   $article->getPerc()['price'];
                                            }
                                         }
 					if ($sum < $events->getSumforgift()) {
@@ -86,7 +86,7 @@
                                         
                                         foreach($_SESSION['basket'] as $key => $item){
                                             if (($article = wsActiveRecord::useStatic('Shoparticles')->findById($item['article_id'])) && $item['count'] > 0) {
-                                            $sum +=   $article->getPerc(($cust->getSumOrderNoNew()+$_SESSION['or_sum']), $item['count'], $cust->getDiscont(false, 0, true), 0, 0, $_SESSION['or_sum'])['price'];
+                                            $sum +=   $article->getPerc()['price'];
                                            }
                                         }
 					if ($sum < $events->getSumforgift()) {

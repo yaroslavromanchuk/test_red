@@ -24,6 +24,9 @@
                 'onDelete' => 'delete'),
                         ];
                         */
+                public function getCityName($branch){
+                     return wsActiveRecord::useStatic('JustinCities')->findFirst(['uuid'=>$branch])->getName();
+                }
 
 
 	}

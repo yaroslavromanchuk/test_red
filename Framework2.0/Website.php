@@ -190,7 +190,7 @@ class Website
         $customer = $this->_customer;
         // set session hash id
         $_SESSION['v'] = $customer->getHashVisit();
-
+        setcookie('hash', $customer->getHashUser(), strtotime('+5 day'),'/');
         // expiry time (+1 year from now)
         $expiryTimes['u'] = strtotime('+1 year');
         $expiryTimes['m'] = strtotime('+1 year');
@@ -210,10 +210,10 @@ class Website
         }
         
         // set user cookie
-        setcookie('u',$customer->getHashUser(), $expiryTimes['u'],'/');
+        setcookie('u', $customer->getHashUser(), $expiryTimes['u'],'/');
 
         // set machine cookie
-        setcookie('m',$customer->getHashMachine(), $expiryTimes['m'],'/');
+        setcookie('m', $customer->getHashMachine(), $expiryTimes['m'],'/');
 	// set date visit cookie
 	if(!isset($_COOKIE['d'])) { setcookie('d',  $this->generateDate(date("Y-m-d")), $expiryTimes['d'],'/'); }
 	// proverca poslednego visita and set new date visit
@@ -244,7 +244,7 @@ class Website
 	{
 		if (!self::$_language)
                 {
-                    self::$_language = 1;//wsLanguage::getDefaultLang()->getId();
+                    self::$_language = Registry::get('lang_id')?Registry::get('lang_id'):1;//wsLanguage::getDefaultLang()->getId();
                     
                 }
 	

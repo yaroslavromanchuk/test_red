@@ -163,8 +163,11 @@ class BrandsController extends controllerAbstract
         $this->cur_menu->setName($brand->name);
         $this->cur_menu->setMetatagDescription($this->trans->get('info_brand').' '.$brand->name.' ✓ '.$this->trans->get('товары бренда').' '.$brand->name.' '.$this->trans->get('exit_brand'));
         $this->view->brand = $brand;
-        $this->view->articles = $brand->findActiveArticles(4);
+        $this->view->articles = $articles =  $brand->findActiveArticles(4);
         $this->view->articlesHtml = $this->render('brands/helper.tpl.php');
+       // if(!$articles->count()){
+            $this->cur_menu->noindex = 1;
+        //}
 
         echo $this->render('brands/item.tpl.php');
 

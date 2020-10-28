@@ -1,8 +1,8 @@
 <?php
 $option =  $this->article->getOptions();
 
-if($option->value and $option->type == 'final'){
-$price = $this->article->getPerc(100, 1);
+if($option && $option->value and $option->type == 'final'){
+$price = $this->article->getPerc();
 $procent = ($this->article->getFirstPrice() - $price['price'])/$this->article->getFirstPrice()*100;
 $pr_real = explode(',', trim(Number::formatFloat($price['price'], 2)))[0];
 $old = trim($this->article->showPrice($this->article->getFirstPrice()));
@@ -40,7 +40,7 @@ $old = trim($this->article->showPrice($this->article->getFirstPrice()));
                         <?=($procent > 0)?'- '.ceil($procent).'%':''?>
                 </span> 
                         <?php } ?>
-                <?php if($option->value){ ?>
+                <?php if($option && $option->value){ ?>
                 <span class="sale-icon-right" data-tooltip="tooltip"  data-original-title="<?=$this->article->getOptions()->option_text?>">
                     Акция
                 </span> 

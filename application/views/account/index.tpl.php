@@ -53,6 +53,7 @@
         <td class="info"><?=$text[7]?></td>
         <td>
             <b><?=$this->user->getCountAllOrder()?></b>
+              <a href="/account/orderhistory/" class="btn btn-danger btn-sm" ><?=$text[10]?></a>
         </td>
     </tr>
    
@@ -65,7 +66,34 @@
             </td>
         </tr>
     <?php } ?>
-	<?php if ($this->user->getBonus() > 0) { ?>
+        
+       <!-- <tr>
+            <td>RedCoin зачислено</td>
+            <td >
+                <?php //$this->user->getSummCoin('add')?>
+            </td>
+        </tr>-->
+            <tr>
+            <td>RedCoin</td>
+            <td >
+                <?=$this->user->getSummCoin('active')?> redcoin.
+                 <a href="/account/redcoin/" class="btn btn-danger btn-sm">История</a>
+            </td>
+        </tr>
+       <!--  <tr>
+            <td>RedCoin использовано</td>
+            <td >
+                <?php//$this->user->getSummCoin('on')?>
+            </td>
+        </tr>
+       <tr>
+            <td>RedCoin аннулировано</td>
+            <td >
+                <?php //echo $this->user->getSummCoin('off')?>
+            </td>
+        </tr>-->
+       
+	<?php if (/*$this->user->getBonus() > 0*/false) { ?>
         <tr>
             <td><?=$text[9]?></td>
             <td>
@@ -80,7 +108,6 @@
   </div>
   <div class="card-footer text-muted">
   <div class="btn-group" role="group" aria-label="Basic example">
-  <a href="/account/orderhistory/" class="btn btn-danger" ><?=$text[10]?></a>
   <a class="btn btn-danger" href="/account/invite/"><?=$text[15]?></a>
 <a class="btn btn-danger" href="/subscribe/"><?=$text[16]?></a>
 </div><br><br>

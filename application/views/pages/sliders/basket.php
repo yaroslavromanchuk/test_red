@@ -18,7 +18,9 @@ if ($block->getId()) {
   } ?>         
 </div>
 </div>
-<?php } ?>
+
+<link rel="stylesheet" href="/js/slider-fhd/slick.css?v=1.2.0">
+<script  src="/js/slider-fhd/slick.min.js?v=1.3" ></script>
 <script>
     $(document).ready(function(){ 
 	   $('.top_articles').slick({
@@ -35,3 +37,4 @@ nextArrow: '<img src="#" style="background-image:url(/img/slider/p-n-b.png);"  d
           $('.history_block').slideDown("slow");
 });
 </script>
+<?php } ?>

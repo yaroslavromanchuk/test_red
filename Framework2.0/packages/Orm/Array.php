@@ -22,7 +22,9 @@ class Orm_Array extends Orm_Magic implements Iterator, ArrayAccess
 
 	//------------------------------------------
 	//iterator
-
+    public function count(){
+            return count($this->_store);
+        }
     public function rewind() {
         reset($this->_store);
     }

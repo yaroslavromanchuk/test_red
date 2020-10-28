@@ -10,7 +10,7 @@ display:none;
 }
 </style>
 <?=$this->getCurMenu()->getPageBody()?>
-<?php $coll = wsActiveRecord::useStatic('Subscriber')->count(array('active'=>1,'confirmed is not null','baby'=>0,'men'=>0,'women'=>0,'shop'=>1)); ?>
+<?php $coll = wsActiveRecord::useStatic('Subscriber')->count(array('active'=>1,'segment_id'=>1)); ?>
 <p>Рассылка будет отправлена <?=$coll?> подписчикам.</p>
 <input type="hidden" id="all_subject" name="all_subject" value="<?=$coll?>"/>  
 
@@ -111,11 +111,11 @@ $( document ).ready(function() {
         <tr>
             <td class="kolom1">Ссылка для статистики<br/>
             	http://www.red.ua/?</td>
-            <td><input name="extra_url" type="text" class="formfields" 
-                       value="<?php echo @$this->post->extra_url ? $this->post->extra_url : 'utm_source=shop_email_'.date('d.m.Y').'&utm_medium=email&utm_content=Shop_Subscriber&utm_campaign=Shop_Subscriber'; ?>"/>
-					   <input name="unsubscribe" hidden type="text"  
-                       value="<?=@$this->post->unsubscribe ? $this->post->unsubscribe : '&utm_source=unsubscribe_'.date('d.m.Y').'&utm_medium=email&utm_content=Shop_Subscriber&utm_campaign=Shop_Subscriber'?>"/>
-					   </td>
+            <td><input name="extra_url" type="text" class="form-control " 
+                       value="<?=@$this->post->extra_url ? $this->post->extra_url : 'utm_source=emailletter_'.date('d.m.Y').'&utm_medium=email&utm_content=EmailLetter&utm_campaign=EmailLetter'; ?>"/>
+					   <input name="unsubscribe" hidden type="text" 
+                       value="<?=@$this->post->unsubscribe ? $this->post->unsubscribe : '&utm_source=unsubscribe_'.date('d.m.Y').'&utm_medium=email&utm_content=EmailLetter&utm_campaign=EmailLetter'?>"/>
+                  </td>
         </tr>        
         <tr>
             <td class="kolom1">Баннеры и текст вначале<br><br>(размер изображения по ширине нужно устанавливать = 700)<br><br>(ссылки должны начинаться c http:// <br> все относительные ссылки будут идти от домена red.ua)</td>

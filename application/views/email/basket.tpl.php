@@ -74,23 +74,25 @@
 	   <a href="https://<?=$_SERVER['HTTP_HOST'].$article_or->article_db->getPath()?>" >
 	   <img width="100" src="https://<?=$_SERVER['HTTP_HOST'].$article_or->getImagePath('listing'); ?>" alt="<?=htmlspecialchars($article_or->getTitle());?>"/>
 	   </a>
-		</td>
+	</td>
 		
-       <td style="text-align:left;">
+        <td style="text-align:left;">
 	   <b><?=$article_or->getTitle()?></b><br>
            <?=$text[0].':'.$article_or->colors->getName().' | '.$text[1].':'.$article_or->sizes->getSize()?>
-	   </td>
+	</td>
        <td>		
 	    <?php if($article_or->getCount() > 0) {
 		$p = $price['price']/$article_or->getCount();
 		if ($price_real != $p){ $pr = $price_real; }else{ $pr = ''; }
-	
-		$skid = '  -'.ceil((1 - ($p/ $price_real)) * 100).'%';
+                    $sk = ceil((1 - ($p/ $price_real)) * 100);
+		//$skid = '  -'..'%';
 		
-	echo '<span style="text-decoration: line-through;color: #666;font-weight: normal;font-size: 10px;">'.$pr.'</span><span style="font-size: 10px;color:red;font-weight: bold;position: relative;top: -5px;"> '.$skid.'</span><br>'.Shoparticles::showPrice($p).' грн.';
+        if($pr){ echo '<span style="text-decoration: line-through;color: #666;font-weight: normal;font-size: 10px;">'.$pr.'</span>';}
+        if($sk > 0){ echo '<span style="font-size: 10px;color:red;font-weight: bold;position: relative;top: -5px;"> -'.$sk.'%</span>';}
+        echo '<br>'.Shoparticles::showPrice($p).' грн.';
 
 		}else { echo $count; } ?>
-	   </td>
+	</td>
 	   
        <td>
 	   <?=$count?>
@@ -174,4 +176,4 @@
 </td>
 </tr>
 </table><br>
-<?=$this->render('email/email.footer.tpl.php');?>
+<?=$this->render('email/email.footer.tpl.php')?>

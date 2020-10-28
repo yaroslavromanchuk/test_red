@@ -161,10 +161,11 @@ $('#new_ttn').click(function(){
 				if(res.errors.length == 0){
 				if(res.data[0].Ref){
     $('#alert').html('<div class="alert alert-success" role="alert"><strong>Успех!</strong> ТТН: '+res.data[0].IntDocNumber+'</div>');
-    setTimeout(function(){$('#alert').html('')}, 5000);
+   // setTimeout(function(){$('#alert').html('')}, 5000);
 				//$('#popup').html(res.data[0].IntDocNumber);
-				window.open("https://my.novaposhta.ua/orders/printDocument/orders/"+res.data[0].Ref+"/type/html/apiKey/1e594a002b9860276775916cdc07c9a6");//, '_blank'
-				}
+				//window.open("https://my.novaposhta.ua/orders/printDocument/orders/"+res.data[0].Ref+"/type/html/apiKey/1e594a002b9860276775916cdc07c9a6");//, '_blank'
+				window.location.replace("https://my.novaposhta.ua/orders/printMarking100x100/orders/"+res.data[0].Ref+"/type/pdf/apiKey/1e594a002b9860276775916cdc07c9a6");//, '_blank'
+                                }
 				}else{
                                 $('#new_ttn').show();
                                         //$('#popup').html(res.errors[0]);

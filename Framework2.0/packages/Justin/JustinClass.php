@@ -19,21 +19,21 @@ class JustinClass
      *
      * @var string
      */
-    protected $login = 'RedUA1';
+    protected $login = 'FOP_KukovitskiySS'; // гудзь - RedUA1 //Цибуля - redUA
 
     /**
      * API pass
      *
      * @var string
      */
-    protected $pass = 'OsiMaNaT';
+    protected $pass = 'pE5CF!*s'; // гудзь - OsiMaNaT //Цибуля - TEdmAtIc
 
     /**
      * API account key
      *
      * @var string
      */
-    protected $key = '08d0c6b5-1d89-11ea-abe1-0050569b41a9';
+    protected $key = '918d4960-f296-11ea-ac14-0050569b9e7e';// гудзь - 08d0c6b5-1d89-11ea-abe1-0050569b41a9 //Цибуля - 851e2b3e-ffd5-11e9-abd8-0050569b9e7e
 
     /**
      * Response result lang
@@ -108,7 +108,7 @@ class JustinClass
      * @param bool $throwErrors
      * @param string $connectionType
      */
-    public function __construct($login, $pass, $key = '', $lang = 'UA', $throwErrors = false, $connectionType = 'curl')
+    /*public function __construct($login, $pass, $key = '', $lang = 'UA', $throwErrors = false, $connectionType = 'curl')
     {
         $this->login = $login;
         $this->pass = $pass;
@@ -116,6 +116,15 @@ class JustinClass
         $this->lang = strtoupper($lang);
         $this->throwErrors = (boolean)$throwErrors;
         $this->apiConnectionMethod = $connectionType;
+    }*/
+    public function __construct($login = false, $pass = false, $key = '')
+    {
+        if($login){ $this->login = $login;}
+        if($pass){$this->pass = $pass;}
+        if($key){$this->key = $key;}
+       // $this->lang = strtoupper($lang);
+       // $this->throwErrors = (boolean)$throwErrors;
+       // $this->apiConnectionMethod = $connectionType;
     }
 
     /**
@@ -628,6 +637,11 @@ if ($err) {
      */
     public function getOrderStatusesHistory($filter = [], $top = 0)
     {
+        $filter[1] = [
+                   'name'=>'senderId',
+                   'comparison'=>'equal',
+                   'leftValue'=>$this->key
+                   ];
         return $this->sendRequest(
             $this->apiUrnRequest,
             $this->prepareRequestDataTemplate(

@@ -20,7 +20,7 @@ AND  ws_articles_sizes.`ctime` >  '2017-01-01 00:00:00' ";
     </div>
 <?php
 }
-if($this->add_count) {echo 'Загружено : '.$this->add_count;}
+if($this->add_count) { echo 'Загружено : '.$this->add_count;}
 ?>
     <div id="pagesaved" align="center" style="margin: auto;display:none;font-size: 14px;">
         <img src="<?=SITE_URL?>/img/icons/accept.png" alt="" width="25" height="25" class="page-img"/>
@@ -59,16 +59,13 @@ if($this->add_count) {echo 'Загружено : '.$this->add_count;}
   <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
   </div>
 </div>
-</div>
-         
-    <p style="display:none;" class="m-auto text-center" id="div_res">
+</div>         
+<p style="display:none;" class="m-auto text-center" id="div_res">
 <input type="hidden" id="all" name="all" value="<?=$all?>">
 <input type="hidden" id="ostatok" name="ostatok" value="<?=$ostatok?>">
 <label class="font-weight-bold text-primary">Для проверки загружено <?=$all?> SKU.</label><br>
 <button id="revizor" class="btn btn-outline-success" >Запустить сверку</button>
 <button id="dell" class="btn btn-outline-danger" >Очистить базу!</button>
-
-
 </p>
 <p id="ad_del" style="display:none;" class="m-auto">
     <span class="font-weight-bold text-success">Добавлено <span id="ad"></span> единиц</span><br>
@@ -77,14 +74,14 @@ if($this->add_count) {echo 'Загружено : '.$this->add_count;}
     <button id="stop"  class="btn btn-outline-danger" >Остановить!</button>
 </p>
 </div>
-         </div>
-   <div class="col-sm-12"> 
-       <div class="card pd-30">
-    <h6 class="card-body-title">Таблица результатов сверки</h6>
- <table id="products1" cellpadding="4" cellspacing="0" style="display:none;" class="table text-center m-auto" >
-    
+</div>
+<div class="col-sm-12"> 
+<div class="card pd-30">
+<div class="card-body">
+<h6 class="card-body-title">Таблица результатов сверки</h6>
+<table id="products1" cellpadding="4" cellspacing="0" style="display:none;" class="table text-center m-auto" >
      <thead>
-         <tr>
+        <tr>
         <th>id</th>
         <th>Артикул</th>
         <th>На сайте</th>
@@ -92,16 +89,15 @@ if($this->add_count) {echo 'Загружено : '.$this->add_count;}
         <th>В 1С</th>
         <th>Собитие</th>
         <th>Изменено</th>
-    </tr>
+        </tr>
     </thead>
-    <tbody id="products1_body">
-        
-    </tbody>
-	</table>
- </div>
-        </div>
+    <tbody id="products1_body"></tbody>
+</table>
 </div>
-
+<div class="card-footer"><button class="btn btn-secondary pd-x-20" id="to_excel" onclick="return download('products1');">Выгрузить в Excel</button></div>
+ </div>
+</div>
+</div>
  <script>
      $(document).ready(function () {
 	 var stop = false;
@@ -137,36 +133,28 @@ $('#form_pa').hide();
           //  alert('Сверка стартовала. Дождитесь окончания!');
 			
         });
-		  $('#dell').click(function () {
-            var url = '/admin/revisiya/';
-           // var data = $('#mail_form').serialize();
-            //$(this).attr('disabled', 'true');
-          // $('.mailing_start').show();
-		   var new_data = '&method=dell';
-		var surl = url+new_data;
-            $.ajax({
-                url: surl,
-                type: 'POST',
-                dataType: 'json',
-                data: new_data,
-                success: function (res) {
-				console.log(res);
-				if(res) alert(res);
-				}
-				});
-				 location.reload();
-
-			
-        });
-		
-		function send(go) {
+$('#dell').click(function () {
             $.ajax({
                 url: '/admin/revisiya/',
                 type: 'POST',
                 dataType: 'json',
-                data: '&method=start&limit='+limit+'&from='+go,
+                data: {method: 'dell'},
                 success: function (res) {
-                    if (res.status == 'send') {
+				console.log(res);
+				if(res) alert(res);
+				}
+            });
+	location.reload();
+});
+		
+function send(go) {
+            $.ajax({
+                url: '/admin/revisiya/',
+                type: 'POST',
+                dataType: 'json',
+                data: {method: "start", limit: limit, from: go},//'&method=start&limit='+limit+'&from='+go,
+                success: function (res) {
+                if(res.status == 'send'){
 					
 					console.log(res);
 					//console.log(res.article.length);

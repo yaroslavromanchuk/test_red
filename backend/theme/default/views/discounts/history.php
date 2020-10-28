@@ -1,38 +1,29 @@
 <?php
-
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-if($this->message){ ?>
+if($this->history){ ?>
 <table class="table table-hover table-bordered form_history"  >
     <thead class="text-center">
         <tr>
-            <th>Заказано<br>товаров</th>
-            <th>Сумма<br>без акции</th>
-            <th>Сумма<br>по акции</th>
-            <th>Разница</th>
-            <th>Куплено<br>товаров</th>
-            <th>Сумма<br>без акции</th>
-            <th>Сумма<br>по акции</th>
-            <th>Разница</th>
+            <th>Дата</th>
+            <th>Администратор</th>
+            <th>Действие</th>
         </tr>
     </thead>
     <tbody>
+        <?php
+        foreach ($this->history as $h){ ?>
         <tr>
-            <td id="all"><?=$this->message['all']?></td>
-            <td id="summa_all_no_akciya"><?=$this->message['summa_all_no_akciya']?> грн.</td>
-            <td id="summa_all"><?=$this->message['summa_all']?> грн.</td>
-            <td id="summa_all_no_akciya_akciya"><?=$this->message['summa_all_no_akciya']-$this->message['summa_all']?></td>
-            <td id="fact"><?=$this->message['fact']?></td>
-            <td id="summa_fact_no_akciya"><?=$this->message['summa_fact_no_akciya']?> грн.</td>
-            <td id="summa_fact"><?=$this->message['summa_fact']?> грн.</td>
-            <td id="summa_fact_no_akciya_akciya"><?=$this->message['summa_fact_no_akciya']-$this->message['summa_fact']?> грн.</td>
+            <td><?=$h->ctime?></td>
+            <td><?=$h->admin->getFullname()?></td>
+            <td><?php $info = []; foreach (unserialize($h->info) as $k => $i){
+                $info[] = '<span>'.$k.': '.$i.'</span>';
+            }
+            echo implode('<br>', $info);
+            ?></td>
         </tr>
+      <?php  }
+        ?>
     </tbody>
 </table>
-<input type="text" hidden value="<?=$this->id?>" class="id_akciya">
  <?php   
 }
 

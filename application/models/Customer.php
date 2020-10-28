@@ -13,23 +13,12 @@ class Customer extends wsCustomer
  * @return int
  */
 	public function getDiscont($current_order_id = false, $plus = 0, $no_a_discint = false) {
-		//показывать вообще по всем ордерам или без учета какого-то
-      /*  if ($current_order_id) {
-            $order = new Shoporders($current_order_id);
-            $a_discont = $order->getEventSkidka();
-        }else{
-          $a_discont = 0;// EventCustomer::getEventsDiscont($this->getId());
-        }*/
-       // if($no_a_discint) {
-            $a_discont = 0;
-       // }
-              $sk = 0;
               $sk1 = 0;
               $sk2 = 0;
         if ($this->getSkidka()!=0) {
             $sk1 =  $this->getSkidka();
         }
-	
+	$amount = 0;
         if ($current_order_id && $this->getId()){
 				$amount = wsActiveRecord::useStatic('Customer')->findByQuery('
 				SELECT IF(SUM(price*count) IS NULL,0,SUM(price*count)) AS amount
@@ -47,30 +36,59 @@ class Customer extends wsCustomer
 						JOIN ws_orders ON ws_order_articles.order_id = ws_orders.id
 				WHERE ws_orders.customer_id = ' . $this->getId() . ' AND ws_orders.status IN (100,1,3,4,6,8,9,10,11,13,14,15,16) ')->at(0)->getAmount();
 
-			}else{
-				$amount = 0;
 			}
-				$amount += $plus;
 
 			if ($amount <= 700){
-				$sk2 =  0+$a_discont;
+				$sk2 =  0;
 			}elseif($amount > 700 && $amount <= 5000 ){//5%
-				$sk2 =  5+$a_discont;
+				$sk2 =  5;
 			}elseif($amount > 5000 && $amount <= 12000){//10%
-				$sk2 =  10+$a_discont;
+				$sk2 =  10;
 			}elseif($amount > 12000){//15%
-				$sk2 =  15+$a_discont;
+				$sk2 =  15;
 			}
         
         if($sk2 > $sk1){
-            $sk = $sk2;
+            return $sk2;
         }else{
-             $sk = $sk1;
+             return $sk1;
         }
-        return $sk;
+        
 	}
         
-       /**
+        /**
+         * getAllCoin - список редкоинов
+         * @param type $type - (add - зачислено, active - Активно, on - Использовано, off - Аннулировано, default = все)
+         * @return type
+         */
+        public function getAllCoin($type = 'active'){
+            switch ($type){
+            case 'add': return wsActiveRecord::useStatic('RedCoin')->findAll(['coin > 0', 'customer_id'=>$this->id, 'status'=> 1]);// зачисленные бонусы
+            case 'active': return wsActiveRecord::useStatic('RedCoin')->findAll(['coin > 0', 'customer_id'=>$this->id, 'status'=> 2]);// активные бонусы
+            case 'on': return wsActiveRecord::useStatic('RedCoin')->findAll(['coin_on > 0', 'customer_id'=>$this->id, 'status'=> 3]);//использован бонус
+            case 'off': return wsActiveRecord::useStatic('RedCoin')->findAll(['customer_id'=>$this->id, 'status'=> 4]);//просрочен бонус
+            case 'all': return wsActiveRecord::useStatic('RedCoin')->findAll(['customer_id'=>$this->id,]);//Все бонусы
+            default : return  wsActiveRecord::useStatic('RedCoin')->findAll(['coin > 0', 'customer_id'=>$this->id], ['id'=>'DESC'], [0, 50]);// активные бонусы
+            }
+        }
+        /**
+         * getSummCoin - Сумма редкоинов
+         * @param type $type - (add - зачислено, active - Активно, on - Использовано, off - Аннулировано, default = active)
+         * @return type
+         */
+        public function getSummCoin($type = 'active'){
+            switch ($type){
+                case 'add': return wsActiveRecord::useStatic('RedCoin')->findByQuery("SELECT if(SUM(coin)>0, SUM(coin), 0) as `summ` FROM ws_red_coin WHERE `coin` > 0 and status = 1 and customer_id=".$this->id)->at(0)->summ;// Сумма зачисленных бонусов
+                case 'active': return wsActiveRecord::useStatic('RedCoin')->findByQuery("SELECT if(SUM(coin)>0, SUM(coin), 0) as `summ` FROM ws_red_coin WHERE `coin` > 0  and status = 2 and customer_id=".$this->id)->at(0)->summ;// Сумма активных бонусов
+                case 'on': return wsActiveRecord::useStatic('RedCoin')->findByQuery("SELECT if(SUM(coin_on)>0, SUM(coin_on), 0) as `summ` FROM ws_red_coin WHERE coin_on > 0  and status in(2,3) and customer_id=".$this->id)->at(0)->summ;// Сумма использованых бонусов
+                case 'off':  return wsActiveRecord::useStatic('RedCoin')->findByQuery("SELECT if(SUM(coin)>0, SUM(coin), 0) as `summ` FROM ws_red_coin WHERE status = 4  and customer_id=".$this->id)->at(0)->summ;// Сумма просроченых бонусов
+                case 'vstup':  return wsActiveRecord::useStatic('RedCoin')->findByQuery("SELECT if(SUM(coin)>0, SUM(coin), 0) as `summ` FROM ws_red_coin WHERE status = 2  and customer_id={$this->id} and `ws_red_coin`.`date_off` = '2020-06-02' AND `date_active` = '2020-03-01'")->at(0)->summ;// Сумма просроченых бонусов   
+            default: return wsActiveRecord::useStatic('RedCoin')->findByQuery("SELECT if(SUM(coin)>0, SUM(coin), 0) as `summ` FROM ws_red_coin WHERE `coin` > 0  and status = 2 and customer_id=".$this->id)->at(0)->summ;// Сумма активных бонусов
+           }
+            }
+
+
+        /**
         * следующая скидка
         * @param float $plus
         * @return int
@@ -176,7 +194,25 @@ class Customer extends wsCustomer
         return false;
 
     }
-	//проверка на блок пользователя на заказ курьером
+    public function isBloskOrder(){
+        
+        if($this->getIsLoggedIn()){
+    if($this->id == 1 || $this->id == 40619){ return false; }
+            if($this->isAdmin()){
+        
+        $d = date('Y-m-d H:i:s', strtotime('-30 days'));
+        $order = wsActiveRecord::useStatic('Shoporders')->findFirst(['customer_id'=>$this->id, 'status in(100,9,15,16)', 'date_create <="'.$d.'"']);
+        if($order->id) { return true; }else{
+            return false;
+        }
+        }else{
+            return false;
+        }
+        }
+        return false;
+    }
+
+    //проверка на блок пользователя на заказ курьером
    public function isBlockCur(){ 
         if($this->getBlockCur() == 1) {return true;}
         return false;
@@ -200,7 +236,7 @@ class Customer extends wsCustomer
     }
     //проверка на блок пользователя на быструю заявку
     public function isBlockJustin(){
-        if($this->getBlockJustin() == 1){ return true; }
+        if($this->bloсk_justin == 1){ return true; }
         return false;
     }
 
@@ -287,6 +323,37 @@ class Customer extends wsCustomer
 		 //$co = wsActiveRecord::useStatic('Shoporders')->findFirst(['customer_id'=>$this->getId()],['id' => 'DESC'])->date_create;
                  
 		return $co['date_create'];
+    }
+    public function sendEmailBirth(){
+        $track = base64_encode(date('Y-m-d H:i:s'));
+       // echo $this->email.'OK<br>';
+        
+        $e = new EncodeDecode();
+        $h =  $e->encode($this->hash_id);
+       
+
+        $view = new View();
+         $view->track_open = 'https://www.red.ua/email/cart/?photo='.$track.'.jpg';
+       $link =  'https://www.red.ua/basket/l/'.$h.'/?utm_source=birthday&utm_medium=email&utm_content=Birthday&utm_campaign=Birthday&track_cart='.$track;
+      // $view->cart = $this;
+       $view->link = $link.'&referral=/account/redcoin/';
+       $view->referral = '/account/redcoin/';
+       $view->email = $this->email;
+       $view->name = $this->middle_name.' '.$this->first_name;
+       $view->track = '/l/'.$h.'/?utm_source=birthday&utm_medium=email&utm_content=Birthday&utm_campaign=Birthday';
+       $msg =  $view->render('email/birthday.template.tpl.php');
+       
+          // $fn = md5(date('Y-m-d H:i:s').$this->id);
+          // $file = "/birthday/{$fn}.html";
+          // $fp =  fopen(INPATH."email".$file,"w");//если файла info.txt не существует, создаем его
+           
+          // fwrite($fp, $msg);//записываем в файл
+          // fclose($fp);//закрываем файл.
+           EmailLog::add($this->first_name.', Вам начислен бонус в честь дня рождения. Поспешите!', $msg, 'birthday', $this->id);
+           
+       SendMail::getInstance()->sendEmail($this->email, $this->middle_name, $this->first_name.', Вам начислен бонус в честь дня рождения. Поспешите!', $msg);
+        return true;
+        
     }
     
    

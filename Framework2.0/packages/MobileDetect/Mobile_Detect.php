@@ -1456,4 +1456,8 @@ class Mobile_Detect
         // will receive the basic, C grade experience.
         return self::MOBILE_GRADE_C;
     }
+    public  function isDevice(){
+        return $this->isMobile() ? ($this->isTablet() ? 'tablet' : 'phone') : 'computer';
+    }
+    
 }

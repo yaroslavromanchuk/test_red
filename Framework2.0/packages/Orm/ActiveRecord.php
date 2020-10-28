@@ -16,16 +16,16 @@
 class Orm_ActiveRecord extends Orm_Array
 {
 	protected $_table = '';
-	protected $_orderby = array('id' => 'ASC');
+	protected $_orderby = ['id' => 'ASC'];
 	protected $_id = 'id';
 	protected $_created = 'ctime';
 	protected $_updated = 'utime';
 	protected $_lang = '';
 	protected $_model = 'Orm_ActiveRecord';
-	protected $_multilang = array();
-	protected $_relations = array();
+	protected $_multilang = [];
+	protected $_relations = [];
 	
-	private $db_store = array();
+	private $db_store = [];
 	private $db = null;
 	private $stmt;
 
@@ -76,11 +76,41 @@ class Orm_ActiveRecord extends Orm_Array
 				->from($this->getTable(), '*')
 				->where($this->stmt->rquote($this->getTable()) . '.' . $this->stmt->rquote($this->_id) . ' = ?', $id);
 			// check for extra params (site_id and lang_id)
-			$this->addExtraStmtParams();
+			//$this->addExtraStmtParams();
 			// add objects for autoload to statement
 			$this->_addAutoloadToSelect();
 			$result = $this->stmt->getRow();
 		}
+		//
+		if($result)
+		{
+			$this->loadObject($result);
+		}
+		else
+		{
+			return null;
+			//throw new Orm_Exception("Entry '$id' not found in DB");
+		}
+		return $this;
+	}
+        /**
+         * Поиск по ссылке
+         * @param type $url
+         * @return $this
+         */
+      public function findUrl($url)
+	{
+
+			// prepare statement
+			$this->stmt
+				->from($this->getTable(), '*')
+				->where($this->stmt->rquote($this->getTable()) . '.url = ?', $url);
+			// check for extra params (site_id and lang_id)
+			//$this->addExtraStmtParams();
+			// add objects for autoload to statement
+			$this->_addAutoloadToSelect();
+			$result = $this->stmt->getRow();
+		
 		//
 		if($result)
 		{
@@ -106,7 +136,7 @@ class Orm_ActiveRecord extends Orm_Array
 			->from($this->getTable(), '*')
 			->where($this->stmt->rquote($this->getTable()) . '.' . $this->stmt->rquote($this->_id) . ' = ?', $id);
 		// check for extra params (site_id and lang_id)
-		$this->addExtraStmtParams();
+		//$this->addExtraStmtParams();
 		// add objects for autoload to statement
 		$this->_addAutoloadToSelect();
 		
@@ -433,7 +463,7 @@ class Orm_ActiveRecord extends Orm_Array
 		$this->stmt->where($this->_where($condition));
 			
 		// check for extra params (site_id and lang_id)
-		$this->addExtraStmtParams();	
+		//$this->addExtraStmtParams();	
 
 		$result = array();
 		if($res = $this->stmt->getResults())
@@ -659,7 +689,7 @@ class Orm_ActiveRecord extends Orm_Array
 		return $s->setQuery($query)->execute();
 	}
         /**
-         *  Получить одну запись в массив (обьект)
+         *  Получить одну запись в массив
          * @param type $query
          * @return ['']
          */
@@ -778,11 +808,11 @@ class Orm_ActiveRecord extends Orm_Array
 				. ' IS NULL OR ' . $this->stmt->rquote($this->getTable()) . '.' . $this->stmt->rquote('site_id')
 				. ' = ?', Registry::get('site_id'));
 
-		if(Registry::isRegistered('lang_id') && array_key_exists('lang_id', $this->db_store))
+		/*if(Registry::isRegistered('lang_id') && array_key_exists('lang_id', $this->db_store))
 			$this->stmt->where(
 				$this->stmt->rquote($this->getTable()) . '.' . $this->stmt->rquote('lang_id')
 				. ' IS NULL OR ' . $this->stmt->rquote($this->getTable()) . '.' . $this->stmt->rquote('lang_id')
-				. ' = ?', Registry::get('lang_id'));
+				. ' = ?', Registry::get('lang_id'));*/
 			
 		return ;
 		/*else
@@ -890,13 +920,13 @@ class Orm_ActiveRecord extends Orm_Array
 		}		
 	}
 	
-	protected function _getRelation($label, $params = array())
+	protected function _getRelation($label, $params = [])
 	{
 		$data = $this->_relations[$label];
-		$where = @$params[0];
-		$order = @$params[1];
-		$limit = @$params[2];
-		switch(strtolower(@$data['type']))
+		$where = isset($params[0]) ? $params[0]: [];
+		$order = isset($params[0]) ? $params[1] : [];
+		$limit = isset($params[0]) ? $params[2] : [];
+		switch(strtolower($data['type']))
 		{
 			case 'hasone':
 				if($this->{$data['field']})
@@ -1045,21 +1075,30 @@ class Orm_ActiveRecord extends Orm_Array
 	
 	public function __get($label)
 	{
-		$data = @func_get_args();
-		$label = $data[0];
-		$params = @$data[1];
+		$data = func_get_args();
+		//$label = isset($data[0]) ? $data[0] : '';
+		$params = isset($data[1]) ? $data[1] : [];
 		
 		//can be used store[$label]
-		$label = $this->_explodeCase($label);
+		$label = $this->_explodeCase(isset($data[0]) ? $data[0] : '');
 		
 		//realtions
-		if(array_key_exists($label, $this->_relations) && (!@$this->_store[$label] || ((get_class(@$this->_store[$label]) == 'Orm_Collection') && !$this->_store[$label]->count())))
+		if(
+        (!empty($label) && array_key_exists($label, $this->_relations)) && (
+                !isset($this->_store[$label]) || (
+                                (get_class($this->_store[$label]) == 'Orm_Collection')
+                                && !$this->_store[$label]->count()
+                                )
+                                )
+                        ) {
 			$this->_store[$label] = $this->_getRelation($label, $params);		
+                }
 				
 		if(array_key_exists($label, $this->_store))
 		{
 			return $this->_store[$label];
 		}
+        
 
 		return null;
 	}
@@ -1102,10 +1141,13 @@ class Orm_ActiveRecord extends Orm_Array
 			if($prop == 'Id') $prop = $this->_id;
 			if(array_key_exists($prop_c, $this->db_store)) 
 			{
-				return $this->findAll((!is_array(@$params[0]) ? array($prop_c => @$params[0]) : @$params[0]), @$params[1] /*sorting*/, @$params[2]/*limit*/, @$params[3]/*count*/);
-			}
-			else
-				throw new Orm_Exception("Method not found findBy$prop");	
+				return $this->findAll(
+                                        (!empty($params[0]) ? (!is_array($params[0]) ? [$prop_c => $params[0]] : $params[0]) : []),
+                                        isset($params[1]) ? $params[1] : [] /*sorting*/,
+                                        isset($params[2]) ? $params[2] : [] /*limit*/,
+                                        isset($params[3]) ? $params[3] : [] /*count*/
+                                        );
+			} else { throw new Orm_Exception("Method not found findBy$prop"); }	
 		}
 
 		//n2n and hasMany

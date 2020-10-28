@@ -39,6 +39,20 @@
         {
             return $this->getArticleDb()->getImagePath($type);
         }
+        /**
+         * Кешбек по конкретному товару
+         * @return int
+         */
+        public function getCashback(){
+            if((!$this->skidka_block && !$this->option_id && $this->count > 0)) {
+                  $sk = $this->order->skidka;
+                  if($cashback = $this->article_db->getCashback()){
+                      $sk = $cashback;
+                  }
+                  return ceil($sk/100*(($this->price-$this->coin)*$this->count));
+              }
+            return 0;
+        }
 
         public function getProcent($all_orders_amount)
         {
@@ -247,18 +261,36 @@
 		
         return $mas;
     }
-    public function getPerc($all_orders_amount, $sum_order = 0)
+    /**
+     * Цена товара * количество
+     * @param type $all_orders_amount
+     * @param type $sum_order
+     * @return string
+     */
+    public function getPerc($all_orders_amount = 0)
             {
+        /*
+             * $mas - массив для возвращения данных
+             */
+            $mas = [];
+            
+            if($this->getOptionPrice()  > 0 and $this->option_id){      
+                        $mas['price'] = ceil($this->getOptionPrice()*$this->count);// $this->getOptionPrice()*$this->count;
+                        
+                        $mas['coin'] = $this->coin;
+                        $mas['minus'] = FLOOR($this->getPrice()*$this->count - $mas['price']);
+			return $mas;
+                     }else{ //if($this->order->date_create > '2020-03-01 00:00:00')
+        $price = $this->order->kupon_price?ceil($this->price*(1-$this->order->kupon_price/100)):$this->price;
+        $minus = ($this->old_price > 0)?($this->old_price-$price):0;
+        $comment = '';
+        return ['price'=>($price*$this->count), 'minus'=>$minus, 'coin'=>$this->coin, 'comment'=> $comment]; 
+     }
             /*
              * $s - дополнительная скидка на товар
              */
             $s = 0;
             $coment = '';
-            /*
-             * $mas - массив для возвращения данных
-             */
-            $mas = [];
-            
             /*
              * сумма скидки на товар
              */
@@ -268,7 +300,20 @@
              */                   
 		$price = $this->getPrice();
 		
-                //$event_skidka = $this->getEventSkidka();
+               if($this->article_db->brand_id == 1504){
+                   if($this->order->getSkidka() > 0){
+            $price = ceil($this->getPrice() *(1-$this->order->getSkidka()/100));
+            $minus = FLOOR($this->getPrice() - $price);
+                }else{
+                    $price = $this->getPrice();
+                    $minus = 0;
+                }
+                
+        $mas['price'] = ceil($price*$this->count);
+        $mas['minus'] = FLOOR($minus*$this->count);
+        //$mas['comment'] = $coment;	
+        return $mas;
+               }
          /*
           * проверяем наличие доп. скидки на это товар
           * если больше 0 - к $s добавляем доп. скидку 

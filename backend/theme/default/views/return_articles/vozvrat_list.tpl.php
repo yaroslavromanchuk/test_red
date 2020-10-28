@@ -24,6 +24,7 @@ return false;
 	<td>Статус</td>
 	<td>Заказ</td>
 	<td>Id клиента</td>
+        <td>Обработан</td>
 	<td>Создан от</td>
 	<td>Создан до</td>
 	<td>Способ возврата</td>
@@ -41,15 +42,17 @@ return false;
 </td>
 <td ><input type="text" onkeyup="var yratext=/['%']/; if(yratext.test(this.value)) this.value=''"  value="" class="form-control " name="order" autofocus="true" id="order"/></td>
 	<td><input type="text"  value="<?=$_GET['customer_id']?>" class="form-control " name="customer_id" id="customer_id"/></td>
-	<td><input type="date"  value="<?php if($_GET['create_from']) echo date('Y-m-d', strtotime($_GET['create_from']));?>"  class="form-control" name="create_from"/></td>
+        <td><input type="date"  value="<?php if($_GET['date_obrabotan']){ echo date('Y-m-d', strtotime($_GET['date_obrabotan']));} ?>"  class="form-control" name="date_obrabotan"/></td>
+        <td><input type="date"  value="<?php if($_GET['create_from']) {echo date('Y-m-d', strtotime($_GET['create_from']));}?>"  class="form-control" name="create_from"/></td>
 
-	<td><input type="date"  value="<?php if($_GET['create_to']) echo date('Y-m-d', strtotime($_GET['create_to']));?>" class="form-control" name="create_to"/></td>
+        <td><input type="date"  value="<?php if($_GET['create_to']) {echo date('Y-m-d', strtotime($_GET['create_to']));}?>" class="form-control" name="create_to"/></td>
 	<td>
             <select name="sposob[]" multiple="true" class="form-control select2" data-placeholder="Выберите способ возврата">
                 <option value="">Все</option>
-                <option value="1" <?php if (isset($_GET['sposob']) and $_GET['sposob'] == '1') echo 'selected="selected"';?>>На депозит</option>
-                <option value="2" <?php if (isset($_GET['sposob']) and $_GET['sposob'] == '2') echo 'selected="selected"';?>>Почтовый</option>
-                 <option value="3" <?php if (isset($_GET['sposob']) and $_GET['sposob'] == '3') echo 'selected="selected"';?>>На карту</option>
+                <option value="1" <?php if (isset($_GET['sposob']) and $_GET['sposob'] == '1') {echo 'selected="selected"';}?>>На депозит</option>
+                <option value="2" <?php if (isset($_GET['sposob']) and $_GET['sposob'] == '2') {echo 'selected="selected"';}?>>Почтовый</option>
+                <option value="3" <?php if (isset($_GET['sposob']) and $_GET['sposob'] == '3'){ echo 'selected="selected"';}?>>На карту</option>
+                <option value="4" <?php if (isset($_GET['sposob']) and $_GET['sposob'] == '4'){ echo 'selected="selected"';}?>>Онлайн по ФОП</option>
             </select>
         </td>
 	</tr>
@@ -96,18 +99,19 @@ $deli = [ 3 => 'Победа', 5 => 'Строителей', 4=>'УкрПочта
 
 <i class="icon ion-md-close text-danger tx-30 pd-5"  id="dell_all" name="dell_all" onclick="return dell('dell_all');" data-tooltip="tooltip" data-original-title="Удалить без возврата на сайт"></i>
 
-<?php }?>
+<?php } ?>
 <i class="icon ion-md-clipboard text-primary tx-30 pd-5"  id="print" name="print" onclick="return print103();" data-tooltip="tooltip" data-original-title="Печать формы 103"></i>
+<i class="icon ion-md-clipboard text-dark tx-30 pd-5"  id="print_buh" name="print_buh" onclick="return print_buh();" data-tooltip="tooltip" data-original-title="Печать формы для бухгалтерии"></i>
 <i class="icon ion-md-mail  text-success tx-30 pd-5 mg-5" id="p_all1" name="p_all1"  onclick="return go_mail_forma103('p_all');" data-tooltip="tooltip" data-original-title="Отправить уведомление на почту"></i>
 <?php if($_GET['status'] == 2) { ?><span id="sum_perekaz"></span> <?php } ?>
-<table id="orders" class="table table-dark table-bordered table-hover" >
+<table id="orders" class="table table-striped table-sm  table-hover datatable1 dataTable table-dark" >
     <thead>
     <tr>
 		<td><label class="ckbox" data-tooltip="tooltip" title="Выделить все товары"><input onchange="chekAll();" class="chekAll" type="checkbox"/><span></span></label></td>
                 <td>Статус</td>
                 <td>№<br>Заказа</td>
 		<td>Id<br>клиента</td>
-		<td>Принят</td>
+		<td>Принят</td> 
 		<td>Принял</td>
 		<td>Обработан</td>
 		<td>Сумма<br>возврата</td>
@@ -123,7 +127,7 @@ $deli = [ 3 => 'Победа', 5 => 'Строителей', 4=>'УкрПочта
      <tbody>
     <?php
     $user = [];
-	$spos = [1=>'На депозин', 2=>'Почтовый', 3=>'На карту'];
+	$spos = [1=>'На депозин', 2=>'Почтовый', 3=>'На карту', 4=>'Онлайн по ФОП'];
         
 	foreach ($this->getOrders() as $order) {
 	//$r = new Shoporders($order->order_id);
@@ -161,9 +165,9 @@ $deli = [ 3 => 'Победа', 5 => 'Строителей', 4=>'УкрПочта
                 <td><?=$order->comments?></td>
 		<td><?php 
 		if ($order->order->getRemarks()->count()) {
-    $text = '';
-        foreach ($order->order->getRemarks() as $remark) { $text.=$remark->getRemark()."-".$remark->getName(); } ?>
-<i class="icon ion-ios-chatboxes green tx-20 " data-placement="right"  data-tooltip="tooltip" title="" data-original-title="<?=$text?>"></i>
+    $text = [];
+        foreach ($order->order->getRemarks() as $remark) { $text[] = $remark->getRemark()."-".$remark->getName(); } ?>
+<i class="icon ion-ios-chatboxes green tx-20 " data-placement="right"  data-tooltip="tooltip" title="" data-original-title="<?=implode(";", $text)?>"></i>
 		<?php }	?>
                 </td>
     </tr>
@@ -331,6 +335,28 @@ if ($('.order-item:checked').val()) {
 					
 					//alert(ids);
 					window.open ( '/admin/vozrat/method/forma103/ids/' + ids , '_blank');
+					}else{
+					alert('Отметьте нужные заказы!');
+					return false;
+					}
+
+return false;
+}
+function print_buh(){
+var ids = '';
+if ($('.order-item:checked').val()) {
+                    i = 0;
+                    jQuery.each($('.order-item:checked'), function () {//order-item cheker
+                        if (i != 0) {
+                            ids += ',' + $(this).attr('name').substr(5);
+                        } else {
+                            ids += $(this).attr('name').substr(5);
+                        }
+                        i++;
+                    });
+					
+					//alert(ids);
+					window.open ( '/admin/vozrat/method/forma_buh/ids/' + ids , '_blank');
 					}else{
 					alert('Отметьте нужные заказы!');
 					return false;

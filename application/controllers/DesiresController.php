@@ -20,7 +20,7 @@ class DesiresController extends controllerAbstract
         parent::init();
         $this->view->css = [
             '/css/cloudzoom/cloudzoom.css',
-            '/css/jquery.lightbox-0.5.css',
+           // '/css/jquery.lightbox-0.5.css',
             '/js/select2/css/select2.min.css',
             '/css/catalog/catalog.css', 
         ];
@@ -28,8 +28,8 @@ class DesiresController extends controllerAbstract
             '/js/desires.js',
             '/js/call/jquery.mask.js',
             '/js/jquery.cycle.all.js',
-            '/js/cloud-zoom.1.0.2.js',
-            '/js/jquery.lightbox-0.5.js',
+          //  '/js/cloud-zoom.1.0.2.js',
+          //  '/js/jquery.lightbox-0.5.js',
             '/js/slider-fhd/slick.min.js',
             '/lib/select2/js/select2.min.js'
         ];

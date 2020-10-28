@@ -33,5 +33,3 @@ class ShoporderarticlesVozrat extends wsActiveRecord
 
 
 }
-
-?>

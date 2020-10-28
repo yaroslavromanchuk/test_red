@@ -31,10 +31,10 @@ class FilterController extends controllerAbstract {
            $param['categories'] = explode(',', $this->get->categories);
            
        }
-//if($this->ws->getCustomer()->isAdmin()){l($this->get);}
+//if($this->ws->getCustomer()->id == 8005){l($this->get);}
        if(count($_GET) > 1){
           // print_r($_GET);
-           $this->cur_menu->nofollow = 1;
+           $this->cur_menu->noindex = 1;
        }
        
        if($this->get->brands) {
@@ -42,7 +42,7 @@ class FilterController extends controllerAbstract {
           // print_r($this->get);
            foreach (explode(',', $this->get->brands) as $v){
             if ($v) {
-                
+              $v =   str_replace("'", "\'", $v);
              //  echo $v;
                $param['brands'][] = (int)Brand::findByQueryFirstArray("SELECT id FROM `red_brands` WHERE  `name` LIKE  '".$v."' ")['id'];
             }
@@ -88,7 +88,7 @@ class FilterController extends controllerAbstract {
           $search_result = Filter::getArticlesFilter($meta_param);
          
          if($meta) {
-                   if($meta['nofollow']) { $this->cur_menu->nofollow = 1; } 
+                   if($meta['noindex']) { $this->cur_menu->noindex = 1; } 
                    if($meta['h1']) {  $this->cur_menu->setName($meta['h1']);}
                    if($meta['title']) { $this->cur_menu->setPageTitle($meta['title']);}
                    if($meta['descriptions']) { $this->cur_menu->setMetatagDescription($meta['descriptions']);}

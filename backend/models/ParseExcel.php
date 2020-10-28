@@ -49,6 +49,8 @@ public static function getExcelArticles($file)
 		$mas[$m[16]]['model'] = trim($m[1]);
 		
 		$mas[$m[16]]['brand'] = str_replace('-',' ',trim($m[2]));
+               // $br = $mas[$m[16]]['brand'];
+               // $mas[$m[16]]['brand_id'] = wsActiveRecord::useStatic('Brand')->findFirst('name LIKE "'.$br.'"')->id;
 		
 		$mas[$m[16]]['stock'] = $mas[$m[16]]['stock'] + (int)$m[8];
                 
@@ -63,58 +65,180 @@ public static function getExcelArticles($file)
 				
 		$sex = wsActiveRecord::useStatic('Shoparticlessex')->findFirst(array('id_1c'=>(int)$m[9]));
                 
-		if (!$sex) { $errors[] = 'Ошибка Пола "' . $m[10] . '", строка '.$m[0]; $sex = 0; }else{ $sex = $sex->id;}
+		if (!$sex) {
+                    $mas[$m[16]]['errors'][] = 'Ошибка Пола "' . $m[10] . '", строка '.$m[0];
+                    $errors[] = 'Ошибка Пола "' . $m[10] . '", строка '.$m[0]; $sex = 0;
+                    }else{ 
+                        $sex = $sex->id;
+                        
+                    }
 				
 		$mas[$m[16]]['id_sex'] = $sex;
 		$mas[$m[16]]['sex'] = $m[10];
+                if(!isset($mas[$m[16]]['id_sex_excel'])){
+                $mas[$m[16]]['id_sex_excel'] = (int)$m[9];
+                }
 		
 		$season = wsActiveRecord::useStatic('Shoparticlessezon')->findFirst(array('id_1c'=>(int)$m[11]));
-		if (!$season) { $errors[] = 'Ошибка сезона "' . $m[12] . '", строка '.$m[0]; $season = 0; }else{ $season = $season->id;}
+		if (!$season) {
+                     $mas[$m[16]]['errors'][] = 'Ошибка сезона "' . $m[12] . '", строка '.$m[0];
+                    $errors[] = 'Ошибка сезона "' . $m[12] . '", строка '.$m[0]; $season = 0; }else{ $season = $season->id;}
 				
 		$mas[$m[16]]['id_season'] = $season;
 		$mas[$m[16]]['season'] = $m[12];
+                if(!isset($mas[$m[16]]['id_season_excel'])){
+                $mas[$m[16]]['id_season_excel'] = (int)$m[11];
+                }
 		
 					
 		
 		$mas[$m[16]]['price'] = trim($m[13]);
 		$mas[$m[16]]['cc'] = trim($m[14]);
 		$mas[$m[16]]['skidka'] = trim($m[15]);
-		
+                if(!$mas[$m[16]]['sostav'] && trim($m[17])){
+                    $excel_sostav =  explode("/", trim($m[17]));
+                    if(count($excel_sostav)){
+                        $pod_excel_sostav = [];
+                        foreach ($excel_sostav as $key_mass => $pod_mass){
+                            $temp_s = explode("=", $pod_mass);
+                            if(count($temp_s)){
+                                $str = $temp_s[0];
+                                 list($str[0], $str[1]) = mb_strtoupper($str[0].$str[1], 'UTF8'); 
+                                 if(isset($temp_s[1]) && !empty($temp_s[1])){
+                            $pod_excel_sostav[$str] = $temp_s[1]?$temp_s[1]:'';
+                                 }
+                            }
+                            unset($excel_sostav[$key_mass]);
+                        }
+                        $excel_sostav = $pod_excel_sostav;
+                    }
+                    
+                    
+                $mas[$m[16]]['sostav'] = $excel_sostav;
+                
+                }
 		
 		//$size = wsActiveRecord::useStatic('Size')->findFirst(array('id_1c'=>(int)$m[6]));
 		//	if (!$size) { $errors[] = 'Ошибка размера "' . $m[7] . '", строка '.$m[0]; $size_id = 0; $size_name = $m[7]; }else{ $size_id = $size->id; $size_name = $size->size;}
 			
-		$size = wsActiveRecord::useStatic('Size')->findFirst(array('size LIKE "'.trim($m[7]).'"'));
-			if (!$size) { $errors[] = 'Ошибка размера "' . $m[7] . '", строка '.$m[0]; $size_id = 0; $size_name = $m[7]; }else{ $size_name = $size->size; $size_id = $size->id;}
+                $size = wsActiveRecord::useStatic('Size')->findFirst(array('id_1c'=>(int)$m[6]));
+                if ($size->id) {
+                    $size_name = $size->size;
+                    $size_id = $size->id;
+                } else {
+                    $size = wsActiveRecord::useStatic('Size')->findFirst(['size LIKE "'.trim($m[7]).'"']);
+                    if (!$size) {
+                            $mas[$m[16]]['errors'][] =  'Ошибка размера "' . $m[7] . '", строка '.$m[0];
+                            $errors[] = 'Ошибка размера "' . $m[7] . '", строка '.$m[0];
+                            $size_id = 0;
+                            $size_name = $m[7];
+                        }else{
+                            $size_name = $size->size;
+                            $size_id = $size->id;
+                            if(!$size->id_1c){
+                            $size->setId_1c(trim($m[6]));
+                            $size->save();
+                            }
+                        }
+                }
+		//$size = wsActiveRecord::useStatic('Size')->findFirst(['size LIKE "'.trim($m[7]).'"']);
+		/*	if (!$size) {
+                            $mas[$m[16]]['errors'][] =  'Ошибка размера "' . $m[7] . '", строка '.$m[0];
+                            $errors[] = 'Ошибка размера "' . $m[7] . '", строка '.$m[0];
+                            $size_id = 0;
+                            $size_name = $m[7];
+                        }else{
+                            $size_name = $size->size;
+                            $size_id = $size->id;
+                            if(!$size->id_1c){
+                            $size->setId_1c(trim($m[6]));
+                            $size->save();
+                            }
+                        }*/
 			
 		$color = wsActiveRecord::useStatic('Shoparticlescolor')->findFirst(array('id_1c' =>(int)$m[4]));
-			if (!$color) { $errors[] = 'Ошибка с цветом "' . $m[5] . '", строка '.$m[0]; $color_id = 0; $color_name = $m[5]; }else{ $color_id = $color->id; $color_name = $color->name;}
+			if (!$color) {
+                             $mas[$m[16]]['errors'][] = 'Ошибка с цветом "' . $m[5] . '", строка '.$m[0];
+                            $errors[] = 'Ошибка с цветом "' . $m[5] . '", строка '.$m[0];
+                            $color_id = 0;
+                            $color_name = $m[5];
+                            }else{
+                                $color_id = $color->id;
+                                $color_name = $color->name;
+                            }
 			
-		$art = wsActiveRecord::useStatic('Shoparticlessize')->count(array("code LIKE  '".trim($m[3])."' "));
-			if ($art) { $errors[] = 'Товар с штрихкодом '.trim($m[3]).' уже существует. id: '.$art->id.' Строка в накладной: '.$m[0]; }
+		$art = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(["code LIKE  '".trim($m[3])."' "]);
+			if ($art) {
+                             $mas[$m[16]]['errors'][] = 'Товар с штрихкодом '.trim($m[3]).' уже существует. id: '.$art->id_article.' Строка в накладной: '.$m[0];
+                            $errors[] = 'Товар с штрихкодом '.trim($m[3]).' уже существует. id: '.$art->id.' Строка в накладной: '.$m[0];
+                            }
+                            
+                      
 		
 		$mas[$m[16]]['color_id'] = $color_id;
-		
-		$mas[$m[16]]['sizes'][] = array(
+                
+		if (self::chekModel($mas[$m[16]], $m)) {
+                        $mas[$m[16]]['errors'][] = 'Товар с штрихкодом '.trim($m[3]).' не в своей модели!. Строка в накладной: '.$m[0];
+                        $errors[] = 'Товар с штрихкодом '.trim($m[3]).' не в своей модели!. Строка в накладной: '.$m[0];
+                       }
+                       
+		$mas[$m[16]]['sizes'][] = [
 		'code'=>trim($m[3]),
+                    'id_color_excel' => (int)$m[4],
 		'id_color'=>$color_id,
 		'color'=>$color_name,
+                    'id_size_excel' => (int)$m[6],
 		'id_size'=>$size_id,
 		'size'=>$size_name,
 		'count'=>(int)$m[8]
-		);
+		];
+                
+                    //   exit;
 		}else{
 		break;
 		}
 		}
-		$mas['error'] = $errors;
-               // echo '<pre>';
-               // echo print_r($mas);
-               // // echo '</pre>';
-               // var_damp($mas);
-              //  die();
+		
                 unlink($file);
         return $mas;
+    }
+    
+    static private function chekModel($model = [], $str = []){
+      // l($model);
+        // l($str);
+       if($model['brand'] != str_replace('-',' ',trim($str[2]))){
+         //  var_dump($model['brand']);
+         //  var_dump(str_replace('-',' ',trim($str[2])));
+         //  echo 'brand<br>';
+           return true;
+       }
+        if($model['id_sex_excel'] != $str[9]){
+           //  echo 'sex<br>';
+           return true;
+        } 
+        if($model['id_season_excel'] != (int)$str[11]){
+           //  echo 'season<br>';
+           return true;
+        } 
+        if($model['price'] != $str[13]){
+          //   echo 'price<br>';
+           return true;
+        }
+       
+       if(!empty($model['sizes'])){
+           foreach ($model['sizes'] as $m){
+               if($m['id_color_excel'] != (int)$str[4]){
+                  //  echo 'color<br>';
+                    return true;
+               }
+               if($m['id_size_excel'] == (int)$str[6]){
+                  // echo 'size<br>';
+                    return true;
+               }
+           }
+           
+       }
+        return false;
     }
     public static function getExcelArticlesStaraVersiya($load_file)
         {//старые накладные
@@ -301,7 +425,7 @@ $mas=array('model'=>$aSheet[1][3], 'price' =>$aSheet[1][32], 'min_price'=>$aShee
                 header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
 
               
-                return $objWriter->save('php://output');
+                 $objWriter->save('php://output');
                // exit();
     }
 }

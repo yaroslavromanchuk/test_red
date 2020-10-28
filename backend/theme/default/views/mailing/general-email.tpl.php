@@ -1,4 +1,6 @@
-<?php $dname = Config::findByCode('domain_name')->getValue();?>
+<?php $dname = Config::findByCode('domain_name')->getValue();
+ $k = '?&utm_source=newsletter&utm_medium=email&utm_campaign=collaboration_red&utm_term=third_letter';
+ ?>
 <html>
     <head>
 		<title><?=Config::findByCode('website_name')->getValue()?></title>
@@ -29,7 +31,8 @@
 	<tbody style="width:700px;">
 	<tr>
 	<?php 
-foreach (wsActiveRecord::useStatic('Shopcategories')->findAll(array('parent_id'=>0, 'active'=>1, 'email IS NOT NULL')) as $menui) {?>
+        $c = 0;
+foreach (wsActiveRecord::useStatic('Shopcategories')->findAll(['parent_id'=>0, 'active'=>1, 'email IS NOT NULL'], [], [0,10]) as $menui) {?>
 <td style="padding:0;">
 <a href="https://<?=$dname.$menui->getPath().$this->track?>"  style="letter-spacing: -1px;text-decoration: none;
     text-transform: uppercase;
@@ -43,7 +46,8 @@ foreach (wsActiveRecord::useStatic('Shopcategories')->findAll(array('parent_id'=
     color: #605f60;"  target="_blank">
 <img src="https://<?=$dname?>/backend/img/email/cat/<?=$menui->img_email?>.png" style="width:40px;margin-top: 5px;">
 <br><span style="margin-left: -5px;"><?=$menui->getEmail()?></span></a></td>
-						<?php } ?>
+						<?php $c++; }
+                                                if($c<10) {?>
 	<td style="padding:0;">
             <a href="https://www.red.ua/brands/<?=$this->track?>" style="letter-spacing: -1px;text-decoration: none;
     text-transform: uppercase;
@@ -56,6 +60,7 @@ foreach (wsActiveRecord::useStatic('Shopcategories')->findAll(array('parent_id'=
     font-weight: bold;
     color: #605f60;"   target="_blank"><img src="https://<?=$dname?>/backend/img/email/cat/brands.png" style="width:40px;margin-top: 5px;"><br>Бренды</a>
 	</td>
+        <?php } ?>
 	</tr>
 	</tbody>
 	</table>
@@ -66,42 +71,106 @@ foreach (wsActiveRecord::useStatic('Shopcategories')->findAll(array('parent_id'=
     <?php if($this->post->intro) { ?>
 			<tr>
 				<td style="color:#383838; padding:0">
-					<p><?php 
+					<?php 
+                                       
                                $s =  preg_replace('#(href="https://www.red.ua[^"]+)#i', '$1$2'.$this->track, $this->post->intro); 
-                               
+                               $s =  preg_replace('#(href="https://kimberli.ua[^"]+)#i', '$1$2'.$k, $s);
                                echo $s;
+                              // echo $this->post->intro;
                                        // echo stripslashes(str_replace('#', '&', $this->post->intro));
-                                        ?></p>
+                                        ?>
 				</td>
 			</tr>
-    <?php }  if($this->post->article_id){ ?>
+    <?php } ?>
+    <?php if($this->deposit){ ?>
+                        <tr>
+                            <td style="padding-left: 0%;">
+                                <p style="background: red;
+    text-align: center;
+    color: white;
+    padding: 15px 20px;
+    font-size: 20px;
+    font-weight: bold;">
+                                    У вас на депозите <?=$this->deposit?> грн.
+                                </p> 
+                            </td>
+                           
+                        </tr>
+                        <tr> <td style="text-align: center;
+    padding-left: 0%;
+    font-size: 16px;
+    color: red;
+    font-weight: bold;">Удачных покупок с RED.UA</td></tr>
+                            
+    <?php } ?>
+                        <?php if($this->coin){ ?>
+                        <tr>
+                            <td style="padding-left: 0%;">
+                                <p style="background: red;
+    text-align: center;
+    color: white;
+    padding: 15px 20px;
+    font-size: 20px;
+    font-weight: bold;">
+                                    У вас на счету <?=$this->coin?> redcoin.
+                                </p> 
+                            </td>
+                           
+                        </tr>
+                        <tr> <td style="text-align: center;
+    padding-left: 0%;
+    font-size: 16px;
+    color: red;
+    font-weight: bold;">Совершайте покупки в интернет магазине RED.UA и расплачивайтесь доступными REDCOIN</td></tr>
+                            
+    <?php } ?>
+    <?php if($this->post->article_id){ ?>
 			<tr>
-				<td style="padding-left: 0%;">
+				<td style="padding: 0;padding-top: 40px;">
 					<?php $i = 0; 
                                             foreach ($this->post->article_id as $item) {
-					++$i;
-					if($i==4) {echo "<br>";}
+					
 					$article = wsActiveRecord::useStatic('Shoparticles')->findFirst(array('id'=>$item)); //var_dump( $article);
 					if(!$article){ continue;}
+                                        ++$i;
+					if($i==4) { echo "<br>";}
 					?> 
 				<table border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;" align="left">
 					<tr>				
 					<td <?php if ($i==2){?>rowspan="2"<?php } ?>>
-						<table border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;" rel="<?=$i?>" align="center" >
+						<table border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-bottom: 40px;" rel="<?=$i?>" align="center" >
 						<tr>
 							<td align="center" style="padding: 0px 16px 0 16px">
-							<a href="http://<?=$dname.$article->getPath().$this->track?>" style="color:#333;text-decoration:none;">
-								<img src="http://<?=$dname.$article->getImagePath('detail')?>" width="200"><br>
-								<span style="font-size: 17px;margin:0"><?=$article->getBrand()?></span><br>
-								<span style="margin:0"><?=$article->getModel()?></span><br>
-								<?php if ((int)$article->getOldPrice()) {echo '<span style="text-decoration: line-through;color: #666;">'.$article->getOldPrice().' грн.</span>';}?>
-								<span style="margin:0">  <?=$article->getPrice()?> грн.</span>
+							<a href="https://<?=$dname.$article->getPath().$this->track?>" style="color:#333;text-decoration:none;">
+								<img src="https://<?=$dname.$article->getImagePath('detail')?>" width="200"><br>
+								<!--<span style="font-size: 17px;margin:0"><?=$article->getBrand()?></span><br>
+								<span style="margin:0"><?=$article->getModel()?></span><br>-->
+								<?php 
+                                                                $price = $article->getPerc();
+                                                                $pr = $price['option_price']?$price['option_price']:$price['price'];
+                                                               
+                                                                $first_price = $article->getFirstPrice();
+                                                                if ($first_price != $pr) {
+                                                                    echo '<span style="text-decoration: line-through;color: #9E9E9E;font-size: 12px;display: block;">'.$first_price.' ₴</span>';
+                                                                    
+                                                                }?>
+								<span style="display: inline-block;
+    background-color: #e00e36;
+    text-align: center;
+    padding: 6px 8px;
+    color: #fff;
+    font-size: 17px;
+    font-weight: 400;
+    font-family: Arial, Helvetica, sans-serif;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;">  <?=$pr?> ₴</span>
 							</a>
 							</td>
 						</tr>
 						</table>
 					</td>
-					<?php if ($i==3){?></tr><tr><?php } ?>
+					<?php if ($i==3){ ?></tr><tr><?php } ?>
 					</tr>
 				</table>					
 					<?php }
@@ -112,12 +181,32 @@ foreach (wsActiveRecord::useStatic('Shopcategories')->findAll(array('parent_id'=
 			<tr>
 				<td style="color:#383838; padding:0"><?php
                                  $f =  preg_replace('#(href="https://www.red.ua[^"]+)#i', '$1$2'.$this->track, $this->post->ending); 
-                               
+                                $f =  preg_replace('#(href="https://kimberli.ua[^"]+)#i', '$1$2'.$k, $f);
                                echo $f;
-                               // stripslashes(str_replace('#', '&', $this->post->ending))
                                ?></td>
 			</tr>
-                        <?php } ?>
+                        <?php }
+                        if($this->brand){ ?>
+                            <tr>
+				<td style="padding:10px;text-align: center;">
+                                     <h4 style="text-align: center;">Лучшие бренды</h4>
+                                    <?php
+             foreach ($this->brand as $b) { ?>
+                                    <div style="display:inline-block; padding:15px;">
+                                        <a href="https://www.red.ua<?=$b->getToSitemapUrl().$this->track?>" style="padding: 10px 15px;
+    background: #e30e13;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;" target="_blank"><?=$b->name?></a>
+                                    </div>
+           <?php  }
+                               
+                               ?></td>
+			</tr>
+                       <?php  }
+                       
+                      
+                        ?>
 </table>
 <table  align="center" border="0" cellpadding="0" cellspacing="0" style="font-size:12px;color:#6c6c6c;width:700px;">
 <tr style="background: #ededed;">

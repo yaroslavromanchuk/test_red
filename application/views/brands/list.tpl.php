@@ -27,17 +27,17 @@
                     <ul type="none">
                         <?php foreach($brand as $item){ ?>
                             <li>
-                                <a class="brand_img" href="<?php echo $item["path"]; ?>">
+                                <a class="brand_img" href="<?=$item["path"]?>">
                                     <?php if (!$item["image"]) {
                                         echo "<span></span>";
                                     } else {
                                         ?>
-                                        <div class="absolute-aligned"><img src="<?php echo $item["image"]; ?>"/>
+                                        <div class="absolute-aligned"><img src="<?=$item["image"]?>"/>
                                         </div> <?php } ?>
                                 </a>
 
-                                <a class="brand_name" href="<?php echo $item["path"]; ?>">
-                                    <?php echo $item["name"]; ?>
+                                <a class="brand_name" href="<?=$item["path"]?>">
+                                    <?=$item["name"]?>
                                 </a>
                             </li>
                         <?php } ?>

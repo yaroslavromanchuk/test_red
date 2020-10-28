@@ -118,7 +118,8 @@ function chekAll() {
 			//console.log(data.ok[index]);
 			oke += 'Заказ '+data.ok[index].order_id +' добавлен!<br>';
 				}
-				$('#ok').html(oke);
+                                
+			$('#ok').html(oke);
 				//console.log('oke = '+oke);
 			}
 			if(data.off.length != 0){
@@ -139,8 +140,9 @@ function chekAll() {
 			$('#save').attr('value', 'Создать');
 			},
 			error: function( e ) {
-			//console.log(e);
+			console.log(e);
 			alert('Что-то пошло нетак! Заказ не добавлен, внесите изменения и попробуйте снова!');
+                        return false;
 			}
 		});
 		
@@ -172,12 +174,14 @@ function chekAll() {
 			dataType: 'json',
 			data: '&id='+id+'&flag=1',
 			success: function( data ){
+                             console.log(data);
 			if(data){
                             window.open("/admin/trekko/prints/"+id, '_blank');
                         }
 			//console.log(data);
 			},
 			error: function(e) {
+                            console.log(e);
 			$('#popup').html('Что-то пошло нетак! Заказ не добавлен, внесите изменения и попробуйте снова!');
 				
                             fopen();

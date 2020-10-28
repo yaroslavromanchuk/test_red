@@ -65,7 +65,7 @@
   <div class="card pd-20">
         <h6 class="card-body-title">Список заявок</h6>
  <div class="card-body">
-	<table id="orders" class="table table-hover ">
+	<table id="orders" class="table table-hover datatable1">
             <thead class="thead-dark">
         <tr>
             <th>

@@ -162,7 +162,7 @@
             <?php
                     $total_price += $article_rec->getPrice()*(1 - ($article_rec->getEventSkidka() / 100)) * $article_rec->getCount(); // обшая сумма
         $to_pay_perc = $article_rec->getProcent($this->all_orders_amount); // процент скидки
-        $price = $article_rec->getPerc($this->all_orders_amount); // цена товара с кидкой
+        $price = $article_rec->getPerc(); // цена товара с кидкой
         $to_pay += $price['price'];
         $to_pay_minus += $price['minus'];
         $i++;

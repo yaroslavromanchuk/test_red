@@ -19,7 +19,7 @@ footer  form .form-submit{border:0;
     color: #FFF;
     width: 40%;}
 #back-top{position:fixed; bottom:0px; left:20px}
-#back-top span{width:50px; height:50px; display:block; opacity:0.6; background:rgb(255,255,255) url(../img/icons/to_top.png); background-size:100%; -webkit-border-radius:35px; -moz-border-radius:35px; border-radius:35px; -webkit-transition:0.5s; -moz-transition:0.5s; transition:0.5s}
+#back-top span{width:50px; height:50px; display:block; opacity:0.6; background:rgb(255,255,255) url(../img/icons/to_top.webp); background-size:100%; -webkit-border-radius:35px; -moz-border-radius:35px; border-radius:35px; -webkit-transition:0.5s; -moz-transition:0.5s; transition:0.5s}
 #back-top a:hover span{opacity:1}
 @media (max-width:992px){#back-top a{display:none}}
 .copirite{    font-size: 10px;position: relative;float: left;bottom: -7px;left: 10px;}

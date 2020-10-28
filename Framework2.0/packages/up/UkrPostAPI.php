@@ -3,10 +3,10 @@
  * 
  */
 class UkrPostAPI{
-	protected $BEARER = '957aaecc-ed29-3c01-944f-0407dbd795ef';
+	protected $bearer = '957aaecc-ed29-3c01-944f-0407dbd795ef';
       //  protected $BEARERSTATUS = '283c9d9a-2373-367c-9fcb-85cb16b35ffb';
-        protected $TOKEN = '38c9400b-71c2-4acb-91db-a338c3030e90';
-	protected $UUID  =  'ce4e19d6-6a4f-4f1f-a8c4-5b4a1f9cde9a';
+        protected $token  = '38c9400b-71c2-4acb-91db-a338c3030e90';
+	protected $uuid  =  'ce4e19d6-6a4f-4f1f-a8c4-5b4a1f9cde9a';
 	protected $throwErrors = FALSE;
 	protected $type = 'POST';
         protected $sender_uuid = 'a3f4232c-0a5b-4cb2-8d06-2ce18dfcbd60';
@@ -25,13 +25,16 @@ class UkrPostAPI{
          * @param type $throwErrors
          * @return type
          */
-	function __construct($BEARER = '957aaecc-ed29-3c01-944f-0407dbd795ef', $TOKEN = '38c9400b-71c2-4acb-91db-a338c3030e90', $UUID = 'ce4e19d6-6a4f-4f1f-a8c4-5b4a1f9cde9a', $type = 'POST', $throwErrors = FALSE) {
+	/*function __construct($BEARER = '957aaecc-ed29-3c01-944f-0407dbd795ef', $TOKEN = '38c9400b-71c2-4acb-91db-a338c3030e90', $UUID = 'ce4e19d6-6a4f-4f1f-a8c4-5b4a1f9cde9a', $type = 'POST', $throwErrors = FALSE) {
 		$this->throwErrors = $throwErrors;
 		return $this	
 			->setBearer($BEARER)
 			->setToken($TOKEN)
 			->setUuid($UUID)
 			->setType($type);
+	}*/
+        function __construct() {
+		
 	}
 	function setBearer($BEARER) {
 		$this->bearer = $BEARER;
@@ -132,7 +135,7 @@ class UkrPostAPI{
         'clients_id' => $externalId,
         'ctime' => date('Y-m-d H:i:s')
     ];
-        $adrr = new UkrPostAddress($result->id);
+        $adrr = new UkrPostAddress(); 
         $adrr->import($adr);
         $adrr->save();
            }
@@ -457,17 +460,27 @@ public function getNewClientAdmin($type = 'INDIVIDUAL', $name = '', $lastName = 
         public function getShipmentInGroups($shipmentGroupUuid = '', $r_uuid = '', $r_lastName = '', $r_firstName = '', $r_middleName = '', $externalId = '',  $weight = '', $lenght = '',  $declaredPrice = '', $postPay = '', $description = '', $transferPostPayToBankAccount = false, $paidByRecipient = false, $postPayPaidByRecipient = true){
          $param = [
                 'type'=> 'STANDARD',
-                'sender'=> ['uuid'=>$this->sender_uuid],
-                'recipient'=> ['uuid' => $r_uuid, 'lastName' => $r_lastName, 'firstName' => $r_firstName, 'middleName' => $r_middleName],
+                'sender'=> [
+                    'uuid'=>$this->sender_uuid,
+                    'name' => 'RED.UA',
+                    'firstName' => 'Кол-центр',
+                    'middleName' => 'RED.UA',
+                    'phoneNumber' => '+380674069080'
+                    ],
+                'recipient'=> [
+                    'uuid' => $r_uuid,
+                    'lastName' => $r_lastName,
+                    'firstName' => $r_firstName,
+                    'middleName' => $r_middleName
+                 ],
                 //'senderAddressId' => $this->senderAddressId,
                 'externalId' => $externalId,
                 'deliveryType' => 'W2W',
+                'onFailReceiveType' => 'RETURN_AFTER_7_DAYS',
                 'shipmentGroupUuid' => $shipmentGroupUuid,
                 'parcels' => [[
                 'weight'=> $weight,
                 'length'=>$lenght,
-               // 'width'=>$widht,
-               // 'height' => $height,
                 'declaredPrice' => $declaredPrice
                 ]],
                 'postPay' => $postPay, 
@@ -504,7 +517,7 @@ public function getNewClientAdmin($type = 'INDIVIDUAL', $name = '', $lastName = 
                    // 'height' => $res->height,
                     'declared_price' => $res->declaredPrice,
                     'delivery_price' => $res->deliveryPrice,
-                    'post_pay' => $res->postPay,
+                    'post_pay' => isset($res->postPay) ? $res->postPay : 0.00,
                     'post_pay_delivery_price' => $res->postPayDeliveryPrice,
                     'description' => (string)$res->description,
                     'delivery_date'=> $res->deliveryDate,
@@ -551,6 +564,7 @@ public function getNewClientAdmin($type = 'INDIVIDUAL', $name = '', $lastName = 
                 'recipient'=> ['uuid' => $r_uuid, 'lastName' => $r_lastName, 'firstName' => $r_firstName, 'middleName' => $r_middleName],
                 //'senderAddressId' => $this->senderAddressId,
                 'externalId' => $externalId,
+                'onFailReceiveType' => 'RETURN_AFTER_7_DAYS',
                 'deliveryType' => 'W2W',
                 'parcels' => [[
                 'weight'=> $weight,

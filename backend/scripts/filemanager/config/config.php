@@ -1,8 +1,7 @@
 <?php
-
-session_start();
-
-
+if (session_id() == '') {
+    session_start();
+}
 mb_internal_encoding('UTF-8');
 
 mb_http_output('UTF-8');
@@ -31,7 +30,7 @@ date_default_timezone_set('Europe/Kiev');
 |
 */
 
-define('USE_ACCESS_KEYS', false); // TRUE or FALSE
+define('USE_ACCESS_KEYS', true); // TRUE or FALSE
 
 /*
 |--------------------------------------------------------------------------
@@ -78,7 +77,7 @@ $config = array(
 	| with start and final /
 	|
 	*/
-	'upload_dir' => '/storage/images/RED_ua/',
+	'upload_dir' => '/storage/',
 	/*
 	|--------------------------------------------------------------------------
 	| relative path from filemanager folder to upload folder
@@ -87,7 +86,7 @@ $config = array(
 	| with final /
 	|
 	*/
-	'current_path' => '../../../storage/images/RED_ua/',
+	'current_path' => '../../../storage/',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -147,6 +146,9 @@ $config = array(
 	*/
 
 	'access_keys' => array(
+             'anya',
+            'nia',
+            'yarik'
 
 	),
 
@@ -156,7 +158,7 @@ $config = array(
 
 	/*
 	|--------------------------------------------------------------------------
-	| Maximum size of all files in source folder
+	| Maximum size of all files in source folder Максимальный размер всех файлов в исходной папке
 	|--------------------------------------------------------------------------
 	|
 	| in Megabytes
@@ -166,7 +168,7 @@ $config = array(
 
 	/*
 	|--------------------------------------------------------------------------
-	| Maximum upload size
+	| Maximum upload size Максимальный размер загрузки
 	|--------------------------------------------------------------------------
 	|
 	| in Megabytes
@@ -462,4 +464,4 @@ return array_merge(
 		),
 	)
 );
-?>
+

@@ -40,7 +40,7 @@ return false;
 	} ?>
 </select>
 </td>
-	<td ><input type="text"  value="<?=$_GET['order']?>" class="form-control " name="order" id="order"/></td>
+<td ><input type="text" onkeyup="var yratext=/['%']/; if(yratext.test(this.value)) this.value=''"  value="" class="form-control " name="order" autofocus="true" id="order"/></td>
 	<td><input type="text"  value="<?=$_GET['customer_id']?>" class="form-control " name="customer_id" id="customer_id"/></td>
 	<td><input type="date"  value="<?php if($_GET['create_from']) echo date('Y-m-d', strtotime($_GET['create_from']));?>"  class="form-control" name="create_from"/></td>
 
@@ -198,6 +198,7 @@ function getRandomColor() {
 }
 
 var $i = 0;
+/*
 $('#order').keypress(function(e){
  //if(e.key == 'Enter')  $('#myform').submit(); 
  if($i == 6) {
@@ -216,7 +217,7 @@ $('#order').keypress(function(e){
 	  }else{
 	   return false;
 	  }
-    });
+    });*/
 	
  $('#p_all').show();
 var ch = $('input:radio:checked').prop("checked");

@@ -124,17 +124,31 @@ class OrderHistory extends wsActiveRecord
         $history->save();
         return true;
     }
-	static function cancelOrder($customer, $order, $sum_order = 0, $count_order = 0)
-    {
-        $history = new OrderHistory();
-        $history->setCustomerId($customer);
-        $history->setOrderId($order);
-        $history->setName('Отмена заказа');
+    /**
+     * Отмена заказа и списание бонусов
+     * @param type $order
+     * @return boolean
+     */
+	static function cancelOrder($order, $customer_id)
+    { 
+       // $history = new OrderHistory();
+       // $history->setCustomerId($customer);
+       // $history->setOrderId($order);
+       // $history->setName('Отмена заказа');
        // $history->setInfo($text);
         //$history->setArticleId($article_id);
-		$history->setSumOrder($sum_order);
-		$history->setCountArticle($count_order);
-        $history->save();
+		//$history->setSumOrder($sum_order);
+		//$history->setCountArticle($count_order);
+       // $history->save();
+        $coin = wsActiveRecord::useStatic('RedCoin')->findAll(['status in(1,2)', 'coin > 0', 'order_id_add'=>$order]);
+        if($coin){
+            foreach ($coin as $c){
+                $c->setStatus(4);
+                $c->save();
+                BonusHistory::add($customer_id, 'Аннулировано', $c->coin, $order);
+            }
+        }
+        
         return true;
     }
 	static function returnOrder($customer, $order, $sum_order = 0, $count_order = 0)

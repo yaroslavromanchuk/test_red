@@ -28,6 +28,11 @@ class Brand extends wsActiveRecord
                 'field_foreign' => 'brand_id',
                 'orderby' => array('id' => 'ASC')
             ),
+            'gryde'=>[
+                    'type' => 'hasOne',
+                    'class' => 'BrandGryde',
+                    'field' => 'greyd'
+             ]
 
         );
 
@@ -45,7 +50,10 @@ class Brand extends wsActiveRecord
                         
     }
     public function getToSitemapUrl(){
-         return "/all/articles/brands-".$this->getToUrl()."/";
+         return "/all/articles/brands-".$this->getToUrl()."/";                  
+    }
+    public function getToSitemapUrlUk(){
+         return "/uk/all/articles/brands-".$this->getToUrl()."/";
                          
                         
     }
@@ -63,7 +71,7 @@ class Brand extends wsActiveRecord
     * @return type
     */
     public function getPathFind(){
-        return "/all/articles/brands-".$this->_generateUrl(str_replace(" ", "_", $this->name))."/";
+        return "/all/articles/brands-".$this->getToUrl()."/";
     }
     public function getPathNew(){
         return "/new/all/brands-".$this->_generateUrl(str_replace(" ", "_", $this->name))."/";
@@ -97,7 +105,7 @@ and red_brands.hide = 1';
                     'name' => mb_strtolower($brand->getBrand()),
                     'cnt' => $brand->getCnt(),
                     'image' => $brand_obj->getImage(),
-                    'path' => $brand_obj->getPath()
+                    'path' => "/brands/id/" . $brand_obj->getId() .'/'.$brand_obj->getToUrl()."/"
                 );
             }
         }

@@ -3,7 +3,7 @@
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"/>
 	<meta name="robot" content="no-index,no-follow"/>
 	<meta name="author" content="Romanchuk Yaroslav"/>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -23,10 +23,12 @@
 	<link href="<?=$this->files?>lib/spectrum/spectrum.css" rel="stylesheet">
 	
 	<link href="<?=$this->files?>lib/morris.js/morris.css" rel="stylesheet">
+        <link href="<?=$this->files?>lib/jquery-ui/jqueryui.custom.css" rel="stylesheet">
 	
 	 <link href="<?=$this->files?>lib/jquery.steps/jquery.steps.css" rel="stylesheet">
          <link href="<?=$this->files?>lib/summernote/summernote-bs4.css" rel="stylesheet">
           <link href="<?=$this->files?>lib/spin_kit/spinkit.css?v=1.0" rel="stylesheet">
+          <link rel="stylesheet" href="/js/gallery/lightgallery.css?v=1.3">
     <!-- Starlight CSS -->
 	<link rel="stylesheet" href="<?=$this->files?>css/starlight.css?v=2.5">
     
@@ -164,13 +166,19 @@
 <script src="<?=$this->files?>lib/highlightjs/highcharts.js"></script>
 <script src="<?=$this->files?>lib/highlightjs/exporting.js"></script>
 <script src="<?=$this->files?>lib/highlightjs/export-data.js?v=1.4"></script>
-	
-	<script src="<?=$this->files?>scripts/starlight.js?v=1"></script>
+	  <script src="/js/gallery/lightgallery.js?v=1.3"></script>
+	<script src="<?=$this->files?>scripts/starlight.js?v=1.2"></script>
+        <script src="<?=$this->files?>views/template/js/download_excel.js?v=1.0"></script>
 
 	<script>
 	  $(function(){
+              
 
 	  'use strict';
+          $('#textarea').summernote({
+height: 150
+});
+          
 	 $('.select2').parsley();
 
         $('.select2').select2({
@@ -218,6 +226,10 @@ $(document).ready(function(){
 
 	
 function show(){return false;}
+function download(table){
+           // var table = String(t_id);
+            return  tableToExcel(table,  String(table),  String(table)+'.xls');
+        }
 
 </script>
   </body>

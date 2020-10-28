@@ -31,12 +31,12 @@ class Filter extends wsActiveRecord
         $addtional = $filter['filter']?$filter['filter']:false; //
         $order_by = $filter['order_by']?$filter['order_by']:false; //
         $page = $filter['page']?$filter['page']:0; //
-        $onPage = $filter['Onpage']?$filter['Onpage']:32; //
+        $onPage = $filter['Onpage']?$filter['Onpage']:60; //
         
         $param = []; //
         
              
-		$t_t = date("Y-m-d H:m:s", strtotime("-7 day"));
+		$t_t = date("Y-m-d H:m:s", strtotime("-27 day"));
 		
         $where = "
                   FROM ws_articles_sizes
@@ -50,8 +50,8 @@ class Filter extends wsActiveRecord
        // $category = $category_id;//new Shopcategories($category_id);
         $category_kids = $category->getKidsIds();
 		switch($category->id){
-		case 106: $where .= " AND ws_articles.ctime > '$t_t' AND ws_articles.old_price = 0"; break;
-                case 267: break;
+                case 106: if(!empty($_GET['code'])){ $cod = $_GET['code']; $where .= " and ws_articles.code in ( {$cod}) "; $onPage = 1000;  }else{ $where .= " AND ws_articles.ctime > '$t_t' AND ws_articles.old_price = 0";} break;
+                case 267: if(!empty($_GET['code'])){ $cod = $_GET['code']; $where .= " and ws_articles.code in ( {$cod} )"; $onPage = 1000; } break;
 		default:  if(count($category_kids) > 0 and $category_kids[0])
                             {
                                 $where .= ' AND (ws_articles.category_id IN (' . (implode(',', $category_kids)) . ') '
@@ -192,9 +192,9 @@ if(in_array($value['id'], $addtional['categories'])){
                case 106: 
                    $sql = 'SELECT  * FROM  `ws_categories` WHERE  `ws_categories`.`parent_id` = 0 and `ws_categories`.`id` not in( 85, 106,267) and `ws_categories`.`active` = 1';
                    break;
-               case 85: 
-                    $sql = 'SELECT  * FROM  `ws_categories` WHERE  `ws_categories`.`parent_id` = 85 and `ws_categories`.`active` = 1';
-                   break;
+            //  case 85: 
+                 //   $sql = 'SELECT  * FROM  `ws_categories` WHERE  `ws_categories`.`controller` LIKE "sale" and `ws_categories`.`active` = 1';
+                  break;
                case 0: $sql = ''; break;
                case 146: $sql = 'SELECT  * FROM  `ws_categories` WHERE  `ws_categories`.`id` = 146 and `ws_categories`.`active` = 1'; break;
                case 267: $sql = 'SELECT  * FROM  `ws_categories` WHERE  `ws_categories`.`parent_id` = 0 and `ws_categories`.`id` not in( 85, 106,267) and `ws_categories`.`active` = 1';
@@ -251,6 +251,29 @@ if(in_array($value['id'], $addtional['categories'])){
                          break;
                      case 85:  
                          if($cat->getActiveProductCountSale()){
+                              if($cat->kids){
+                        $array[$cat->id] = [
+                    'url' => $cat->getPath(),
+                    'id' => $cat->id,
+                    'name' => $cat->getRoutez(),
+                    'parent' => '',//$cat->getRoutezGolovna(), 
+                    'count' => $cat->getActiveProductCountSale(),
+                    'title' => $cat->getName() 
+                      ]; 
+                         foreach ($cat->getKids() as $v) {
+                    $array[$cat->id]['kids'][$v->id] = [
+                    'url' => $v->getPath(),
+                    'id' => $v->id,
+                    'name' => $v->getRoutez(),
+                    'parent' => '',//$cat->category->getRoutezGolovna(), 
+                    'count' => $v->getActiveProductCountSale(),
+                    'title' => $v->getName()  
+                      ]; 
+            }
+                        
+                            
+                                 
+                             }else{
                     $array[$cat->id] = [
                     'url' => $cat->getPath(),
                     'id' => $cat->id,
@@ -259,6 +282,7 @@ if(in_array($value['id'], $addtional['categories'])){
                     'count' => $cat->getActiveProductCountSale(),
                     'title' => $cat->getName() 
                       ]; 
+                             }
                          }
                          
                          break;
@@ -358,9 +382,14 @@ if(in_array($value['id'], $addtional['categories'])){
 		$array = [];
 		switch($type){
 		case 'categories': //Categories
-        $categories = 'SELECT ws_articles.category_id, count(distinct(ws_articles.id)) AS cnt  ' . $where.' and ws_articles.category_id != '.$category_id.'  group by ws_articles.category_id  order by ws_articles.category_id';
+        $categories = 'SELECT ws_articles.category_id, count(distinct(ws_articles.id)) AS cnt  ' . $where;
+                    if(!empty($category_id)) {
+                       $categories .= ' and ws_articles.category_id != '.$category_id; 
+                    }
+                  $categories .=  ' group by ws_articles.category_id  order by ws_articles.category_id';
        //d($categories, false);
-                    $categories = wsActiveRecord::useStatic('Shoparticles')->findByQuery($categories);
+        $categories = wsActiveRecord::useStatic('Shoparticles')->findByQuery($categories);
+        //l($categories);
         //convert to array
         foreach ($categories as $cat) {
                 if (in_array($category_id, array(106, 85, 299, 300, 301, 302, 303, 11, 267, 0)) or $search != '' ){
@@ -497,12 +526,12 @@ if(in_array($value['id'], $addtional['categories'])){
       $meta = [];
         //order by
 		switch($order_by){
-                case 'cena_vozrastaniyu': $order_by = 'price ASC'; $meta['nofollow'] = true;  break;
-                case 'cena_ubyvaniyu': $order_by = 'price DESC'; $meta['nofollow'] = true;  break;
-                case 'populyarnost_vozrastaniyu': $order_by = 'views ASC'; $meta['nofollow'] = true;  break;
-                case 'populyarnost_spadaniyu': $order_by = 'views DESC'; $meta['nofollow'] = true;  break;
-                case 'date_vozrastaniye': $order_by = 'ctime ASC'; $meta['nofollow'] = true;  break;
-                case 'date_spadaniye': $order_by = 'ctime DESC'; $meta['nofollow'] = true;  break;
+                case 'cena_vozrastaniyu': $order_by = 'price ASC'; $meta['noindex'] = true;  break;
+                case 'cena_ubyvaniyu': $order_by = 'price DESC'; $meta['noindex'] = true;  break;
+                case 'populyarnost_vozrastaniyu': $order_by = 'views ASC'; $meta['noindex'] = true;  break;
+                case 'populyarnost_spadaniyu': $order_by = 'views DESC'; $meta['noindex'] = true;  break;
+                case 'date_vozrastaniye': $order_by = 'ctime ASC'; $meta['noindex'] = true;  break;
+                case 'date_spadaniye': $order_by = 'ctime DESC'; $meta['noindex'] = true;  break;
 		default:  $order_by = 'ctime DESC';
 		}
              
@@ -565,7 +594,7 @@ if(in_array($value['id'], $addtional['categories'])){
         $addtional = $filter['filter']?$filter['filter']:false; //
         $order_by = $filter['order_by']?$filter['order_by']:false; //
         $page = $filter['page']?$filter['page']:0; //
-        $onPage = $filter['Onpage']?$filter['Onpage']:32; //
+        $onPage = $filter['Onpage']?$filter['Onpage']:60; //
              $param = [];
 
         
@@ -586,6 +615,7 @@ if(in_array($value['id'], $addtional['categories'])){
                              . " WHERE ws_articles_sizes.count > 0 and ws_articles.active = 'y' 
 						AND ws_articles.stock not like '0'  
 						and ws_articles.status = 3
+                                                and ws_articles.old_price != 0.00
                                                 AND ws_articles_options.option_id = ".$options->id;
                       break;
                   case 'brand': 
@@ -608,7 +638,7 @@ if(in_array($value['id'], $addtional['categories'])){
 						and ws_articles.status = 3";
                       break;
               }
-              
+              $param['categories'] = self::getAllParametrs($where, $category->id, 'categories', $search);
            return self:: where('', false, $addtional, $order_by, $page, $onPage, $param, $where);
 
          }else{
@@ -616,7 +646,7 @@ if(in_array($value['id'], $addtional['categories'])){
          }
         
     }
-    static private function where($search = '', $category = false, $addtional, $order_by = false, $page = 0, $onPage = 32, $param, $where = '') {
+    static private function where($search = '', $category = false, $addtional, $order_by = false, $page = 0, $onPage = 60, $param, $where = '') {
         
         switch($order_by){
                 case 'cena_vozrastaniyu': $order_by = 'price ASC'; break;
@@ -625,7 +655,8 @@ if(in_array($value['id'], $addtional['categories'])){
                 case 'populyarnost_spadaniyu': $order_by = 'views DESC';  break;
                 case 'date_vozrastaniye': $order_by = 'ctime ASC';   break;
                 case 'date_spadaniye': $order_by = 'ctime DESC';  break;
-		default:  $order_by = 'ctime DESC';
+		default:  $order_by = 'data_new DESC';
+                   // default:  $order_by = 'views DESC';
 		}
         
         $cat = $category?$category->id:'';

@@ -165,7 +165,7 @@ for ($step = 0; $step < $z; $step++) { ?>
 		
 		
 				//$z = chr(10);
-		$cod.=$article_rec->artikul.'/'.$article_rec->getCount().'/'.$sk.'&';
+		$cod.=$article_rec->getCode().'/'.$article_rec->getCount().'/'.$sk.'&';
 		
         ?>
         <tr>
@@ -176,8 +176,8 @@ for ($step = 0; $step < $z; $step++) { ?>
             </td>
             <td class="border_all <?php echo($i == $c) ? 'tt_border_bottom' : ''?>" align="center">
 				<?php if($article_rec->getCount()) {?>
-				<img src="/images/barcodeimage.php?text=<?=$article_rec->artikul?>" alt="Barcode Image" />
-				<br><?=$article_rec->artikul?>
+				<img src="/images/barcodeimage.php?text=<?=$article_rec->getCode()?>" alt="Barcode Image" />
+				<br><?=$article_rec->getCode()?>
 				<?php } ?>
             </td>
             <td class="border_all <?php echo($i == $c) ? 'tt_border_bottom' : ''?>" align="center">
@@ -214,8 +214,9 @@ echo $skid_show ? '<span '.$st.'>'.$skid_show.' %</span>' : '';
 	
     //$to_pay = $this->getOrder()->calculateOrderPrice2(true, true); //общая сумма к оплате
 	
-	$to_pay_minus = $t_real_price - $this->getOrder()->getAmount();//общая скидка
+	$to_pay_minus = $t_real_price - ($this->getOrder()->getAmount()-$this->getOrder()->dop_summa-$this->getOrder()->getDeliveryCost());//общая скидка
          $to_pay = Number::formatFloat($this->order->amount, 2);
+         
 
 
         $kop = round(($to_pay - toFixed($to_pay)) * 100, 0);
@@ -257,13 +258,14 @@ echo $skid_show ? '<span '.$st.'>'.$skid_show.' %</span>' : '';
             </td>
         </tr>
 		<?php } ?>
+    
 		<tr>
 			<td colspan="6" align="right">
 				<i>Стоимость с учетом скидок</i>
 			</td>
 			<td class="border_all border_right" align="right" colspan="2">
 				<i>
-				<?=$to_pay?>
+				<?=Number::formatFloat(($this->order->amount-$this->getOrder()->dop_summa-$this->getOrder()->getDeliveryCost()), 2)?>
 		</i>
 			</td>
 		</tr>
@@ -271,11 +273,21 @@ echo $skid_show ? '<span '.$st.'>'.$skid_show.' %</span>' : '';
 		<td colspan="6" align="right" class="fnt_size_1">Доставка:</td>
         <td class="border_all border_right" align="right" colspan="2"><?=Number::formatFloat($this->getOrder()->getDeliveryCost(), 2);?></td>
     </tr>
-    <?php if ($this->getOrder()->getDeposit() > 0) {?>
+    <?php if ($this->getOrder()->getDeposit() > 0) { ?>
         <tr>
             <td colspan="6" align="right"><i>Депозит</i></td>
             <td class="border_all border_right" align="right" colspan="2">
                 <i><?php echo Number::formatFloat($this->getOrder()->getDeposit(), 2)?></i>
+            </td>
+        </tr>
+    <?php } ?>
+    <?php if ($this->getOrder()->getDopSumma() > 0) { ?>
+        <tr>
+            <td colspan="6" align="right" ><span class="fnt_size_1">Дополнительная оплата</span><br>
+            <i><?=$this->getOrder()->getCommentDopSumm()?></i>
+            </td>
+            <td class="border_all border_right" align="right" colspan="2">
+                <i><?php echo Number::formatFloat($this->getOrder()->getDopSumma(), 2)?></i>
             </td>
         </tr>
     <?php } ?>
@@ -317,11 +329,11 @@ echo $skid_show ? '<span '.$st.'>'.$skid_show.' %</span>' : '';
     </tr>
     </table>
 	<?php
-		if($this->getOrder()->getDeliveryCost() > 0){$cod.='USL00000002/1/&';}
+		if($this->getOrder()->getDeliveryCost() > 0){ $cod.='USL00000002/1/&'; }
 				//$cod='%USL0000004/1/&';
 		$qr = new qrcode();
 		$qr->text($cod);
-		echo "<p id='qr".$this->order->getId()."' hidden ><img src='".$qr->get_link(140)."' border='0'/></p>";
+		echo "<p id='qr".$this->order->getId()."' hidden ><img src='".$qr->get_link(140)."' style='max-width: 140px;' border='0'/></p>";
 ?>
     <div style='page-break-after: always;'></div>
 	
@@ -345,7 +357,7 @@ if($z > 1){
                     </td>
 					<td style="text-align:center;">
 					<strong>Интернет-магазин «RED.UA»</strong><br>
-					 http://www.red.ua<br>
+					 https://www.red.ua<br>
 					  <strong>E-mail: market@red.ua</strong>
                     </td>
                 </tr>
@@ -395,8 +407,8 @@ foreach ($this->getOrder()->getArticles() as $main_key => $article_rec) {
 	</td>
 	<td class="border" align="center" >
 	<?php if($article_rec->getCount()) {?>
-				<img src="/images/barcodeimage.php?text=<?=$article_rec->artikul?>" alt="Barcode Image" />
-				<br><?=$article_rec->artikul?>
+				<img src="/images/barcodeimage.php?text=<?=$article_rec->getCode()?>" alt="Barcode Image" />
+				<br><?=$article_rec->getCode()?>
 				<?php } ?>
 				</td>
 	<td class="border" align="center"> ___ шт.</td>

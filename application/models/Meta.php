@@ -3,7 +3,7 @@
 class Meta extends wsActiveRecord
 {
    
-    public function getMeta($param) {
+  static public function getMeta($param) {
         $meta = [];
         $title = [];
         $category = $param['category'];
@@ -15,12 +15,15 @@ class Meta extends wsActiveRecord
           // 'Onpage' => $page_onpage_order_by['onPage']
         
         
-        if(count($param['filter']) and (in_array($category->parent_id, [54,59,85,106,254]) or in_array($category->id, [54,59,85,106,254]))){
-           $meta['nofollow'] = 1; 
+       // if(count($param['filter']) and (in_array($category->parent_id, [54,59,85,106,254]) or in_array($category->id, [54,59,85,106,254]))){
+          // $meta['noindex'] = 1; 
+       // }
+        if(count($param['filter']) > 1){
+            $meta['noindex'] = 1; 
         }
         
         
-           if(count($param['filter']['brands'])){
+           if(!empty($param['filter']['brands'])){
                $bb = Brand::findByQueryArray("SELECT id, name FROM `red_brands` WHERE  `id` in(".implode(',', $param['filter']['brands']).")  ");
                   foreach ($bb as $value) {
                              $title[] = $value->name;
@@ -37,7 +40,7 @@ class Meta extends wsActiveRecord
                 }
            }
            
-           if(count($param['filter']['sezons'])){
+           if(!empty($param['filter']['sezons'])){
                $sezon = wsActiveRecord::useStatic('Shoparticlessezon')->findByQuery("SELECT * FROM  `ws_articles_sezon` WHERE  `id` IN (".implode(',', $param['filter']['sezons']).")");
                foreach ($sezon as $value) {
                 if(in_array($value->id, $param['filter']['sezons'])){
@@ -57,9 +60,9 @@ class Meta extends wsActiveRecord
                 }
            }
            
-           if(count($param['filter']['colors'])){
+           if(!empty($param['filter']['colors'])){
                if(!$category->parent_id){
-                   $meta['nofollow'] = 1;
+                   $meta['noindex'] = 1;
                }
                $color = wsActiveRecord::useStatic('Shoparticlescolor')->findByQuery("SELECT * FROM  `ws_articles_colors` WHERE  `id` IN (".implode(',', $param['filter']['colors']).")");
                foreach ($color as $value) {
@@ -80,8 +83,8 @@ class Meta extends wsActiveRecord
                 }
            }
            
-             if(count($param['filter']['sizes'])){
-                  $meta['nofollow'] = 1;
+             if(!empty($param['filter']['sizes'])){
+                  $meta['noindex'] = 1;
                  $size = wsActiveRecord::useStatic('Size')->findByQuery("SELECT * FROM  `ws_sizes` WHERE  `id` IN (".implode(',', $param['filter']['sizes']).")");
                foreach ($size as $value) {
                 if(in_array($value->id, $param['filter']['sizes'])){
@@ -101,31 +104,35 @@ class Meta extends wsActiveRecord
                     $meta['footer']['block'] = 'tut';
                 }
            }
-           if(count($param['filter']['labels'])){
-                $meta['nofollow'] = 1;
+           if(!empty($param['filter']['labels'])){
+                $meta['noindex'] = 1;
             $meta['footer']['block'] = 'tut';
            }
-           if(count($param['filter']['skidka'])){
-                $meta['nofollow'] = 1;
+           if(!empty($param['filter']['skidka'])){
+                $meta['noindex'] = 1;
             $meta['footer']['block'] = 'tut';
            }
            
            
-           if(count($param['filter']['price'])){
-               $meta['nofollow'] = 1;
+           if(!empty($param['filter']['price'])){
+               $meta['noindex'] = 1;
            }
             if ($param['search']){
                  $title[] = $param['search'];
                 $meta['footer']['block'] = 'tut';
-                $meta['nofollow'] = 1;
+                $meta['noindex'] = 1;
             }
             if($param['order_by']){
-                $meta['nofollow'] = 1;
+                $meta['noindex'] = 1;
                 $meta['footer']['block'] = 'tut';
             }
             if($param['page']){
-                 $meta['nofollow'] = 1;
+                 $meta['noindex'] = 1;
                 $meta['footer']['block'] = 'tut';
+            }
+            $cat = [106, 85, 54, 254, 59, 146];
+            if((in_array($category->id, $cat) or in_array($category->parent_id, $cat)) and count($param['filter']) > 0){
+                 $meta['noindex'] = 1;
             }
             
              $t = ' '.implode(', ', $title);

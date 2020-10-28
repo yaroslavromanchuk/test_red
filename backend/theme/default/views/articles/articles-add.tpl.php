@@ -1,4 +1,36 @@
-<?php if($this->save){ ?>
+<?php if(isset($_SESSION['astrafit']) and !empty($_SESSION['astrafit'])){
+    $art = wsActiveRecord::useStatic('Shoparticles')->findById($_SESSION['astrafit']);
+    unset($_SESSION['astrafit']);
+    if($art->id and $art->category->astrafit){
+        $s = [];
+ foreach ($art->sizes as $k => $size) {
+     $s[] = $size->size->size;
+ }
+    ?>
+<!-- AstraFit.Loader -->
+<script>
+(function(d, s, id, host, ver, shopID, locale){ 
+    var js,fjs=d.getElementsByTagName(s)[0];if(d.getElementById(id))return;
+    d.astrafitSettings={host:host,ver:ver,shopID:shopID,locale:locale};
+    js=d.createElement(s);js.id=id;js.async=true;js.src=host+"/js/loader."+ver+".min.js";
+    fjs.parentNode.insertBefore(js,fjs);
+}(document, "script", "astrafit-loader", "https://widget.astrafit.com", "latest", 464, "ru"));
+</script>
+<!-- /AstraFit.Loader -->
+    <div class="alert alert-info" role="alert"><strong><?=$art->id?></strong><br>
+    <div class="astrafit-wdgt" 
+ data-id="<?=$art->id?>"  
+ data-sizes-list="<?=implode($s, ',')?>" 
+ data-canonical="https://www.red.ua<?=$art->getPath()?>"
+ data-img="https://www.red.ua<?=$art->getImagePath('card_product')?>"
+></div>
+    </div>
+    
+    
+    <?php }
+    }?>
+<?php
+if($this->save){ ?>
 <div class="alert alert-success <?php if($this->save){ echo 'show';}?>"  role="alert">
   <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
 <span class="sr-only1"><?=$this->save?></span>

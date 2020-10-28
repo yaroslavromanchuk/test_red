@@ -41,10 +41,10 @@
      
          function Calculat(e){
 var sum = 0.00;
-//console.log(e);
+console.log(e);
 if ($('.order-item:checked').val() && $('#order_status').val() == 1) {
 jQuery.each($('.order-item:checked'), function () {
-sum += Number($('#s_'+$(this).attr('name').substr(5,5)).val());
+sum += Number($('#s_'+$(this).attr('name').substr(0,$(this).attr('name').lastIndexOf("_"))).val());
                     });
 					sum+=Number($('#dop_suma').val());
 					sum = sum.toFixed(2);
@@ -63,7 +63,7 @@ var list = '';
 if ($('.order-item:checked').val()) {
 var arr = [];
 jQuery.each($('.order-item:checked'), function () {
-arr.push($(this).attr('name').substr(5,5));
+arr.push($(this).attr('name').substr(0,$(this).attr('name').lastIndexOf("_")));
 });
 list = arr.join(',');
 
@@ -122,7 +122,7 @@ $skid_show = round((1 - (($price_show['price']/$article_rec->getCount())/ $price
 <li class="list-group-item"  >
 			 <div style="    display: inline-flex;">
 			 <label class="ckbox">
-			 <input type="checkbox" class="order-item cheker" name="item_<?=$article_rec->getArticleId()?>_<?=$article_rec->artikul?>" onChange="return Calculat(this);">
+			 <input type="checkbox" class="order-item cheker" name="<?=$article_rec->getArticleId()?>_<?=$article_rec->getCode()?>" onChange="return Calculat(this);">
 			 <span></span>
 			 </label>
 <img class="prev" rel="#miesart<?=$article_rec->getId()?>" src="<?=$article_rec->getImagePath('small_basket')?>" alt="<?=htmlspecialchars($article_rec->getTitle())?>" style="width:36px;height:36px;">
@@ -240,7 +240,7 @@ var sum = 0.00;
 if($(this).val() > 0){
 if ($('.order-item:checked').val()) {
 jQuery.each($('.order-item:checked'), function () {
-sum += Number($('#s_'+$(this).attr('name').substr(5,5)).val());
+sum += Number($('#s_'+$(this).attr('name').substr(0,$(this).attr('name').lastIndexOf("_"))).val());
 });
 sum+=Number($('#dop_suma').val());
 sum = sum.toFixed(2);

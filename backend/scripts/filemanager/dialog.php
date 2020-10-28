@@ -3,18 +3,18 @@ $time = time();
 $config = include 'config/config.php';
 //TODO switch to array
 extract($config, EXTR_OVERWRITE);
-/*
+
 if (USE_ACCESS_KEYS == TRUE){
 	if (!isset($_GET['akey'], $access_keys) || empty($access_keys)){
-		die('Access Denied!');
+		die('Доступ запрещен! Обратитесь к администратору.');
 	}
 
 	$_GET['akey'] = strip_tags(preg_replace( "/[^a-zA-Z0-9\._-]/", '', $_GET['akey']));
 
 	if (!in_array($_GET['akey'], $access_keys)){
-		die('Access Denied!');
+		die('Доступ запрещен! Обратитесь к администратору.');
 	}
-}*/
+}
 
 $_SESSION['RF']["verify"] = "RESPONSIVEfilemanager";
 

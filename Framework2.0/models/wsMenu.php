@@ -2,9 +2,9 @@
 class wsMenu extends wsActiveRecord
 {
     protected $_table = 'ws_menus';
-	protected $_orderby = array('sequence' => 'ASC', 'id'=>'ASC');
+    protected $_orderby = array('sequence' => 'ASC', 'id'=>'ASC');
 	
-	protected $_default_catalog = '';
+    protected $_default_catalog = '';
     protected $_current_catalog;
 
     protected $_parents;

@@ -1,19 +1,20 @@
 <?php
 $count_article = $this->getShopItem()->getCountArticles();
-if($this->user->id == 8005){ ?>
+?>
 <!-- AstraFit.Loader -->
-<script> 
+<script>
+    $(window).load(function() {
+setTimeout(function(){
 (function(d, s, id, host, ver, shopID, locale){ 
     var js,fjs=d.getElementsByTagName(s)[0];if(d.getElementById(id))return;
     d.astrafitSettings={host:host,ver:ver,shopID:shopID,locale:locale};
     js=d.createElement(s);js.id=id;js.async=true;js.src=host+"/js/loader."+ver+".min.js";
     fjs.parentNode.insertBefore(js,fjs);
-}(document, "script", "astrafit-loader", "https://widget.astrafit.com", "latest", 464, "ru"));
+}(document, "script", "astrafit-loader", "https://widget.astrafit.com", "latest", 464, "<?=Registry::get('lang')?>"))
+}, 2000);
+});
 </script>
 <!-- /AstraFit.Loader -->
-       <?php // echo $this->render('poll/index.tpl.php');
-     // l($this->get);
-  } ?>
 <?php
 $remind = $this->getShopItem()->getRemind();
 if($remind){ // сообщить о наличии
@@ -31,45 +32,71 @@ echo $this->render('/article/file/remind.php');
                 </div>
                 <div class="modal-body">
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer"> 
                 </div>
             </div>
         </div>
     </div>   
 <div class="container article-index">
-<div class="row m-auto">
-    <div class="col-sm-12  col-lg-8 px-0 ">
+    <input id="article_id" hidden="true" value="<?=$this->getShopItem()->id?>">
+<div class="row">
+    <div class="col-sm-12  col-lg-6 px-0 ">
         <div class="row m-auto images">
-            <div class="col-sm-12 col-lg-1 px-0  thumbnails-all columns-4 owl-carousel ">
+            <?php if(Registry::get('device') == 'computer'){ ?>
+            <div class="col-sm-12 col-lg-1 px-0  thumbnails-all columns-4 owl-carousel">
             <a href="<?=$this->getShopItem()->getImagePath('listing')?>" class="first" title="">
               
-			<img src="<?=$this->getShopItem()->getImagePath('listing')?>"  class="wp-post-image " alt="" >
+		<img src="/loader.gif" data-src="<?=$this->getShopItem()->getImagePath('listing')?>"  class="wp-post-image " alt="<?=$this->getShopItem()->getModel()?>" >
 		</a>
             <?php if (count($this->getShopItem()->getImages()) > 0) {
                 foreach ($this->getShopItem()->getImages() as $image) {?>
              <a href="<?=$image->getImagePath('listing')?>" class="last"  title="">
-			<img src="<?=$image->getImagePath('listing')?>" class="wp-post-image" >
+			<img src="/loader.gif" data-src="<?=$image->getImagePath('listing')?>" class="wp-post-image" alt="<?=$this->getShopItem()->getModel()?>" >
 		</a>
             <?php } } ?>
         </div>
+            <?php } ?>
             
-           <div class="photos col-sm-12 col-lg-11  thumbnails-single owl-carousel carousel-inner gallery list-unstyled" id="image-gallery">
+           <div class="photos col-sm-12 col-lg-11 p-1 px-md-3  thumbnails-single owl-carousel carousel-inner gallery list-unstyled" id="image-gallery">
               <?php
+              $Headers = @get_headers('https://www.red.ua'.$this->getShopItem()->getImagePath('card_product'));
+
+if(stripos($Headers[0], '200') !== false) {
+$siz_photo = 'card_product';
+}else{
+$siz_photo = 'detail';
+}
+            //  $siz_photo = 'card_product';
+              if(Registry::get('device') == 'computer'){
+                  $siz_photo = '';
+              }
               $sale_icon ='';
-             // $akciya = '';
+            
               if($this->getShopItem()->label_id && $this->getShopItem()->label->name){
-                    $sale_icon = '<span class="sale-icon">'.$this->getShopItem()->label->name.'</span>'; ?>
+                    
+                    if($this->getShopItem()->temp_price){
+                        $p = ceil(($this->getShopItem()->temp_price - $this->getShopItem()->price)/$this->getShopItem()->temp_price*100);
+                        $sale_icon = '<span class="sale-icon">'.$this->getShopItem()->label->name.' -'.$p.'%</span>';
+                    }else{
+                        $sale_icon = '<span class="sale-icon">'.$this->getShopItem()->label->name.'</span>';
+                    }
+                    ?>
     <?php } ?> 
             <a href="<?=$this->getShopItem()->getImagePath()?>" class="zoom carousel-item1 " title=""  data-rel="prettyPhoto[product-gallery]">
                 <?=$sale_icon?>
-	<img itemprop="image" src="<?=$this->getShopItem()->getImagePath()?>"  class="jetzoom gimg" alt=""  data-jetzoom = "zoomImage: 'https://www.red.ua<?=$this->getShopItem()->getImagePath()?>'">
-		</a>
+                <picture>
+  <!--<source type="image/webp" srcset="flower.webp">-->
+  <source type="image/jpeg" srcset="<?=$this->getShopItem()->getImagePath($siz_photo)?>">
+
+	<img itemprop="image" src="<?=$this->getShopItem()->getImagePath($siz_photo)?>"  class="jetzoom gimg" alt="<?=$this->getShopItem()->getModel()?>"  data-jetzoom = "zoomImage: 'https://www.red.ua<?=$this->getShopItem()->getImagePath()?>'">
+	</picture>	
+        </a>
             <?php if (count($this->getShopItem()->getImages()) > 0) { 
                 foreach ($this->getShopItem()->getImages() as $image) { ?>
              <a href="<?=$image->getImagePath()?>" class="zoom carousel-item1 " title=""  data-rel="prettyPhoto[product-gallery]">
                  <?=$sale_icon?>
-                <?=$akciya?>
-			<img itemprop="image" src="<?=$image->getImagePath()?>"   alt="" class="jetzoom " alt=""  data-jetzoom = "zoomImage: 'https://www.red.ua<?=$image->getImagePath()?>'" >
+        
+			<img itemprop="image" src="/loader.gif" data-src="<?=$image->getImagePath($siz_photo)?>"   alt="<?=$this->getShopItem()->getModel()?>" class="jetzoom "  data-jetzoom = "zoomImage: 'https://www.red.ua<?=$image->getImagePath()?>'" >
 		</a>
             <?php }} ?>
         </div>
@@ -77,51 +104,67 @@ echo $this->render('/article/file/remind.php');
         </div>
         
     </div>
-    <div class="col-sm-12  col-lg-4 texts px-1">
+    <div class="col-sm-12  col-lg-6 texts px-1">
          <?php if ($count_article) { ?>
         <?php  $option =  $this->getShopItem()->getOptions();
-    if($option->value){ ?>
+    if($option && $option->value){ ?> 
         <div class="card  border-danger mb-3">
          
             <div class="card-body text-danger">
                  <h5 class=" card-body-title  text-center"><?=$option->option_text?></h5>
+                 <?php if($option->timer){ ?>
                 <div class="text-center">
                         <p class="p-0 m-0 d_end text-uppercase">До завершения:</p>
                         <div class="timer d-inline-block pt-2 btn-group" id="<?=$option->id?>"></div>
                     </div>
-        <script>initializeClock('<?=$option->id?>', new Date("<?=$option->end?> 23:59:59"));</script>
+        <script>setTimeout(function(){initializeClock('<?=$option->id?>', new Date("<?=$option->end?> 23:59:59"))}, 1000);</script>
+    <?php } ?>
   </div>
         </div>
    <?php } ?>
         <div class="card">
              <div class="card-body">
                 <h5 class="card-title model"><?=$this->getShopItem()->getModel()?></h5>
-                <p class="shop_brand"  itemprop="brand" itemscope itemtype="http://schema.org/Brand">
-                    <a href="<?=$this->getShopItem()->brands->getPath()?>">
+               <div class="d-inline-block">
+                <p class="shop_brand">
+                    <a itemprop="brand" itemscope itemtype="http://schema.org/Brand" href="<?=$this->getShopItem()->getCategory()->getPath().'brands-'.$this->getShopItem()->brands->getToUrl().'/'?>">
                         <span itemprop="name"><?=$this->getShopItem()->getBrand()?></span>
                     </a>
-                </p>      
-<p class="article-category">
+                </p>  
+                 <p class="article-category d-inline-block">
     <a  href="<?=$this->getShopItem()->getCategory()->getPath()?>"><?=$this->getShopItem()->getCategory()->getH1()?></a>
 </p>
+</div>
 
 	<?php if($option->value and $option->type == 'final'){
             $price   = $this->getShopItem()->getPerc(100, 1);
   $pric = explode(',', trim(Number::formatFloat($price['price'], 2)));
-            $pric_sk = explode(',', Number::formatFloat($this->getShopItem()->getFirstPrice(), 2));
+  $t_price = $this->getShopItem()->temp_price;
+if($t_price){
+    $pric_sk = explode(',', Number::formatFloat($t_price));
+}else{
+    $pric_sk = explode(',', Number::formatFloat($this->getShopItem()->getFirstPrice(), 2));
+}
+           // $pric_sk = explode(',', Number::formatFloat($this->getShopItem()->getFirstPrice(), 2));
  }else{
              $price['price'] = $this->getShopItem()->getPriceSkidka();
              $pric = explode(',', Number::formatFloat($this->getShopItem()->getPriceSkidka(), 2));
              $pric_sk = false;
-            if ($this->getShopItem()->getDiscount()) {
+             if($this->getShopItem()->temp_price){
+                 $pric_sk = explode(',', Number::formatFloat($this->getShopItem()->temp_price, 2));
+             }elseif ($this->getShopItem()->getDiscount()) {
                 $pric_sk = explode(',', Number::formatFloat($this->getShopItem()->getOldPrice(), 2));
             }
     }?>
+            
+            <meta itemprop="sku" content="<?=$this->getShopItem()->id?>" />
 	<p class="div_price"  itemprop="offers" itemscope itemtype="http://schema.org/Offer" >
             <meta itemprop="priceCurrency" content="UAH" />
+            <meta itemprop="url"  content="https://www.red.ua<?=$this->getShopItem()->getPath()?>">
+            <meta itemprop="priceValidUntil" content="<?=date("Y-m-d", strtotime("+5 year"))?>">
             <span class="price"> 
                 <link itemprop="availability" href="http://schema.org/InStock" />
-                <input type="text" hidden value="<?=$price['price']?>" itemprop="price" content="<?=$price['price']?>" name="price" id="price">
+                <input type="text" hidden value="<?=ceil($price['price'])?>" itemprop="price" content="<?=$price['price']?>" name="price" id="price">
                 <span><?=$pric[0]?></span>
             <?=(int)$pric[1] ? '<span style="font-size:11px; vertical-align: text-bottom; margin-left: -4px;">,'.$pric[1].'</span>' : ''; //копейки?> грн
 	</span>
@@ -133,16 +176,22 @@ echo $this->render('/article/file/remind.php');
             <?php } ?>
 	</p>
         <hr>
+        <?php if($this->getShopItem()->shop_id != 1){ ?>
+        <p class="message_shop_article"><?=$this->trans->get('message_shop_article_1').' <b>'.$this->getShopItem()->shop->getName().'</b>. '.$this->trans->get('message_shop_article_2')?></p>
+            <hr>
+            <?php } ?>
         <div class="form-group">
            <label class="col-form-label"><?=$this->trans->get('Цвет')?>:</label>
            <div class=" d-inline-block "><?=$this->getShopItem()->color_name->getName()?></div>
         </div>
                
 <form action="<?=$this->getShopItem()->getPath()?>" method="post" id="article" class="form was-validated">
+     <div class="row">
+         <div class="col-sm-12 col-md-12 col-lg-6">
+
                     <div class="form-group">
                     <input type="text" hidden value="<?=$this->getShopItem()->color_id?>" id="color"  name="color">
     <label for="size_sel" class="col-form-label"><?=$this->trans->get('Размер')?>:</label>
-    <div class="d-inline-block">
         <?php $mas = [];
         $one_s = 0;
         $one_c = 0;
@@ -162,6 +211,8 @@ echo $this->render('/article/file/remind.php');
      }
  }
         ?>
+
+      <div class="input-group mb-3">
     <select class="form-control " name="size"  required id="size">
         <option  label="<?=$this->trans->get('Выберите размер')?>"></option>
         <?php  foreach ($mas as $k => $size) { ?>
@@ -169,11 +220,13 @@ echo $this->render('/article/file/remind.php');
         <?php }
         ?>
     </select>
-         <span class="error size"><span><?=$this->trans->get('Выберите размер'); ?></span></span>
-        </div>
-    <div class="d-inline-block"> <a href="/ajax/sitka/id/<?=$this->getShopItem()->category->getSizeType()?>" class="setka btn-link" data-toggle="modal"><?=$this->trans->get('соответствие размеров')?></a></div>
+          <div class="input-group-append">
+    <a href="/ajax/sitka/id/<?=$this->getShopItem()->category->getSizeType().'/'?><?=$this->user->id == 8005?'user/8005/':''?>" data-lang="<?=$this->lang?>" class="setka " data-toggle="modal"><?=$this->trans->get('соответствие размеров')?></a>
   </div>
-
+      </div>
+         <span class="error size"><span><?=$this->trans->get('Выберите размер'); ?></span></span>
+ </div>
+ 
     <?php if($one_s and $one_c and $cod){ // $cod = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article'=>$this->getShopItem()->getId(),'id_size'=>$one_s, 'id_color'=>$one_c))->code;
         ?>
         <div class="form-group  art "  >
@@ -189,20 +242,30 @@ echo $this->render('/article/file/remind.php');
     </div>
         <?php } ?>
     
+         
     <div class="buttom_click" style="margin: 5px;" >			
 
     <span class="error error_add"><i class="arrow-left"></i><span class="mes"></span></span>
     <span class="error ok_add"><i class="arrow-left"></i><span class="mes"></span></span>
 </div>
+             </div>
+             
+
+
+         <div class="col-sm-12 col-md-12 col-lg-6">
        <div class="text-center"> 
-    <div class="btn-group  btn-sm btn-group-lg m-auto" role="group" aria-label="Basic example">
-                                                <button type="button" class="btn btn-danger"  id="sub_bascet"  onclick="getQuickCartNew(<?=$this->getShopItem()->getId()?>); return false;" data-placement="bottom"  data-tooltip="tooltip"  title="<?=$this->trans->get('Выбраный Вами товар будет добавлен в корзину'); ?>" >
+
+        <button type="button" class="btn btn-danger  btn-lg btn-block"  id="sub_bascet"  onclick="getQuickCartNew(<?=$this->getShopItem()->getId()?>); return false;" data-placement="bottom"  data-tooltip="tooltip"  title="<?=$this->trans->get('Выбраный Вами товар будет добавлен в корзину'); ?>" >
       <span><?=$this->trans->get('Добавить в корзину')?></span>
   </button>
-  <button type="button" class="btn btn-secondary " onclick="getQuickOrderNew(); return false;" data-target="#comment-modal_b_ord" data-toggle=""  data-placement="bottom"  data-tooltip="tooltip" id="quick_order"  title="<?=$this->trans->get('Вам потребуется ввести только имя, телефон и email. Всю дополнительную информацию узнает менеджер по телефону')?>">
+           <div class="row p-0 mt-3">
+               <div class="col-<?=$remind?4:6?>">
+                    <button type="button" class="btn btn-secondary btn-sm btn-block" onclick="getQuickOrderNew(); return false;" data-target="#comment-modal_b_ord" data-toggle=""  data-placement="bottom"  data-tooltip="tooltip" id="quick_order"  title="<?=$this->trans->get('Вам потребуется ввести только имя, телефон и email. Всю дополнительную информацию узнает менеджер по телефону')?>">
   <i class="icon ion-ios-clock-outline" style="font-size:25px"></i>
   </button>
-  <button type="button" class="btn btn-secondary">
+               </div>
+               <div class="col-<?=$remind?4:6?>">
+                    <button type="button" class="btn btn-secondary btn-sm btn-block">
       <?php $chek = '';
 $title = $this->trans->get('Добавить в избранное');
 if($this->ws->getCustomer()->getIsLoggedIn() and wsActiveRecord::useStatic('Desires')->count(array('id_customer'=>$this->ws->getCustomer()->getId(), 'id_articles'=>$this->getShopItem()->getId())) > 0 or $this->getCurMenu()->getPath()=='/desires/'){
@@ -216,14 +279,58 @@ if($this->ws->getCustomer()->getIsLoggedIn() and wsActiveRecord::useStatic('Desi
      <input hidden id="d_chek-<?=$this->getShopItem()->getId()?>" type="checkbox" class="chek_des"  <?=$chek?>   >
       <label class="leeb des" style="" for="d_chek-<?=$this->getShopItem()->getId()?>" title="<?=$title?>" data-placement="bottom"  data-tooltip="tooltip"></label>
   </button>
+               </div>
+           
+ 
+ 
 <?php if($remind){ ?>
-                        <button type="button" class="btn btn-secondary" data-toggle="modal" data-placement="bottom"  data-tooltip="tooltip" id="quick_order_r" href="#comment-modal_b_ord1" title="<?=$this->trans->get('Вам придет email сообщение, когда выбранный Вами товар появится в наличии')?>.">
+               <div class="col-4">
+                        <button type="button" class="btn btn-secondary btn-sm btn-block" data-toggle="modal" data-placement="bottom"  data-tooltip="tooltip" id="quick_order_r" href="#comment-modal_b_ord1" title="<?=$this->trans->get('Вам придет email сообщение, когда выбранный Вами товар появится в наличии')?>.">
                             <i class="icon ion-ios-alarm-outline" style="font-size:25px"></i>
-                        </button>                                           
+                        </button>
+               </div>
 <?php } ?>
+               </div>
 
-</div>
-</div>
+</div> 
+        <!--     <div class="btn-block">
+          <div class="sharing icon-sharing" data-tooltip="tooltip" data-title="<?=$this->trans->get('Поделиться')?>"></div>
+          <div class="relative">
+              <div class="sharing-box bottom-shadow">
+                  <a target="_blank" href="http://www.facebook.com/sharer.php?u=https://www.red.ua<?=$this->getShopItem()->getPath()?>" class="icon-facebook-sharing"></a>
+                  <a target="_blank" href="https://twitter.com/intent/tweet?url=https://www.red.ua<?=$this->getShopItem()->getPath()?>" class="icon-twitter-sharing"></a>
+                  <a target="_blank" href="https://vk.com/share.php?url=https://www.red.ua<?=$this->getShopItem()->getPath()?>" class="icon-vk-sharing"></a>
+                  <a target="_blank" href="whatsapp://send?text=https://www.red.ua<?=$this->getShopItem()->getPath()?>" class="icon-whatsapp-sharing"></a>
+                  <a target="_blank" href="viber://forward?text=https://www.red.ua<?=$this->getShopItem()->getPath()?>" class="icon-viber-sharing"></a>
+                  <a target="_blank" href="https://telegram.me/share/url?url=https://www.red.ua<?=$this->getShopItem()->getPath()?>" class="icon-telegram-sharing"></a>
+                  <div class="copy-to-clipboard"></div>
+                  <div class="close-sharing"></div>   
+              </div>
+          </div>
+      </div>-->
+             
+     </div>
+         <?php if($this->getShopItem()->category->astrafit and $this->getShopItem()->id >= 123490){ ?>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+    <div class="text-center">
+        <?php
+        $s = [];
+        foreach ($mas as $k => $size) { 
+            $s[] = $size['size'];
+        }
+        ?>
+
+    <div class="astrafit-wdgt" 
+    data-id="<?=$this->getShopItem()->id?>"
+ data-sizes-list="<?=implode($s, ',')?>" 
+ data-canonical="https://www.red.ua<?=$this->getShopItem()->getPath()?>"
+ data-img="https://www.red.ua<?=$this->getShopItem()->getImagePath('card_product')?>"
+ data-align="center"
+></div>
+    </div>
+          </div>
+         <?php } ?>
+    </div>
                 </form>
        <hr>
         <?php if($model = $this->getShopItem()->getModels()){ 
@@ -233,22 +340,93 @@ if($this->ws->getCustomer()->getIsLoggedIn() and wsActiveRecord::useStatic('Desi
                <?=$par[0].':'.$model->rost?>, <?=$par[1].':'.$model->grud?>, <?=$par[2].':'.$model->taliya?>, <?=$par[3].':'.$model->bedra?>
 </p> 
 <?php } ?>
-<div class="description p-3 ">
+<div class="description p-3 "  >
             <ul class="accordion">
                 <?php if ($this->getShopItem()->getLongText() or $this->getShopItem()->getLongTextUk() ) {?>
-			<li class="nav-item"><a class="nav-link " href="#tabs-1" data-toggle="collapse" ><?=$this->trans->get('Описание')?></a>
+			<li class="nav-item"><a class="nav-link " href="#tabs-1" data-toggle="collapse" ><?=$this->trans->get('Описание').' '.$this->getShopItem()->model.' '.$this->getShopItem()->brand?></a>
 		<div id="tabs-1"  class="collapse show"  data-parent=".description" >
-		<p style="line-height: 2.5;">
-                    Сезон: <a href="<?=$this->getCategory()->getPath()?>sezons-<?=$this->getShopItem()->getNameSezon()->translate?>"><?=$this->getShopItem()->getNameSezon()->getName()?></a>
-		<br><?=$this->getShopItem()->getLongText()?>
-		</p></div>
-		
+                    <table class="table table-hover" itemprop="description">
+                        <tr>
+                            <td>Сезон</td>
+                            <td><b><a href="<?=$this->getCategory()->getPath()?>sezons-<?=$this->getShopItem()->getNameSezon()->translate?>"><?=mb_strtolower($this->getShopItem()->getNameSezon()->getName())?></a></b></td>
+                        </tr>
+                        <?php
+                          $pos      = strripos($this->getShopItem()->getLongText(), 'stdClass');
+                          if ($pos === false) {
+                        $long = explode("<br>", $this->getShopItem()->getLongText());
+                        if(count($long) > 0){
+                         foreach ($long as $value) { 
+                             $s = explode(": ", $value);
+                             if(count($s) == 2){
+                             ?>
+                        <tr>
+                            <td><?=$s[0]?></td>
+                            <td><b><?=str_replace(".","", str_replace(";","",$s[1]))?></b></td>
+                        </tr>
+                        <?php
+                             }
+                         }
+                        }
+                          }else{
+                               $op = unserialize($this->getShopItem()->getLongText());
+                             
+                           if($op){
+                               foreach ($op as $k => $s){ ?>
+                                      <tr> 
+                             <td><?=ucfirst($k)?></td>
+                             <td><b><?=$s?></b></td>
+                         </tr>
+                             <?php  }
+                           }
+                          }
+                    ?>
+                    </table>
+                </div>
                         </li> 
 			<?php } ?>
-                        
                         <?php if ($this->getShopItem()->getSostav() or $this->getShopItem()->getSostavUk()) { ?>
                 <li class="nav-item"><a class="nav-link collapsed" href="#tabs-2" data-toggle="collapse" ><?=$this->trans->get('Cостав')?></a>
-                 <div id="tabs-2" class="collapse" data-parent=".description" ><p><?=$this->getShopItem()->getSostav()?></p></div>
+                 <div id="tabs-2" class="collapse" data-parent=".description" >
+                     <table class="table table-hover">
+                         <?php
+                         $pos      = strripos($this->getShopItem()->getSostav(), 'stdClass');
+                       
+                         
+                       if ($pos === false) {
+                            $sos =  explode(";", $this->getShopItem()->getSostav());
+                         if(count($sos) > 0){
+                            // l($sos);
+                             foreach ($sos as $s){
+                                 $ss = explode("% ", $s);
+                                 if(count($ss) == 2){ ?>
+                                      <tr> 
+                             <td><?=ucfirst(str_replace(".","", str_replace(";","",$ss[1])))?></td>
+                             <td><?=$ss[0]?>%</td>
+                         </tr>
+                                 <?php }else{
+                                    $ss = explode(": ", $s);
+                                if(count($ss) == 2){     ?>
+                                    <td><?=ucfirst(str_replace(".","", str_replace(";","",$ss[0])))?></td>
+                             <td><b><?=$ss[1]?></b></td>
+                                     
+                                 <?php  } }
+                             } 
+                         }  
+                       }else{
+                           $sos = unserialize($this->getShopItem()->getSostav());
+                           if($sos){
+                               foreach ($sos as $k => $s){ ?>
+                                      <tr> 
+                             <td><?=ucfirst($k)?></td>
+                             <td><?=$s?$s.'%':''?></td>
+                         </tr>
+                             <?php  }
+                           }
+                       }
+                     ?>
+                        
+                     </table>
+                 </div>
                 </li>
                         <?php } ?>
                 <?php if ($this->getShopItem()->getSootRozmer()) { ?>
@@ -259,7 +437,7 @@ if($this->ws->getCustomer()->getIsLoggedIn() and wsActiveRecord::useStatic('Desi
                             <li class="nav-item"><a class="nav-link collapsed" href="#tabs-4" data-toggle="collapse"><?=$this->trans->get('Способ доставки')?></a>
                             <div id="tabs-4" class="collapse" data-parent=".description">
 	<?php foreach(DeliveryType::find('DeliveryType', ['active_user'=> 1, 'id != 16'],['sort'=>'ASC']) as $dely){ ?>
-					<p><?=strip_tags($dely->name)?></p>
+			<a target="_blank" href="/pays/#<?=$dely->id?>"><p><?=strip_tags($dely->name)?></p></a> 
 					<?php } ?>
 	</div>
                             </li>
@@ -270,13 +448,10 @@ if($this->ws->getCustomer()->getIsLoggedIn() and wsActiveRecord::useStatic('Desi
 					<?php } ?>
 	</div>
                         </li>
-                
             </ul>
-    </div>
-                   
+    </div>     
             </div>
         </div>
-    </div>
      <?php  }else{
         
          ?>
@@ -291,15 +466,18 @@ if($this->ws->getCustomer()->getIsLoggedIn() and wsActiveRecord::useStatic('Desi
 <p class="article-category">
     <a  href="<?=$this->getShopItem()->getCategory()->getPath()?>"><?=$this->getShopItem()->getCategory()->getH1()?></a>
 </p>
+<meta itemprop="url"  value="<?=$this->getShopItem()->getPath()?>">
+            <meta itemprop="sku" content="<?=$this->getShopItem()->id?>" />
 	<p class="div_price"  itemprop="offers" itemscope itemtype="http://schema.org/Offer" >
             <meta itemprop="priceCurrency" content="UAH" />
+            
             <span class="price"> 
                 <link itemprop="availability" href="http://schema.org/InStock" />
-                <input type="text" hidden value="<?=$this->getShopItem()->price?>" itemprop="price" content="<?=$this->getShopItem()->price?>" name="price" id="price">
+                <input type="text" hidden value="<?=ceil($this->getShopItem()->price)?>" itemprop="price" content="<?=$this->getShopItem()->price?>" name="price" id="price">
                 <span><?=$this->getShopItem()->price?></span>
             грн
 	</span>
-            <?php if($this->getShopItem()->old_price){ ?>
+            <?php if($this->getShopItem()->old_price > 0){ ?>
 			<span class="old-price">
 			(<?php echo $this->getShopItem()->old_price;?> грн)
 			</span>
@@ -310,9 +488,9 @@ if($this->ws->getCustomer()->getIsLoggedIn() and wsActiveRecord::useStatic('Desi
            <label class="col-form-label"><?=$this->trans->get('Цвет')?>:</label>
            <div class=" d-inline-block "><?=$this->getShopItem()->color_name->getName()?></div>
         </div>
-
+        <div class="text-center"><?=$this->trans->get('ТОВАРА НЕТ НА СКЛАДЕ')?></div>
+<hr>
        <div class="text-center"> 
-            <?=$this->trans->get('ТОВАРА НЕТ НА СКЛАДЕ')?>
     <div class="btn-group  btn-sm btn-group-lg m-auto" role="group" aria-label="Basic example">
   <button type="button" class="btn btn-secondary">
       <?php $chek = '';
@@ -370,7 +548,7 @@ if($this->ws->getCustomer()->getIsLoggedIn() and wsActiveRecord::useStatic('Desi
                             <li class="nav-item"><a class="nav-link collapsed" href="#tabs-4" data-toggle="collapse"><?=$this->trans->get('Способ доставки')?></a>
                             <div id="tabs-4" class="collapse" data-parent=".description">
 	<?php foreach(DeliveryType::find('DeliveryType', ['active_user'=> 1, 'id != 16'],['sort'=>'ASC']) as $dely){ ?>
-					<p><?=strip_tags($dely->name)?></p>
+                                <a target="_blank" href="/pays/#<?=strip_tags($dely->name)?>"><p><?=strip_tags($dely->name)?></p></a> 
 					<?php } ?>
 	</div>
                             </li>
@@ -388,7 +566,7 @@ if($this->ws->getCustomer()->getIsLoggedIn() and wsActiveRecord::useStatic('Desi
             </div>
         </div>
    <?php  } ?>
-    
+    </div>
 </div>
 <?php
 $code = array(14101,14106,14110,14112,14114,14116,14117,14118,14120,14121,14123,14125,14127,14129,14131,14133,14134,14137,14140,14141,14142,14145,14148,14150,14156);
@@ -397,7 +575,7 @@ echo $this->render('/article/file/komplekt.php');
 } ?>
 
 </div>
-<div class="row m-auto"><?=$this->render('/pages/sliders/articles.php')?></div>
+<div class="row m-auto slider_articles"><?php echo $this->render('/pages/sliders/articles.php')?></div>
 <script>
     $('#size').on('change',  function() {
                     
@@ -543,7 +721,9 @@ function getQuickOrderNew() {//bistriy zakaz open form
 }
 
 	$(document).ready(function () {
-            
+            $(".phone_form").mask("38(999)999-99-99");
+                       
+	});
             $('.setka[data-toggle="modal"]').click(function(e) {
   e.preventDefault();
   var url = $(this).attr('href');
@@ -553,6 +733,7 @@ function getQuickOrderNew() {//bistriy zakaz open form
         type: "GET",
         url: url,
         dataType: 'json',
+        data: { lang : $(this).attr('data-lang')},
         success: function(res) {
           $('#rozmernasetka .modal-body').html(res);
             $('#rozmernasetka').modal('show');
@@ -569,14 +750,134 @@ function getQuickOrderNew() {//bistriy zakaz open form
     $('.chek_des').change(function(event) {
             setDesires($(this).attr('id').substr(7));
     });
-	$(".phone_form").mask("38(999)999-99-99");
 	
-	$('a.cloud-zoom').lightBox({fixedNavigation: true,overlayOpacity: 0.6});
+	
+
+   
+
+$("#qo1").submit(function () { //bistriy zakaz
+	
+		var f = $('#telephone').val();
+		f = f.replace(/[^0123456789]/g, '');
+
+		if (f.length != 12) {
+			var x = 12 - f.length;
+			var t = ' В номере телефона не хватает ' + x + ' цыфр.';
+			$("#leb").css({
+				'color': 'red'
+			});
+			$("#leb").text(t);
+			$('#telephone').css({
+				'border-color': '#d8512d'
+			});
+			setTimeout(function () {
+				$('#telephone').removeAttr('style');
+			}, 600);
+		} else {
+			$.ajax({
+			beforeSend: function () {
+			$('#hide .modal-body #qo-result').html('<div style="text-align:center;"><img src="/img/loading_trac.png"></div>');
+			$('#qo-result').show();
+			$('#hide .modal-footer').hide();
+				},
+				type: 'POST',
+				url: '/quick-order/',
+				data: $("form#qo1").serialize() + '&size=' + $("#size").val() + '&color=' + $("#color").val()+'&artikul='+$('#artikul').val(),
+				dataType: 'json',
+				success: function (data) {
+				
+				if(data.result == 'send'){
+                                  dataLayer.push({'event' : 'quick', 'eventAction' : 'add_quick'});
+				$('#qo-result').hide();
+				$('#hide .modal-body').html(data.message);
+				$('#hide .modal-footer').hide();
+				ga('send', 'quick', '/virtual/quick/');
+				ga('send', {hitType: 'event', eventCategory: 'quick',  eventAction: 'add_quick' });
+				}else{
+				var er = data.message.error;
+				t = '';
+				for(var key in er){
+				$('#'+key).addClass('is-invalid');
+				t+=er[key];
+				
+				}
+				$('#hide .modal-body #qo-result').html('<div class="alert alert-danger" role="alert">'+t+'</div>');
+					$('#qo-result').fadeIn(300);
+					$('#hide .modal-footer').show();
+				}	
+				},
+				error: function (e) {
+                                    console.log(e);
+					$('#qo-result').html('Извините, но при отправке заказа произошла ошибка, попробуйте позже');
+					$('#qo-result').show();
+					$('#hide .modal-footer').hide();
+				}
+			});
+		}
+		return false;
+	});
+        
+        
+       
+     
+$(window).load(function() {
+  $( ".copy-to-clipboard" ).on( "click", function() {
+      $(this).addClass("copied");
+      setTimeout(function () {
+        $( ".copy-to-clipboard" ).removeClass("copied");
+        $(".sharing-box.bottom-shadow").removeClass("visible");
+      }, 1000);
+     var  element = window.location.href;
+     var $temp = $("<input>");
+     $("body").append($temp);
+     $temp.val(element).select();
+     document.execCommand("copy");
+     $temp.remove();
+     
+});  
+$( ".sharing" ).on( "click", function() {
+  $(".sharing-box.bottom-shadow").addClass("visible");
+});
+$( ".close-sharing" ).on( "click", function() {
+  $(".sharing-box.bottom-shadow").removeClass("visible");
+});
+       
+          //  $('a.cloud-zoom').lightBox({fixedNavigation: true,overlayOpacity: 0.6});
 	      
         /*===================================================================================*/
         /*  Electro Product Gallery Carousel
         /*===================================================================================*/
          $("#image-gallery").lightGallery(); 
+         if(window.innerWidth < 992){
+             $( '.images' ).each( function() {
+            var $sync1 = $(this).children('.thumbnails-single');
+            $sync1.owlCarousel({
+                animateOut: 'fadeOut',
+                loop:true,
+                autoplay: false,
+                //autoplayTimeout: 7000,
+               // autoplayHoverPause: true,
+                items: 1,
+                margin: 0,
+                dots: true,
+                nav: false,
+               // rtl: true,
+                autoHeight: true,
+                responsive:{
+                    0:{
+                        items:1
+                    },
+                    480:{
+                        items:1
+                    },
+                    768:{
+                        items:1
+                    }
+                }
+            });  
+        });
+             
+         }else{
         $( '.images' ).each( function() {
             var $sync1 = $(this).children('.thumbnails-single');
             var $sync2 = $(this).children('.thumbnails-all');
@@ -664,74 +965,9 @@ function getQuickOrderNew() {//bistriy zakaz open form
                 }
             });
         });
-   
-
-$("#qo1").submit(function () { //bistriy zakaz
-	
-		var f = $('#telephone').val();
-		f = f.replace(/[^0123456789]/g, '');
-
-		if (f.length != 12) {
-			var x = 12 - f.length;
-			var t = ' В номере телефона не хватает ' + x + ' цыфр.';
-			$("#leb").css({
-				'color': 'red'
-			});
-			$("#leb").text(t);
-			$('#telephone').css({
-				'border-color': '#d8512d'
-			});
-			setTimeout(function () {
-				$('#telephone').removeAttr('style');
-			}, 600);
-		} else {
-			$.ajax({
-			beforeSend: function () {
-			$('#hide .modal-body #qo-result').html('<div style="text-align:center;"><img src="/img/loading_trac.png"></div>');
-			$('#qo-result').show();
-			$('#hide .modal-footer').hide();
-				},
-				type: 'POST',
-				url: '/quick-order/',
-				data: $("form#qo1").serialize() + '&size=' + $("#size").val() + '&color=' + $("#color").val()+'&artikul='+$('#artikul').val(),
-				dataType: 'json',
-				success: function (data) {
-				
-				if(data.result == 'send'){
-                                  dataLayer.push({'event' : 'quick', 'eventAction' : 'add_quick'});
-				$('#qo-result').hide();
-				$('#hide .modal-body').html(data.message);
-				$('#hide .modal-footer').hide();
-				ga('send', 'quick', '/virtual/quick/');
-				ga('send', {hitType: 'event', eventCategory: 'quick',  eventAction: 'add_quick' });
-				}else{
-				var er = data.message.error;
-				t = '';
-				for(var key in er){
-				$('#'+key).addClass('is-invalid');
-				t+=er[key];
-				
-				}
-				$('#hide .modal-body #qo-result').html('<div class="alert alert-danger" role="alert">'+t+'</div>');
-					$('#qo-result').fadeIn(300);
-					$('#hide .modal-footer').show();
-				}	
-				},
-				error: function (e) {
-                                    console.log(e);
-					$('#qo-result').html('Извините, но при отправке заказа произошла ошибка, попробуйте позже');
-					$('#qo-result').show();
-					$('#hide .modal-footer').hide();
-				}
-			});
-		}
-		return false;
-	});
-        
-        
-        if(window.innerWidth > 992) {
+         }
+          if(window.innerWidth > 992) {
         JetZoom.quickStart();
         }
-                
-	});
+    });
 </script>

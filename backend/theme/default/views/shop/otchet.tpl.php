@@ -197,24 +197,27 @@ $customers = wsActiveRecord::useStatic('Customer')->findByQuery($s)->at(0)->getC
     <div class="panel-heading"><h3 class="panel-title">Отчет по уцененному товару</h3></div>
 <div class="panel-body">
   <?php
-	$sql = "SELECT  `ws_articles`.`ucenka` , count(`ws_articles_sizes`.`count` ) AS ctn
-FROM  `ws_articles` 
-INNER JOIN  `ws_articles_sizes` ON  `ws_articles`.`id` =  `ws_articles_sizes`.`id_article` 
-WHERE  `ws_articles_sizes`.`count` > 0
-GROUP BY  `ws_articles`.`ucenka` ";
+$sql = "SELECT `ws_articles`.`ucenka` , SUM( `ws_articles_sizes`.`count` ) AS ctn
+FROM `ws_articles`
+INNER JOIN `ws_articles_sizes` ON `ws_articles`.`id` = `ws_articles_sizes`.`id_article`
+WHERE `ws_articles_sizes`.`count` >0
+AND `ws_articles`.status in (3,4)
+GROUP BY `ws_articles`.`ucenka` ";
 $ucenka = wsActiveRecord::useStatic('Shoparticles')->findByQuery($sql);
 ?>
   <select name="ucenka_proc" id="ucenka_proc" class="form-control input"  >
   <option value="">Выберите процент уценки</option>
 <?php
 foreach($ucenka as $c){ ?>
- <option value="<?=$c->ctn?>" data-proc="<?=$c->ucenka?>"><?=$c->ucenka?></option>
+ <option value="<?=$c->ucenka?>" data-proc="<?=$c->ucenka?>"><?=$c->ucenka.'% ('.$c->ctn.')'?></option>
 <?php }
   ?>
 </select> Для скачивания выберите процент уценки
 
 <div class="col-lg-12">
- <div class="return_ucenka" style="text-align:center;"></div>
+        <div class="return_ucenka" id="return_ucenka" style="text-align:center;">
+ 
+    </div>
  </div>
   </div>
   </div>
@@ -245,14 +248,112 @@ foreach($ucenka as $c){ ?>
   }
   
     $("#ucenka_proc").change(function() {
-	//console.log();
-	var v = $(this).val();
-	var proc = $('#ucenka_proc option:selected').html();
-	Otchet_ucenka(v, proc);
+		$.ajax({
+                url: '/report/otchets/type/5/',
+                type: 'POST',
+                dataType: 'json',
+                data: {method:'list_articles', proc : $(this).val()},
+                beforeSend: function(){
+                    $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+                },
+                success: function (res) {
+				console.log(res);
+				var l = res.length;
+                                console.log(l);
+                                
+                                $('#table_return_ucenka').detach();
+                                $('#download_table_return_ucenka').detach();
+                            
+                                var t = document.getElementById("return_ucenka");
+                                var button = document.createElement("button");
+                                      
+    button.innerHTML = "Скачать таблицу";
+    button.setAttribute("class", "btn btn-danger");
+    button.setAttribute("id", "download_table_return_ucenka");
+    button.setAttribute("onClick", "return download('table_return_ucenka')");
+                                
+                    var table = document.createElement("table");
+                    table.setAttribute("id", "table_return_ucenka");
+                    table.setAttribute("class", "table");
+                    t.appendChild(table);
+                    t.appendChild(button);
+                             
+var header = table.createTHead();
+  var row = header.insertRow(0);
+            row.insertCell(0).innerHTML = "<b>Бренд</b>";
+            row.insertCell(1).innerHTML = "<b>Категория</b>";
+            row.insertCell(2).innerHTML = "<b>Модель</b>";
+            row.insertCell(3).innerHTML = "<b>Артикул</b>";
+            row.insertCell(4).innerHTML = "<b>Цвет</b>";
+            row.insertCell(5).innerHTML = "<b>Размер</b>";
+            row.insertCell(6).innerHTML = "<b>Приход</b>";
+            row.insertCell(7).innerHTML = "<b>Расход</b>";
+            row.insertCell(8).innerHTML = "<b>Возвраты</b>";
+            row.insertCell(9).innerHTML = "<b>Остаток</b>";
+            row.insertCell(10).innerHTML = "<b>Уценка</b>";
+            row.insertCell(11).innerHTML = "<b>Цена до уценки</b>";
+            row.insertCell(12).innerHTML = "<b>Цена после уценки</b>";
+            row.insertCell(13).innerHTML = "<b>Добавлен</b>";
+            row.insertCell(14).innerHTML = "<b>Уценен</b>"; 
+            row.insertCell(15).innerHTML = "<b>ИД</b>"; 
+             var body = table.createTBody();
+            
+             console.log(res[0]);
+             size_load(0, res, body);                
+                },
+				error: function(res){
+				console.log(res);
+					}
+            });
+        
+	//var proc = $('#ucenka_proc option:selected').html();
+	//Otchet_ucenka(v, proc);
 	
 	//console.log($('#ucenka_proc option:selected').html());
 
 });
+
+function size_load(key, array, body){
+    console.log(array);
+    $.ajax({
+                url: '/report/otchets/type/5/',
+                type: 'POST',
+                dataType: 'json',
+                data: { id : array[key], key: key},
+                success: function (res) {
+                    console.log(res);
+                    if(res.mas.length > 0){
+                    for(var i in res.mas){
+                var row = body.insertRow(); 
+    row.insertCell(0).innerHTML = res.mas[i].brand;
+    row.insertCell(1).innerHTML = res.mas[i].h1;
+    row.insertCell(2).innerHTML = res.mas[i].model;
+    row.insertCell(3).innerHTML = res.mas[i].acode;
+    row.insertCell(4).innerHTML = res.mas[i].colors;
+    row.insertCell(5).innerHTML =res.mas[i].sizes;
+    row.insertCell(6).innerHTML = res.mas[i].prichod;
+    row.insertCell(7).innerHTML = res.mas[i].rozhod;
+    row.insertCell(8).innerHTML = res.mas[i].vozrat;
+    row.insertCell(9).innerHTML = res.mas[i].sklad;
+    row.insertCell(10).innerHTML = res.mas[i].ucenka;
+    row.insertCell(11).innerHTML = res.mas[i].old_price;
+    row.insertCell(12).innerHTML = res.mas[i].price;
+    row.insertCell(13).innerHTML = res.mas[i].data_new;
+    row.insertCell(14).innerHTML = res.mas[i].data_ucenki;
+    row.insertCell(15).innerHTML = res.mas[i].id;
+    }
+    }
+    $('#download_table_return_ucenka').focus();
+                    if(res.key < array.length){
+                        size_load(res.key, array,  body);
+                    }else{
+                        $('#foo').detach(); 
+                    }
+                },error: function(res){
+				console.log(res);
+					}
+});
+}
 
   </script>
   
@@ -264,7 +365,7 @@ foreach($ucenka as $c){ ?>
 <div class="panel-heading"><h3 class="panel-title">Отчет по бренду за период</h3></div>
 <div class="panel-body">
 <form action="/report/otchets/type/4/" method="post">
-    Бренд <select name="brend" class="form-control input">
+    Бренд <select name="brend" class="form-control input select2-show-search">
         <?php foreach (wsActiveRecord::useStatic('Brand')->findAll() as $brand) { ?>
             <option value="<?=$brand->getId()?>"><?=$brand->getName()?></option>
         <?php } ?>
@@ -279,6 +380,265 @@ foreach($ucenka as $c){ ?>
 </form>
 </div>
 </div>
+</div>
+  <div class="row">
+<div class="panel panel-success">
+<div class="panel-heading"><h3 class="panel-title">Отчет по накладной</h3></div>
+<div class="panel-body">
+    <div class="col-lg-8">
+    <form action="/report/otchets/type/44/" method="post"  id="load_nakladna">
+       <div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">Накладная №</span>
+  <input type="text" class="form-control" name="ttn" placeholder="хххххх" onkeyup="this.value = this.value.replace (/[^\d,]/g, '')" aria-describedby="basic-addon1">
+  <span class="input-group-btn">
+        <input type="submit" class="btn btn-small btn-primary" value="Смотреть"/>
+      </span>
+</div> 
+</form>
+        </div>
+</div>
+    <div class="panel-body" id="result_load_nakladna"></div>
+</div>
+      <script>
+              $("#load_nakladna").submit(function(){
+    // для читаемости кода
+    var form = $(this);
+    // вы же понимаете, о чём я тут толкую?
+    // это ведь одна из ипостасей AJAX-запроса 
+
+         $.ajax({
+                url: form.attr("action"),
+                type: 'POST',
+                dataType: 'json',
+                data: form.serialize(),
+                beforeSend: function(){
+                    $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+                },
+                success: function (res) {
+				//console.log(res);
+                                 var t = document.getElementById("result_load_nakladna");
+                                 
+                                $('#table_result_load_nakladna').detach();
+                                $('#download_result_load_nakladna').detach();
+                             var table = document.createElement("table");
+                    table.setAttribute("id", "table_result_load_nakladna");
+                    table.setAttribute("class", "table");
+                    t.appendChild(table);
+                              // if(!$('button').is('#download_result_load_nakladna')){
+                                  var button = document.createElement("button"); 
+                                        button.innerHTML = "Скачать таблицу";
+                                        button.setAttribute("class", "btn btn-danger");
+                                        button.setAttribute("id", "download_result_load_nakladna");
+                                        button.setAttribute("onClick", "return download('table_result_load_nakladna')");
+                                t.appendChild(button); 
+                               //}
+     
+                             
+var header = table.createTHead();
+  var row = header.insertRow(0);
+            row.insertCell(0).innerHTML = "<b>Накладная</b>";
+            row.insertCell(1).innerHTML = "<b>Приход</b>";
+            row.insertCell(2).innerHTML = "<b>Расход</b>";
+            row.insertCell(3).innerHTML = "<b>Остаток</b>";
+            row.insertCell(4).innerHTML = "<b>Продано грн.</b>";
+            row.insertCell(5).innerHTML = "<b>Маржа ед</b>";
+            row.insertCell(6).innerHTML = "<b>Маржа</b>"; 
+            row.insertCell(7).innerHTML = "<b>С/С продано</b>";
+            row.insertCell(8).innerHTML = "<b>С/С остатка</b>";
+            row.insertCell(9).innerHTML = "<b>С/С приход</b>";
+            row.insertCell(10).innerHTML = "<b>Дней</b>";
+            row.insertCell(11).innerHTML = "<b>Просмотров</b>";
+          
+             var body = table.createTBody();
+            var prihod = 0;
+            var prodano = 0;
+            var ostatok = 0;
+            var prodano_summ = 0;
+            var marga_prodano = 0;
+            var ss = 0;
+            var ss_ostatok = 0;
+            var ss_prihod = 0;
+            var views = 0;
+           
+                    for(var i in res){
+                var row = body.insertRow(); 
+    row.insertCell(0).innerHTML = res[i].code;
+    row.insertCell(1).innerHTML = res[i].prihod;
+        prihod+=parseInt(res[i].prihod);
+    row.insertCell(2).innerHTML = res[i].prodano;
+        prodano+=parseInt(res[i].prodano);
+    row.insertCell(3).innerHTML = res[i].ostatok;
+        ostatok+=parseInt(res[i].ostatok);
+    row.insertCell(4).innerHTML = res[i].prodano_summ;
+        prodano_summ+=parseInt(res[i].prodano_summ);
+    row.insertCell(5).innerHTML = res[i].marga_od;
+    row.insertCell(6).innerHTML = res[i].marga_prodano;
+        marga_prodano+=parseInt(res[i].marga_prodano);
+    row.insertCell(7).innerHTML = res[i].ss;
+        ss+=parseInt(res[i].ss);
+    row.insertCell(8).innerHTML = res[i].ss_ostatok;
+        ss_ostatok+=parseInt(res[i].ss_ostatok);
+    row.insertCell(9).innerHTML = res[i].ss_prihod;
+        ss_prihod+=parseInt(res[i].ss_prihod);
+    row.insertCell(10).innerHTML = res[i].day;   
+    row.insertCell(11).innerHTML = res[i].views; 
+        views+=parseInt(res[i].views);
+    }
+    var foot = table.createTFoot();
+    var row = foot.insertRow();
+    row.insertCell(0).innerHTML = "";
+            row.insertCell(1).innerHTML = "<b>"+prihod+"</b>";
+            row.insertCell(2).innerHTML = "<b>"+prodano+"</b>";
+            row.insertCell(3).innerHTML = "<b>"+ostatok+"</b>";
+            row.insertCell(4).innerHTML = "<b>"+prodano_summ+"</b>";
+            row.insertCell(5).innerHTML = "";
+            row.insertCell(6).innerHTML = "<b>"+marga_prodano+"</b>"; 
+            row.insertCell(7).innerHTML = "<b>"+ss+"</b>";
+            row.insertCell(8).innerHTML = "<b>"+ss_ostatok+"</b>";
+            if((ss + ss_ostatok) === ss_prihod){
+                var color = "style='color:#00d200'";
+            }else{
+                var color = "";
+            }
+            row.insertCell(9).innerHTML = "<b "+color+" >"+ss_prihod+"</b>";
+            row.insertCell(10).innerHTML = "";
+            row.insertCell(11).innerHTML = "<b>"+views+"</b>";
+           
+                },
+				error: function(res){
+				console.log(res);
+                                 $('#foo').detach();
+					}
+            }).done(function() {
+         $('#foo').detach();
+        });
+          return false;
+      });
+      </script>
+</div>
+  <div class="row">
+<div class="panel panel-success">
+<div class="panel-heading"><h3 class="panel-title">Отчет остатки категории по грейдам</h3></div>
+<div class="panel-body">
+    <div class="col-lg-8">
+    <form action="/report/otchets/type/45/" method="post"  id="load_ostatok_graid">
+       <p class="checkbox">
+        Дата с: <input type="date" class="form-control input" value="<?=date('Y-m-d', strtotime('-60 days'))?>" name="from"/>
+        по: <input type="date" class="form-control input" value="<?=date('Y-m-d')?>" name="to"/><input type="submit" class="btn btn-small btn-default" value="Скачать"/>
+    </p>
+</form>
+        </div>
+</div>
+    <div class="panel-body" id="result_load_ostatok_graid"></div>
+</div>
+    <script>
+              $("#load_ostatok_graid").submit(function(){
+                    var form = $(this);
+                    $.ajax({
+                url: form.attr("action"),
+                type: 'POST',
+                dataType: 'json',
+                data: form.serialize(),
+                beforeSend: function(){
+                    $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
+                },
+                success: function (res) {
+				console.log(res);
+                                 var t = document.getElementById("result_load_ostatok_graid");
+                                 
+                                $('#table_result_load_ostatok').detach();
+                                $('#download_result_load_ostatok').detach();
+                             var table = document.createElement("table");
+                    table.setAttribute("id", "table_result_load_ostatok");
+                    table.setAttribute("class", "table");
+                    t.appendChild(table);
+                              // if(!$('button').is('#download_result_load_nakladna')){
+                                  var button = document.createElement("button"); 
+                                        button.innerHTML = "Скачать таблицу";
+                                        button.setAttribute("class", "btn btn-danger");
+                                        button.setAttribute("id", "download_result_load_ostatok");
+                                        button.setAttribute("onClick", "return download('table_result_load_ostatok')");
+                                t.appendChild(button); 
+                               //}
+     
+                             
+var header = table.createTHead();
+  var row = header.insertRow(0);
+            row.insertCell(0).innerHTML = "<b>Грейд</b>";
+            row.insertCell(1).innerHTML = "<b>Категория</b>";
+            row.insertCell(2).innerHTML = "<b>Ср.Остаток</b>";
+            row.insertCell(3).innerHTML = "<b>Ср.Сум.Остаток</b>";
+          
+             var body = table.createTBody();
+          /*  var prihod = 0;
+            var prodano = 0;
+            var ostatok = 0;
+            var prodano_summ = 0;
+            var marga_prodano = 0;
+            var ss = 0;
+            var ss_ostatok = 0;
+            var ss_prihod = 0;
+            var views = 0;*/
+           
+                    for(var i in res){
+                        for(var j in res[i]){
+                            var row = body.insertRow(); 
+    row.insertCell(0).innerHTML = 'Грейд '+i;
+    row.insertCell(1).innerHTML = res[i][j].h1;
+      //  prihod+=parseInt(res[i].prihod);
+    row.insertCell(2).innerHTML = res[i][j].ctn;
+       // prodano+=parseInt(res[i].prodano);
+    row.insertCell(3).innerHTML = res[i][j].summ;
+                        }
+                
+       // ostatok+=parseInt(res[i].ostatok);
+   // row.insertCell(4).innerHTML = res[i].prodano_summ;
+      //  prodano_summ+=parseInt(res[i].prodano_summ);
+  //  row.insertCell(5).innerHTML = res[i].marga_od;
+   // row.insertCell(6).innerHTML = res[i].marga_prodano;
+       // marga_prodano+=parseInt(res[i].marga_prodano);
+   // row.insertCell(7).innerHTML = res[i].ss;
+      //  ss+=parseInt(res[i].ss);
+  //  row.insertCell(8).innerHTML = res[i].ss_ostatok;
+       // ss_ostatok+=parseInt(res[i].ss_ostatok);
+ //   row.insertCell(9).innerHTML = res[i].ss_prihod;
+       // ss_prihod+=parseInt(res[i].ss_prihod);
+  //  row.insertCell(10).innerHTML = res[i].day;   
+  //  row.insertCell(11).innerHTML = res[i].views; 
+      //  views+=parseInt(res[i].views);
+    }
+    /*
+    var foot = table.createTFoot();
+    var row = foot.insertRow();
+    row.insertCell(0).innerHTML = "";
+            row.insertCell(1).innerHTML = "<b>"+prihod+"</b>";
+            row.insertCell(2).innerHTML = "<b>"+prodano+"</b>";
+            row.insertCell(3).innerHTML = "<b>"+ostatok+"</b>";
+            row.insertCell(4).innerHTML = "<b>"+prodano_summ+"</b>";
+            row.insertCell(5).innerHTML = "";
+            row.insertCell(6).innerHTML = "<b>"+marga_prodano+"</b>"; 
+            row.insertCell(7).innerHTML = "<b>"+ss+"</b>";
+            row.insertCell(8).innerHTML = "<b>"+ss_ostatok+"</b>";
+            if((ss + ss_ostatok) === ss_prihod){
+                var color = "style='color:#00d200'";
+            }else{
+                var color = "";
+            }
+            row.insertCell(9).innerHTML = "<b "+color+" >"+ss_prihod+"</b>";
+            row.insertCell(10).innerHTML = "";
+            row.insertCell(11).innerHTML = "<b>"+views+"</b>";
+           */
+                },
+				error: function(res){
+				console.log(res);
+                                 $('#foo').detach();
+					}
+            }).done(function() {
+         $('#foo').detach();
+        });
+                  return false;
+              });
+    </script>
 </div>
 <div class="row">
 <div class="panel panel-primary">
@@ -332,6 +692,16 @@ foreach($ucenka as $c){ ?>
 <div class="panel-heading"><h3 class="panel-title">Количество товаров по ключевым категориям</h3></div>
 <div class="panel-body">
 <form action="/report/otchets/type/9/" method="post">
+    <input type="submit" class="btn btn-small btn-default" value="Скачать"/>
+</form>
+</div>
+</div>
+</div>
+  <div class="row">
+<div class="panel panel-primary">
+<div class="panel-heading"><h3 class="panel-title">Количество товаров по Брендам (все что есть в наличии)</h3></div>
+<div class="panel-body">
+<form action="/report/otchets/type/10/" method="post">
     <input type="submit" class="btn btn-small btn-default" value="Скачать"/>
 </form>
 </div>
@@ -593,7 +963,7 @@ var end = e;
                     $('<div/>', { id: 'foo', class: 'modal-backdrop fade show', html: '<div class="sk-cube-grid"><div class="sk-cube sk-cube1"></div><div class="sk-cube sk-cube2"></div><div class="sk-cube sk-cube3"></div><div class="sk-cube sk-cube4"></div><div class="sk-cube sk-cube5"></div><div class="sk-cube sk-cube6"></div><div class="sk-cube sk-cube7"></div><div class="sk-cube sk-cube8"></div><div class="sk-cube sk-cube9"></div></div>' }).appendTo('body');
                 },
                 success: function (res) {
-				//console.log(res);
+				console.log(res);
 				var r = 0;
 				var l = res.length;
 				var i = 0;

@@ -14,7 +14,7 @@ if($('#search_word').val()){
             
         }
 
-        //console.log(get_page);
+      //  console.log(get_page);
         if(get_page != ''){
     location.search = get_page;
         }else{
