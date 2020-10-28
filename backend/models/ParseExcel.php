@@ -44,7 +44,8 @@ public static function getExcelArticles($file)
 		unset($aSheet[0]);
 		unset($aSheet[1]);
 		foreach($aSheet as $k => $m){
-		if($m[0]){
+		if(!empty($m[0]) && !empty($m[16])){
+                  
 		//$mas[$m[16]]['nakladnaya'] = $nakladna[2];
 		$mas[$m[16]]['model'] = trim($m[1]);
 		
@@ -195,7 +196,8 @@ public static function getExcelArticles($file)
                 
                     //   exit;
 		}else{
-		break;
+                    $mas[$m[0]]['errors'][]  = 'Не указаны модели в файле!';
+                    break; 
 		}
 		}
 		

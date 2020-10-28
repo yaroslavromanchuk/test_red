@@ -13862,10 +13862,11 @@ if(isset($this->post->long_text) and $this->post->long_text != ''){
 								
 	}elseif($_POST['version'] == 2){ //новая версия
 	$ifos = ParseExcel::getExcelArticles($tmp_name_excel);
-									//echo '<pre>';
+				//l($ifos);
+         //  exit();					//echo '<pre>';
 	if (!empty($ifos) && is_array($ifos) && count($ifos) > 0) {
-         //  l($ifos);
-         //   exit();
+          // l($ifos);
+          // exit();
             $add = 0;
             $errors = [];
             foreach ($ifos as $a) {
