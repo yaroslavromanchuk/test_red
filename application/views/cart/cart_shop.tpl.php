@@ -132,12 +132,12 @@ if ($this->getCard()['articles']){
             <div class="card-footer">
                 <div class="row delivery_box">
                     <div class="col-sm-12 col-md-4">
-                        <?php /*if($count_ithem_order > 5){
+                        <?php if($count_ithem_order > 5){
     echo '<div class="alert alert-danger" role="alert">
-  <p>Пункт выдачи заказов: ограничение 5 товаров.<br>В заказе '.$count_ithem_order.'.</p>
+  <p>Доставка в розничные магазины: ограничение 5 товаров.<br>В заказе '.$count_ithem_order.'.</p>
 </div>';
-}*/ ?>
-                        <input type="text" name="dostavka[<?=$key?>][amount]" value="<?=$s_order?>" class="hidden" >
+} ?>
+<input type="text" name="dostavka[<?=$key?>][amount]" value="<?=$s_order?>" class="hidden" >
 <div class="form-group form-group-sm ">
 <label for="delivery_type_id_<?=$key?>"><?=$this->trans->get('Способ доставки')?> <span class="red">*</span> <?php if($bool and @$this->errors['delivery']) echo '<br><span class="red" style="font-size: 10px;">'.$this->errors['delivery'].'</span>'; ?></label>
 <div id="delivery_<?=$key?>">
@@ -165,10 +165,10 @@ if(!$this->ws->getCustomer()->isAdmin()){
    // 'active'=> 1,
    // 'delivery_id != 16',
 //];
-//if($count_ithem_order > 5){
-   // $sql .= " AND ws_delivery_payments.delivery_id !=3 ";
+if($count_ithem_order > 5){
+   $sql .= " AND ws_delivery_payments.delivery_id !=20 ";
    // $data[] = 'delivery_id != 3';
-//}
+} 
 $sql .=" GROUP BY ws_delivery_payments.`delivery_id`";
 //wsActiveRecord::useStatic('DeliveryPayment')->findAll($data, array('sort'=>'ASC'))
 foreach(wsActiveRecord::useStatic('DeliveryPayment')->findByQuery($sql) as $dely){ ?>
