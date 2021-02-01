@@ -95,6 +95,7 @@ class Orm_Statement extends Zend_Db_Select
 	public function execute()
 	{	
 		$query = ($this->_query ? $this->_query : $this->__toString() ). ';';
+		//var_dump($query);
 		//log query
 		if ($this->sqllog) {
                 $this->sqllog->log($this->_class_name, $query);
@@ -106,10 +107,6 @@ class Orm_Statement extends Zend_Db_Select
 				$this->pdo_statement->execute();
 			} else {
                             $result = mysql_query($query, $this->_db);
-                            if (!$result) {
-                                Telegram::sendMessageTelegram(404070580, 'ERROR RED.UA!'.PHP_EOL.'URL:'.$_SERVER['REQUEST_URI'].PHP_EOL.'Message:' .$query.' '. $this->_db);
-                           //throw new RuntimeException($query.' '.mysql_error($this->_db)); 
-                            }
 				  $this->_last_result = $result;
 			}
                 } catch (Exception $e){
@@ -298,6 +295,7 @@ class Orm_Statement extends Zend_Db_Select
      */
     public function insert($table, $data)
     {
+        //var_dump('INSERT INTO ' . $this->rquote($table) . ' SET ' . $data);
     	$this->_query = 'INSERT INTO ' . $this->rquote($table) . ' SET ' . $data;
     	return $this;
     }

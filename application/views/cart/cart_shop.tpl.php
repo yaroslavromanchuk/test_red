@@ -144,7 +144,7 @@ if ($this->getCard()['articles']){
 <select name="dostavka[<?=$key?>][delivery_type_id]" id="delivery_type_id_<?=$key?>" data-placeholder="Выбрать" onchange="loadDelivery(this, <?=(int)$s_order?>)" class="form-control select2" data-parsley-class-handler="#delivery_<?=$key?>" data-parsley-errors-container="#d_sl_<?=$key?>_ErrorContainer" required>
 <option label="Выбрать"></option>
 <?php
-$sql = "SELECT ws_delivery_payments.*
+$sql = "SELECT ws_delivery_types.name, ws_delivery_payments.delivery_id
 FROM `ws_delivery_payments`
 inner join ws_delivery_types ON `ws_delivery_payments`.delivery_id = ws_delivery_types.id ";
 $sql .= " WHERE ws_delivery_payments.`active` = 1

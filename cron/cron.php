@@ -165,8 +165,6 @@ $all_sum+=$sum;
 $mes.="60 - ".$j." - ".$sum." грн.\r\n";
 /// end 60
 $mes.="All - ".$all_count." - ".$all_sum." грн.\r\n";
-sendMessageTelegram(404070580, $mes);//Yarik
-sendMessageTelegram(396902554, $mes);//Ira
 }//выход с уценки
 //выход с ускоренной уценки
 if(false)
@@ -223,7 +221,6 @@ $all_count+=$j;
 $all_sum+=$sum;
 $mes.="30 - ".$j." - ".$sum." грн.\r\n";
 $mes.="All - ".$all_count." - ".$all_sum." грн.\r\n";
-sendMessageTelegram(404070580, $mes);//Yarik
 		}
       
 }//end if

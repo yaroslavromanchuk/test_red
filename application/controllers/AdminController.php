@@ -3471,8 +3471,8 @@ return;
 	// Telegram::sendMessageTelegram(404070580, $message);//ya
         // Telegram::sendMessageTelegram(404070580, "https://www.red.ua/new/all/?code=".$this->post->code);
          
-	 Telegram::sendMessageTelegram(396902554, $message);//Ira
-         Telegram::sendMessageTelegram(396902554, "https://www.red.ua/new/all/?code=".$this->post->code);
+	// Telegram::sendMessageTelegram(396902554, $message);//Ira
+       //  Telegram::sendMessageTelegram(396902554, "https://www.red.ua/new/all/?code=".$this->post->code);
          
        //  if($i > 5){
         // Telegram::sendMessageTelegram(326712054, "https://www.red.ua/new/all/?code=".$this->post->code);//andriy 
@@ -6848,8 +6848,6 @@ UcenkaHistory::newUcenka($this->user->getId(), $art->getId(), $s_p, $art->getPri
 					$result['id'][] = $art->getId();
                 }
 				
-        if($i > 0) { Telegram::sendMessageTelegram(404070580, "Уценено ".$i." товаров на ".$this->post->usenka_id_proc." %. Товары: ".$this->post->ucenka_id);}
-
 $result['uceneno'] = $i;
 
 
@@ -13405,11 +13403,12 @@ if($s->uuid){
 	
 	}
 	
-   /*   
+  
 public function sendMessageTelegram($chat_id, $message) {
-  file_get_contents('https://api.telegram.org/bot'.Config::findByCode('telegram_key')->getValue().'/sendMessage?chat_id=' . $chat_id . '&text=' . urlencode($message));
+   return false;
+   
 }
- */
+
   
 
 

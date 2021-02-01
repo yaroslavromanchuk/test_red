@@ -16,8 +16,8 @@
     //define('LOCAL', $_SERVER['REMOTE_ADDR'] == '127.0.0.1');
 	
     $sql_host = "localhost";
-    $sql_user = "red_site_user";
-    $sql_passwd = "hx2H6xQWjsqQcuVsss!";
+    $sql_user = "test";
+    $sql_passwd = "ld2wiuho2iu3h9ohdfw3hx2H6xQWjsqQcuVsss";
     $sql_database = "red_site";
 
     //get current server

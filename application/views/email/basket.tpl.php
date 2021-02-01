@@ -18,7 +18,7 @@
 <tr>
 <td width=700 style="vertical-align:top">
 
-<p><?=$this->trans->get('Дополнительную информацию можно получить по телефону');?>: (044) 224-40-00</p>
+<p><?= $this->trans->get('Дополнительную информацию можно получить по телефону');?>: (044) 224-40-00</p>
 <?php if(in_array(@$this->order['delivery_type_id'],array(3,5))){ ?>
 <?php if($this->order['delivery_type_id'] == 3) { echo '<br><span style="font-size: 14px;color:#E8641B;">'.$this->trans->get('График работы пункта выдачи').' <b>Пн-Вс: 10:00-22:00</b></span>'; }?>
 <?php if($this->order['delivery_type_id'] == 5) { echo '<br><span style="font-size: 14px;color:#E8641B;">'.$this->trans->get('График работы пункта выдачи').' <b>Пн-Вс: 10:00- 22:00</b></span>'; }?>
@@ -38,8 +38,8 @@
 <th>Продукт</th><th></th><th><?=$text[3]?></th><th><?=$text[2]?></th><th><?=$text[4]?></th>
     </tr>
 	</thead>
-    <?php 
-	$t_count = 0; 
+    <?php
+	$t_count = 0;
 	$t_price = 0.00; 
 	$total_price = 0.00;
     $to_pay = 0;
@@ -52,14 +52,14 @@
 	$skid = '';
 
      $order = new Shoporders((int)$this->order->getId());
-	
-    foreach ($order->getArticles() as $article_or) {	
+     
+    foreach ($order->getArticles() as $article_or) {
    if($article_or->getCount() == 0 ){ $count = 'нет на складе';}else{$count = $article_or->getCount(); }
-	
+
 	$price_real = (int)$article_or->getOldPrice() ? $article_or->getOldPrice() : $article_or->getPrice();
 	
         $t_real_price += $price_real * $article_or->getCount();
-	
+
 	$price = $article_or->getPerc($order->getAllAmount());
 	
         $sum_skudka += $price['minus'];
@@ -67,8 +67,7 @@
 	if($article_or->getCount() > 0){
 	$skid_show = round((1 - (($price['price']/$article_or->getCount()) / $price_real)) * 100);
 	}
-
-        ?>
+         ?>
    <tr>
        <td>
 	   <a href="https://<?=$_SERVER['HTTP_HOST'].$article_or->article_db->getPath()?>" >

@@ -44,13 +44,13 @@
                 <span class="custom-file-control custom-file-control-primary"></span>
             </div>
                 <div class="col-lg-2 mg-t-40 mg-lg-t-0">
-                <input type="text" name="order" class="form-control" placeholder="Заказ" value="<?=$_GET['order']?$_GET['order']:''?>">
+                <input type="text" name="order" class="form-control" placeholder="Заказ" value="<?=$_GET['order']?$_GET['order']:1?>">
             </div>
                 <div class="col-lg-2 mg-t-40 mg-lg-t-0">
-                    <input type="text" name="status" class="form-control" placeholder="Статус" value="<?=$_GET['status']?$_GET['status']:''?>">
+                    <input type="text" name="status" class="form-control" placeholder="Статус" value="<?=$_GET['status']?$_GET['status']:2?>">
             </div>
                 <div class="col-lg-2 mg-t-40 mg-lg-t-0">
-             <input type="text" name="summa" class="form-control" placeholder="Сумма" value="<?=$_GET['summa']?$_GET['summa']:''?>">
+             <input type="text" name="summa" class="form-control" placeholder="Сумма" value="<?=$_GET['summa']?$_GET['summa']:3?>">
             </div>
                     <button class="btn btn-info mg-r-5" name="open_file" type="submit">Прочитать файл</button>
             </div>

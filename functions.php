@@ -305,8 +305,9 @@ function error_handler($errno, $errstr, $errfile, $errline)
 	if (!$isAdmin) {
 		if (Cfg::getInstance()->getValue('is_live')) {
 				wsLog::add($exceptionContent, 'EMERG');
-				header("Location: /status/");
-				exit;
+				##header("Location: /status/");
+				##exit;
+				echo $exceptionContent;
 		}
 		}else{ throw new ErrorException($exceptionContent);}
 	}

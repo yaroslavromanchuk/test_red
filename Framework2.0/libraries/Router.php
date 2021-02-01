@@ -3,48 +3,48 @@
 class Router {
 
 	static public function route() {
-            
+
            if(empty($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) != 'xmlhttprequest') {
     // не ajax запрос
   if(strpos($_SERVER['PHP_SELF'], 'ajaxsearch')) {
-     header("HTTP/1.1 301 Moved Permanently"); 
+     header("HTTP/1.1 301 Moved Permanently");
     header("Location: /",TRUE,301);
     exit();
   }
     $redirect = wsActiveRecord::useStatic('Redirect')->findFirst([' url LIKE  "'.(string)$_SERVER['PHP_SELF'].'" ']);
-   
+
                 if(!empty($redirect->to_url)){
-                     header("HTTP/1.1 301 Moved Permanently"); 
+                     header("HTTP/1.1 301 Moved Permanently");
 			header("Location: $redirect->to_url",TRUE,301);
 			exit();
                 }
 
        }
-            
+
                   $i = 0;
                 $get = $_GET;
-                
+
 	$rout = $_SERVER['REQUEST_URI'];
 	$route = isset($get['route']) ? explode('/', substr($get['route'],1)) : [];
                 //redirect no "/"
        // echo $_SERVER['PHP_SELF'];
-        
+
       //  l($_SERVER);
-                if($_SERVER['PHP_SELF'] and substr($_SERVER['PHP_SELF'], -1) != '/' and  $route[$i] != 'admin'){ 
+                if($_SERVER['PHP_SELF'] and substr($_SERVER['PHP_SELF'], -1) != '/' and  $route[$i] != 'admin'){
                    // $r = $rout.'/';
                   //  $r =  str_replace($_SERVER['PHP_SELF'], $_SERVER['PHP_SELF']."/", $_SERVER['REQUEST_URI']);
                     $r = $_SERVER['PHP_SELF'].'/';
-                     header("HTTP/1.1 301 Moved Permanently"); 
+                     header("HTTP/1.1 301 Moved Permanently");
 			header("Location: $r",TRUE,301);
 			exit();
                }
                 //exit redirect no "/"
-                
+
 		$controller = 'Home';
 		$action = 'index';
 		$params =[];
 		$curMenu = new Menu();
-                
+
                 if(array_search('category', $route)){
                   header('HTTP/1.0 404 Not Found');
                    header("Location: /404/");
@@ -82,44 +82,44 @@ class Router {
                    header('HTTP/1.0 404 Not Found');
                    header("Location: /404/");
                 }
-                
+
                 if(strpos($_SERVER['PHP_SELF'], 'category')){
-             header("HTTP/1.1 301 Moved Permanently"); 
+             header("HTTP/1.1 301 Moved Permanently");
 			header("Location: /new/all/",TRUE,301);
 			exit();
         }
-                 
+
 		unset($_GET['route']);
 
 		if(!count($route) || !$route[$i])
                     {
                   $route[$i] = 'homepage';//
-                    
+
                     }
-   		
+
 		if(isset($_SESSION['lang']) && $_SESSION['lang'] == 'uk' && $route[$i] != 'uk'){
-			
+
                     if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) != 'xmlhttprequest') {
-			
+
                         $r = '/uk'.$rout;
-                        header("HTTP/1.1 301 Moved Permanently"); 
+                        header("HTTP/1.1 301 Moved Permanently");
 			header("Location: $r",TRUE,301);
 			exit();
                     }
 		}
-                
+
 		if(self::isLang($route[$i])) {
-			
+
 			$l = wsLanguage::findByCode($route[$i]);
-			
+
 			Registry::set('lang_id', $l->getId());
 			Registry::set('lang', strtolower($l->getCode()));
-                        
+
                         if(empty($_SESSION['lang'])){
                             $_SESSION['lang'] = strtolower($l->getCode());
                         }elseif(isset($_SESSION['lang']) && $_SESSION['lang'] != $route[$i]){
                              $ur = substr($_SERVER['PHP_SELF'],3);
-                                    header("HTTP/1.1 301 Moved Permanently"); 
+                                    header("HTTP/1.1 301 Moved Permanently");
                                     header("Location: $ur",TRUE,301);
                                 exit();
                             unset($route[$i]);
@@ -128,44 +128,44 @@ class Router {
 			//setcookie('lang', strtolower($l->getCode()));
                         if($route[$i]== 'ru'){
                                     $ur = substr($_SERVER['PHP_SELF'],3);
-                                    header("HTTP/1.1 301 Moved Permanently"); 
+                                    header("HTTP/1.1 301 Moved Permanently");
                                     header("Location: $ur",TRUE,301);
                                 exit();
                             unset($route[$i]);
                         }else{
                             $i++;//i = 1
-                            
+
                         }
-                        
-                        
+
+
 			$route = array_values($route);
 			if(!count($route) || !$route[$i]){ $route[$i] = 'homepage';}
                 }else{
                         Registry::set('lang', 'ru');
                         Registry::set('lang_id', 1);
-			
+
 			$_SESSION['lang'] = 'ru';
 			unset($_COOKIE['lang']);
                 }
-               
+
                 if(self::first($route[$i])){
                 $ur = mb_strtolower($_SERVER['PHP_SELF']);
-                      header("HTTP/1.1 301 Moved Permanently"); 
+                      header("HTTP/1.1 301 Moved Permanently");
 			header("Location: $ur",TRUE,301);
 			exit();
                 }elseif(isset($route[$i+1]) && self::first($route[$i+1])){
                 $ur = mb_strtolower($_SERVER['PHP_SELF']);
-                    header("HTTP/1.1 301 Moved Permanently"); 
+                    header("HTTP/1.1 301 Moved Permanently");
 			header("Location: $ur",TRUE,301);
 			exit();
                 }
                 if($route[$i] == 'brands' and self::first($route[$i+3])){
                     $ur = mb_strtolower($_SERVER['PHP_SELF']);
-                      header("HTTP/1.1 301 Moved Permanently"); 
+                      header("HTTP/1.1 301 Moved Permanently");
 			header("Location: $ur",TRUE,301);
 			exit();
                 }
-                
+
                 //echo $route[$i];
                  if($route[$i] == 'category'){
                    $cat = wsActiveRecord::useStatic('Shopcategories')->findById((int)$route[$i+2]);
@@ -175,7 +175,7 @@ class Router {
                 $lang = '';
                 if(Registry::get('lang') == 'uk'){$lang = '/uk';}
                 $ur = $lang.'/all/articles/brands-'.$br->name;
-                header("HTTP/1.1 301 Moved Permanently"); 
+                header("HTTP/1.1 301 Moved Permanently");
 			header("Location: $ur",TRUE,301);
 			exit();
                          }
@@ -183,23 +183,23 @@ class Router {
                         $lang = '';
                 if(Registry::get('lang') == 'uk'){$lang = '/uk';}
             $ur= $lang.'/'.$cat->controller.'/'.$cat->action.'/';
-                        header("HTTP/1.1 301 Moved Permanently"); 
+                        header("HTTP/1.1 301 Moved Permanently");
 			header("Location: $ur",TRUE,301);
 			exit();
                     }else{
                          $lang = '';
                         if(Registry::get('lang') == 'uk'){$lang = '/uk';}
                      $ur = $lang.str_replace('category', 'all/articles', $_SERVER['PHP_SELF']);
-                header("HTTP/1.1 301 Moved Permanently"); 
+                header("HTTP/1.1 301 Moved Permanently");
 			header("Location: $ur",TRUE,301);
 			exit();
                     }
-                        
+
                     }
-                    
-		
+
+
 		$old_controller = ucfirst($route[$i]);// perevod v verchniy registr - Controller
-            
+
 		//try to find it all in menu
 		$cnt = $i;
 		do {
@@ -227,25 +227,25 @@ class Router {
                             if($cat->id){
                             $arr = explode('-', $route[$i+2]);
                              if(!in_array($arr[0], ['brands','sezons','sizes','colors','labels','skidka','price_min','price_max'])){
-                                header("HTTP/1.1 301 Moved Permanently"); 
+                                header("HTTP/1.1 301 Moved Permanently");
                                 // header("HTTP/1.0 404 Not Found");
                                 header("Location: /404/",TRUE,301);
 			exit();
                             }
-                            
+
                              }
                         }
                         //exit
-                        
+
 		}
 		//check if controller exists
-		if($controller && !file_exists(APP_DIR . '/controllers/' . $controller . 'Controller.php')) {	
-			header("HTTP/1.1 301 Moved Permanently"); 
+		if($controller && !file_exists(APP_DIR . '/controllers/' . $controller . 'Controller.php')) {
+			header("HTTP/1.1 301 Moved Permanently");
                    // header("HTTP/1.0 404 Not Found");
-                    header("Location: /404/",TRUE,301); 
+                    header("Location: /404/",TRUE,301);
 			exit();
 		}
-                
+
 		if(!$curMenu->getId() && file_exists(APP_DIR . '/controllers/' . $old_controller . 'Controller.php')) {
 			$controller = $old_controller;
 			if(isset($route[$i+1]) && $route[$i+1]) {
@@ -256,7 +256,7 @@ class Router {
 		}
 
                 if(!$action){
-                    $action = 'index'; 
+                    $action = 'index';
                 }
 		$old_get = $_GET;
 		$new_get = [];
@@ -268,11 +268,11 @@ class Router {
                   foreach (explode('/', $_SERVER['PHP_SELF']) as $k => $f){
                       if($f){
                           $ff[] = $f;
-                          
+
                       }
                   }
-           
-                 
+
+
                    $filter = isset($ff[$i+2]) ? explode('-', $ff[$i+2]) : [];
                   // print_r($filter);
                    // $filter = explode('-', $route[$i+2]);
@@ -280,14 +280,14 @@ class Router {
                     foreach ($filter as $k => $value) {
                         if ($k % 2 == 0 && !empty($filter[($k+1)])){
                             $new_get[$value] = $filter[($k+1)];
-                            
+
                         }
                     }
-                    } 
+                    }
        }
 
 		$route = array_values($route);
-                
+
 		//parse what have left from route
 		for($j=$i; $j < count($route); $j++) {
 			if(isset($new_get[$route[$j]]) && !is_array($new_get[$route[$j]])) {
@@ -296,10 +296,10 @@ class Router {
 				$new_get[$route[$j]][] = $tmp;
 			}elseif(isset($new_get[$route[$j]]) && is_array($new_get[$route[$j]])){
                             $new_get[$route[$j]][] = $route[$j+1];
-                        
+
                         }else if(isset($route[$j+1])){
                             $new_get[$route[$j]] = $route[$j+1];
-                            
+
                         }
 			$j++;
 		}
@@ -319,24 +319,24 @@ class Router {
 		}
        // }
 
-                
-		//use only values with keys	
+
+		//use only values with keys
 		foreach($new_get as $key => $value) {
 			if($key and $value){ $params[$key] = $value; }
 		}
 
-		Registry::set('cur_menu', $curMenu);	
+		Registry::set('cur_menu', $curMenu);
 		Registry::set('get', new Orm_Array($params));
 		Registry::set('post', new Orm_Array($_POST));
 		Registry::set('files', new Orm_Array($_FILES));
 		Registry::set('cookies', new Orm_Array($_COOKIE));
 		//Registry::set('route', $route);
-		
+
 
 	}
 	static public function isLang($lang) {
 	GLOBAL $langs;
-	if (isset($langs) && isset($langs[strtolower($lang)])){ 
+	if (isset($langs) && isset($langs[strtolower($lang)])){
             return true;
             }
             return false;

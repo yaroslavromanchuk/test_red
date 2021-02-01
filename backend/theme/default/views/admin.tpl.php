@@ -10,6 +10,7 @@
         
         <link href="<?=$this->files?>views/template/lib/select2/css/select2.min.css" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="<?=$this->files?>css/layout.css?v=3.36.4">
+	<link rel="stylesheet" type="text/css" href="<?=$this->files?>css/custom.css">
         <link rel="stylesheet" type="text/css" href="<?=$this->files?>views/template/lib/spin_kit/spinkit.css">
 	<link rel="stylesheet" type="text/css" href="<?=$this->files?>css/ionicons/css/ionicons.css">
 	
@@ -79,7 +80,7 @@ left:5px;
     <div class="collapse navbar-collapse" id="navbar-main">
       <!-- Содержимое основной части -->
       <ul class="nav navbar-nav">
-        <?php              
+        <?php
         $section = AdminSection::find('AdminSection');
          foreach ($section as $s) { ?>
         <!-- Выпадающий список -->
@@ -124,6 +125,7 @@ left:5px;
 <!--end container -->
 <p id="back-top"><a href="#top"><span></span></a></p>
 
+<script  src="/js/basket/basket.js"></script>
 <script  src="<?=$this->files?>css/bs/js/bootstrap.min.js"></script>
 <script src="<?=$this->files?>views/template/lib/select2/js/select2.min.js"></script>
 <!--<script  src="<?=$this->files?>css/bs/js/bootstrap-select.js"></script>-->

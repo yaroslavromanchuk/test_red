@@ -22,7 +22,7 @@ Zend_Loader::registerAutoload();// nujno
 //spl_autoload_register(array('Zend_Loader', 'autoload'));
 
 //$timer = new DebugTimer(4);
-Registry::set('SQLLogger', SQLLogger::getInstance());
+//Registry::set('SQLLogger', SQLLogger::getInstance());
 
 header('Content-type: text/html; charset=UTF-8');
 header('Cache-control: private');

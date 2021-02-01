@@ -53,6 +53,7 @@ class HomeController extends controllerAbstract {
         }
 		//blog
 		$this->view->blog = wsActiveRecord::useStatic('Blog')->findAll(array('public = 1 and ctime < "'.date("Y-m-d H:i:s").'" '), array(), array(0, $lim));
+        
 		//blog
 		
 		

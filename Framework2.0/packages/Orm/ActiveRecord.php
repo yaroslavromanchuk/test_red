@@ -285,11 +285,12 @@ class Orm_ActiveRecord extends Orm_Array
 				
 		if(array_key_exists($this->_getUpdatedName(), $this->db_store))
 			$this->{"set" . $this->_implodeCase($this->_getUpdatedName()) }(date('Y-m-d H:i:s'));
-			
+		
 		if($this->getId())
 		{
 			if(!$this->_beforeUpdate())
 				throw new Orm_Exception('Before update event failed');
+
 			$action = 'UPDATE';
 			$set = $this->_set($this->export(), 0, $insert = 0);
 			$this->stmt->update($this->getTable(), $set, array($this->_id => $this->getId()));
@@ -461,7 +462,7 @@ class Orm_ActiveRecord extends Orm_Array
 		
 		// add where condition
 		$this->stmt->where($this->_where($condition));
-			
+
 		// check for extra params (site_id and lang_id)
 		//$this->addExtraStmtParams();	
 
@@ -480,7 +481,7 @@ class Orm_ActiveRecord extends Orm_Array
 			}
 
 		}
-		
+
 		return new Orm_Collection($result);
 	}
 	/**
@@ -583,7 +584,7 @@ class Orm_ActiveRecord extends Orm_Array
 			return $this->findById($data);
 		
 		if(is_array($data)){$data = (object) $data;}
-                
+
 		if(is_object($data)) {
 			foreach($data as $key => $value) {
 				$this->{"set$key"}($value);
@@ -757,7 +758,7 @@ class Orm_ActiveRecord extends Orm_Array
 			}
 			$conditions = $new_conditions;
 		}
-		
+
 		return $conditions;
 	}
 

@@ -17,9 +17,6 @@ class wsLog extends wsActiveRecord
 		$logger->setMessage($message);
 		$logger->save();
                 
-                if($type == 'EMERG'){
-                   Telegram::sendMessageTelegram(404070580, 'ERROR RED.UA!'.PHP_EOL.'URL:'.$_SERVER['REQUEST_URI'].PHP_EOL.'Message:'.$message);
-                }
 	}
         
         

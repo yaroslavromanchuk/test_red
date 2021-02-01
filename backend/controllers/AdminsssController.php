@@ -5632,6 +5632,1141 @@ $text_full .= '
 
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**** CALLORDER STARTS HERE *******/
+
+    public function callorderAction()
+    {
+        // JSON
+        if ($_POST and isset($_POST['edit'])) {
+
+            foreach ($_POST as $kay => $value) {
+                $k = explode('count-', $kay);
+                if (count($k) > 1) {
+                    $size = (int)$_POST['size-' . $k[1]];
+                    $color = (int)$_POST['color-' . $k[1]];
+                    $count = (int)$_POST['count-' . $k[1]];
+                    if (isset($_POST['edit_count-' . $k[1]])) {
+                        if ($size != 0 and $color != 0 and $count != 0) {
+                            $order = new Shoporderarticles($k[1]);
+                            Shoporders::canEdit($order->getOrderId());
+                            $article = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $order->getArticleId(), 'id_size' => $order->getSize(), 'id_color' => $order->getColor()));
+                            $article->setCount($article->getCount() + $order->getCount());
+                            $article->save();
+                            $artic = new Shoparticles($order->getArticleId());
+                            $artic->setStock($artic->getStock() + $order->getCount());
+                            $artic->save();
+                            if($order->getCount() != $count){
+                                OrderHistory::newHistory($this->user->getId(), $order->getOrderId(), 'Изменение товара',
+                                    OrderHistory::getOrderArticle($order->getId(), $size, $color, $count), $order->getArticleId());}
+                            $order->setSize($size);
+                            $order->setColor($color);
+                            $order->setCount($count);
+                            $article = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $order->getArticleId(), 'id_size' => $size, 'id_color' => $color));
+                            $article->setCount($article->getCount() - $count);
+                            $artic->setStock($artic->getStock() - $count);
+                            $artic->save();
+                            $order->save();
+                            $article->save();
+                        }
+                    }
+
+                }
+                //	$opt = explode('option_id-', $kay);
+                //if($o){
+                //	d($opt);
+
+
+
+                //	}
+
+                //break;
+            }
+            // $order = new Shoporders($this->get->getId());
+            /*$order->updateDeposit($this->user->getId());*/
+            $this->_redir('shop-orders/edit/id/' . $this->get->getId());
+        }
+        if(@$this->post->addskidka == 'add_sk' and $this->post->id){
+
+            $order_art = new Shoporderarticles((int)$this->post->id);
+            $order_art->setOptionId((int)$this->post->option_id);
+            $summ = $order_art->getPrice()*Shoparticlesoption::getProcSkidka((int)$this->post->option_id);
+            $order_art->setOptionPrice($summ);
+            $order_art->save();
+
+            // $this->_redir('shop-orders/edit/id/' . $this->get->getId());
+            die($summ);
+        }
+
+        if ($_POST and isset($_POST['Toevoegen']) and isset($_POST['article_id']) and isset($_POST['size_id']) and isset($_POST['color_id'])) {
+
+            $article_id = (int)$_POST['article_id'];
+            $size_id = (int)$_POST['size_id'];
+            $color_id = (int)$_POST['color_id'];
+
+            if ($article_id != 0 and $size_id != 0 and $color_id != 0) {
+                $article = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $article_id, 'id_size' => $size_id, 'id_color' => $color_id));
+                $ar = new Shoparticles($article_id);
+                $s = Skidki::getActiv($ar->getId());
+                $c = Skidki::getActivCat($ar->getCategoryId(), $ar->getDopCatId());
+                if ($article->getCount() != 0) {
+                    $order = new Shoporderarticles();
+                    Shoporders::canEdit($this->get->getId());
+                    $order->setOrderId($this->get->getId());
+                    $order->setArticleId($article_id);
+                    $order->setTitle($ar->getTitle());
+                    $order->setCount(1);
+                    $order->setPrice($ar->getRealPrice());
+                    if($s){ $order->setEventSkidka($s->getValue()); $order->setEventId($s->getId()); }
+                    if($c){ $order->setEventSkidka($c->getValue()); $order->setEventId($c->getId()); }
+                    $order->setColor($color_id);
+                    $order->setSize($size_id);
+                    $order->setArtikul($article->getCode());
+                    $article->setCount($article->getCount() - 1);
+                    $order->setOldPrice($ar->getOldPrice());
+                    $article->save();
+                    $order->save();
+                    OrderHistory::newHistory($this->user->getId(), $order->getOrderId(), 'Новый товар',
+                        OrderHistory::getNewOrderArticle($order->getId()), $order->getArticleId());
+                }
+
+            }
+
+            $this->_redir('shop-orders/edit/id/' . $this->get->getId());
+        }elseif ($_POST and isset($_POST['Toevoegen2']) and isset($_POST['add_article_by_barcode'])) {
+
+            $article = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('code' => $_POST['add_article_by_barcode']));
+            $article_id = $article->getIdArticle();
+            $size_id = $article->getIdSize();
+            $color_id = $article->getIdColor();
+
+
+            if ($article_id != 0 and $size_id != 0 and $color_id != 0) {
+                $ar = new Shoparticles($article_id);
+                $s = Skidki::getActiv($ar->getId());
+                $c = Skidki::getActivCat($ar->getCategoryId(), $ar->getDopCatId());
+
+                if ($article->getCount() != 0) {
+                    $order = new Shoporderarticles();
+                    $order->setOrderId($this->get->getId());
+                    $order->setArticleId($article_id);
+                    $order->setTitle($ar->getTitle());
+                    $order->setCount(1);
+                    $order->setPrice($ar->getRealPrice());
+                    if($s){ $order->setEventSkidka($s->getValue()); $order->setEventId($s->getId()); }
+                    if($c){ $order->setEventSkidka($c->getValue()); $order->setEventId($c->getId()); }
+                    $order->setColor($color_id);
+                    $order->setSize($size_id);
+                    $order->setArtikul($article->getCode());
+                    $article->setCount($article->getCount() - 1);
+                    $order->setOldPrice($ar->getOldPrice());
+                    $article->save();
+                    $order->save();
+                    OrderHistory::newHistory($this->user->getId(), $order->getOrderId(), 'Новый товар', OrderHistory::getNewOrderArticle($order->getId()), $order->getArticleId());
+                }
+            }
+
+            $this->_redir('shop-orders/edit/id/' . $this->get->getId());
+        }
+        /*
+        if ($_POST && isset($_POST['getarticles'])) {
+            if (isset($_POST['id']) && ($category = wsActiveRecord::useStatic('Shopcategories')->findById((int)$_POST['id'])) && $category->getId()) {
+                $data = array();
+                $articles = $category->getArticles(array('active' => 'y'));
+                if ($articles->count())
+                    foreach ($articles as $article)
+                        $data[] = array(
+                            'id' => $article->getId(),
+                            'title' => $article->getTitle() . " (" . Shoparticles::showPrice($article->getRealPrice()) . " грн)",
+                            'img' => $article->getImagePath('detail')
+                        );
+                $res = array(
+                    'result' => 'done',
+                    'type' => 'articles',
+                    'data' => $data
+                );
+            } else {
+                $res = array('result' => 'false');
+            }
+            echo json_encode($res);
+            die();
+        }
+        if ($_POST && isset($_POST['getoptions'])) {
+            if (isset($_POST['id']) && ($article = wsActiveRecord::useStatic('Shoparticles')->findById((int)$_POST['id'])) && $article->getId()) {
+                $data = array();
+                $options = $article->getOptions();
+                $count = 0;
+                $del = isset($_POST['delivery_cost']) ? str_replace(',', '.', $_POST['delivery_cost'])
+                    : Config::findByCode('delivery_cost')->getValue();
+                if (isset($_POST['articles_count']) && (int)$_POST['articles_count'])
+                    $del = 0.00;
+                if ($options->count())
+                    foreach ($options as $option)
+                        $data[] = array(
+                            'id' => $count++,
+                            'title' => (($count > 1) ? $option->getOption()
+                                    : $this->trans->get('delivery option')) . (($count > 1 || $del != 0)
+                                    ? " (&euro;" . Shoparticles::showPrice($count == 1 ? $del
+                                        : $option->getRealPrice()) . ")"
+                                    : "")
+                        );
+                $res = array(
+                    'result' => 'done',
+                    'type' => 'options',
+                    'data' => $data
+                );
+            } else {
+                $res = array('result' => 'false');
+            }
+            echo json_encode($res);
+            die();
+        }
+        */
+
+        // END OF JSON
+        $dat = array();
+        if($this->user->isPointIssueAdmin()){
+            $dat[] = ' id in(100,1,3,5,7,8,9,15,16)';
+        }else{
+            $dat[] = ' id != 0';
+        }
+        /*if($this->user->isDeveloperAdmin()){
+        $dat[] = ' id in(0,1,3,5,7,8,9,15,16)';
+        }*/
+
+        $o_stat = wsActiveRecord::useStatic('OrderStatuses')->findAll($dat);
+        $mas_os = array();
+        foreach ($o_stat as $o) {
+            $mas_os[$o->getId()] = $o->getName();
+        }
+        $this->view->order_status = $mas_os;
+
+
+        $this->view->categories = wsActiveRecord::useStatic('Shopcategories')->findAll();
+
+        if ('edit' == $this->cur_menu->getParameter()) {
+
+            $errors = array();
+            $order = wsActiveRecord::useStatic('Shoporders')->findById($this->get->getId());
+
+            Shoporders::canEdit($this->get->getId());
+            if (!($order || $order->getId())) {
+                if ($_POST) {
+                    $order = new Shoporders();
+                    if ((int)$_POST['id'] != 0) {
+                        $order->setCustomerId($_POST['id']);
+                    }
+                    $order->setCompany($_POST['company']);
+                    $order->setNakladna($_POST['nakladna']);
+                    $order->setName($_POST['name']);
+                    $order->setIndex($_POST['index']);
+                    $order->setStreet($_POST['street']);
+                    $order->setHouse($_POST['house']);
+                    $order->setFlat($_POST['flat']);
+                    $order->setAddress($_POST['address']);
+                    $order->setRayon($_POST['rayon']);
+                    $order->setObl($_POST['obl']);
+                    $order->setCity($_POST['city']);
+                    $order->setTelephone(Number::clearPhone($_POST['phone']));
+                    $order->setEmail($_POST['email']);
+                    $order->setComments($_POST['coments']);
+                    $order->setDeliveryTypeId($_POST['delivery_type_id']);
+                    $order->setPaymentMethodId($_POST['payment_method_id']);
+
+                    // $order->setDeliveryCost($_POST['payment_method_id']);
+                    if ((int)$_POST['delivery_type_id'] == 4) {
+                        if (strlen($_POST['index']) < 1) $errors[] = 'Введите индекс';
+                        if (strlen($_POST['obl']) < 1) $errors[] = 'Введите область';
+                        if (strlen($_POST['street']) < 1) $errors[] = 'Введите улицу';
+                        if (strlen($_POST['house']) < 1) $errors[] = 'Введите дом';
+                        if (strlen($_POST['flat']) < 1) $errors[] = 'Введите квартиру';
+                    }
+                    if ((int)$_POST['delivery_type_id'] == 0) $errors[] = 'Выберите способ доставки';
+                    if ((int)$_POST['payment_method_id'] == 0) $errors[] = 'Выберите способ оплаты';
+
+                    if ((int)$_POST['id'] == 0) {
+                        $alredy = wsActiveRecord::useStatic('Customer')->findFirst(array('phone1' => $order->getTelephone()));
+                        if ($alredy and strlen(Number::clearPhone($_POST['phone'])) > 0) $errors[] = "Пользователь с таким номером телефона уже существует";
+                    }
+                    if (!count($errors)) {
+                        $cost = wsActiveRecord::useStatic('DeliveryPayment')->findFirst(array('delivery_id' => (int)$_POST['delivery_type_id'], 'payment_id' => (int)$_POST['payment_method_id']))->getPrice();
+                        $order->setDeliveryCost($cost);
+                    }
+                    if (strlen($_POST['name']) < 1) $errors[] = 'Введите имя клиента';
+                    if (strlen($_POST['address']) < 1) $errors[] = 'Введите адрес клиента';
+                    if (strlen($_POST['email']) > 1) {
+                        if (!count($errors)) {
+                            $klient = wsActiveRecord::useStatic('Customer')->findFirst(array('username' => $_POST['email']));
+                            if ($klient and $klient->getId() != (int)$_POST['id']) $errors[] = 'Такой Email уже используется, найдите клиента в списке клиентов';
+                            elseif (!isValidEmail($_POST['email'])) $errors[] = $this->trans->get("Email is invalid");
+                            elseif ((int)$_POST['id'] == 0) {
+                                $allowedChars = 'abcdefghijklmnopqrstuvwxyz'
+                                    . 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+                                    . '0123456789';
+                                $newPass = '';
+                                $allowedCharsLength = strlen($allowedChars);
+                                while (strlen($newPass) < 8)
+                                    $newPass .= $allowedChars[rand(0, $allowedCharsLength - 1)];
+                                $customer = new Customer();
+                                $customer->setUsername($order->getEmail());
+                                $customer->setPassword(md5($newPass));
+                                $customer->setCustomerTypeId(1);
+                                $customer->setCompanyName($order->getCompany());
+                                $customer->setFirstName($order->getName());
+                                $customer->setEmail($order->getEmail());
+                                $customer->setPhone1($order->getTelephone());
+                                $customer->setCity($order->getCity());
+                                $customer->setAdress($order->getAddress());
+                                $customer->setIndex($order->getIndex());
+                                $customer->setObl($order->getObl());
+                                $customer->setRayon($order->getRayon());
+                                $customer->setStreet($order->getStreet());
+                                $customer->setHouse($order->getHouse());
+                                $customer->setFlat($order->getFlat());
+                                $customer->save();
+
+                                $this->view->login = $order->getEmail();
+                                $this->view->pass = $newPass;
+                                $admin_name = Config::findByCode('admin_name')->getValue();
+                                $admin_email = Config::findByCode('admin_email')->getValue();
+                                $do_not_reply = Config::findByCode('do_not_reply_email')->getValue();
+                                $msg = $this->render('email/new-customer.tpl.php');
+                                $subject = 'Создан акаунт';
+
+                                require_once('nomadmail/nomad_mimemail.inc.php');
+                                $mimemail = new nomad_mimemail();
+                                $mimemail->debug_status = 'no';
+                                $mimemail->set_from($do_not_reply, $admin_name);
+                                $mimemail->set_to($order->getEmail(), $order->getName());
+                                $mimemail->set_charset('UTF-8');
+                                $mimemail->set_subject($subject);
+                                $mimemail->set_text(make_plain($msg));
+                                $mimemail->set_html($msg);
+                                //@$mimemail->send();
+
+                                MailerNew::getInstance()->sendToEmail($order->getEmail(), $order->getName(), $subject, $msg);
+                            }
+                        }
+                    } else {
+                        if ((int)$_POST['id'] == 0) {
+                            $allowed_chars = '1234567890';
+                            $tel = $order->getTelephone();
+                            if (!Number::clearPhone($tel))
+                                $errors[] = "Введите телефонный номер";
+                            for ($i = 0; $i < mb_strlen($tel); $i++) {
+                                if (mb_strpos($allowed_chars, mb_strtolower($tel[$i])) === false) {
+                                    $errors[] = "В номоре должны быть только числа";
+                                }
+                            }
+
+                            if (!count($errors)) {
+                                $allowedChars = 'abcdefghijklmnopqrstuvwxyz'
+                                    . 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+                                    . '0123456789';
+                                $newPass = '';
+                                $allowedCharsLength = strlen($allowedChars);
+                                while (strlen($newPass) < 8)
+                                    $newPass .= $allowedChars[rand(0, $allowedCharsLength - 1)];
+                                $customer = new Customer();
+                                $customer->setUsername(Number::clearPhone($order->getTelephone()));
+                                $customer->setPassword(md5($newPass));
+                                $customer->setCustomerTypeId(1);
+                                $customer->setCompanyName($order->getCompany());
+                                $customer->setFirstName($order->getName());
+                                $customer->setPhone1($order->getTelephone());
+                                $customer->setCity($order->getCity());
+                                $customer->setAdress($order->getAddress());
+                                $customer->setIndex($order->getIndex());
+                                $customer->setObl($order->getObl());
+                                $customer->setRayon($order->getRayon());
+                                $customer->setStreet($order->getStreet());
+                                $customer->setHouse($order->getHouse());
+                                $customer->setFlat($order->getFlat());
+                                $customer->save();
+                                $phone = Number::clearPhone($order->getTelephone());
+                                include_once('smsclub.class.php');
+                                $sms = new SMSClub(Config::findByCode('sms_login')->getValue(), Config::findByCode('sms_pass')->getValue());
+                                $sender = Config::findByCode('sms_alphaname')->getValue();
+                                $user = $sms->sendSMS($sender, $phone, 'Vy zaregistrirovany na sajte Red.ua. Vash login: '. $phone .'. Vash password: '. $newPass .'.');
+                                wsLog::add('SMS to user: ' . $sms->receiveSMS($user), 'SMS_' . $sms->receiveSMS($user));
+                            }
+                        }
+                    }
+                    if (!count($errors)) {
+                        $order->save();
+                        $this->_redir('shop-orders/edit/id/' . $order->getId());
+                    }
+                }
+                $user = 0;
+                if (isset($_GET['user'])) {
+                    if ((int)$_GET['user'] != 0) {
+                        $user = (int)$_GET['user'];
+                    }
+                }
+                if ($user == 0) {
+                    $user = new Customer();
+                } else {
+                    $user = new Customer($user);
+                }
+                $this->view->errors = $errors;
+                $this->view->customer = $user;
+                echo $this->render('shop/order-new.tpl.php');
+                return;
+            } else {
+
+                if ($_POST) {
+                    if(isset($_POST['skidka'])){
+                        $order->setSkidka(@$_POST['skidka']);
+                    }
+                    if (isset($_POST['box_number'])) {
+                        $order->setBoxNumber(@$_POST['box_number']);
+                    }
+                    if (isset($_POST['kupon'])) {
+                        $order->setKupon(@$_POST['kupon']);
+                    }
+                    if (isset($_POST['kupon_price'])) {
+                        $order->setKuponPrice(@$_POST['kupon_price']);
+                    }
+                    $order->save();
+                    if (isset($_POST['order_status'])) {
+                        if ($order->getNakladna() != @$_POST['nakladna']) {
+                            OrderHistory::newHistory($this->user->getId(), $order->getId(), 'Смена номера накладной',
+                                'C "' . $order->getNakladna() . '" на "' . @$_POST['nakladna'] . '"');
+                        }
+                        $order->setNakladna(@$_POST['nakladna']);
+
+
+                        if (((int)$_POST['order_status'] == 6 or (int)$_POST['order_status'] == 4) and strlen(@$_POST['nakladna']) == 0) {
+                            $this->_redirect($_SERVER['HTTP_REFERER']);
+                        }
+
+
+                        if ((int)$_POST['order_status'] == 3 or (int)$_POST['order_status'] == 4 or (int)$_POST['order_status'] == 6 or (int)$_POST['order_status'] == 13) {
+                            $order->setOrderGo(date('Y-m-d H:i:s'));
+                        }
+                        if ((int)$_POST['order_status'] == 8) {
+                            OrdersPay::newOrderPay($this->user->getId(), $order->getCustomerId(), $order->calculateOrderPrice(), $order->getId());
+                        }
+                        OrderHistory::newHistory($this->user->getId(), $order->getId(), 'Смена статуса',
+                            OrderHistory::getStatusText($order->getStatus(), (int)$_POST['order_status']));
+                        $st = $order->getStatus();
+                        if((int)$_POST['order_status'] == 5) {
+                            $today = date('Y-m-d H:i:s', strtotime('-'.(int)Config::findByCode('count_dey_ban_samovyvos')->getValue().' days'));
+                            $ord = wsActiveRecord::useStatic('Shoporders')->findAll(array('customer_id' => $order->getCustomerId(), 'flag = 1 and date_create >= "'.$today.'"'));
+                            $ban = (int)Config::findByCode('ban_shop_count')->getValue()-1;
+                            if($ord->count() >= $ban){
+                                $or_list="";
+                                foreach($ord as $r){
+                                    $or_list.=$r->getId().", ";
+                                    $r->setFlag(2);
+                                    $r->save();
+                                }
+                                $order->setFlag(2);
+                                $user = new Customer($order->getCustomerId());
+                                $user->setBanAdmin($this->user->getId());
+                                $user->setBanComment('Автобан по заказу ( '.$order->getId().'). Список заказов '.$or_list);
+                                $user->setBlockM(1);
+                                $user->setBanDate(date('Y-m-d H:i:s'));
+                                $user->save();
+                                wsLog::add('Автобан по заказу ( '.$order->getId().'). Список заказов '.$or_list, 'BAN');
+                            }else{
+                                $order->setFlag(1);
+                            }
+                        }
+                        $order->setStatus((int)$_POST['order_status']);
+                        $rez = $order->save();
+                        if ($rez) {
+                            $status = explode(',', $this->trans->get('new,processing,canceled,dostavlen v magazin,otpravlen ukrpochtoj,srok zakonchivsa,otpravlen novoj pochtoj'));
+                            if ((int)$_POST['order_status'] == 2 or (int)$_POST['order_status'] == 7) {
+                                if($st == 3 and $order->getDeliveryTypeId() == 5 and (int)$_POST['order_status'] == 7){
+                                    $order->setFlag(3);
+                                }
+
+                                foreach ($order->articles as $art) {
+                                    if ((int)$_POST['order_status'] == 2 or (int)$_POST['order_status'] == 7) {
+                                        if((int)$_POST['order_status'] == 7 and in_array($order->getDeliveryTypeId(), array(3,5)) and $art->getCount() > 0){
+                                            $article = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $art->getArticleId(), 'id_size' => $art->getSize(), 'id_color' => $art->getColor()));
+                                            if($article){
+                                                if($art->getCount() > 1){
+                                                    for($i=1; $i<=$art->getCount(); $i++){
+                                                        OrderHistory::newHistory($this->user->id, $order->Id(), 'Возврат товара', OrderHistory::getNewOrderArticle($art->getId()), $art->getArticleId());
+                                                        $artic = new ShoporderarticlesVozrat();
+                                                        $artic->setStatus(0);
+                                                        $artic->setOrderId($art->getOrderId());
+                                                        $artic->setArticleId($art->getArticleId());
+                                                        $artic->setCod($art->getArtikul());
+                                                        $artic->setTitle($art->getTitle());
+                                                        $artic->setCount(1);
+                                                        $artic->setPrice($art->getPrice());
+                                                        $artic->setCtime(date('Y-m-d H:i:s'));
+                                                        $artic->setUtime(date('0000-00-00 00:00:00'));
+                                                        $artic->setUser($this->user->getId());
+                                                        $artic->setDelivery($order->getDeliveryTypeId());
+                                                        $artic->setSize($art->getSize());
+                                                        $artic->setColor($art->getColor());
+                                                        $artic->setOldPrice($art->getOldPrice());
+                                                        if($order->getDeposit() > 0){
+                                                            $artic->setDeposit(1);
+                                                        }
+                                                        $artic->save();
+                                                    }
+                                                }else{
+                                                    OrderHistory::newHistory($this->user->id, $order->Id(), 'Возврат товара', OrderHistory::getNewOrderArticle($art->getId()), $art->getArticleId());
+                                                    $artic = new ShoporderarticlesVozrat();
+                                                    $artic->setStatus(0);
+                                                    $artic->setOrderId($art->getOrderId());
+                                                    $artic->setArticleId($art->getArticleId());
+                                                    $artic->setCod($art->getArtikul());
+                                                    $artic->setTitle($art->getTitle());
+                                                    $artic->setCount($art->getCount());
+                                                    $artic->setPrice($art->getPrice());
+                                                    $artic->setCtime(date('Y-m-d H:i:s'));
+                                                    $artic->setUtime(date('0000-00-00 00:00:00'));
+                                                    $artic->setUser($this->user->getId());
+                                                    $artic->setDelivery($order->getDeliveryTypeId());
+                                                    $artic->setSize($art->getSize());
+                                                    $artic->setColor($art->getColor());
+                                                    $artic->setOldPrice($art->getOldPrice());
+                                                    if($order->getDeposit() > 0){
+                                                        $artic->setDeposit(1);
+                                                    }
+                                                    $artic->save();
+                                                }
+                                                $art->setCount(0);
+                                                $art->save();
+                                            }else{
+                                                $order->setStatus($st);
+                                                wsLog::add('Ошибка перемещения на возврат ' . $art->Title() . ' - ' . $art->getArticleId(), 'ERROR dell article');
+                                                $this->view->errordell = "Не удается переместить товар на возврат, ".$art->Title().". Попробуйте снова!";
+                                                $this->_redir('shop-orders/edit/id/' . $order->getId());
+                                                break;
+                                            }
+                                        }else{
+                                            $article = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $art->getArticleId(), 'id_size' => $art->getSize(), 'id_color' => $art->getColor()));
+                                            if(@$article){
+
+                                                OrderHistory::newHistory($this->user->id, $art->getOrderId(), 'Отмена заказа', '', $art->getArticleId());
+                                                $artic = new Shoparticles($art->getArticleId());
+                                                if($article->getCount() == 0 and $artic->getCategoryId() != 16){
+                                                    if(wsActiveRecord::useStatic('Returnarticle')->count(array('code' => $article->getCode(), 'utime is null')) > 0){
+                                                        $this->sendMailAddCount($article->getCode(), $article->getIdArticle());
+                                                    }
+                                                }
+                                                $article->setCount($article->getCount() + $art->getCount());
+                                                $artic->setStock($artic->getStock() + $art->getCount());
+                                                $art->setCount(0);
+                                                $art->save();
+                                                $article->save();
+                                                $artic->save();
+
+                                            }else{
+                                                $order->setStatus($st);
+                                                wsLog::add('Ошибка удаления ' . $art->Title() . ' - ' . $art->getArticleId(), 'ERROR dell article');
+                                                $this->view->errordell = "Не удается удалить товар, ".$art->Title().". Попробуйте снова!";
+                                                $this->_redir('shop-orders/edit/id/' . $order->getId());
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                }
+                                $deposit = $order->getDeposit();
+                                $order->setDeposit(0);
+                                $order->save();
+                                $customer = new Customer($order->getCustomerId());
+                                $c_dep = $customer->getDeposit();
+                                $new_d = (float)$customer->getDeposit() + (float)$deposit;
+                                $customer->setDeposit((float)$customer->getDeposit() + (float)$deposit);
+                                $customer->save();
+                                if($deposit > 0){
+                                    OrderHistory::newHistory($this->user->getId(), $order->getId(), 'Клиенту зачислен депозит ('.$deposit.') грн. ',
+                                        'C "' . $c_dep . '" на "' . $new_d . '"');
+                                    $ok = '+';
+                                    DepositHistory::newDepositHistory($this->user->getId(), $customer->getId(), $ok, $deposit, $order->getId());
+                                }
+                            }
+                            if ((int)$_POST['order_status'] == 3 or (int)$_POST['order_status'] == 4 or (int)$_POST['order_status'] == 6 or (int)$_POST['order_status'] == 13) {
+                                $phone = Number::clearPhone($order->getTelephone());
+                                include_once('smsclub.class.php');
+                                $sms = new SMSClub(Config::findByCode('sms_login')->getValue(), Config::findByCode('sms_pass')->getValue());
+                                $sender = Config::findByCode('sms_alphaname')->getValue();
+                                if ((int)$_POST['order_status'] == 6 or (int)$_POST['order_status'] == 4) {
+                                    $mes = 'Zakaz №' . (int)$order->getId() . ' ' . $status[(int)$_POST['order_status']] . '. TTH №' . $_POST['nakladna'] . '.';
+                                    $user = $sms->sendSMS($sender, $phone, $mes);
+                                } else if((int)$_POST['order_status'] == 13){
+                                    $mes = 'Zakaz №' . (int)$order->getId() . ' ' . $status[(int)$_POST['order_status']] . '. Dostavka:' . $order->getDeliveryDate();
+                                    $user = $sms->sendSMS($sender, $phone, $mes);
+                                }else {
+                                    $mes = 'Zakaz №' . (int)$order->getId() . ' ' . $status[(int)$_POST['order_status']] . '. Summa ' . $order->getAmount() . ' grn.';
+                                    $user = $sms->sendSMS($sender, $phone, $mes);
+                                }
+
+                                wsLog::add('SMS to order: ' .$mes, 'SMS_' . @$sms->receiveSMS($user));
+                            }
+
+                            if ((int)$_POST['order_status'] == 3 or (int)$_POST['order_status'] == 4 or (int)$_POST['order_status'] == 6 or (int)$_POST['order_status'] == 13) {
+                                $status = explode(',', $this->trans->get('new,processing,canceled,ready_shop,ready_post'));
+                                $fields = array();
+                                $text = '';
+                                $text .= '
+										<table border="0" cellpadding="0" cellspacing="0" width="700" align="center" style="background:#fff;border-collapse:collapse;">
+										<tr>
+										<td colspan="2"><br>
+										Ваш заказ № <a href="http://www.red.ua/account/orderhistory/">' . (int)$order->getId() . '</a> сменил статус на: ' . $status[(int)$_POST['order_status']] . '.<br>
+										</td>
+										</tr>
+										</table>';
+                                if (strlen($_POST['nakladna']) > 0) {
+
+                                    if ((int)$_POST['order_status'] == 4) {
+                                        $text .= '
+										<table border="0" cellpadding="0" cellspacing="0" width="700" align="center" style="background:#fff;border-collapse:collapse;">
+											
+											<tr>
+											<td colspan="2">
+										Номер накладной: №' . $_POST['nakladna'].'
+										</td>
+										</tr>
+										
+											<tr>
+										<td colspan="2">
+										<a href="http://services.ukrposhta.ua/bardcodesingle/Default.aspx">По этой ссылке</a> можно перейти и по номеру декларации отследить состояние посылки.<br>
+										</td>
+										</tr>
+										</table>';
+                                    }
+                                    if ((int)$_POST['order_status'] == 6) {
+                                        $text .= '
+										<table border="0" cellpadding="0" cellspacing="0" width="700" align="center" style="background:#fff;border-collapse:collapse;">
+											<tr>
+											<td colspan="2">
+										Номер накладной: №' . $_POST['nakladna'].'
+										</td>
+										</tr>
+	<tr>
+	<td colspan="2">
+										<a href="https://novaposhta.ua/tracking/?cargo_number='.$_POST['nakladna'].'">По этой ссылке</a> можно перейти и по номеру декларации отследить состояние посылки.<br>
+										</td>
+										</tr>
+										</table>';
+                                    }
+                                }
+                                if ((int)$_POST['order_status'] == 13) {
+                                    $text .= '
+										<table border="0" cellpadding="0" cellspacing="0" width="700" align="center" style="background:#fff;border-collapse:collapse;">
+												<tr>
+											<td colspan="2">
+										Дата доставки: ' . $order->getDeliveryDate().' '. $order->getDeliveryInterval().'
+										</td>
+										</tr>
+										</table>';
+                                }
+
+                                if(isValidEmailNew($order->getEmail()) and isValidEmailRu($order->getEmail())){
+                                    $subject = 'Изменения статуса заказа';
+                                    $this->view->content = $text;
+                                    $msg = $this->view->render('mailing/template.tpl.php');
+
+                                    SendMail::getInstance()->sendEmail($order->getEmail(), $order->getName(), $subject, $msg);
+
+
+                                }
+                            }
+
+
+                            //отправка письма - оставь свой отзыв + скидка 10% на 48 часов
+                            if ((int)$_POST['order_status'] == 8 || (int)$_POST['order_status'] == 14) {
+                                if(EventCustomer::getEventsCustomerCount($order->getCustomerId()) < 2 and wsActiveRecord::useStatic('EventCustomer')->count(array('order'=>$order->getId())) == 0){
+
+
+                                    $end_date = date("Y-m-d H:i:s", strtotime("now +2 days"));
+                                    $dat_e = date("d-m-Y H:i:s", strtotime($end_date));
+                                    $ev = new EventCustomer();
+                                    $ev->setCtime(date("Y-m-d H:i:s"));
+                                    $ev->setEndTime($end_date);
+                                    $ev->setEventId(15);
+                                    $ev->setCustomerId($order->getCustomerId());
+                                    $ev->setStatus(1);
+                                    $ev->setSt(1);
+                                    $ev->setOrder($order->getId());
+                                    $ev->save();
+
+                                    $text = '
+<p><img src="https://www.red.ua/storage/images/RED_ua/New/h_1449567151_1867958_82a3df0b9a-1024x356.jpg" alt="" width="700" height="243"></p>
+<p style="text-align: center;font-size: 14pt;"><strong>'.$order->getName().', у нас для тебя есть специальное предложение..</strong></p>
+<p style="text-align: justify;"><span style="font-size: 12pt;">Дарим дополнительную скидку 10% на покупку в нашем интернет-магазине. Предложение диствительно 48 часов с момента получения этого письма <span style="font-size: 10pt;">(до '.$dat_e.')</span>. </span></p>
+<p style="text-align: center; font-size: 10pt; color: &amp;808080;">Для получения скидки нужно успеть оформить заказ в течении 48 часов.</p>
+<p style="text-align: center; font-size: 10pt; color: &amp;808080;"><strong>Дополнительные условия:</strong></p>
+<p style="font-size: 10pt; color: &amp;808080; text-align: left;">		1. скидка действует единоразово (при отмене или возврате заказа скидка теряется),</p>
+<p style="font-size: 10pt; color: &amp;808080; text-align: left;">		2. скидка сумируется со всеми скидками на сайте кроме товаров участвующих в других акциях и товаров с этикеткой "LAST PRICE",</p>
+<p style="font-size: 10pt; color: &amp;808080; text-align: left;">		3. распространяется только на товары в заказе оформленном в период акции ( совмещение с другими заказами невозможно).</p>
+<p style="font-size: 10pt; color: &amp;808080; text-align: left;">		4. каждый покупатель может получить максимум два  предложения со скидкой в месяц,</p>
+<p style="font-size: 10pt; color: &amp;808080; text-align: left;">		5. скидка подключается при оформлении заказа через корзину, при оформлении быстрого заказа - акция не подключается.</p>
+<p style="text-align: left;"></p>';
+
+                                    $subject = 'Дополнительная скидка 10% на новую покупку.';
+                                    $this->view->content = $text;
+                                    $msg = $this->view->render('email/template_new.tpl.php');
+                                    SendMail::getInstance()->sendEmail($order->getEmail(), $order->getName(), $subject, $msg);
+
+                                }elseif($order->getCountOrder('m') == 3){
+
+                                    if(isValidEmailNew($order->getEmail()) and isValidEmailRu($order->getEmail())){
+                                        $text_full = '';
+                                        $text_full .= '
+	<table border="0" cellpadding="0" cellspacing="0" width="700" align="center" style="background:#fff;border-collapse:collapse;">
+	<tr><td><img src="https://red.ua/images/otzyv1.png"  width="700" height="50" border="0"/></td></tr>
+    <tr><td>
+	<h2>Привет, '.$order->getName().'!</h2>
+	Тобой был сделан заказ № <a href="http://www.red.ua/account/orderhistory/">' . (int)$order->getId() . '</a>,';
+                                        if($order->getDeliveryTypeId() == 8 or $order->getDeliveryTypeId()==16){
+                                            $text_full .=' он уже в пути. После получения, ';}
+                                        $text_full .= '
+	оставь, пожалуйста, свой отзыв.<br></td></tr> 
+	<tr><td><br><a href="https://red.ua/reviews/"><img src="https://red.ua/images/kol.jpg"  width="700" height="300" border="0"/></a></td></tr>
+	</table>';
+
+                                        $subject = $order->getName().', тебе понравилась покупка? Оставь свой отзыв.';
+                                        $this->view->content = $text_full;
+                                        $msg = $this->view->render('mailing/template.tpl.php');
+                                        SendMail::getInstance()->sendEmail($order->getEmail(), $order->getName(), $subject, $msg);
+                                    }
+
+                                }
+
+
+
+                            }
+
+
+                            if ((int)$_POST['order_status'] == 11) {
+                                $order->setDelayToPay(date('Y-m-d'));
+                                $order->save();
+                            }
+                            if ((int)$_POST['order_status'] == 1) {
+                                $order->setDateVProcese(date('Y-m-d'));
+                                $order->save();
+                            }
+                        }
+/////
+                        $this->_redirect($_SERVER['HTTP_REFERER']);
+                    } elseif (isset($_POST['add_remark']) && isset($_POST['remark'])) {
+                        $remark = new Shoporderremarks();
+                        $data = array(
+                            'order_id' => $order->getId(),
+                            'date_create' => date("Y-m-d H:i:s"),
+                            'remark' => $_POST['remark'],
+                            'name' => $this->user->getMiddleName()
+                        );
+                        $remark->import($data);
+                        $remark->save();
+                        $this->_redir('shop-orders/edit/id/' . $order->getId());
+                    }
+                }
+
+                $this->view->order = $order;
+                $this->view->total_amount = wsActiveRecord::useStatic('Shoporders')->findByQuery('
+                SELECT IF(SUM(price*count) IS NULL,0,SUM(price*count)) AS sum_amount
+			        FROM ws_order_articles
+			        JOIN ws_orders ON ws_order_articles.order_id = ws_orders.id
+                WHERE ws_orders.status in(3,4,6,8)
+                AND ws_orders.customer_id=' . $order->getCustomerId())->at(0)->getSumAmount();
+
+                echo $this->render('shop/order-edit.tpl.php');
+                return;
+            }
+        }elseif ('editquickorder' == $this->cur_menu->getParameter()) {
+            $order = wsActiveRecord::useStatic('Shoporders')->findById($this->get->getId());
+            if (isset($_POST['add_remark']) && isset($_POST['remark'])) {
+                $remark = new Shoporderremarks();
+                $data = array(
+                    'order_id' => $order->getId(),
+                    'date_create' => date("Y-m-d H:i:s"),
+                    'remark' => $_POST['remark'],
+                    'name' => $this->user->getMiddleName()
+                );
+                $remark->import($data);
+                $remark->save();
+                $this->_redir('edit-quick-order/id/' . $order->getId());
+            }
+            if (isset($_POST['converting_to_order'])) {
+
+                $order->setQuick(0);
+                $order->setDateCreate(date('Y-m-d H:i:s'));
+                $order->save();
+                $this->_redir('shop-quick-orders');
+            }
+            if (isset($_POST['delete_qo'])) {
+                foreach ($order->articles as $art) {
+                    $article = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $art->getArticleId(), 'id_size' => $art->getSize(), 'id_color' => $art->getColor()));
+                    if ($article) {
+                        $artic = new Shoparticles($art->getArticleId());
+                        if($article->getCount() == 0 and $artic->getCategoryId() != 16){
+                            if(wsActiveRecord::useStatic('Returnarticle')->count(array('code' => $article->getCode(), 'utime is null')) > 0){
+                                $this->sendMailAddCount($article->getCode(), $article->getIdArticle());
+                            }
+                        }
+
+                        $article->setCount($article->getCount() + $art->getCount());
+                        $artic->setStock($artic->getStock() + $art->getCount());
+                        $article->save();
+                        $artic->save();
+                        $art->setCount(0);
+                        $art->save();
+                    }
+
+                }
+                $deposit = $order->getDeposit();
+                $order->setStatus(2);
+                $order->setDeposit(0);
+                $order->save();
+                $customer = new Customer($order->getCustomerId());
+                $c_dep = $customer->getDeposit();
+                $new_d = (float)$customer->getDeposit() + (float)$deposit;
+                $customer->setDeposit($new_d);
+                $customer->save();
+
+                $this->_redir('shop-quick-orders');
+            }
+
+            $this->view->order = $order;
+            echo $this->render('shop/order-edit-quick.tpl.php');
+            return;
+        } elseif ('delete' == $this->cur_menu->getParameter()) {
+
+            $c = new Shoporders($this->get->getId());
+            if ($c && $c->getId()) {
+                /*    $c->destroy();*/
+                $this->_redir('shop-orders');
+            }
+
+        }elseif ('adelete' == $this->cur_menu->getParameter()) {
+
+            $c = new Shoporderarticles($this->get->getId());
+            if ($c && $c->getId()) {
+                $order_id = $c->getOrder()->getId();
+                $article = wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $c->getArticleId(), 'id_size' => $c->getSize(), 'id_color' => $c->getColor()));
+                if(@$article){
+                    $artic = new Shoparticles($c->getArticleId());
+
+                    if($article->getCount() == 0 and $artic->getCategoryId() != 16){
+                        if(wsActiveRecord::useStatic('Returnarticle')->count(array('code' => $article->getCode(), 'utime is null')) > 0){
+                            $this->sendMailAddCount($article->getCode(), $article->getIdArticle());
+                        }
+                    }
+                    $article->setCount($article->getCount() + $c->getCount());
+                    $artic->setStock($artic->getStock() + $c->getCount());
+
+                    OrderHistory::newHistory($this->user->getId(), $c->getOrderId(), 'Удаление товара',
+                        OrderHistory::getNewOrderArticle($c->getId()), $c->getArticleId());
+
+                    $article->save();
+                    $artic->save();
+
+                    $c->setCount(0);
+                    //   $c->setPrice(0);
+                    $c->save();
+                }else{
+                    wsLog::add('Ошибка удаления ' . $c->Title() . ' - ' . $c->getArticleId(), 'ERROR dell article');
+                    $this->view->errordell = "Не удается удалить товар, ".$c->Title().". Попробуйте снова!";
+                }
+
+                $this->_redir('shop-orders/edit/id/' . $order_id.'/#flag='.$this->get->getId());
+            }
+
+        }elseif('return_article' == $this->cur_menu->getParameter()){
+
+            $mes = 'возврат';
+
+            $c = new Shoporderarticles((int)$this->post->id);
+            if ($c && $c->getId()) {
+                if($c->getCount() > 1){
+                    //die('dva');
+                    for($i = 1; $i <= $c->getCount(); $i++){
+                        $artic = new ShoporderarticlesVozrat();
+                        $artic->setStatus(0);
+                        $artic->setOrderId($c->getOrderId());
+                        $artic->setArticleId($c->getArticleId());
+                        $artic->setCod($c->getArtikul());
+                        $artic->setTitle($c->getTitle());
+                        $artic->setCount(1);
+                        $artic->setPrice($c->getPrice());
+                        $artic->setCtime(date('Y-m-d H:i:s'));
+                        $artic->setUtime(date('0000-00-00 00:00:00'));
+                        $artic->setUser($this->user->getId());
+                        $artic->setDelivery($c->getOrder()->getDeliveryTypeId());
+                        $artic->setSize($c->getSize());
+                        $artic->setColor($c->getColor());
+                        $artic->setOldPrice($c->getOldPrice());
+                        if($c->getOrder()->getDeposit() > 0){
+                            $artic->setDeposit(1);
+                        }
+                        $artic->save();
+                    }
+                }else{
+
+                    $artic = new ShoporderarticlesVozrat();
+                    $artic->setStatus(0);
+                    $artic->setOrderId($c->getOrderId());
+                    $artic->setArticleId($c->getArticleId());
+                    $artic->setCod($c->getArtikul());
+                    $artic->setTitle($c->getTitle());
+                    $artic->setCount(1);
+                    $artic->setPrice($c->getPrice());
+                    $artic->setCtime(date('Y-m-d H:i:s'));
+                    $artic->setUtime(date('0000-00-00 00:00:00'));
+                    $artic->setUser($this->user->getId());
+                    $artic->setDelivery($c->order->delivery_type_id);
+                    $artic->setSize($c->getSize());
+                    $artic->setColor($c->getColor());
+                    $artic->setOldPrice($c->getOldPrice());
+                    if($c->getOrder()->getDeposit() > 0){
+                        $artic->setDeposit(1);
+                    }
+                    $artic->save();
+                }
+
+                $c->setCount(0);
+                $c->save();
+
+                OrderHistory::newHistory($this->user->getId(), $c->getOrderId(), 'Возврат товара', OrderHistory::getNewOrderArticle($c->getId()), $c->getArticleId());
+                if(@$this->post->js){
+                    die(json_encode('ok'));
+                }else{
+                    $this->_redir('shop-orders/edit/id/' .$c->getOrder()->getId().'/#flag='.$this->get->getId());
+                }
+            }else{
+                wsLog::add('Ошибка удаления  на возврат ' . $c->Title() . ' - ' . $c->getArticleId(), 'ERROR dell article');
+                $this->view->errordell = "Не удается удалить товар на возврат, ".$c->Title().". Попробуйте снова!";
+            }
+
+
+        }elseif ('adeletenoshop' == $this->cur_menu->getParameter()) {
+            if(@$this->get->getMes()){
+                $mes = $this->get->getMes();
+            }else{
+                $mes = '';
+            }
+            $c = new Shoporderarticles($this->get->getId());
+            if ($c && $c->getId()) {
+
+                $log_text = 'Удаление без возврата';
+                //$log_text .= '<br> ( '.$mes.' )';
+                $log = new Shoparticlelog();
+                $log->setCustomerId($this->website->getCustomer()->getId());
+                $log->setUsername($this->website->getCustomer()->getUsername());
+                $log->setArticleId($c->getArticleId());
+                if ($c->getSize() and $c->getColor()) {
+                    $size = new Size($c->getSize());
+                    $color = new Shoparticlescolor($c->getColor());
+                    $log->setInfo($size->getSize() . ' ' . $color->getName());
+                }
+                $log->setTypeId(7);
+                $log->setCount($c->getCount());
+                $log->setComents($log_text);
+                $log->setCode(wsActiveRecord::useStatic('Shoparticlessize')->findFirst(array('id_article' => $c->getArticleId(), 'id_size' => $c->getSize(), 'id_color' => $c->getColor()))->getCode());
+                $log->save();
+                $c->setCount(0);
+                $c->save();
+                OrderHistory::newHistory($this->user->getId(), $c->getOrderId(), 'Удаление товара без возврата<br>( '.$mes.' )',
+                    OrderHistory::getNewOrderArticle($c->getId()), $c->getArticleId());
+
+                $this->_redir('shop-orders/edit/id/' . $c->getOrder()->getId());
+            }
+
+        }
+
+
+        $data = array();
+
+        if ('quick' == $this->cur_menu->getParameter()) $data[] = 'quick = 1';
+        else $data[] = 'quick = 0';
+
+        $admins = wsActiveRecord::useStatic('Customer')->findAll(array('customer_type_id >1'));
+        $adminsid = array();
+        foreach ($admins as $ad) {
+            $adminsid[] = $ad->getId();
+        }
+        if (isset($_GET['kupon']) and @$_GET['kupon'] == 1) $data[] = 'kupon NOT LIKE ""';
+        if (isset($_GET['online']) and @$_GET['online'] == 1) $data[] = 'payment_method_id in(7,4,6)';
+        if(isset($_GET['bonus']) and @$_GET['bonus'] == 1) $data[] = 'bonus > 0';
+        if (isset($_GET['quick_order']) and @$_GET['quick_order'] == 1) {
+            $data[] = 'from_quick = 1';
+        } elseif ('quick' != $this->cur_menu->getParameter()) {
+            if (isset($_GET['is_admin']) and @$_GET['is_admin'] == 1) {
+                $data[] = 'customer_id in(' . implode(',', $adminsid) . ')';
+            } else {
+                $data[] = 'customer_id not in(' . implode(',', $adminsid) . ')';
+            }
+        }
+
+        if (isset($_GET['detail']) and @$_GET['detail'] == 1) $data[] = 'call_my = 1';
+
+        if (isset($_GET['nall']) and @$_GET['nall'] == 1) $data[] = 'amount > 0';
+
+        if (isset($_GET['order']) and $_GET['order'] > 0) {
+            $iddd = explode(',', $_GET['order']);
+
+            if(count($iddd) == 1){
+                $data[] = '( id = '.$_GET['order'].' or comlpect LIKE "%' . $_GET['order'] . '%" or oldid = '.$_GET['order'].')';
+            }else{
+                $data[] = 'id in( '.implode(",", $iddd).') ';
+            }
+        }
+        if (isset($_GET['phone']) and strlen($_GET['phone']) > 0) $data[] = 'telephone LIKE "%' . trim($_GET['phone']) . '%"';
+
+        if (isset($_GET['uname']) and strlen($_GET['uname']) > 0) $data[] = 'name LIKE "%' . $_GET['uname'] . '%"';
+
+        if (isset($_GET['email']) and strlen($_GET['email']) > 0) $data[] = 'email LIKE "%' . $_GET['email'] . '%" or temp_email LIKE "%' . $_GET['email'] . '%"';
+
+        if (isset($_GET['customer_id']) and strlen($_GET['customer_id']) > 0) $data[] = 'customer_id = '.trim($_GET['customer_id']);
+
+        if (isset($_GET['delivery']) and (int)$_GET['delivery'] > 0) {
+            if ((int)$_GET['delivery'] != 999) {
+                /*  if ((int)$_GET['delivery'] == 111) {
+                      $data[] = 'delivery_type_id in(9,10)';
+                  } else {*/
+                $data['delivery_type_id'] = (int)$_GET['delivery'];
+                //}
+            } else {
+                $data[] = 'delivery_type_id in(3,5)';
+            }
+        }
+        if (isset($_GET['status']) and (int)$_GET['status'] < 900) {
+            if ($_GET['status'] == 0 or $_GET['status'] == 15 or $_GET['status'] == 16 or $_GET['status'] == 9 or $_GET['status'] == 100) {
+                $order_orderby = array('id' => 'ASC');
+            }else{
+                $order_orderby = array('id' => 'DESC');
+            }
+            if ((int)$_GET['status'] == 8) {
+                $data[] = 'status = 8 OR status = 14';
+            }else{
+                $data['status'] = (int)$_GET['status'];
+            }
+        }
+
+
+        if ((isset($_GET['create_from']) and strlen($_GET['create_from']) > 0) or (isset($_GET['create_to']) and strlen($_GET['create_to']) > 0)) {
+
+            $start = '';
+            $end = '';
+            if (strlen(@$_GET['create_from']) > 0) $start = strtotime($_GET['create_from']);
+            if (strlen(@$_GET['create_to']) > 0) $end = strtotime($_GET['create_to']);
+            if ($start != '' and $end != '') {
+                if ($start > $end) {
+                    $k = $start;
+                    $start = $end;
+                    $end = $k;
+                }
+            }
+            if ($start != '') $data[] = 'date_create > "' . date('Y-m-d 00:00:00', $start) . '"';
+            if ($end != '') $data[] = 'date_create < "' . date('Y-m-d 23:59:59', $end) . '"';
+
+        }
+
+        if ((isset($_GET['go_from']) and strlen($_GET['go_from']) > 0) or (isset($_GET['go_to']) and strlen($_GET['go_to']) > 0)) {
+
+            $start = '';
+            $end = '';
+            if (strlen(@$_GET['go_from']) > 0) $start = strtotime($_GET['go_from']);
+            if (strlen(@$_GET['go_to']) > 0) $end = strtotime($_GET['go_to']);
+            if ($start != '' and $end != '') {
+                if ($start > $end) {
+                    $k = $start;
+                    $start = $end;
+                    $end = $k;
+                }
+            }
+            if ($start != '') $data[] = 'order_go > "' . date('Y-m-d 00:00:00', $start) . '"';
+            if ($end != '') $data[] = 'order_go < "' . date('Y-m-d 23:59:59', $end) . '"';
+
+        }
+        if (isset($_GET['price']) and strlen($_GET['price']) > 0) {
+            $data[] = 'amount > ' . ((int)$_GET['price'] - 3) . ' AND amount < ' . ((int)$_GET['price'] + 3);
+        }
+        if (isset($_GET['nakladna']) and strlen($_GET['nakladna']) > 0) {
+            $data[] = 'nakladna LIKE "%' . $_GET['nakladna'] . '%"';
+        }
+
+        $onPage = 40;
+        $page = !empty($this->get->page) && (int)$this->get->page ? (int)$this->get->page : 1;
+        $startElement = ($page - 1) * $onPage;
+        if(isset($_GET['go'])){
+            $total = wsActiveRecord::useStatic('Shoporders')->count($data);
+        }else{
+            if('quick' == $this->cur_menu->getParameter()) { $total = 60; }else{ $total = 300; }
+        }
+        //$total = wsActiveRecord::useStatic('Shoporders')->count($data);
+        $this->view->totalPages = ceil($total / $onPage);
+        $this->view->count = $total;
+        $this->view->page = $page;
+        $this->view->start = ($page == 1) ? 1 : $onPage * ($page - 1);
+        $this->view->end = $onPage * ($page - 1) + $onPage;
+
+        $this->view->orders = wsActiveRecord::useStatic('Shoporders')->findAll($data, $order_orderby, array($startElement, $onPage));
+        //$this->view->orders = wsActiveRecord::useStatic('Shoporders')->findAll($data, array(), array($startElement, $onPage));
+
+        if($this->user->id == 8005 and false) {
+            if ('quick' == $this->cur_menu->getParameter())
+                echo $this->render('template/shop/orders-quick.tpl.php');
+            else
+                echo $this->render('template/shop/orders.tpl.php');
+        }else{
+
+            if ('quick' == $this->cur_menu->getParameter())
+                echo $this->render('shop/orders-quick.tpl.php');
+            else
+                echo $this->render('shop/orders.tpl.php');
+        }
+
+
+    }
+
+/**** CALLORDER ENDS HERE *******/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 public function generatePassword($length = 10){
   $chars = 'abdefhiknrstyzABDEFGHKNQRSTYZ23456789';
   $numChars = strlen($chars);
@@ -15932,7 +17067,7 @@ $text = 'Помилка';
 	}
 	
 		public function sendMessageTelegram($chat_id, $message) {
-  file_get_contents('https://api.telegram.org/bot'.Config::findByCode('telegram_key')->getValue().'/sendMessage?chat_id=' . $chat_id . '&text=' . urlencode($message));
+                    return false;
 }
 
 public function articlesaddAction(){

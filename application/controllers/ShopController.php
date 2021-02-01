@@ -543,7 +543,6 @@ if($_SESSION['bonus'] and $this->ws->getCustomer()->getBonus() > 0 and $order->g
 
         if($this->ws->getCustomer()->getIsLoggedIn() and $this->ws->getCustomer()->isAdmin() and $this->ws->getCustomer()->getTelegram()){
 	$message = 'Ваш заказ № '.$order->getId().' оформлен. Сумма к оплате '.$order->calculateOrderPrice2().' грн. Телефон (044) 224-40-00';
-	 Telegram::sendMessageTelegram($this->ws->getCustomer()->getTelegram(), $message);
 	}else{
 		$phone = Number::clearPhone($order->getTelephone());
 
@@ -967,7 +966,6 @@ $a = new Shoporderarticles();
 				//____________________send_email________________
 if($this->ws->getCustomer()->getIsLoggedIn() and $this->ws->getCustomer()->getTelegram()){
 $message = 'Ваша заявка № '.$order->getQuickNumber().' прийнята. Ожидайте звонок менеджера для уточнения деталей доставки и оплаты.';
- Telegram::sendMessageTelegram($this->ws->getCustomer()->getTelegram(), $message);
 }else{
 				//____________________send_sms__________________
 				require_once('alphasms/smsclient.class.php');

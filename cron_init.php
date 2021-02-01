@@ -47,6 +47,6 @@ Zend_Loader::registerAutoload();
 	
 		
 function sendMessageTelegram($chat_id, $message) {
-  file_get_contents('https://api.telegram.org/bot'.Config::findByCode('telegram_key')->getValue().'/sendMessage?chat_id=' . $chat_id . '&text=' . urlencode($message));
+    return false;
 }
 	?>
