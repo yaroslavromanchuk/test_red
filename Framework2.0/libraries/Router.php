@@ -3,6 +3,7 @@
 class Router {
 
 	static public function route() {
+	    var_dump(111);die;
 
            if(empty($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) != 'xmlhttprequest') {
     // не ajax запрос
