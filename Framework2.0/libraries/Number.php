@@ -110,10 +110,10 @@ class Number {
     	return $ret;
     }
     
-    static public function formatFloat($value, $digits = 2)
+    static public function formatFloat($value, $digits = 2, $thousendSep = " ")
     {
     	if(is_numeric($value))
-    		$ret = number_format($value, $digits, ",", " ");
+    		$ret = number_format($value, $digits, ",", $thousendSep);
     	else
     		$ret = $value;
 

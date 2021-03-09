@@ -63,6 +63,7 @@ die(json_encode(html_entity_decode($rez)));
            //l($lang);
             if($lang){
                  $_SESSION['lang'] = $lang->code;
+                setcookie('lang', $lang->code, time()+60*60*24*30, '/', 'red.ua');
                 // Registry::set('lang', $lang->code);
                //  Registry::set('lang_id', $lang->id);
                  if($lang->code == 'uk'){

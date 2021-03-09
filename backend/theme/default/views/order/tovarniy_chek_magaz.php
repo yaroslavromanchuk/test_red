@@ -115,7 +115,7 @@ for ($step = 0; $step < $this->count; $step++) { ?>
            $qr_cod[] = 'DEPO'.Number::formatFloat($this->order->deposit);
         }
         if($this->order->bonus > 0){
-            $qr_cod[] = 'COIN'.Number::formatFloat($coin);
+            $qr_cod[] = 'COIN'.Number::formatFloat($coin, 0, '');
         }
         
         foreach ($this->getOrder()->getArticles() as $main_key => $article_rec) {

@@ -141,37 +141,37 @@
                 <div id="ru" class="tab-pane fade  active in">
                     <div class="form-group">
                   <label class="form-control-label">H1: <span class="tx-danger">*</span></label>
-                  <input name="name" class="form-control" type="text" class="form-control" id="paginatitle" required value="<?php echo $this->page->getName();?>" />
+                  <input name="name" class="form-control" type="text" class="form-control" id="paginatitle" required value="<?php echo $this->page->name;?>" />
                 </div>
                     <div class="form-group">
                   <label class="form-control-label">Ключевые слова: </label>
-                <input type="text" name="metatag_keywords" id="metatag_keyword"  class="form-control" value="<?php echo $this->page->getMetatagKeywords();?>"/>
+                <input type="text" name="metatag_keywords" id="metatag_keyword"  class="form-control" value="<?php echo $this->page->metatag_keywords;?>"/>
                 </div>
                      <div class="form-group">
                   <label class="form-control-label">Описание: </label>
-                  <textarea name="metatag_description"  rows="5"  class="form-control" id="metatag_description"><?php echo $this->page->getMetatagDescription();?></textarea>
+                  <textarea name="metatag_description"  rows="5"  class="form-control" id="metatag_description"><?php echo $this->page->metatag_description;?></textarea>
                 </div>
                      <div class="form-group">
                   <label class="form-control-label">Содержание страницы:</label>
-                <textarea name="page_body"  rows="10"   class="form-control" id="paginatext"><?php echo $this->page->getPageBody();?></textarea>
+                <textarea name="page_body"  rows="10"   class="form-control" id="paginatext"><?php echo $this->page->page_body;?></textarea>
                 </div>
                 </div>
                 <div id="uk" class="tab-pane fade">
                     <div class="form-group">
                   <label class="form-control-label">H1: <span class="tx-danger">*</span></label>
-                 <input name="name_uk" class="form-control" type="text"  class="form-control" required id="paginatitleuk" value="<?php echo $this->page->getNameUk();?>" />
+                 <input name="name_uk" class="form-control" type="text"  class="form-control" required id="paginatitleuk" value="<?php echo $this->page->name_uk;?>" />
                 </div>
                     <div class="form-group">
                   <label class="form-control-label">Ключевые слова: </label>
-                <input type="text" name="metatag_keywords_uk" id="metatag_keyword_uk"  class="form-control" value="<?php echo $this->page->getMetatagKeywordsUk();?>"/>
+                <input type="text" name="metatag_keywords_uk" id="metatag_keyword_uk"  class="form-control" value="<?php echo $this->page->metatag_keywords_uk;?>"/>
                 </div>
                     <div class="form-group">
                   <label class="form-control-label">Описание: </label>
-                  <textarea name="metatag_description_uk"  rows="5"  class="form-control" id="metatag_description_uk"><?php echo $this->page->getMetatagDescriptionUk();?></textarea>
+                  <textarea name="metatag_description_uk"  rows="5"  class="form-control" id="metatag_description_uk"><?php echo $this->page->metatag_description_uk;?></textarea>
                 </div>
                     <div class="form-group">
                   <label class="form-control-label">Содержание страницы:</label>
-                 <textarea name="page_body_uk" rows="10" s  class="form-control"  id="paginatextuk"><?php echo $this->page->getPageBodyUk();?></textarea>
+                 <textarea name="page_body_uk" rows="10" s  class="form-control"  id="paginatextuk"><?php echo $this->page->page_body_uk;?></textarea>
                 </div>
                 </div>
             </div>

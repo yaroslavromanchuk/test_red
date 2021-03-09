@@ -11,6 +11,11 @@ setlocale(LC_ALL, $locale);
 setlocale(LC_NUMERIC, "en_US");
 mb_internal_encoding("UTF-8");
 
+//if (stristr($_SERVER['SCRIPT_NAME'], 'admin', true)) {
+//    header('HTTP/1.0 404 Not Found');
+//    header("Location: /");
+//}
+
 //if(!in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '127.0.0.2', '91.225.165.62'))) die('Сайт на техобслуживании, вернитесь позже.');
 
 require_once('site_config.php');

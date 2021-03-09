@@ -105,9 +105,9 @@ $this->view->days = array('Mon'=>'Понедельник', 'Tue'=>'Вторни�
     {
         if ($this->user->getIsLoggedIn() and $this->user->isAdmin()){
             if($this->user->getId() == 34936){ //dla Maksima redirect
-                $this->_redir('stores-akciya'); 
+                $this->_redir('stores-akciya');
             }
-        $this->_redir('index'); 
+        $this->_redir('index');
         }
 
         if (!count($this->post)) {
@@ -4245,7 +4245,7 @@ return;
 			$mes = 'возврат';
 
 		$c = new Shoporderarticles((int)$this->post->id);
-            if ($c && $c->getId()) { 
+            if ($c && $c->getId()) {
 			if($c->getCount() > 1){
 			//die('dva');
 				for($i = 1; $i <= $c->getCount(); $i++){
@@ -6799,6 +6799,50 @@ if(isValidEmailNew($order->getEmail()) and isValidEmailRu($order->getEmail())){
 
     public function ucenkaAction()
     {
+        if ($_GET['revert-auto-ucenka'] == true) {
+            try {
+                //формуємо автоматичні уцінки
+                $sql = "SELECT d1.* FROM ucenka_history d1
+                  JOIN (SELECT MIN(id) AS id FROM ucenka_history where `admin_id` = 8005 GROUP BY article_id ORDER BY NULL)
+                  d2 USING (id)";
+                $ucenki = wsActiveRecord::findByQueryArray($sql);
+                $ucenki = array_chunk($ucenki, 1000);
+                foreach ($ucenki as $tab) {
+                    $ucenkiAuto = json_decode(json_encode($tab), true);
+                    $ucenkiAuto = array_column($ucenkiAuto, null, 'article_id');
+                    $ids = array_column($ucenkiAuto, 'article_id');
+                    $ids = implode(', ', $ids);
+                    $sql = "SELECT d1.* FROM ucenka_history d1
+                      JOIN (SELECT MAX(id) AS id FROM ucenka_history where `admin_id` != 8005 and article_id in ($ids) GROUP BY article_id ORDER BY NULL)
+                      d2 USING (id)";
+                    //формуємо мануальні уцінки
+                    $ucenkiManual = wsActiveRecord::findByQueryArray($sql);
+                    $ucenkiManual = json_decode(json_encode($ucenkiManual), true);
+                    $ucenkiManual = array_column($ucenkiManual, null, 'article_id');
+
+                    //відбираємо товар, зв’язаний з уцінкою
+                    $sql = "select id, old_price, price, ucenka from ws_articles where id IN ($ids)";
+                    $articles = wsActiveRecord::useStatic('Shoparticles')->findByQuery($sql);
+                    foreach ($articles as $article) {
+                        if (isset($ucenkiAuto[$article->id]) && !isset($ucenkiManual[$article->id])) {
+                            $article->setPrice($ucenkiAuto[$article->id]['old_price']);
+                            $article->setOldPrice(0);
+                            $article->setUcenka(0);
+                        } else if (isset($ucenkiManual[$article->id])) {
+                            $article->setPrice($ucenkiManual[$article->id]['new_price']);
+                            $article->setOldPrice($ucenkiManual[$article->id]['old_price']);
+                            $article->setUcenka($ucenkiManual[$article->id]['proc']);
+                        }
+                            $article->save();
+                    }
+                }
+
+            } catch (Exception $e) {
+                var_dump($e->getMessage());
+                die;
+            }
+        }
+
 if($this->post->ucenka_id){
 $result = array();
 //$id = explode(',', $this->post->ucenka_id);
@@ -10943,8 +10987,8 @@ case 5:
     }
 
     public function blogAction()
-    { 
-        
+    {
+
         if (isset($this->get->delete) and (int)$this->get->delete > 0) {
         $n = new Blog((int)$this->get->delete);
 		if ($n->getId()) {$n->destroy();}
@@ -10956,23 +11000,34 @@ case 5:
                  $block = new Blog();
                  $errors = array();
                  $errors = array();
-		if (!$_POST['post_name']){$errors[] = 'Пожалуйста заполните поле "Заголовок"';}
+		        if (!$_POST['post_name']){$errors[] = 'Пожалуйста заполните поле "Заголовок"';}
                 if(!$_POST['preview_post']){ $errors[] = 'Пожалуйста заполните поле "Вступительная часть"';}
                 if(!$_POST['content_post']){ $errors[] = 'Пожалуйста заполните поле "Содержимое"';}
                 
                 if (!count($errors)) {
 				
 					$block->setPostName($_POST['post_name']);
-					$block->setPostNameUk($_POST['post_name']);
+                    if (!empty($_POST['post_name_uk'])) {
+                        $block->setPostNameUk($_POST['post_name_uk']);
+                    } else {
+                        $block->setPostNameUk($this->trans->translate($_POST['post_name'], 'ru', 'uk'));
+                    }
 					$block->setCtime($_POST['ctime']);
 					$block->setUtime(date("y-m-d h:i:s"));
 					if(isset($_POST['autor'])) { $block->setAutor($_POST['autor']); $block->setAutorUk($_POST['autor']);}
 					//$block->setAutor($autor);
 					$block->setPreviewPost($_POST['preview_post']);
-					$block->setPreviewPostUk($_POST['preview_post']);
+                    if (!empty($_POST['preview_post_uk'])) {
+                        $block->setPreviewPostUk($_POST['preview_post_uk']);
+                    } else {
+                        $block->setPreviewPostUk($this->trans->translate($_POST['preview_post'], 'ru', 'uk'));
+                    }
 					$block->setContentPost($_POST['content_post']);
-					$block->setContentPostUk($_POST['content_post']);
-					$block->setContentPostUk($_POST['content_post']);
+                    if (!empty($_POST['content_post_uk'])) {
+                        $block->setContentPostUk($_POST['content_post_uk']);
+                    } else {
+                        $block->setContentPostUk($this->trans->translate($_POST['content_post'], 'ru', 'uk'));
+                    }
 					if (isset($_POST['public']))$block->setPublic(1);
 						else $block->setPublic(0);
 						$text_cat = '0';	
@@ -11012,33 +11067,52 @@ case 5:
 				if (!count($errors)) {
 				
 					$block->setPostName($_POST['post_name']);
-					$block->setPostNameUk($_POST['post_name']);
+					if (!empty($_POST['post_name_uk'])) {
+                        $block->setPostNameUk($_POST['post_name_uk']);
+                    } else {
+                        $block->setPostNameUk($this->trans->translate($_POST['post_name'], 'ru', 'uk'));
+                    }
 					$block->setCtime($_POST['ctime']);
 					$block->setUtime(date("y-m-d h:i:s"));
-					if(isset($_POST['autor'])) { $block->setAutor($_POST['autor']); $block->setAutorUk($_POST['autor']);}
+					if(isset($_POST['autor'])) { $block->setAutor($_POST['autor']); $block->setAutorUk($this->trans->translate($_POST['autor'], 'ru', 'uk'));}
 					//$block->setAutor($autor);
 					$block->setPreviewPost($_POST['preview_post']);
-					$block->setPreviewPostUk($_POST['preview_post']);
-					$block->setContentPost($_POST['content_post']);
-					$block->setContentPostUk($_POST['content_post']);
-					$block->setContentPostUk($_POST['content_post']);
-					if (isset($_POST['public']))$block->setPublic(1);
-						else $block->setPublic(0);
-						$text_cat = '0';	
-						if(isset($_POST['c1'])) {$text_cat .=',1';}
-						if(isset($_POST['c2'])) {$text_cat .=',2';}
-						if(isset($_POST['c3'])) {$text_cat .=',3';}
-						if(isset($_POST['c4'])) {$text_cat .=',4';}
-						if(isset($_POST['c5'])) {$text_cat .=',5';}
-						if(isset($_POST['c6'])) {$text_cat .=',6';}
-						if(isset($_POST['c7'])) {$text_cat .=',7';}
+					if (!empty($_POST['preview_post_uk'])) {
+                        $block->setPreviewPostUk($_POST['preview_post_uk']);
+                    } else {
+                        $block->setPreviewPostUk($this->trans->translate($_POST['preview_post'], 'ru', 'uk'));
+                    }
+                    $block->setContentPost($_POST['content_post']);
+					if (!empty($_POST['content_post_uk'])) {
+                        $block->setContentPostUk($_POST['content_post_uk']);
+                    } else {
+                        $block->setContentPostUk($this->trans->translate($_POST['content_post'], 'ru', 'uk'));
+                    }
+					if (isset($_POST['public'])){
+					    $block->setPublic(1);
+					} else {
+					    $block->setPublic(0);
+					}
+                    $text_cat = '0';
+                    if(isset($_POST['c1'])) {$text_cat .=',1';}
+                    if(isset($_POST['c2'])) {$text_cat .=',2';}
+                    if(isset($_POST['c3'])) {$text_cat .=',3';}
+                    if(isset($_POST['c4'])) {$text_cat .=',4';}
+                    if(isset($_POST['c5'])) {$text_cat .=',5';}
+                    if(isset($_POST['c6'])) {$text_cat .=',6';}
+                    if(isset($_POST['c7'])) {$text_cat .=',7';}
 					$block->setDescription($_POST['description']);
+                    if (!empty($_POST['description_uk'])) {
+                        $block->setDescriptionUk($_POST['description_uk']);
+                    } else {
+                        $block->setDescriptionUk($this->trans->translate($_POST['description'], 'ru', 'uk'));
+                    }
 					$block->setKeyword($_POST['keyword']);
 					$block->setCategories($text_cat);
 					$block->setImage($_POST['image']);
-					
+
                     $block->save();
-					
+
                 $this->view->saved = 1;
                 } else {
                     $this->view->errors = $errors;

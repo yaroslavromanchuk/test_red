@@ -97,6 +97,10 @@ class Router {
 
                     }
 
+        if (empty($_COOKIE['lang']) || $_COOKIE['lang'] == 'uk') {
+            setcookie('lang', 'uk', time()+60*60*24*30, '/', 'red.ua');
+            $_SESSION['lang'] = 'uk';
+        }
 		if(isset($_SESSION['lang']) && $_SESSION['lang'] == 'uk' && $route[$i] != 'uk'){
 
                     if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) != 'xmlhttprequest') {

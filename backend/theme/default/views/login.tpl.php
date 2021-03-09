@@ -34,7 +34,8 @@
             </div><!-- d-flex -->
           </div>
 		  <?php } ?>
-<form action="<?=$this->path?>login/" method="post" class="form-signin">
+          <?php $lang = $_SESSION['lang'] == 'uk' ? '/uk' : ''?>
+<form action="<?=$lang . $this->path?>login/" method="post" class="form-signin">
         <div class="form-group">
           <input type="text" class="form-control" name="login" placeholder="Enter your username">
         </div><!-- form-group -->
